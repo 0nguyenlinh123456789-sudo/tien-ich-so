@@ -1,0 +1,18 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "fire",
+  "slug": "tiet-kiem-50-trieu-moi-thang-lai-6-phan-tram-tu-30-tuoi-bao-gio-nghi-huu",
+  "title": "Tiết kiệm 50 triệu/tháng, lãi 6%/năm từ 30 tuổi: bao giờ nghỉ hưu?",
+  "params": {
+    "currentAge": 30,
+    "initial": 0,
+    "monthly": 50000000,
+    "annualReturn": 6,
+    "contributionGrowth": 5,
+    "annualExpenses": 900000000,
+    "inflation": 4,
+    "withdrawalRate": 4,
+    "years": 30
+  }
+}

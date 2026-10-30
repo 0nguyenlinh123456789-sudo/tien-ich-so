@@ -1,0 +1,18 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "fire",
+  "slug": "tiet-kiem-30-trieu-moi-thang-lai-8-phan-tram-tu-40-tuoi-bao-gio-nghi-huu",
+  "title": "Tiết kiệm 30 triệu/tháng, lãi 8%/năm từ 40 tuổi: bao giờ nghỉ hưu?",
+  "params": {
+    "currentAge": 40,
+    "initial": 0,
+    "monthly": 30000000,
+    "annualReturn": 8,
+    "contributionGrowth": 5,
+    "annualExpenses": 540000000,
+    "inflation": 4,
+    "withdrawalRate": 4,
+    "years": 30
+  }
+}

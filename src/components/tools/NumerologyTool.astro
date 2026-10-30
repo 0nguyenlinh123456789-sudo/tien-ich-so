@@ -1,0 +1,155 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+
+interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; autorun?: boolean; }
+const { lang = 'vi', preset = {}, autorun = false } = Astro.props;
+const now = new Date().getFullYear();
+const p = { name: '', dob: '', targetYear: now, ...preset };
+const vi = lang === 'vi';
+---
+<div data-tool="numerology" data-lang={lang}>
+  <form class="card grid gap-4 md:grid-cols-3" data-tool-form data-autorun={String(autorun)}>
+    <div class="md:col-span-1">
+      <label class="label" for="nm-name">{vi ? 'Họ và tên khai sinh (không bắt buộc)' : 'Full birth name (optional)'}</label>
+      <input id="nm-name" name="name" class="input" placeholder={vi ? 'VD: Nguyễn Văn An' : 'e.g. John Michael Smith'} value={p.name} />
+    </div>
+    <div>
+      <label class="label" for="nm-dob">{vi ? 'Ngày sinh dương lịch' : 'Date of birth'}</label>
+      <input id="nm-dob" name="dob" type="date" class="input" required value={p.dob} min="1900-01-01" max="2100-12-31" />
+    </div>
+    <div>
+      <label class="label" for="nm-year">{vi ? 'Xem năm cá nhân cho năm' : 'Personal year for'}</label>
+      <input id="nm-year" name="targetYear" type="number" min="1900" max="2200" class="input" value={p.targetYear} />
+    </div>
+    <div class="md:col-span-3"><button class="btn-primary" type="submit">{vi ? 'Giải mã ngay' : 'Reveal my numbers'}</button></div>
+  </form>
+
+  <MonetizedResult context="destiny" lang={lang}>
+    <div data-out="core"></div>
+    <div data-out="chart" class="mt-6"></div>
+    <div slot="bottom">
+      <div data-out="peaks" class="mt-6"></div>
+      <div data-out="year" class="mt-6"></div>
+      <div data-out="name" class="mt-6"></div>
+    </div>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { numerologyProfile, toSingle } from '../../lib/numerology.js';
+  import { solarToLunar, napAm, ELEMENT_COLORS, ELEMENT_COLORS_EN } from '../../lib/lunar.js';
+  import { escapeHtml } from '../../lib/format.js';
+  import DATA from '../../data/numerology.json';
+  import { bindToolForm, showResult } from '../../scripts/form-state.js';
+
+  const T = {
+    vi: { lifePath: 'Con số chủ đạo', strengths: 'Điểm mạnh', weaknesses: 'Điểm cần cải thiện', career: 'Nghề nghiệp phù hợp', love: 'Tình cảm', advice: 'Lời khuyên',
+      birthday: 'Chỉ số ngày sinh', attitude: 'Chỉ số thái độ', chart: 'Biểu đồ ngày sinh', strongArrows: 'Mũi tên sức mạnh', missingArrows: 'Mũi tên trống', isolated: 'Số cô lập',
+      peaks: '4 Đỉnh cao đời người', peak: 'Đỉnh', age: 'Tuổi', yearLbl: 'Năm', challenge: 'Thử thách', personalYear: 'Năm cá nhân', personalMonth: 'Tháng cá nhân hiện tại',
+      next: 'Dự báo 3 năm tới', lucky: 'Con số may mắn', destiny: 'Mệnh (nạp âm)', colors: 'Màu hợp', avoid: 'Màu nên tránh', nameTitle: 'Chỉ số theo họ tên',
+      expression: 'Chỉ số Sứ mệnh (Expression)', soul: 'Chỉ số Linh hồn (Soul Urge)', personality: 'Chỉ số Nhân cách', maturity: 'Chỉ số Trưởng thành', none: 'Không có', lunar: 'Âm lịch' },
+    en: { lifePath: 'Life Path number', strengths: 'Strengths', weaknesses: 'Growth areas', career: 'Suitable careers', love: 'Love', advice: 'Advice',
+      birthday: 'Birthday number', attitude: 'Attitude number', chart: 'Birth chart', strongArrows: 'Arrows of strength', missingArrows: 'Empty arrows', isolated: 'Isolated numbers',
+      peaks: 'The 4 Pinnacles', peak: 'Pinnacle', age: 'Age', yearLbl: 'Year', challenge: 'Challenge', personalYear: 'Personal Year', personalMonth: 'Current personal month',
+      next: '3-year forecast', lucky: 'Lucky numbers', destiny: 'Element (Nạp Âm)', colors: 'Lucky colors', avoid: 'Colors to avoid', nameTitle: 'Name numbers',
+      expression: 'Expression number', soul: 'Soul Urge number', personality: 'Personality number', maturity: 'Maturity number', none: 'None', lunar: 'Lunar date' }
+  };
+
+  const meaning = (n: number, lang: 'vi' | 'en') => (DATA.numbers as any)[String(n)]?.[lang] || (DATA.numbers as any)[String(toSingle(n))]?.[lang];
+
+  document.querySelectorAll<HTMLElement>('[data-tool="numerology"]').forEach((root) => {
+    const lang = (root.dataset.lang === 'en' ? 'en' : 'vi') as 'vi' | 'en';
+    const L = T[lang];
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+
+    bindToolForm(root.querySelector<HTMLFormElement>('[data-tool-form]')!, (d: any) => {
+      if (!d.dob) return;
+      const [year, month, day] = String(d.dob).split('-').map(Number);
+      const r = numerologyProfile({ name: d.name, day, month, year, targetYear: Number(d.targetYear) });
+      const mm = meaning(r.lifePath, lang);
+      const lunar = solarToLunar(day, month, year);
+      const na = napAm(lunar.year);
+      const colors = (lang === 'vi' ? ELEMENT_COLORS : ELEMENT_COLORS_EN)[na.element as keyof typeof ELEMENT_COLORS];
+
+      out('core').innerHTML = `
+        <div class="flex flex-col gap-5 md:flex-row">
+          <div class="grid h-36 w-36 shrink-0 place-items-center rounded-3xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white shadow-lg">
+            <div class="text-center"><div class="text-6xl font-black">${r.lifePath}</div><div class="text-xs uppercase opacity-80">${L.lifePath}</div></div>
+          </div>
+          <div class="flex-1">
+            <div class="text-2xl font-bold">${mm.title}</div>
+            <div class="mt-1 font-medium text-violet-700">${mm.keyword}</div>
+            <div class="mt-3 grid gap-2 text-sm sm:grid-cols-3">
+              <div class="stat"><div class="stat-label">${L.birthday}</div><div class="stat-value">${r.birthdayNumber}</div></div>
+              <div class="stat"><div class="stat-label">${L.attitude}</div><div class="stat-value">${r.attitude}</div></div>
+              <div class="stat"><div class="stat-label">${L.destiny}</div><div class="text-base font-bold">${lang === 'vi' ? na.name : na.en} (${lang === 'vi' ? na.element : na.elementEn})</div><div class="text-xs text-slate-500">${na.canChi} · ${L.lunar} ${lunar.day}/${lunar.month}/${lunar.year}</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="prose-lite mt-5">
+          <h3>💪 ${L.strengths}</h3><p>${mm.strengths}</p>
+          <h3>⚠️ ${L.weaknesses}</h3><p>${mm.weaknesses}</p>
+          <h3>💼 ${L.career}</h3><p>${mm.career}</p>
+          <h3>❤️ ${L.love}</h3><p>${mm.love}</p>
+          <h3>🧭 ${L.advice}</h3><p>${mm.advice}</p>
+        </div>`;
+
+      const grid = [[3, 6, 9], [2, 5, 8], [1, 4, 7]];
+      const arrowText = (ids: string[], kind: 'strong' | 'missing') =>
+        ids.length ? `<ul>${ids.map((id) => `<li>${(DATA.arrows as any)[id][kind][lang]}</li>`).join('')}</ul>` : `<p>${L.none}</p>`;
+      out('chart').innerHTML = `<h3 class="mb-3 text-lg font-semibold">${L.chart}</h3>
+        <div class="flex flex-col gap-6 md:flex-row">
+          <div class="grid w-56 shrink-0 grid-cols-3 gap-1 rounded-2xl bg-violet-100 p-2">
+            ${grid.flat().map((n) => `<div class="grid aspect-square place-items-center rounded-xl bg-white text-xl font-bold ${r.chart.counts[n] ? 'text-violet-700' : 'text-slate-300'}">${r.chart.counts[n] ? String(n).repeat(r.chart.counts[n]) : n}</div>`).join('')}
+          </div>
+          <div class="prose-lite flex-1 text-sm">
+            <h3>${L.strongArrows}</h3>${arrowText(r.chart.strong, 'strong')}
+            <h3>${L.missingArrows}</h3>${arrowText(r.chart.missing, 'missing')}
+            ${r.chart.isolated.length ? `<h3>${L.isolated}</h3><p>${r.chart.isolated.join(', ')}</p>` : ''}
+          </div>
+        </div>`;
+
+      out('peaks').innerHTML = `<h3 class="mb-3 text-lg font-semibold">${L.peaks}</h3>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        ${r.peaks.map((pk: any, i: number) => {
+          const pm = meaning(pk.number, lang);
+          const ch = (DATA.challenges as any)[String(r.challenges[i])]?.[lang] || '';
+          return `<div class="rounded-2xl border border-violet-200 bg-violet-50 p-4">
+            <div class="text-xs uppercase text-violet-600">${L.peak} ${pk.index}</div>
+            <div class="text-3xl font-black text-violet-700">${pk.number}</div>
+            <div class="text-sm font-medium">${L.age} ${pk.age} · ${L.yearLbl} ${pk.year}</div>
+            <div class="mt-2 text-sm">${pm.keyword}</div>
+            <div class="mt-2 text-xs text-slate-600"><b>${L.challenge} ${r.challenges[i]}:</b> ${ch}</div></div>`;
+        }).join('')}</div>`;
+
+      out('year').innerHTML = `<h3 class="mb-3 text-lg font-semibold">${L.personalYear} ${r.input.targetYear}: <span class="text-violet-700">${r.personalYear}</span></h3>
+        <p class="text-slate-700">${(DATA.personalYear as any)[String(r.personalYear)][lang]}</p>
+        <p class="mt-2 text-sm text-slate-600">${L.personalMonth}: <b>${r.personalMonth}</b></p>
+        <h4 class="mt-4 mb-2 font-semibold">${L.next}</h4>
+        <div class="table-wrap"><table class="data-table"><tbody>
+          ${r.nextYears.map((y: any) => `<tr><td class="font-semibold">${y.year}</td><td>${y.number}</td><td class="whitespace-normal">${(DATA.personalYear as any)[String(y.number)][lang]}</td></tr>`).join('')}
+        </tbody></table></div>
+        <div class="mt-4 grid gap-3 sm:grid-cols-3">
+          <div class="stat"><div class="stat-label">${L.lucky}</div><div class="stat-value">${r.luckyNumbers.join(' · ')}</div></div>
+          <div class="stat"><div class="stat-label">${L.colors}</div><div class="text-sm font-semibold">${colors.good.join(', ')}</div></div>
+          <div class="stat"><div class="stat-label">${L.avoid}</div><div class="text-sm font-semibold">${colors.bad.join(', ')}</div></div>
+        </div>`;
+
+      if (r.names && r.names.normalized) {
+        const n = r.names;
+        const block = (label: string, num: number) => {
+          const nm = meaning(num, lang);
+          return `<div class="rounded-2xl border border-slate-200 p-4"><div class="text-xs uppercase text-slate-500">${label}</div><div class="text-3xl font-black text-violet-700">${num}</div><div class="text-sm font-medium">${nm?.title || ''}</div><div class="mt-1 text-xs text-slate-600">${nm?.keyword || ''}</div></div>`;
+        };
+        out('name').innerHTML = `<h3 class="mb-1 text-lg font-semibold">${L.nameTitle}: ${escapeHtml(n.normalized)}</h3>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            ${block(L.expression, n.expression)}${block(L.soul, n.soulUrge)}${block(L.personality, n.personality)}${block(L.maturity, r.maturity)}
+          </div>`;
+      } else {
+        out('name').innerHTML = '';
+      }
+      showResult(root);
+    });
+  });
+</script>
+

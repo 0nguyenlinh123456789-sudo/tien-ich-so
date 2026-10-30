@@ -1,0 +1,12 @@
+{
+  "section": "tools",
+  "lang": "vi",
+  "tool": "moneywords",
+  "slug": "2500000-dong-viet-bang-chu",
+  "title": "2.500.000 đồng viết bằng chữ",
+  "params": {
+    "amount": "2500000",
+    "currency": "VND",
+    "outLang": "vi"
+  }
+}

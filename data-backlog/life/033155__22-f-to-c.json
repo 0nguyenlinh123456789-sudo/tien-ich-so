@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "22-f-to-c",
+  "title": "22°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 22
+  }
+}

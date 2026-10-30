@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-160cm-54kg",
+  "title": "BMI for 160 cm and 54 kg",
+  "params": {
+    "h": 160,
+    "w": 54
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-135-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 135 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 135000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

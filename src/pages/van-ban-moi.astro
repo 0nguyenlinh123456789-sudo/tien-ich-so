@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+import data from '../data/legal-updates.json';
+
+const items = data.items || [];
+const topics = (data.topics || []).filter((t: any) => items.some((i: any) => i.topics.includes(t.id)));
+const label = Object.fromEntries((data.topics || []).map((t: any) => [t.id, t.label]));
+const updated = data.updatedAt ? new Date(data.updatedAt).toLocaleDateString('vi-VN') : '';
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'ItemList', name: 'Văn bản pháp luật mới',
+  itemListElement: items.slice(0, 30).map((i: any, n: number) => ({ '@type': 'ListItem', position: n + 1, name: `${i.code} – ${i.title}`, url: i.url }))
+};
+---
+<Layout title="Văn bản pháp luật mới nhất về lương, thuế, bảo hiểm, hợp đồng" description="Danh sách Luật, Nghị định, Thông tư mới nhất về tiền lương, thuế TNCN, bảo hiểm, lao động, hợp đồng, nhà đất – tự động cập nhật hằng ngày từ Cổng TTĐT Chính phủ." lang="vi" jsonLd={jsonLd}>
+  <nav class="mb-3 text-sm text-slate-500"><a href="/" class="hover:text-brand-700">Trang chủ</a> / Văn bản mới</nav>
+  <h1 class="text-3xl font-black md:text-4xl">Văn bản pháp luật mới</h1>
+  <p class="mt-2 max-w-3xl text-slate-600">
+    Tự động cập nhật hằng ngày từ <b>{data.source}</b>. Chỉ hiển thị văn bản quy phạm (Luật, Nghị định, Nghị quyết, Thông tư, Quyết định của Thủ tướng) liên quan lương, thuế, bảo hiểm, lao động, hợp đồng, nhà đất và thủ tục. Mỗi văn bản đã qua kiểm tra tự động: đúng nguồn chính thống, số hiệu và ngày hợp lệ, tệp gốc tải được.
+  </p>
+  {updated && <p class="mt-1 text-xs text-slate-500">Lần quét gần nhất: {updated} · {items.length} văn bản</p>}
+
+  <div class="mt-6 flex flex-wrap gap-2" data-filter>
+    <button type="button" data-t="" class="rounded-full border border-brand-600 bg-brand-600 px-3 py-1.5 text-sm font-medium text-white">Tất cả</button>
+    {topics.map((t: any) => <button type="button" data-t={t.id} class="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-600">{t.label}</button>)}
+  </div>
+
+  {items.length === 0 ? (
+    <p class="card mt-6 text-slate-600">Chưa có văn bản nào phù hợp trong lần quét gần nhất.</p>
+  ) : (
+    <ul class="mt-6 grid gap-3" data-list>
+      {items.map((i: any) => (
+        <li class="card" data-topics={i.topics.join(' ')}>
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <span class="rounded-md bg-slate-900 px-2 py-0.5 font-semibold text-white">{i.code}</span>
+            <span class="text-slate-500">{i.type} · ban hành {i.date}</span>
+            {i.topics.map((t: string) => <span class="rounded-full bg-brand-50 px-2 py-0.5 text-brand-700">{label[t] || t}</span>)}
+            {i.impact && <span class="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-800">Có thể ảnh hưởng công cụ tính lương</span>}
+          </div>
+          <p class="mt-2 font-semibold text-slate-900">{i.title}</p>
+          <div class="mt-2 flex flex-wrap gap-4 text-sm">
+            <a href={i.url} target="_blank" rel="noopener" class="font-semibold text-brand-600 hover:underline">Xem trên Cổng Chính phủ →</a>
+            {i.file && <a href={i.file} target="_blank" rel="noopener" class="text-slate-600 hover:underline">Tải văn bản gốc</a>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <p class="mt-8 text-xs text-slate-500">Danh sách mang tính tra cứu nhanh; giá trị pháp lý theo văn bản gốc trên Công báo và Cổng TTĐT Chính phủ. Văn bản chưa chắc đã có hiệu lực ngay tại ngày ban hành – xem điều khoản hiệu lực trong văn bản.</p>
+</Layout>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-filter]');
+  box?.addEventListener('click', (ev) => {
+    const b = (ev.target as HTMLElement).closest<HTMLElement>('[data-t]');
+    if (!b) return;
+    const t = b.dataset.t!;
+    box.querySelectorAll<HTMLElement>('[data-t]').forEach((x) => {
+      const on = x === b;
+      x.classList.toggle('bg-brand-600', on); x.classList.toggle('text-white', on); x.classList.toggle('border-brand-600', on);
+      x.classList.toggle('bg-white', !on); x.classList.toggle('text-slate-600', !on); x.classList.toggle('border-slate-300', !on);
+    });
+    document.querySelectorAll<HTMLElement>('[data-list] > li').forEach((li) => { li.hidden = !!t && !li.dataset.topics!.split(' ').includes(t); });
+  });
+</script>

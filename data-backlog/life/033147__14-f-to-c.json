@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "14-f-to-c",
+  "title": "14°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 14
+  }
+}

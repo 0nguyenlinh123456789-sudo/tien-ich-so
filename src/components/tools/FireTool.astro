@@ -1,0 +1,113 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+import { fmtNum } from '../../lib/format.js';
+import { t } from '../../i18n/ui.js';
+
+interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; autorun?: boolean; }
+const { lang = 'vi', preset = {}, autorun = false } = Astro.props;
+const p = { currentAge: 28, initial: 100000000, monthly: 10000000, annualReturn: 10, contributionGrowth: 5, annualExpenses: 180000000, inflation: 4, withdrawalRate: 4, years: 30, ...preset };
+const vi = lang === 'vi';
+const L = t(lang);
+const fields: [string, string, string, boolean, string?][] = [
+  ['currentAge', vi ? 'Tuổi hiện tại' : 'Current age', 'number', false, '1'],
+  ['initial', vi ? 'Số vốn hiện có (VNĐ)' : 'Current savings (VND)', 'text', true],
+  ['monthly', vi ? 'Tiết kiệm / đầu tư mỗi tháng (VNĐ)' : 'Monthly investment (VND)', 'text', true],
+  ['annualReturn', vi ? 'Lợi nhuận kỳ vọng (%/năm)' : 'Expected return (%/year)', 'number', false, '0.1'],
+  ['contributionGrowth', vi ? 'Tăng tiền góp mỗi năm (%)' : 'Contribution growth (%/year)', 'number', false, '0.1'],
+  ['annualExpenses', vi ? 'Chi tiêu mỗi năm khi nghỉ hưu (theo giá hôm nay)' : 'Yearly expenses in retirement (today)', 'text', true],
+  ['inflation', vi ? 'Lạm phát (%/năm)' : 'Inflation (%/year)', 'number', false, '0.1'],
+  ['withdrawalRate', vi ? 'Tỷ lệ rút an toàn (%)' : 'Safe withdrawal rate (%)', 'number', false, '0.1'],
+  ['years', vi ? 'Số năm mô phỏng' : 'Years to simulate', 'number', false, '1']
+];
+---
+<div data-tool="fire" data-lang={lang}>
+  <form class="card grid gap-4 md:grid-cols-3" data-tool-form data-autorun={String(autorun)}>
+    {fields.map(([name, label, type, isMoney, step]) => (
+      <div>
+        <label class="label" for={`fire-${name}`}>{label}</label>
+        {isMoney
+          ? <input id={`fire-${name}`} name={name} class="input" inputmode="numeric" data-money value={fmtNum((p as any)[name], 'vi')} />
+          : <input id={`fire-${name}`} name={name} type={type} step={step} class="input" value={(p as any)[name]} />}
+      </div>
+    ))}
+    <div class="md:col-span-3"><button class="btn-primary" type="submit">{vi ? 'Xem kết quả chi tiết' : 'View detailed result'}</button></div>
+  </form>
+
+  <MonetizedResult context="finance" lang={lang}>
+    <div data-out="summary"></div>
+    <div data-out="chart" class="mt-6"></div>
+    <div slot="bottom">
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-2">
+        <h3 class="font-semibold">{vi ? 'Bảng tăng trưởng tài sản từng năm' : 'Year-by-year growth table'}</h3>
+        <button type="button" class="btn-ghost py-2 text-sm" data-action="csv">⬇ {L.exportCsv}</button>
+      </div>
+      <div data-out="table" class="mt-2 max-h-[560px] overflow-y-auto"></div>
+    </div>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { simulateFire } from '../../lib/fire.js';
+  import { fmtMoney, toCsv, downloadText } from '../../lib/format.js';
+  import { bindToolForm, showResult } from '../../scripts/form-state.js';
+
+  const T = {
+    vi: { fireNum: 'Con số FIRE (giá hôm nay)', fireAge: 'Tuổi tự do tài chính', notReached: 'Chưa đạt trong 70 năm', final: 'Tài sản sau', yrs: 'năm',
+      interest: 'Tiền lãi tích lũy', real: 'Sức mua thực (giá hôm nay)', year: 'Năm', age: 'Tuổi', contrib: 'Góp trong năm', balance: 'Tổng tài sản',
+      target: 'Mục tiêu FIRE', passive: 'Thu nhập thụ động/tháng', reached: '✅ Đạt FIRE', inYears: 'sau', chartTitle: 'Tài sản vs Mục tiêu FIRE' },
+    en: { fireNum: 'FIRE number (today)', fireAge: 'Financial independence age', notReached: 'Not reached within 70 years', final: 'Wealth after', yrs: 'years',
+      interest: 'Accumulated interest', real: 'Real value (today)', year: 'Year', age: 'Age', contrib: 'Contributed', balance: 'Balance',
+      target: 'FIRE target', passive: 'Passive income/month', reached: '✅ FIRE', inYears: 'in', chartTitle: 'Wealth vs FIRE target' }
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-tool="fire"]').forEach((root) => {
+    const lang = (root.dataset.lang === 'en' ? 'en' : 'vi') as 'vi' | 'en';
+    const L = T[lang];
+    const m = (v: number) => fmtMoney(v, lang);
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    let last: any = null;
+
+    bindToolForm(root.querySelector<HTMLFormElement>('[data-tool-form]')!, (d: any) => {
+      const r = simulateFire(d);
+      last = r;
+      out('summary').innerHTML = `<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="stat"><div class="stat-label">${L.fireNum}</div><div class="stat-value">${m(r.fireNumberToday)}</div></div>
+        <div class="stat bg-orange-50"><div class="stat-label">${L.fireAge}</div><div class="stat-value text-orange-600">${r.fireAge ? `${r.fireAge} <span class="text-sm font-normal">(${L.inYears} ${r.fireYear} ${L.yrs})</span>` : L.notReached}</div></div>
+        <div class="stat"><div class="stat-label">${L.final} ${r.years} ${L.yrs}</div><div class="stat-value">${m(r.finalBalance)}</div></div>
+        <div class="stat"><div class="stat-label">${L.interest}</div><div class="stat-value">${m(r.finalInterest)}</div></div></div>
+        <p class="mt-2 text-sm text-slate-600">${L.real}: <b>${m(r.finalReal)}</b></p>`;
+
+      // Inline SVG chart (no library)
+      const rows = r.rows;
+      const W = 720, H = 240, pad = 30;
+      const max = Math.max(...rows.map((x: any) => Math.max(x.balance, x.target)), 1);
+      const px = (i: number) => pad + (i / Math.max(1, rows.length - 1)) * (W - pad * 2);
+      const py = (v: number) => H - pad - (v / max) * (H - pad * 2);
+      const line = (key: string) => rows.map((x: any, i: number) => `${i ? 'L' : 'M'}${px(i).toFixed(1)},${py(x[key]).toFixed(1)}`).join(' ');
+      const fi = rows.findIndex((x: any) => x.reached);
+      out('chart').innerHTML = `<h3 class="mb-2 font-semibold">${L.chartTitle}</h3>
+        <svg viewBox="0 0 ${W} ${H}" class="w-full rounded-xl bg-slate-50">
+          <path d="${line('target')}" fill="none" stroke="#f97316" stroke-width="2" stroke-dasharray="6 4"/>
+          <path d="${line('balance')}" fill="none" stroke="#1f55e6" stroke-width="3"/>
+          ${fi >= 0 ? `<circle cx="${px(fi)}" cy="${py(rows[fi].balance)}" r="6" fill="#16a34a"/>` : ''}
+          <text x="${pad}" y="18" font-size="12" fill="#1f55e6">● ${L.balance}</text>
+          <text x="${pad + 140}" y="18" font-size="12" fill="#f97316">● ${L.target}</text>
+          <text x="${pad}" y="${H - 8}" font-size="11" fill="#64748b">${L.age} ${rows[0]?.age ?? ''}</text>
+          <text x="${W - pad - 60}" y="${H - 8}" font-size="11" fill="#64748b">${L.age} ${rows[rows.length - 1]?.age ?? ''}</text>
+        </svg>`;
+
+      out('table').innerHTML = `<div class="table-wrap"><table class="data-table"><thead class="sticky top-0"><tr><th>${L.year}</th><th>${L.age}</th><th class="num">${L.contrib}</th><th class="num">${L.balance}</th><th class="num">${L.target}</th><th class="num">${L.passive}</th></tr></thead><tbody>
+        ${rows.map((x: any) => `<tr class="${x.reached ? 'bg-emerald-50' : ''}"><td>${x.year}</td><td>${x.age}</td><td class="num">${m(x.contribution)}</td><td class="num">${m(x.balance)}</td><td class="num">${m(x.target)}</td><td class="num">${m(x.passiveIncomeMonthly)} ${x.year === r.fireYear ? L.reached : ''}</td></tr>`).join('')}
+        </tbody></table></div>`;
+      showResult(root);
+    });
+
+    root.querySelector('[data-action="csv"]')?.addEventListener('click', () => {
+      if (!last) return;
+      const rows = [[L.year, L.age, L.contrib, L.balance, L.target, L.passive],
+        ...last.rows.map((x: any) => [x.year, x.age, Math.round(x.contribution), Math.round(x.balance), Math.round(x.target), Math.round(x.passiveIncomeMonthly)])];
+      downloadText(lang === 'vi' ? 'ke-hoach-fire.csv' : 'fire-plan.csv', toCsv(rows));
+    });
+  });
+</script>
+

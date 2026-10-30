@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-24-trieu-2-nguoi-phu-thuoc-nhan-net-bao-nhieu",
+  "title": "Lương Gross 24 triệu 2 người phụ thuộc nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 24000000,
+    "dependents": 2,
+    "region": "1"
+  }
+}

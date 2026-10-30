@@ -1,0 +1,12 @@
+{
+  "section": "tools",
+  "lang": "en",
+  "tool": "moneywords",
+  "slug": "55000-usd-in-words",
+  "title": "55,000 USD in words",
+  "params": {
+    "amount": "55000",
+    "currency": "USD",
+    "outLang": "en"
+  }
+}

@@ -1,0 +1,49 @@
+---
+import { MERGED, UNCHANGED, OLD_TO_NEW } from '../../lib/provinces-2025.js';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const olds = Object.keys(OLD_TO_NEW).sort((a, b) => a.localeCompare(b, 'vi'));
+---
+<div data-tool="address" data-lang={lang} class="grid gap-5">
+  <div class="card grid gap-3 sm:grid-cols-2">
+    <div><label class="label">{vi ? 'Tỉnh/thành cũ' : 'Former province'}</label>
+      <select class="input text-lg" data-old>{olds.map((o) => <option value={o} selected={o === 'Bình Dương'}>{o}</option>)}</select></div>
+    <div><label class="label">{vi ? 'Số nhà, đường, xã/phường (tùy chọn)' : 'Street, ward (optional)'}</label><input class="input text-lg" data-street placeholder={vi ? '12 Lê Lợi, phường …' : '12 Le Loi, ward …'} /></div>
+    <div class="sm:col-span-2 rounded-2xl bg-brand-50 p-4" data-out></div>
+  </div>
+  <div class="card">
+    <h2 class="mb-2 font-bold">{vi ? '34 tỉnh, thành từ 1/7/2025' : '34 provinces from 1 July 2025'}</h2>
+    <div class="table-wrap"><table class="data-table"><tbody>
+      {Object.entries(MERGED).map(([n, o]) => <tr><td class="font-semibold">{n}</td><td class="whitespace-normal">{o.join(' + ')}</td></tr>)}
+      {UNCHANGED.map((u) => <tr><td class="font-semibold">{u}</td><td class="text-slate-500">{vi ? 'Giữ nguyên' : 'Unchanged'}</td></tr>)}
+    </tbody></table></div>
+  </div>
+</div>
+
+<script>
+  import { OLD_TO_NEW } from '../../lib/provinces-2025.js';
+  document.querySelectorAll<HTMLElement>('[data-tool="address"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const sel = root.querySelector<HTMLSelectElement>('[data-old]')!;
+    const st = root.querySelector<HTMLInputElement>('[data-street]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    const draw = () => {
+      const nw = OLD_TO_NEW[sel.value];
+      const street = st.value.trim();
+      const addr = `${street ? street + ', ' : ''}${nw}`;
+      out.innerHTML = `
+        <div class="text-sm text-slate-500">${vi ? 'Tỉnh/thành mới' : 'New province'}</div>
+        <div class="text-3xl font-extrabold text-brand-700">${esc(nw)}</div>
+        ${street ? `<div class="mt-2"><b>${vi ? 'Địa chỉ mới' : 'New address'}:</b> ${esc(addr)} <button type="button" class="btn-ghost ml-2 py-1 text-sm" data-copy>📋 Copy</button></div>` : ''}
+        <p class="mt-3 text-sm text-slate-600">${vi
+          ? 'Cấp huyện (quận, huyện, thị xã) đã bỏ: địa chỉ mới chỉ còn <b>xã/phường + tỉnh/thành</b>. Tên xã/phường có thể đã đổi, hãy tra tên mới trên cổng thông tin của tỉnh hoặc <a class="underline" href="https://sapnhap.bando.com.vn" target="_blank" rel="noopener nofollow">sapnhap.bando.com.vn</a>.'
+          : 'Districts were abolished: addresses are now ward/commune + province. Check new ward names on the provincial portal.'}</p>`;
+      out.querySelector('[data-copy]')?.addEventListener('click', () => navigator.clipboard?.writeText(addr));
+    };
+    sel.addEventListener('change', draw);
+    st.addEventListener('input', draw);
+    draw();
+  });
+</script>

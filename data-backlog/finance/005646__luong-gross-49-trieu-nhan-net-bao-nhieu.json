@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-49-trieu-nhan-net-bao-nhieu",
+  "title": "Lương Gross 49 triệu nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 49000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

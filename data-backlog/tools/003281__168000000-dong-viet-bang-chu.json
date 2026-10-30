@@ -1,0 +1,12 @@
+{
+  "section": "tools",
+  "lang": "vi",
+  "tool": "moneywords",
+  "slug": "168000000-dong-viet-bang-chu",
+  "title": "168.000.000 đồng viết bằng chữ",
+  "params": {
+    "amount": "168000000",
+    "currency": "VND",
+    "outLang": "vi"
+  }
+}

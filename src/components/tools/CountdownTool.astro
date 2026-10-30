@@ -1,0 +1,72 @@
+---
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+---
+<div data-tool="countdown" data-lang={lang} class="grid gap-5">
+  <div class="card text-center" data-main></div>
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-list></div>
+  <form class="card grid gap-3 sm:grid-cols-[1fr_auto_auto]" data-f>
+    <input class="input" name="name" placeholder={vi ? 'Sự kiện của bạn (cưới, thi, sinh nhật…)' : 'Your event'} />
+    <input class="input" name="date" type="date" required />
+    <button class="btn-primary" type="submit">{vi ? 'Đếm ngược & lấy link' : 'Count down & get link'}</button>
+  </form>
+</div>
+
+<script>
+  import { solarToLunar } from '../../lib/lunar.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="countdown"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const $ = (s: string) => root.querySelector<HTMLElement>(s)!;
+    const now = new Date();
+    const tet = (y: number) => {
+      for (let k = 0; k < 50; k++) {
+        const d = new Date(y, 0, 15 + k);
+        const l = solarToLunar(d.getDate(), d.getMonth() + 1, d.getFullYear());
+        if (l.day === 1 && l.month === 1 && !l.leap) return d;
+      }
+      return null;
+    };
+    const next = (m: number, d: number) => { const t = new Date(now.getFullYear(), m - 1, d); return t < now ? new Date(now.getFullYear() + 1, m - 1, d) : t; };
+    const tt = tet(now.getFullYear());
+    const tetD = tt && tt > now ? tt : tet(now.getFullYear() + 1)!;
+    const events: [string, Date][] = [
+      [`${vi ? 'Tết Nguyên đán' : 'Lunar New Year'} ${tetD.getFullYear()}`, tetD],
+      [vi ? 'Tết Dương lịch' : 'New Year', next(1, 1)],
+      [vi ? 'Giáng sinh' : 'Christmas', next(12, 25)],
+      [vi ? 'Giải phóng miền Nam 30/4' : 'Reunification Day', next(4, 30)],
+      [vi ? 'Quốc khánh 2/9' : 'National Day', next(9, 2)]
+    ];
+    if (!vi) {
+      // US Thanksgiving: fourth Thursday of November.
+      const tg = (y: number) => { const d = new Date(y, 10, 1); d.setDate(1 + ((11 - d.getDay()) % 7) + 21); return d; };
+      const t0 = tg(now.getFullYear());
+      events.splice(1, 3, ['Christmas', next(12, 25)], ['Halloween', next(10, 31)], ['Thanksgiving', t0 > now ? t0 : tg(now.getFullYear() + 1)], ["Valentine's Day", next(2, 14)], ['New Year', next(1, 1)]);
+      events.push(events.shift()!); // lead with Christmas for English readers
+    }
+    const q = new URLSearchParams(location.search);
+    const custom = q.get('date') ? new Date(q.get('date') + 'T00:00:00') : null;
+    const main: [string, Date] = custom && !isNaN(+custom) ? [q.get('name') || (vi ? 'Sự kiện' : 'Event'), custom] : events[0];
+    const f = root.querySelector<HTMLFormElement>('[data-f]')!;
+    if (custom) { (f.elements.namedItem('name') as HTMLInputElement).value = q.get('name') || ''; (f.elements.namedItem('date') as HTMLInputElement).value = q.get('date')!; }
+    const dd = (d: Date) => `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+    $('[data-list]').innerHTML = events.slice(custom ? 0 : 1).map(([n, d]) =>
+      `<div class="card"><div class="text-sm text-slate-500">${n}</div><div class="text-2xl font-extrabold">${Math.ceil((+d - +now) / 864e5)} ${vi ? 'ngày' : 'days'}</div><div class="text-xs text-slate-400">${dd(d)}</div></div>`).join('');
+    const unit = (v: number, l: string) => `<div class="rounded-2xl bg-brand-50 px-4 py-3"><div class="text-4xl font-extrabold text-brand-700 tabular-nums md:text-6xl">${String(v).padStart(2, '0')}</div><div class="text-xs text-slate-500">${l}</div></div>`;
+    const tick = () => {
+      const ms = Math.max(0, +main[1] - Date.now());
+      const s = Math.floor(ms / 1000);
+      $('[data-main]').innerHTML = `<div class="text-lg font-semibold">${main[0]} · ${dd(main[1])}</div>
+        <div class="mt-4 flex flex-wrap justify-center gap-3">${unit(Math.floor(s / 86400), vi ? 'ngày' : 'days')}${unit(Math.floor(s / 3600) % 24, vi ? 'giờ' : 'hours')}${unit(Math.floor(s / 60) % 60, vi ? 'phút' : 'min')}${unit(s % 60, vi ? 'giây' : 'sec')}</div>`;
+    };
+    tick();
+    setInterval(tick, 1000);
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(f);
+      const p = new URLSearchParams({ name: String(fd.get('name') || ''), date: String(fd.get('date')) });
+      location.search = p.toString();
+    });
+  });
+</script>

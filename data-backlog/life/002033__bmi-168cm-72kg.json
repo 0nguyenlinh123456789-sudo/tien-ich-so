@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-168cm-72kg",
+  "title": "BMI for 168 cm and 72 kg",
+  "params": {
+    "h": 168,
+    "w": 72
+  }
+}

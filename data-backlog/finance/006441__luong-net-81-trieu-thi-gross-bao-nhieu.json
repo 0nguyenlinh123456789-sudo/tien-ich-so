@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-81-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 81 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 81000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

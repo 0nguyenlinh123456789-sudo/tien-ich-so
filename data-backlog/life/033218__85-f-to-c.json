@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "85-f-to-c",
+  "title": "85°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 85
+  }
+}

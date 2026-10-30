@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "57-f-to-c",
+  "title": "57°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 57
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "86-f-to-c",
+  "title": "86°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 86
+  }
+}

@@ -1,0 +1,44 @@
+name: Auto publish (drip-feed)
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # 01:00 UTC every day (08:00 Vietnam time)
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Number of records to publish'
+        required: false
+        default: '20'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure git identity
+        run: |
+          git config user.name "drip-feed-bot"
+          git config user.email "drip-feed-bot@users.noreply.github.com"
+
+      - name: Move records, commit, push & ping IndexNow
+        env:
+          COUNT: ${{ github.event.inputs.count || '20' }}
+        run: node scripts/drip-feed.js --count "$COUNT" --wait 900
+

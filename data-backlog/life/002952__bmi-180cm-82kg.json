@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-180cm-82kg",
+  "title": "BMI for 180 cm and 82 kg",
+  "params": {
+    "h": 180,
+    "w": 82
+  }
+}

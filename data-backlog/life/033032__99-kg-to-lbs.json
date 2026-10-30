@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "99-kg-to-lbs",
+  "title": "99 kg to lbs",
+  "params": {
+    "kind": "kg",
+    "v": 99
+  }
+}

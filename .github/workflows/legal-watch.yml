@@ -1,0 +1,56 @@
+name: Legal watch (free, no AI)
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # 02:00 UTC daily (09:00 Vietnam time)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: legal-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Scan vanban.chinhphu.vn and review new documents
+        run: node scripts/legal-watch.mjs
+
+      # Salary/tax/insurance documents never change the calculator automatically: the owner gets an issue to verify.
+      - name: Open an issue for documents that may change the calculators
+        if: hashFiles('data-backlog/_logs/legal-impact.md') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create --title "Văn bản mới có thể ảnh hưởng công cụ tính lương ($(date -u +%F))" --body-file data-backlog/_logs/legal-impact.md
+          rm data-backlog/_logs/legal-impact.md
+
+      - name: Check official form links
+        run: node scripts/forms-check.mjs
+
+      - name: Open an issue for broken form links
+        if: hashFiles('data-backlog/_logs/forms-broken.md') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create --title "Link biểu mẫu nhà nước cần kiểm tra ($(date -u +%F))" --body-file data-backlog/_logs/forms-broken.md
+          rm data-backlog/_logs/forms-broken.md
+
+      - name: Commit and push (Cloudflare Pages rebuilds automatically)
+        run: |
+          git config user.name "legal-watch-bot"
+          git config user.email "legal-watch-bot@users.noreply.github.com"
+          git add src/data/legal-updates.json
+          if git diff --cached --quiet; then echo "No new documents."; exit 0; fi
+          git commit -m "chore: cập nhật văn bản pháp luật mới $(date -u +%F)"
+          git push

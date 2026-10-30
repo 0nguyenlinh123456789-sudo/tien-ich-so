@@ -1,0 +1,82 @@
+---
+// mode "age": age from date of birth; mode "diff": days between dates / add days.
+interface Props { lang?: 'vi' | 'en'; mode: 'age' | 'diff'; }
+const { lang = 'vi', mode } = Astro.props;
+const vi = lang === 'vi';
+---
+<div data-tool="date" data-mode={mode} data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid content-start gap-3" data-f>
+    {mode === 'age' ? (
+      <>
+        <div><label class="label">{vi ? 'Ngày sinh' : 'Date of birth'}</label><input class="input text-lg" type="date" name="a" value="1995-08-15" /></div>
+        <div><label class="label">{vi ? 'Tính đến ngày' : 'Age at date'}</label><input class="input" type="date" name="b" /></div>
+      </>
+    ) : (
+      <>
+        <div><label class="label">{vi ? 'Từ ngày' : 'Start date'}</label><input class="input text-lg" type="date" name="a" /></div>
+        <div><label class="label">{vi ? 'Đến ngày' : 'End date'}</label><input class="input text-lg" type="date" name="b" /></div>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="incl" /> {vi ? 'Tính cả ngày cuối' : 'Include end date'}</label>
+        <hr class="my-2 border-slate-200" />
+        <div class="grid grid-cols-[1fr_auto] items-end gap-2"><div><label class="label">{vi ? 'Cộng/trừ số ngày vào "Từ ngày"' : 'Add/subtract days to start'}</label><input class="input" type="number" name="add" value="90" /></div><label class="mb-3 flex items-center gap-1 text-sm"><input type="checkbox" name="biz" /> {vi ? 'Chỉ ngày làm việc' : 'Business days'}</label></div>
+      </>
+    )}
+  </form>
+  <div class="card" data-out></div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tool="date"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const mode = root.dataset.mode;
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const fb = form.elements.namedItem('b') as HTMLInputElement;
+    const fa = form.elements.namedItem('a') as HTMLInputElement;
+    if (!fb.value) fb.value = iso(mode === 'age' ? today : new Date(today.getFullYear(), 11, 25));
+    if (!fa.value) fa.value = iso(today);
+    const p = (s: string) => new Date(s + 'T00:00:00');
+    const n = (x: number) => x.toLocaleString(vi ? 'vi-VN' : 'en-US');
+    const fmt = (d: Date) => d.toLocaleDateString(vi ? 'vi-VN' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const big = (l: string, v: string) => `<div class="text-sm text-slate-500">${l}</div><div class="text-4xl font-extrabold text-brand-700">${v}</div>`;
+    const tile = (l: string, v: string) => `<div class="rounded-xl bg-slate-50 p-3"><div class="text-xs text-slate-500">${l}</div><div class="text-lg font-bold">${v}</div></div>`;
+    const ymd = (a: Date, b: Date) => {
+      let y = b.getFullYear() - a.getFullYear(), m = b.getMonth() - a.getMonth(), d = b.getDate() - a.getDate();
+      if (d < 0) { m--; d += new Date(b.getFullYear(), b.getMonth(), 0).getDate(); }
+      if (m < 0) { y--; m += 12; }
+      return [y, m, d];
+    };
+    const calc = () => {
+      const f = new FormData(form);
+      if (!fa.value || !fb.value) return;
+      const a = p(fa.value), b = p(fb.value);
+      if (mode === 'age') {
+        if (b < a) { out.innerHTML = vi ? 'Ngày sinh phải trước ngày tính.' : 'Birth date must be before the target date.'; return; }
+        const [y, m, d] = ymd(a, b);
+        const days = Math.round((+b - +a) / 864e5);
+        let next = new Date(b.getFullYear(), a.getMonth(), a.getDate());
+        if (next < b) next = new Date(b.getFullYear() + 1, a.getMonth(), a.getDate());
+        const toNext = Math.round((+next - +b) / 864e5);
+        out.innerHTML = big(vi ? 'Tuổi' : 'Age', vi ? `${y} tuổi ${m} tháng ${d} ngày` : `${y} years ${m} months ${d} days`)
+          + `<div class="mt-4 grid grid-cols-2 gap-3">${tile(vi ? 'Tổng số tháng' : 'Months', n(y * 12 + m))}${tile(vi ? 'Tổng số tuần' : 'Weeks', n(Math.floor(days / 7)))}${tile(vi ? 'Tổng số ngày' : 'Days', n(days))}${tile(vi ? 'Sinh nhật tiếp theo' : 'Next birthday', toNext === 0 ? (vi ? 'Hôm nay! 🎂' : 'Today! 🎂') : (vi ? `còn ${toNext} ngày` : `in ${toNext} days`))}</div>
+          <p class="mt-3 text-sm text-slate-600">${vi ? 'Sinh vào' : 'Born on a'} ${a.toLocaleDateString(vi ? 'vi-VN' : 'en-US', { weekday: 'long' })}.</p>`;
+      } else {
+        let days = Math.round((+b - +a) / 864e5);
+        if (f.get('incl')) days += Math.sign(days || 1);
+        let biz = 0;
+        for (let d = new Date(Math.min(+a, +b)); d < new Date(Math.max(+a, +b)); d.setDate(d.getDate() + 1)) if (d.getDay() % 6) biz++;
+        const [y, m, d] = ymd(new Date(Math.min(+a, +b)), new Date(Math.max(+a, +b)));
+        const add = Number(f.get('add')) || 0;
+        const res = new Date(a);
+        if (f.get('biz')) { let left = Math.abs(add); const s = Math.sign(add); while (left > 0) { res.setDate(res.getDate() + s); if (res.getDay() % 6) left--; } }
+        else res.setDate(res.getDate() + add);
+        out.innerHTML = big(vi ? 'Khoảng cách' : 'Difference', `${n(Math.abs(days))} ${vi ? 'ngày' : 'days'}`)
+          + `<div class="mt-4 grid grid-cols-2 gap-3">${tile(vi ? 'Năm/tháng/ngày' : 'Y/M/D', `${y} / ${m} / ${d}`)}${tile(vi ? 'Số tuần' : 'Weeks', `${n(Math.floor(Math.abs(days) / 7))} + ${Math.abs(days) % 7}d`)}${tile(vi ? 'Ngày làm việc (T2–T6)' : 'Business days', n(biz))}${tile(vi ? 'Giờ' : 'Hours', n(Math.abs(days) * 24))}</div>
+          <div class="mt-4 rounded-xl bg-brand-50 p-3"><div class="text-xs text-slate-500">${fmt(a)} ${add >= 0 ? '+' : '−'} ${Math.abs(add)} ${f.get('biz') ? (vi ? 'ngày làm việc' : 'business days') : (vi ? 'ngày' : 'days')}</div><div class="text-lg font-bold">${fmt(res)}</div></div>`;
+      }
+    };
+    form.addEventListener('input', calc);
+    calc();
+  });
+</script>

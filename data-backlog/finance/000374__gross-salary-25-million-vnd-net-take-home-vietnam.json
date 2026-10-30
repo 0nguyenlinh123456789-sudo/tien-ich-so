@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "en",
+  "tool": "salary",
+  "slug": "gross-salary-25-million-vnd-net-take-home-vietnam",
+  "title": "Gross salary 25 million VND: take-home pay in Vietnam",
+  "params": {
+    "mode": "gross",
+    "amount": 25000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-19-5-trieu-1-nguoi-phu-thuoc-nhan-net-bao-nhieu",
+  "title": "Lương Gross 19,5 triệu 1 người phụ thuộc nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 19500000,
+    "dependents": 1,
+    "region": "1"
+  }
+}

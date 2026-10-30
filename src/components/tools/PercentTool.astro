@@ -1,0 +1,43 @@
+---
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+// Each row: [id, label parts around inputs a and b]
+const rows = vi
+  ? [['of', '', '% của', ''], ['ratio', '', 'là bao nhiêu % của', ''], ['change', 'Từ', 'lên/xuống', ''], ['discount', 'Giá', 'giảm', '%'], ['add', '', 'cộng thêm', '%']]
+  : [['of', '', '% of', ''], ['ratio', '', 'is what % of', ''], ['change', 'From', 'to', ''], ['discount', 'Price', 'minus', '%'], ['add', '', 'plus', '%']];
+---
+<div data-tool="percent" data-lang={lang} class="grid gap-3">
+  {rows.map(([id, pre, mid, post]) => (
+    <form class="card flex flex-wrap items-center gap-2" data-row={id}>
+      {pre && <span class="text-slate-600">{pre}</span>}
+      <input class="input w-32" name="a" type="number" step="any" />
+      <span class="text-slate-600">{mid}</span>
+      <input class="input w-32" name="b" type="number" step="any" />
+      {post && <span class="text-slate-600">{post}</span>}
+      <span class="text-slate-400">=</span>
+      <output class="min-w-24 text-xl font-bold text-brand-700" data-r></output>
+    </form>
+  ))}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tool="percent"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const fmt = (x: number) => Number.isFinite(x) ? x.toLocaleString(vi ? 'vi-VN' : 'en-US', { maximumFractionDigits: 2 }) : '—';
+    const F: Record<string, (a: number, b: number) => string> = {
+      of: (a, b) => fmt((a * b) / 100),
+      ratio: (a, b) => fmt((a / b) * 100) + '%',
+      change: (a, b) => { const p = ((b - a) / a) * 100; return (p > 0 ? '+' : '') + fmt(p) + '%'; },
+      discount: (a, b) => fmt(a * (1 - b / 100)),
+      add: (a, b) => fmt(a * (1 + b / 100))
+    };
+    root.querySelectorAll<HTMLFormElement>('[data-row]').forEach((form) => {
+      form.addEventListener('submit', (e) => e.preventDefault());
+      form.addEventListener('input', () => {
+        const a = (form.elements.namedItem('a') as HTMLInputElement).value, b = (form.elements.namedItem('b') as HTMLInputElement).value;
+        form.querySelector('[data-r]')!.textContent = a !== '' && b !== '' ? F[form.dataset.row!](Number(a), Number(b)) : '';
+      });
+    });
+  });
+</script>

@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "en",
+  "tool": "salary",
+  "slug": "gross-salary-70-million-vnd-net-take-home-vietnam",
+  "title": "Gross salary 70 million VND: take-home pay in Vietnam",
+  "params": {
+    "mode": "gross",
+    "amount": 70000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

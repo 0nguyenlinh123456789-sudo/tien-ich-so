@@ -1,0 +1,176 @@
+---
+/**
+ * Shared page body for /tai-chinh, /van-menh, /cong-cu (vi) and /en/finance, /en/destiny, /en/tools.
+ * kind = index | tool | record
+ */
+import Layout from '../layouts/Layout.astro';
+import ToolRenderer from './ToolRenderer.astro';
+import AffiliateCards from './AffiliateCards.astro';
+import AdSlot from './AdSlot.astro';
+import { SECTIONS, toolsIn, getTool, toolUrl, sectionUrl, recordUrl, homeUrl } from '../data/tools.js';
+import { buildRecordContent } from '../lib/seo-content.js';
+import { t } from '../i18n/ui.js';
+import site from '../config/site.json';
+
+interface Props {
+  kind: 'index' | 'tool' | 'record';
+  sectionId: string;
+  lang: 'vi' | 'en';
+  toolId?: string;
+  record?: any;
+  related?: any[];
+  popular?: any[];
+}
+const { kind, sectionId, lang, toolId, record, related = [], popular = [] } = Astro.props;
+const section = (SECTIONS as any)[sectionId];
+const L = t(lang);
+const other = lang === 'vi' ? 'en' : 'vi';
+const tool = toolId ? getTool(toolId) : null;
+// These tools already render offers and ads inside MonetizedResult.
+const LEGACY_MONETIZED = ['salary', 'loan', 'fire', 'numerology', 'tarot', 'goodday', 'compress', 'moneywords', 'documents', 'portfolio'];
+// Google shows ~155 chars; short UI copy is expanded with the SEO title and first FAQ answer.
+const metaDesc = (txt: string) => { const t = txt.replace(/\s+/g, ' ').trim(); return t.length <= 155 ? t : t.slice(0, 154).replace(/\s+\S*$/, '') + '…'; };
+const content = kind === 'record' ? buildRecordContent(record) : null;
+
+let title: string, description: string, h1: string, alternate: string | null;
+if (kind === 'index') {
+  title = section.name[lang];
+  description = metaDesc(`${section.desc[lang]} ${toolsIn(sectionId).map((x: any) => x.title[lang]).join(', ')}.`);
+  h1 = `${section.icon} ${section.name[lang]}`;
+  alternate = sectionUrl(sectionId, other);
+} else if (kind === 'tool') {
+  title = (tool as any).seo?.[lang] || tool!.title[lang];
+  description = metaDesc(`${(tool as any).seo?.[lang] || tool!.title[lang]}. ${tool!.desc[lang]} ${(tool as any).faq?.[0]?.a?.[lang] || ''}`);
+  h1 = tool!.title[lang];
+  alternate = toolUrl(tool!, other);
+} else {
+  title = content!.title;
+  description = content!.description;
+  h1 = content!.h1;
+  alternate = record.alternate || null;
+}
+
+const crumbs = [
+  { name: L.home, url: homeUrl(lang) },
+  { name: section.name[lang], url: sectionUrl(sectionId, lang) },
+  ...(tool ? [{ name: tool.title[lang], url: toolUrl(tool, lang) }] : []),
+  ...(kind === 'record' ? [{ name: h1, url: recordUrl(record) }] : [])
+];
+const jsonLd: any[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.url, site.siteUrl).href }))
+  }
+];
+if (tool && kind === 'tool') {
+  jsonLd.push({ '@context': 'https://schema.org', '@type': 'WebApplication', name: tool.title[lang], description: tool.desc[lang], applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'VND' } });
+}
+// Editorial content (reviewed articles) stored in the record itself: record.article = [{heading, paragraphs[]}], record.faq = [{q, a}]
+const article: { heading: string; paragraphs: string[] }[] = Array.isArray(record?.article) ? record.article : [];
+const toolFaq: { q: string; a: string }[] = kind === 'tool' && Array.isArray((tool as any)?.faq) ? (tool as any).faq.map((f: any) => ({ q: f.q[lang], a: f.a[lang] })) : [];
+const faqs: { q: string; a: string }[] = [...(Array.isArray(record?.faq) ? record.faq : []), ...(content?.faq || []), ...toolFaq];
+if (content) content.faq = faqs;
+if (faqs.length) {
+  jsonLd.push({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
+}
+---
+<Layout title={title} description={description} lang={lang} alternate={alternate} jsonLd={jsonLd}>
+  <nav class="mb-4 text-sm text-slate-500" aria-label="breadcrumb">
+    {crumbs.map((c, i) => (
+      <span>{i > 0 && ' / '}{i < crumbs.length - 1 ? <a href={c.url} class="hover:text-brand-600">{c.name}</a> : <span class="text-slate-700">{c.name}</span>}</span>
+    ))}
+  </nav>
+
+  <h1 class="text-2xl font-extrabold md:text-4xl">{h1}</h1>
+
+  {kind === 'index' && (
+    <>
+      <p class="mt-3 max-w-3xl text-lg text-slate-600">{section.desc[lang]}</p>
+      <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {toolsIn(sectionId).map((tl) => (
+          <a href={toolUrl(tl, lang)} class="card group transition hover:-translate-y-0.5 hover:shadow-md">
+            <div class="text-3xl">{tl.icon}</div>
+            <div class="mt-2 text-lg font-bold group-hover:text-brand-700">{tl.title[lang]}</div>
+            <p class="mt-1 text-sm text-slate-600">{tl.desc[lang]}</p>
+          </a>
+        ))}
+      </div>
+      <AffiliateCards context={section.context} lang={lang} limit={2} />
+    </>
+  )}
+
+  {kind === 'tool' && (
+    <>
+      <p class="mt-3 max-w-3xl text-slate-600">{tool!.desc[lang]}</p>
+      <div class="mt-6"><ToolRenderer toolId={toolId!} lang={lang} /></div>
+      {!LEGACY_MONETIZED.includes(toolId!) && (<><AffiliateCards context={section.context} tool={toolId} lang={lang} /><AdSlot lang={lang} /></>)}
+      {toolFaq.length > 0 && (
+        <section class="mt-10 max-w-3xl">
+          <h2 class="mb-3 text-xl font-bold">{lang === 'vi' ? 'Hỏi nhanh' : 'FAQ'}</h2>
+          {toolFaq.map((f) => (
+            <details class="card mb-2"><summary class="cursor-pointer font-semibold">{f.q}</summary><p class="mt-2 text-slate-700">{f.a}</p></details>
+          ))}
+        </section>
+      )}
+    </>
+  )}
+
+  {kind === 'record' && content && (
+    <>
+      <div class="prose-lite mt-4 max-w-3xl text-slate-700">
+        {content.intro.map((p: string) => <p set:html={p} />)}
+      </div>
+      {content.table.length > 0 && (
+        <div class="table-wrap mt-4 max-w-3xl bg-white">
+          <table class="data-table"><tbody>
+            {content.table.map(([k, v]: [string, string]) => <tr><td class="font-medium">{k}</td><td class="num whitespace-normal">{v}</td></tr>)}
+          </tbody></table>
+        </div>
+      )}
+      {article.length > 0 && (
+        <article class="prose-lite mt-8 max-w-3xl text-slate-700">
+          {article.map((s) => (
+            <section>
+              <h2>{s.heading}</h2>
+              {(s.paragraphs || []).map((p) => <p>{p}</p>)}
+            </section>
+          ))}
+        </article>
+      )}
+      <h2 class="mt-10 mb-3 text-xl font-bold">{lang === 'vi' ? 'Tự tính lại với thông số của bạn' : 'Recalculate with your own numbers'}</h2>
+      <ToolRenderer toolId={toolId!} lang={lang} preset={record.params} autorun={true} />
+      {content.faq.length > 0 && (
+        <section class="mt-10 max-w-3xl">
+          <h2 class="mb-3 text-xl font-bold">FAQ</h2>
+          {content.faq.map((f: any) => (
+            <details class="card mb-2"><summary class="cursor-pointer font-semibold">{f.q}</summary><p class="mt-2 text-slate-700">{f.a}</p></details>
+          ))}
+        </section>
+      )}
+    </>
+  )}
+
+  {(related.length > 0 || popular.length > 0) && (
+    <section class="mt-10">
+      <h2 class="mb-3 text-xl font-bold">{kind === 'record' ? L.related : L.popular}</h2>
+      <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {(kind === 'record' ? related : popular).map((r: any) => (
+          <li><a href={recordUrl(r)} class="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm hover:border-brand-300 hover:text-brand-700">{r.title}</a></li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {kind !== 'index' && (
+    <section class="mt-10">
+      <h2 class="mb-3 text-xl font-bold">{L.moreTools}</h2>
+      <div class="flex flex-wrap gap-2">
+        {toolsIn(sectionId).filter((tl) => tl.id !== toolId).map((tl) => (
+          <a href={toolUrl(tl, lang)} class="rounded-full border border-slate-300 bg-white px-4 py-1.5 text-sm hover:border-brand-500">{tl.icon} {tl.title[lang]}</a>
+        ))}
+      </div>
+    </section>
+  )}
+</Layout>
+

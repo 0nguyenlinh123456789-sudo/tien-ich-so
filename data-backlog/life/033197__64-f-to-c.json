@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "64-f-to-c",
+  "title": "64°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 64
+  }
+}

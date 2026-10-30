@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "97-f-to-c",
+  "title": "97°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 97
+  }
+}

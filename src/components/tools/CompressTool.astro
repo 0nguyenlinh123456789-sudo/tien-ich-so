@@ -1,0 +1,152 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+---
+<div data-tool="compress" data-lang={lang}>
+  <form class="card grid gap-4 md:grid-cols-4" data-tool-form>
+    <label class="md:col-span-4 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-brand-300 bg-brand-50 p-8 text-center hover:bg-brand-100" data-drop>
+      <span class="text-4xl">🖼️</span>
+      <span class="font-semibold">{vi ? 'Kéo thả hoặc bấm để chọn nhiều ảnh' : 'Drag & drop or click to select images'}</span>
+      <span class="text-sm text-slate-500">{vi ? 'JPG, PNG, WebP – ảnh được xử lý ngay trên máy bạn, không tải lên server.' : 'JPG, PNG, WebP – processed locally, never uploaded.'}</span>
+      <input type="file" name="files" accept="image/*" multiple class="sr-only" />
+      <span data-out="count" class="text-sm font-medium text-brand-700"></span>
+    </label>
+    <div>
+      <label class="label" for="cp-q">{vi ? 'Chất lượng' : 'Quality'}: <span data-out="qv">0.75</span></label>
+      <input id="cp-q" name="quality" type="range" min="0.3" max="0.95" step="0.05" value="0.75" class="w-full" />
+    </div>
+    <div>
+      <label class="label" for="cp-w">{vi ? 'Chiều rộng tối đa (px)' : 'Max width (px)'}</label>
+      <input id="cp-w" name="maxWidth" type="number" min="100" max="10000" value="1920" class="input" />
+    </div>
+    <div>
+      <label class="label" for="cp-h">{vi ? 'Chiều cao tối đa (px)' : 'Max height (px)'}</label>
+      <input id="cp-h" name="maxHeight" type="number" min="100" max="10000" value="1920" class="input" />
+    </div>
+    <div>
+      <label class="label" for="cp-f">{vi ? 'Định dạng xuất' : 'Output format'}</label>
+      <select id="cp-f" name="format" class="input">
+        <option value="image/jpeg">JPEG</option>
+        <option value="image/webp" selected>WebP</option>
+        <option value="image/png">PNG</option>
+      </select>
+    </div>
+    <div class="md:col-span-4"><button class="btn-primary" type="submit">{vi ? 'Nén ảnh' : 'Compress'}</button></div>
+  </form>
+
+  <MonetizedResult context="tools" lang={lang}>
+    <div data-out="summary" class="mb-4"></div>
+    <div data-out="list" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+    <div slot="bottom" class="mt-6 flex justify-center">
+      <button type="button" class="btn-primary" data-action="zip">⬇ {vi ? 'Tải tất cả (ZIP)' : 'Download all (ZIP)'}</button>
+    </div>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { zipSync } from 'fflate';
+  import { downloadBlob } from '../../lib/format.js';
+  import { showResult } from '../../scripts/form-state.js';
+
+  const kb = (n: number) => (n / 1024 < 1024 ? (n / 1024).toFixed(1) + ' KB' : (n / 1048576).toFixed(2) + ' MB');
+  const ext = (t: string) => (t === 'image/png' ? 'png' : t === 'image/webp' ? 'webp' : 'jpg');
+
+  async function compressOne(file: File, o: { quality: number; maxWidth: number; maxHeight: number; format: string }) {
+    const bmp = await createImageBitmap(file);
+    const ratio = Math.min(1, o.maxWidth / bmp.width, o.maxHeight / bmp.height);
+    const w = Math.round(bmp.width * ratio);
+    const h = Math.round(bmp.height * ratio);
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d')!;
+    if (o.format === 'image/jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); }
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bmp, 0, 0, w, h);
+    bmp.close();
+    const blob: Blob = await new Promise((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error('toBlob failed'))), o.format, o.quality));
+    const useOriginal = blob.size >= file.size && ratio === 1 && file.type === o.format;
+    return { blob: useOriginal ? file : blob, w, h, keptOriginal: useOriginal };
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tool="compress"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-tool-form]')!;
+    const input = form.querySelector<HTMLInputElement>('input[name="files"]')!;
+    const drop = root.querySelector<HTMLElement>('[data-drop]')!;
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    let files: File[] = [];
+    let results: { name: string; blob: Blob }[] = [];
+
+    const setFiles = (list: FileList | File[]) => {
+      files = Array.from(list).filter((f) => f.type.startsWith('image/'));
+      out('count').textContent = files.length ? (vi ? `Đã chọn ${files.length} ảnh` : `${files.length} image(s) selected`) : '';
+    };
+    input.addEventListener('change', () => input.files && setFiles(input.files));
+    ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('ring-2', 'ring-brand-500'); }));
+    ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('ring-2', 'ring-brand-500'); }));
+    drop.addEventListener('drop', (e) => { const dt = (e as DragEvent).dataTransfer; if (dt?.files) setFiles(dt.files); });
+    const q = form.querySelector<HTMLInputElement>('input[name="quality"]')!;
+    q.addEventListener('input', () => { out('qv').textContent = q.value; });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!files.length) { out('count').textContent = vi ? 'Vui lòng chọn ít nhất 1 ảnh.' : 'Please select at least one image.'; return; }
+      const fd = new FormData(form);
+      const o = { quality: Number(fd.get('quality')), maxWidth: Number(fd.get('maxWidth')) || 1920, maxHeight: Number(fd.get('maxHeight')) || 1920, format: String(fd.get('format')) };
+      const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      btn.disabled = true;
+      results = [];
+      out('list').innerHTML = '';
+      showResult(root);
+      let before = 0, after = 0;
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        btn.textContent = `${i + 1}/${files.length}…`;
+        try {
+          const r = await compressOne(f, o);
+          const name = f.name.replace(/\.[^.]+$/, '') + (r.keptOriginal ? '.' + (f.name.split('.').pop() || 'jpg') : '-min.' + ext(o.format));
+          results.push({ name, blob: r.blob });
+          before += f.size; after += r.blob.size;
+          const url = URL.createObjectURL(r.blob);
+          const saved = Math.max(0, 1 - r.blob.size / f.size);
+          const card = document.createElement('div');
+          card.className = 'rounded-2xl border border-slate-200 p-3';
+          card.innerHTML = `<img src="${url}" alt="" class="h-40 w-full rounded-lg bg-slate-100 object-contain" loading="lazy" />
+            <div class="mt-2 truncate text-sm font-medium" title="${name}">${name}</div>
+            <div class="text-xs text-slate-500">${r.w}×${r.h} · ${kb(f.size)} → <b class="text-emerald-700">${kb(r.blob.size)}</b> (-${(saved * 100).toFixed(0)}%)</div>
+            <a href="${url}" download="${name}" class="btn-ghost mt-2 w-full py-1.5 text-sm">⬇ ${vi ? 'Tải ảnh' : 'Download'}</a>`;
+          out('list').appendChild(card);
+        } catch (err: any) {
+          const card = document.createElement('div');
+          card.className = 'rounded-2xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700';
+          card.textContent = `${f.name}: ${err.message}`;
+          out('list').appendChild(card);
+        }
+      }
+      out('summary').innerHTML = `<div class="grid gap-3 sm:grid-cols-3">
+        <div class="stat"><div class="stat-label">${vi ? 'Trước' : 'Before'}</div><div class="stat-value">${kb(before)}</div></div>
+        <div class="stat"><div class="stat-label">${vi ? 'Sau' : 'After'}</div><div class="stat-value text-emerald-700">${kb(after)}</div></div>
+        <div class="stat"><div class="stat-label">${vi ? 'Tiết kiệm' : 'Saved'}</div><div class="stat-value">${before ? ((1 - after / before) * 100).toFixed(1) : 0}%</div></div></div>`;
+      btn.disabled = false;
+      btn.textContent = vi ? 'Nén ảnh' : 'Compress';
+    });
+
+    root.querySelector('[data-action="zip"]')?.addEventListener('click', async () => {
+      if (!results.length) return;
+      const entries: Record<string, Uint8Array> = {};
+      const used = new Set<string>();
+      for (const r of results) {
+        let n = r.name, k = 1;
+        while (used.has(n)) n = r.name.replace(/(\.[^.]+)$/, `-${k++}$1`);
+        used.add(n);
+        entries[n] = new Uint8Array(await r.blob.arrayBuffer());
+      }
+      const zipped = zipSync(entries, { level: 0 });
+      downloadBlob('images-compressed.zip', new Blob([zipped], { type: 'application/zip' }));
+    });
+  });
+</script>
+

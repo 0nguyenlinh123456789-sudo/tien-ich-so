@@ -1,0 +1,550 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+import { PORTFOLIO_STYLES, PORTFOLIO_FIELDS } from '../../lib/portfolio-templates.js';
+import { PORTFOLIO_PRESETS } from '../../lib/portfolio-presets.js';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const styles = PORTFOLIO_STYLES.map((s) => ({ id: s.id, name: vi ? s.vi : s.en, desc: s.desc[lang], fields: s.fields.join(' ') }));
+const fields = PORTFOLIO_FIELDS[lang];
+const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:border-brand-500';
+---
+<div data-tool="portfolio" data-lang={lang}>
+  <div class="card mb-6">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-lg font-bold">{vi ? `1. Chọn phong cách (${styles.length})` : `1. Pick a style (${styles.length})`}</h2>
+      <span class="text-xs text-slate-500">{vi ? 'Ảnh thu nhỏ đang chạy thật – rê chuột để xem rõ' : 'Live thumbnails – hover to look closer'}</span>
+    </div>
+    <div class="mb-4 flex flex-wrap gap-2">
+      <button type="button" class={`${chip} !border-brand-600 !bg-brand-600 !text-white`} data-field="">{vi ? 'Tất cả lĩnh vực' : 'All fields'}</button>
+      {Object.entries(fields).map(([k, label]) => <button type="button" class={chip} data-field={k}>{label}</button>)}
+    </div>
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4" data-styles>
+      {styles.map((s, i) => (
+        <button type="button" data-style={s.id} data-fields={s.fields} class={`group rounded-xl border-2 bg-white p-2 text-left transition hover:border-brand-400 ${i === 0 ? 'border-brand-600' : 'border-slate-200'}`}>
+          <div class="relative overflow-hidden rounded-lg bg-slate-100" style="aspect-ratio:16/11" data-thumb={s.id}></div>
+          <div class="mt-2 px-1 font-semibold text-slate-900">{s.name}</div>
+          <div class="px-1 pb-1 text-xs text-slate-500">{s.desc}</div>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <form class="card self-start" data-pf-form onsubmit="return false">
+      <h2 class="mb-3 text-lg font-bold">{vi ? '2. Nội dung' : '2. Content'}</h2>
+      <div class="mb-4 rounded-xl bg-gradient-to-br from-brand-50 to-violet-50 p-3 ring-1 ring-brand-100">
+        <div class="mb-2 text-sm font-semibold text-slate-700">⚡ {vi ? 'Bắt đầu nhanh – chọn ngành của bạn để có sẵn nội dung mẫu:' : 'Quick start – pick your field for sample content:'}</div>
+        <div class="flex flex-wrap gap-1.5">
+          {PORTFOLIO_PRESETS.map((p) => <button type="button" data-preset={p.id} class="rounded-full border border-slate-300 bg-white px-2.5 py-1 text-sm font-medium transition hover:border-brand-500 hover:text-brand-700">{p.icon} {p[lang].label}</button>)}
+        </div>
+        <p class="mt-1.5 text-xs text-slate-500">{vi ? 'Điền sẵn nghề, giới thiệu, dự án, dịch vụ, quy trình, số liệu + chọn phong cách và màu hợp ngành. Tên, email và ảnh của bạn được giữ nguyên.' : 'Fills role, bio, projects, services, process, numbers and picks a matching style and colour. Your name, email and photos are kept.'}</p>
+      </div>
+      <div class="grid gap-3" data-pf-fields></div>
+      <div class="mt-4">
+        <div class="label">{vi ? 'Ảnh đại diện (không bắt buộc)' : 'Avatar (optional)'}</div>
+        <label class="btn-ghost cursor-pointer py-2 text-sm">📷 {vi ? 'Chọn ảnh' : 'Upload'}<input type="file" accept="image/*" class="hidden" data-pf-avatar /></label>
+      </div>
+      <div class="mt-5 border-t border-slate-200 pt-4">
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+          <h3 class="mr-auto font-bold">{vi ? 'Sản phẩm của bạn' : 'Your work'} <span class="text-sm font-normal text-slate-500" data-pf-count></span></h3>
+          <label class="btn-primary cursor-pointer py-1.5 text-sm">⬆ {vi ? 'Tải sản phẩm lên' : 'Upload work'}<input type="file" accept="image/*" multiple class="hidden" data-pf-bulk /></label>
+          <button type="button" class="btn-ghost py-1.5 text-sm" data-pf-add>＋ {vi ? 'Dự án trống' : 'Empty project'}</button>
+        </div>
+        <div class="rounded-xl border-2 border-dashed border-slate-300 p-3 text-center text-xs text-slate-500 transition" data-pf-drop>{vi ? 'Kéo thả ảnh sản phẩm vào đây – mỗi ảnh thành 1 dự án' : 'Drop images here – one project per image'}</div>
+        <div class="mt-3 grid gap-3" data-pf-projects></div>
+        <p class="mt-2 text-xs text-slate-500">{vi ? 'Bấm vào ảnh để chỉnh sửa: cắt khung, xoay, bộ lọc màu, chữ trên ảnh. Ảnh chỉ xử lý trên máy bạn, không gửi đi đâu.' : 'Click an image to edit: crop, rotate, filters, text. Images never leave your device.'}</p>
+      </div>
+    </form>
+
+    <div class="lg:sticky lg:top-20 lg:self-start">
+      <div class="mb-3 flex flex-wrap items-center gap-2">
+        <h2 class="mr-auto text-lg font-bold">{vi ? '3. Xem trực tiếp & tải về' : '3. Live preview & download'}</h2>
+        <div class="inline-flex rounded-xl border border-slate-300 bg-white p-0.5 text-sm">
+          <button type="button" data-device="1280" class="rounded-lg bg-slate-900 px-3 py-1 text-white">🖥</button>
+          <button type="button" data-device="390" class="rounded-lg px-3 py-1">📱</button>
+        </div>
+        <button type="button" class="btn-ghost py-2 text-sm !border-amber-400 !bg-amber-100" data-pf-editmode aria-pressed="true" title={vi ? 'Bấm vào chữ trên trang để sửa' : 'Click text on the page to edit'}>✎ {vi ? 'Sửa trên trang' : 'Edit on page'}</button>
+        <button type="button" class="btn-primary py-2 text-sm" data-pf-download>⬇ {vi ? 'Tải trang web (.html)' : 'Download site (.html)'}</button>
+      </div>
+      <div class="overflow-hidden rounded-xl bg-slate-200/60 p-3 ring-1 ring-slate-200" data-pf-frame>
+        <div data-pf-scaler style="transform-origin:top left;margin:0 auto">
+          <iframe title="Portfolio preview" data-pf-iframe sandbox="allow-scripts" class="block rounded-lg bg-white shadow-xl" style="width:1280px;height:820px;border:0"></iframe>
+        </div>
+      </div>
+      <p class="mt-2 text-xs text-slate-600">{vi ? '✎ Bấm thẳng vào tên, nghề, giới thiệu, tên/mô tả dự án trên trang để sửa – Enter để xong.' : '✎ Click your name, role, bio or project text on the page to edit it – Enter to finish.'}</p>
+      <p class="mt-1 text-xs text-slate-500">{vi
+        ? 'Trang tải về là 1 file chạy ngay trên trình duyệt. Muốn có link chia sẻ: kéo thả file vào app.netlify.com/drop (miễn phí), hoặc đăng lên GitHub Pages.'
+        : 'The download is a single file that runs in any browser. For a shareable link, drag it into app.netlify.com/drop (free) or publish with GitHub Pages.'}</p>
+    </div>
+  </div>
+
+  <MonetizedResult context="tools" lang={lang} visible share={false} title={vi ? 'Gợi ý cho bạn' : 'Recommended'}>
+    <p class="text-sm text-slate-600">{vi ? 'Portfolio tốt nhất có 6–10 dự án chọn lọc, mỗi dự án nêu rõ vấn đề, cách làm và kết quả bằng con số.' : 'Strong portfolios show 6–10 curated projects, each with problem, process and a measurable result.'}</p>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { renderPortfolio, portfolioFields, SECTION_KEYS, SECTION_NAMES } from '../../lib/portfolio-templates.js';
+  import { downloadBlob, escapeHtml } from '../../lib/format.js';
+  import { openImageEditor } from '../../lib/image-editor.js';
+  import { PORTFOLIO_PRESETS } from '../../lib/portfolio-presets.js';
+
+  // Downscale an image to a JPEG data URL so the exported single-file site stays light.
+  function shrink(file: File, max = 1400): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, max / Math.max(img.width, img.height));
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+        cv.getContext('2d')!.drawImage(img, 0, 0, cv.width, cv.height);
+        URL.revokeObjectURL(img.src);
+        resolve(cv.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tool="portfolio"]').forEach((root) => {
+    const lang = (root.dataset.lang === 'en' ? 'en' : 'vi') as 'vi' | 'en';
+    const q = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const fields = portfolioFields(lang);
+    const storeKey = `mp:portfolio:${lang}`;
+    const L = (a: string, b: string) => (lang === 'vi' ? a : b);
+    const iframe = q<HTMLIFrameElement>('[data-pf-iframe]');
+    const frame = q('[data-pf-frame]');
+    const scaler = q('[data-pf-scaler]');
+    let style = new URLSearchParams(location.search).get('style') || 'professional';
+    let avatar = '';
+    let device = 1280;
+
+    let saved: Record<string, any> = {};
+    try { saved = JSON.parse(localStorage.getItem(storeKey) || '{}'); } catch { saved = {}; }
+
+    // Each project is a card; `orig` is the uploaded photo and `edit` the editor state, so edits stay reversible.
+    type Project = { title: string; cat: string; year: string; desc: string; link: string; orig: string; img: string; edit: any; challenge: string; solution: string; result: string; gallery: string[]; open?: boolean };
+    const blank = (p: Partial<Project> = {}): Project => ({ title: '', cat: '', year: String(new Date().getFullYear()), desc: '', link: '', orig: '', img: '', edit: null, challenge: '', solution: '', result: '', gallery: [], ...p });
+    const fromText = (txt: string) => txt.split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
+      const [title = '', cat = '', year = '', desc = '', link = ''] = l.split('|').map((x) => x.trim());
+      return blank({ title, cat, year, desc, link });
+    });
+    let projects: Project[] = Array.isArray(saved.projectList)
+      ? saved.projectList.map((p: any) => blank(p))
+      : fromText(saved.projects ?? fields.find((f: any) => f.name === 'projects')?.default ?? '');
+    try {
+      const imgs = JSON.parse(localStorage.getItem(storeKey + ':img') || '[]');
+      imgs.forEach((x: any, i: number) => { if (projects[i] && x) Object.assign(projects[i], x, { gallery: Array.isArray(x.gallery) ? x.gallery : [] }); });
+    } catch { /* no saved images */ }
+
+    const SWATCHES = [
+      ['#2563eb', L('Xanh dương – tin cậy, công nghệ', 'Blue – trust, tech')], ['#0d9488', L('Xanh ngọc – hiện đại, cân bằng', 'Teal – modern')],
+      ['#16a34a', L('Xanh lá – tự nhiên, bền vững', 'Green – natural')], ['#ca8a04', L('Vàng nghệ – ấm áp, thủ công', 'Ochre – warm, crafted')],
+      ['#ea580c', L('Cam – năng lượng, trẻ trung', 'Orange – energetic')], ['#db2777', L('Hồng – sáng tạo, thời trang', 'Pink – creative')],
+      ['#9f1239', L('Đỏ đô – sang trọng', 'Burgundy – luxury')], ['#7c3aed', L('Tím – nghệ thuật, độc đáo', 'Violet – artistic')],
+      ['#18181b', L('Đen – tối giản, cao cấp', 'Black – minimal')]
+    ];
+    // Dominant vivid colour of an image: hue histogram weighted by saturation, so grey backgrounds are ignored.
+    const dominant = (src: string) => new Promise<string>((res) => {
+      const img = new Image();
+      img.onload = () => {
+        const cv = document.createElement('canvas'); cv.width = cv.height = 48;
+        const ctx = cv.getContext('2d')!; ctx.drawImage(img, 0, 0, 48, 48);
+        const px = ctx.getImageData(0, 0, 48, 48).data;
+        const bins = Array.from({ length: 24 }, () => ({ w: 0, r: 0, g: 0, b: 0 }));
+        for (let i = 0; i < px.length; i += 4) {
+          const [r, g, b] = [px[i], px[i + 1], px[i + 2]];
+          const mx = Math.max(r, g, b), mn = Math.min(r, g, b), sat = mx ? (mx - mn) / mx : 0;
+          if (sat < 0.25 || mx < 50 || mx > 250 && sat < 0.35) continue;
+          let h = mx === mn ? 0 : mx === r ? (g - b) / (mx - mn) : mx === g ? 2 + (b - r) / (mx - mn) : 4 + (r - g) / (mx - mn);
+          h = ((h * 60) + 360) % 360;
+          const bin = bins[Math.floor(h / 15)], w = sat * sat;
+          bin.w += w; bin.r += r * w; bin.g += g * w; bin.b += b * w;
+        }
+        const top = bins.sort((a, b) => b.w - a.w)[0];
+        if (!top.w) return res('');
+        // Darken slightly so white text on the accent stays readable.
+        const k = 0.85, hex = (n: number) => Math.round((n / top.w) * k).toString(16).padStart(2, '0');
+        res(`#${hex(top.r)}${hex(top.g)}${hex(top.b)}`);
+      };
+      img.onerror = () => res('');
+      img.src = src;
+    });
+    const fieldHtml = (f: any) => {
+      const val = escapeHtml(saved[f.name] ?? f.default ?? '');
+      if (f.type === 'hidden') return `<input type="hidden" name="${f.name}" value="${val}" />`;
+      const id = `pf-${f.name}`;
+      const label = `<label class="label" for="${id}">${escapeHtml(f.label)}</label>`;
+      const ph = f.placeholder ? ` placeholder="${escapeHtml(f.placeholder)}"` : '';
+      if (f.type === 'textarea') return `<div>${label}<textarea id="${id}" name="${f.name}" rows="${f.rows || 3}" class="input text-sm"${ph}>${val}</textarea></div>`;
+      if (f.type === 'select') return `<div>${label}<select id="${id}" name="${f.name}" class="input text-sm">${f.options.map((o: any) => `<option value="${escapeHtml(o.value)}"${o.value === (saved[f.name] ?? f.default) ? ' selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}</select></div>`;
+      if (f.type === 'color') return `<div>${label}<div class="flex flex-wrap items-center gap-1.5"><input id="${id}" name="${f.name}" type="color" value="${val}" class="h-9 w-12 cursor-pointer rounded border border-slate-300" />
+${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escapeHtml(n)}" aria-label="${escapeHtml(n)}" class="h-7 w-7 rounded-full ring-2 ring-white ring-offset-1 ring-offset-slate-200 transition hover:scale-110" style="background:${c}"></button>`).join('')}
+<button type="button" data-sw-pick class="ml-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold hover:border-brand-500">🎯 ${L('Lấy màu từ sản phẩm', 'Match my work')}</button></div>
+<p class="mt-1 text-xs text-slate-500">${L('Nguyên tắc 60-30-10: nền trung tính 60%, chữ 30%, màu nhấn 10% – chỉ cần chọn 1 màu nhấn nổi bật.', '60-30-10 rule: neutral background, text, and one strong accent.')}</p></div>`;
+      return `<div>${label}<input id="${id}" name="${f.name}" value="${val}" class="input text-sm"${ph} /></div>`;
+    };
+    // The form is grouped so a long portfolio stays easy to fill: basics, page sections (with the layout manager), look.
+    const GROUPS = [
+      { t: L('① Thông tin cơ bản', '① Basics'), keys: ['name', 'role', 'bio', 'email', 'location', 'links', 'skills'], open: true },
+      { t: L('② Các mục trên trang & bố cục', '② Page sections & layout'), keys: ['sections', 'stats', 'services', 'process', 'testimonials', 'experience', 'awards', 'clients'], layout: true },
+      { t: L('③ Giao diện', '③ Look'), keys: ['font', 'color'] }
+    ];
+    const byName = Object.fromEntries(fields.map((f: any) => [f.name, f]));
+    q('[data-pf-fields]').innerHTML = GROUPS.map((g) => `<details class="group rounded-xl border border-slate-200 bg-slate-50/60"${g.open ? ' open' : ''}>
+<summary class="flex cursor-pointer list-none items-center justify-between px-3 py-2.5 font-semibold">${g.t}<span class="text-slate-400 transition group-open:rotate-180">⌄</span></summary>
+<div class="grid gap-3 px-3 pb-3">${g.layout ? `<div><div class="label">${L('Bố cục trang – bật/tắt và sắp xếp thứ tự các mục', 'Layout – toggle and reorder sections')}</div><div class="grid gap-1" data-pf-layout></div><p class="mt-1 text-xs text-slate-500">${L('Mục có nội dung trống sẽ tự ẩn. "Chi tiết dự án" lấy từ phần Case study của từng dự án bên dưới.', 'Empty sections hide automatically. Case studies come from each project below.')}</p></div>` : ''}${g.keys.map((k) => (byName[k] ? fieldHtml(byName[k]) : '')).join('')}</div></details>`).join('');
+
+    // Layout manager: the hidden "sections" field holds the order; a leading "-" marks a section that is switched off.
+    const secInput = q<HTMLInputElement>('[name="sections"]');
+    const readLayout = () => {
+      const toks = secInput.value.split(',').filter(Boolean);
+      const seen = toks.map((t) => t.replace(/^-/, ''));
+      return [...toks.map((t) => ({ k: t.replace(/^-/, ''), on: !t.startsWith('-') })), ...SECTION_KEYS.filter((k: string) => !seen.includes(k)).map((k: string) => ({ k, on: true }))]
+        .filter((x) => SECTION_KEYS.includes(x.k));
+    };
+    const drawLayout = () => {
+      const lay = readLayout();
+      q('[data-pf-layout]').innerHTML = lay.map((x, i) => `<div class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm ${x.on ? '' : 'opacity-50'}" data-li="${i}">
+<span class="cursor-grab select-none text-slate-400" data-drag title="drag">⠿</span><input type="checkbox" class="h-4 w-4 accent-brand-600" data-lk ${x.on ? 'checked' : ''} aria-label="${escapeHtml(SECTION_NAMES[lang][x.k])}" /><span class="mr-auto">${escapeHtml(SECTION_NAMES[lang][x.k])}</span>
+<button type="button" class="rounded px-1.5 text-slate-400 hover:bg-slate-100 disabled:opacity-30" data-lm="-1" ${i ? '' : 'disabled'}>↑</button><button type="button" class="rounded px-1.5 text-slate-400 hover:bg-slate-100 disabled:opacity-30" data-lm="1" ${i < lay.length - 1 ? '' : 'disabled'}>↓</button></div>`).join('');
+    };
+    const writeLayout = (lay: { k: string; on: boolean }[]) => { secInput.value = lay.map((x) => (x.on ? '' : '-') + x.k).join(','); drawLayout(); render(); };
+    q('[data-pf-layout]').addEventListener('click', (ev) => {
+      const t = ev.target as HTMLElement;
+      const row = t.closest<HTMLElement>('[data-li]');
+      if (!row) return;
+      const lay = readLayout(), i = Number(row.dataset.li);
+      if (t.matches('[data-lk]')) { lay[i].on = (t as HTMLInputElement).checked; return writeLayout(lay); }
+      const m = t.closest<HTMLElement>('[data-lm]');
+      if (m) { const j = i + Number(m.dataset.lm); [lay[i], lay[j]] = [lay[j], lay[i]]; writeLayout(lay); }
+    });
+
+    const values = () => {
+      const v: Record<string, string> = {};
+      root.querySelectorAll<HTMLInputElement>('[data-pf-fields] [name]').forEach((el) => (v[el.name] = el.value));
+      // Templates read projects as "Title | Category | Year | Desc | Link" lines; strip the separator from user text.
+      const clean = (s: string) => String(s || '').replace(/[|\n]/g, ' ').trim();
+      v.projects = projects.map((p) => [p.title || ' ', p.cat, p.year, p.desc, p.link].map(clean).join(' | ')).join('\n');
+      return v;
+    };
+    let editMode = true;
+    // The preview gets the click-to-edit script; the downloaded file never does.
+    const html = (preview = false) => renderPortfolio(style, {
+      ...values(), avatar,
+      projectDetails: projects.map(({ challenge, solution, result, gallery }) => ({ challenge, solution, result, gallery }))
+    }, projects.map((p) => p.img || p.orig), lang, { edit: preview && editMode });
+
+    const fit = () => {
+      const h = device === 1280 ? 820 : 760;
+      iframe.style.width = device + 'px';
+      iframe.style.height = h + 'px';
+      const s = Math.min(1, (frame.clientWidth - 24) / device);
+      scaler.style.width = device + 'px';
+      scaler.style.transform = `scale(${s})`;
+      scaler.style.height = h * s + 'px';
+      scaler.style.marginLeft = device === 1280 ? '0' : `${Math.max(0, (frame.clientWidth - 24 - device * s) / 2)}px`;
+    };
+
+    let timer = 0;
+    // quiet: the change came from typing inside the preview, which already shows it; reloading would lose the scroll position.
+    const render = (quiet: any = false) => {
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (quiet !== true) iframe.srcdoc = html(true);
+        const { projects: _txt, ...rest } = values();
+        const projectList = projects.map(({ orig, img, edit, gallery, open, ...p }) => p);
+        try { localStorage.setItem(storeKey, JSON.stringify({ ...rest, projectList })); } catch { /* quota */ }
+        // Photos are large; if they no longer fit in localStorage only the text survives a reload.
+        try { localStorage.setItem(storeKey + ':img', JSON.stringify(projects.map(({ orig, img, edit, gallery }) => ({ orig, img, edit, gallery })))); }
+        catch { try { localStorage.removeItem(storeKey + ':img'); } catch { /* blocked */ } }
+      }, 250);
+    };
+
+    const markStyle = () => root.querySelectorAll<HTMLElement>('[data-style]').forEach((b) => {
+      b.classList.toggle('border-brand-600', b.dataset.style === style);
+      b.classList.toggle('border-slate-200', b.dataset.style !== style);
+    });
+    const inp = 'w-full rounded-lg border border-slate-300 px-2 py-1 text-sm focus:border-brand-500 focus:outline-none';
+    const drawProjects = () => {
+      q('[data-pf-count]').textContent = `(${projects.length})`;
+      q('[data-pf-projects]').innerHTML = projects.map((p, i) => {
+        const src = p.img || p.orig;
+        const pic = src
+          ? `<button type="button" data-pa="edit" class="group relative block aspect-[4/3] w-full overflow-hidden rounded-lg bg-slate-100" title="${L('Chỉnh sửa ảnh', 'Edit image')}"><img src="${src}" alt="" class="h-full w-full object-cover" /><span class="absolute inset-0 flex items-center justify-center bg-black/50 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100">✎ ${L('Chỉnh ảnh', 'Edit')}</span></button>`
+          : `<label class="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500 hover:border-brand-500">⬆<span>${L('Thêm ảnh', 'Add image')}</span><input type="file" accept="image/*" class="hidden" data-pa="file" /></label>`;
+        return `<div class="relative grid grid-cols-[96px_minmax(0,1fr)] gap-3 rounded-xl border border-slate-200 bg-white p-2.5 pl-6" data-pi="${i}"><span class="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab select-none text-lg leading-none text-slate-300 hover:text-slate-500" data-drag title="drag">⠿</span>
+<div class="space-y-1">${pic}
+<div class="flex justify-between text-xs">${src ? `<label class="cursor-pointer text-brand-600 hover:underline" title="${L('Đổi ảnh khác', 'Replace')}">${L('Đổi', 'Swap')}<input type="file" accept="image/*" class="hidden" data-pa="file" /></label>` : '<span></span>'}<span class="text-slate-400">#${i + 1}</span></div></div>
+<div class="grid gap-1.5">
+<div class="flex gap-1.5"><input class="${inp} font-semibold" data-pk="title" value="${escapeHtml(p.title)}" placeholder="${L('Tên dự án', 'Project title')}" />
+<button type="button" data-pa="up" class="rounded px-1.5 text-slate-400 hover:bg-slate-100 disabled:opacity-30" ${i ? '' : 'disabled'} title="${L('Lên', 'Up')}">↑</button>
+<button type="button" data-pa="down" class="rounded px-1.5 text-slate-400 hover:bg-slate-100 disabled:opacity-30" ${i < projects.length - 1 ? '' : 'disabled'} title="${L('Xuống', 'Down')}">↓</button>
+<button type="button" data-pa="del" class="rounded px-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600" title="${L('Xóa', 'Delete')}">✕</button></div>
+<div class="grid grid-cols-[minmax(0,1fr)_70px] gap-1.5"><input class="${inp}" data-pk="cat" value="${escapeHtml(p.cat)}" placeholder="${L('Lĩnh vực (Branding, 3D…)', 'Category')}" /><input class="${inp}" data-pk="year" value="${escapeHtml(p.year)}" placeholder="${L('Năm', 'Year')}" /></div>
+<textarea class="${inp}" rows="2" data-pk="desc" placeholder="${L('Mô tả: vấn đề – cách làm – kết quả', 'Problem – process – result')}">${escapeHtml(p.desc)}</textarea>
+<input class="${inp}" data-pk="link" value="${escapeHtml(p.link)}" placeholder="https://… (${L('không bắt buộc', 'optional')})" /></div>
+<details class="col-span-2 rounded-lg bg-slate-50 px-2.5 py-1.5" data-pcs${p.open ? ' open' : ''}><summary class="cursor-pointer text-sm font-semibold text-brand-700">${L('Case study – kể quá trình tư duy', 'Case study – tell the story')} ${p.challenge || p.solution || p.result || p.gallery.length ? '✓' : ''}</summary>
+<div class="mt-2 grid gap-1.5">
+<textarea class="${inp}" rows="2" data-pk="challenge" placeholder="${L('Thử thách: khách hàng gặp vấn đề gì? Mục tiêu là gì?', 'Challenge: what problem, what goal?')}">${escapeHtml(p.challenge)}</textarea>
+<textarea class="${inp}" rows="2" data-pk="solution" placeholder="${L('Giải pháp: bạn nghiên cứu, lên ý tưởng và thiết kế thế nào?', 'Solution: how did you research, ideate, design?')}">${escapeHtml(p.solution)}</textarea>
+<textarea class="${inp}" rows="2" data-pk="result" placeholder="${L('Kết quả: con số, phản hồi, giải thưởng (VD: doanh số +30%)', 'Result: numbers, feedback, awards')}">${escapeHtml(p.result)}</textarea>
+<div class="text-xs font-semibold text-slate-600">${L('Bộ ảnh quá trình (phác thảo, mockup, chi tiết) – tối đa 8', 'Process gallery (sketches, mockups) – up to 8')}</div>
+<div class="grid grid-cols-4 gap-1.5">${p.gallery.map((g, k) => `<div class="group relative"><button type="button" data-pa="gedit" data-g="${k}" class="block w-full"><img src="${g}" alt="" class="aspect-square w-full rounded object-cover" /></button><button type="button" data-pa="gdel" data-g="${k}" class="absolute -right-1 -top-1 hidden h-5 w-5 rounded-full bg-red-600 text-xs text-white group-hover:block" aria-label="${L('Xóa ảnh', 'Remove')}">✕</button></div>`).join('')}
+${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-center justify-center rounded border-2 border-dashed border-slate-300 text-lg text-slate-400 hover:border-brand-500">＋<input type="file" accept="image/*" multiple class="hidden" data-pa="gfile" /></label>` : ''}</div></div></details></div>`;
+      }).join('') || `<p class="text-center text-sm text-slate-500">${L('Chưa có dự án nào – tải sản phẩm lên để bắt đầu.', 'No projects yet – upload your work.')}</p>`;
+    };
+    const nameOf = (f: File) => f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
+    const addFiles = async (files: File[]) => {
+      const list = files.filter((f) => f.type.startsWith('image/')).slice(0, 30);
+      for (const f of list) {
+        try { projects.push(blank({ title: nameOf(f), orig: await shrink(f) })); } catch { /* unreadable */ }
+      }
+      drawProjects(); render();
+    };
+
+    root.addEventListener('click', (ev) => {
+      const t = ev.target as HTMLElement;
+      const s = t.closest<HTMLElement>('[data-style]');
+      if (s) {
+        style = s.dataset.style!;
+        history.replaceState(null, '', location.pathname + '?style=' + style);
+        markStyle(); render();
+        if (innerWidth < 1024) q('[data-pf-form]').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      const d = t.closest<HTMLElement>('[data-device]');
+      if (d) {
+        device = Number(d.dataset.device);
+        root.querySelectorAll<HTMLElement>('[data-device]').forEach((b) => {
+          const on = b === d;
+          b.classList.toggle('bg-slate-900', on); b.classList.toggle('text-white', on);
+        });
+        fit();
+      }
+    });
+    q('[data-pf-fields]').addEventListener('input', render);
+    q<HTMLInputElement>('[data-pf-avatar]').addEventListener('change', async (ev) => {
+      const f = (ev.target as HTMLInputElement).files?.[0];
+      if (f) { try { avatar = await shrink(f, 600); render(); } catch { /* unreadable */ } }
+    });
+    q<HTMLInputElement>('[data-pf-bulk]').addEventListener('change', (ev) => {
+      const el = ev.target as HTMLInputElement;
+      addFiles([...(el.files || [])]); el.value = '';
+    });
+    q('[data-pf-add]').addEventListener('click', () => { projects.push(blank()); drawProjects(); render(); });
+    const drop = q('[data-pf-drop]');
+    const hot = (on: boolean) => ['border-brand-500', 'bg-brand-50'].forEach((c) => drop.classList.toggle(c, on));
+    drop.addEventListener('dragover', (ev) => { ev.preventDefault(); hot(true); });
+    drop.addEventListener('dragleave', () => hot(false));
+    drop.addEventListener('drop', (ev) => { ev.preventDefault(); hot(false); addFiles([...(ev.dataTransfer?.files || [])]); });
+
+    const list = q('[data-pf-projects]');
+    // Remember which case-study panels are open so redrawing the list does not collapse them.
+    list.addEventListener('toggle', (ev) => {
+      const d = ev.target as HTMLDetailsElement;
+      const card = d.closest<HTMLElement>('[data-pi]');
+      if (d.matches('[data-pcs]') && card) projects[Number(card.dataset.pi)].open = d.open;
+    }, true);
+    list.addEventListener('input', (ev) => {
+      const el = ev.target as HTMLInputElement;
+      const card = el.closest<HTMLElement>('[data-pi]');
+      if (!card || !el.dataset.pk) return;
+      (projects[Number(card.dataset.pi)] as any)[el.dataset.pk] = el.value;
+      render();
+    });
+    list.addEventListener('change', async (ev) => {
+      const el = ev.target as HTMLInputElement;
+      const card = el.closest<HTMLElement>('[data-pi]');
+      if (!card || !el.files?.[0]) return;
+      const p = projects[Number(card.dataset.pi)];
+      if (el.dataset.pa === 'gfile') {
+        for (const f of [...el.files].slice(0, 8 - p.gallery.length)) { try { p.gallery.push(await shrink(f, 1200)); } catch { /* unreadable */ } }
+        p.open = true; drawProjects(); return render();
+      }
+      if (el.dataset.pa !== 'file') return;
+      try { p.orig = await shrink(el.files[0]); p.img = ''; p.edit = null; if (!p.title) p.title = nameOf(el.files[0]); } catch { return; }
+      drawProjects(); render();
+    });
+    list.addEventListener('click', async (ev) => {
+      const b = (ev.target as HTMLElement).closest<HTMLElement>('button[data-pa]');
+      const card = b?.closest<HTMLElement>('[data-pi]');
+      if (!b || !card) return;
+      const i = Number(card.dataset.pi);
+      const act = b.dataset.pa;
+      if (act === 'del') { if (!confirm(L('Xóa dự án này?', 'Delete this project?'))) return; projects.splice(i, 1); }
+      else if (act === 'up' && i > 0) [projects[i - 1], projects[i]] = [projects[i], projects[i - 1]];
+      else if (act === 'down' && i < projects.length - 1) [projects[i + 1], projects[i]] = [projects[i], projects[i + 1]];
+      else if (act === 'edit') {
+        const p = projects[i];
+        const res = await openImageEditor(p.orig || p.img, p.edit, lang);
+        if (!res) return;
+        if (!p.orig) p.orig = p.img;
+        p.img = res.dataUrl; p.edit = res.state;
+      } else if (act === 'gdel') projects[i].gallery.splice(Number(b.dataset.g), 1);
+      else if (act === 'gedit') {
+        const p = projects[i], k = Number(b.dataset.g);
+        const res = await openImageEditor(p.gallery[k], null, lang);
+        if (!res) return;
+        p.gallery[k] = res.dataUrl;
+      } else return;
+      drawProjects(); render();
+    });
+    q('[data-pf-download]').addEventListener('click', () => {
+      const name = (values().name || 'portfolio').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+      downloadBlob(`${name}-portfolio.html`, new Blob([html()], { type: 'text/html;charset=utf-8' }));
+    });
+    window.addEventListener('resize', fit);
+
+    // Live thumbnails: each style rendered with the sample content in a scaled, non-interactive iframe, only once visible.
+    const sampleValues = Object.fromEntries(fields.map((f: any) => [f.name, f.default ?? '']));
+    const thumbIo = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      const box = en.target as HTMLElement;
+      thumbIo.unobserve(box);
+      const f = document.createElement('iframe');
+      f.setAttribute('sandbox', 'allow-scripts');
+      f.setAttribute('tabindex', '-1');
+      f.title = box.dataset.thumb!;
+      f.style.cssText = `width:1280px;height:880px;border:0;transform:scale(${box.clientWidth / 1280});transform-origin:top left;pointer-events:none`;
+      f.srcdoc = renderPortfolio(box.dataset.thumb!, sampleValues, [], lang);
+      box.appendChild(f);
+    }), { rootMargin: '200px' });
+    root.querySelectorAll('[data-thumb]').forEach((el) => thumbIo.observe(el));
+
+    root.querySelectorAll<HTMLElement>('[data-field]').forEach((b) => b.addEventListener('click', () => {
+      const k = b.dataset.field!;
+      root.querySelectorAll<HTMLElement>('[data-field]').forEach((x) => ['!border-brand-600', '!bg-brand-600', '!text-white'].forEach((c) => x.classList.toggle(c, x === b)));
+      root.querySelectorAll<HTMLElement>('[data-style]').forEach((card) => { card.hidden = !!k && !card.dataset.fields!.split(' ').includes(k); });
+    }));
+
+    const colorInput = q<HTMLInputElement>('[data-pf-fields] [name="color"]');
+
+    // Industry starter: overwrite the discipline-specific text, keep personal details; existing photos stay on the first projects.
+    root.querySelectorAll<HTMLElement>('[data-preset]').forEach((btn) => btn.addEventListener('click', () => {
+      const pr = PORTFOLIO_PRESETS.find((x) => x.id === btn.dataset.preset);
+      if (!pr) return;
+      if (!confirm(L(`Điền nội dung mẫu ngành "${pr.vi.label}"? Nghề, giới thiệu, kỹ năng, dự án, dịch vụ, quy trình và số liệu hiện tại sẽ được thay.`, `Fill "${pr.en.label}" sample content? Role, bio, skills, projects, services, process and numbers will be replaced.`))) return;
+      const c = (pr as any)[lang];
+      for (const k of ['role', 'bio', 'skills', 'services', 'process', 'stats']) {
+        const el = root.querySelector<HTMLInputElement>(`[data-pf-fields] [name="${k}"]`);
+        if (el) el.value = c[k];
+      }
+      // Never drop the user's uploads: photos go onto the sample projects in order, and any extra keep their own project.
+      const withPhoto = projects.filter((p) => p.img || p.orig);
+      const next = fromText(c.projects);
+      next.forEach((p, i) => { const o = withPhoto[i]; if (o) Object.assign(p, { orig: o.orig, img: o.img, edit: o.edit, gallery: o.gallery }); });
+      projects = [...next, ...withPhoto.slice(next.length)];
+      colorInput.value = pr.color;
+      style = pr.style;
+      history.replaceState(null, '', location.pathname + '?style=' + style);
+      root.querySelectorAll<HTMLElement>('[data-preset]').forEach((b) => ['!border-brand-600', '!bg-brand-600', '!text-white'].forEach((cl) => b.classList.toggle(cl, b === btn)));
+      drawProjects(); markStyle(); render();
+    }));
+    q('[data-pf-fields]').addEventListener('click', async (ev) => {
+      const t = ev.target as HTMLElement;
+      const sw = t.closest<HTMLElement>('[data-sw]');
+      if (sw) { colorInput.value = sw.dataset.sw!; return render(); }
+      const pick = t.closest<HTMLButtonElement>('[data-sw-pick]');
+      if (!pick) return;
+      const src = projects.map((p) => p.img || p.orig).find(Boolean);
+      if (!src) { alert(L('Hãy tải ít nhất 1 ảnh sản phẩm trước.', 'Upload at least one project image first.')); return; }
+      const c = await dominant(src);
+      if (c) { colorInput.value = c; render(); }
+    });
+
+    // Drag-to-reorder by the ⠿ handle. Pointer events (not HTML5 drag) so it also works with touch.
+    const sortable = (box: HTMLElement, attr: string, move: (from: number, to: number) => void) => {
+      let from = -1, over = -1;
+      const mark = (i: number) => box.querySelectorAll<HTMLElement>(`[${attr}]`).forEach((el) => {
+        const on = Number(el.getAttribute(attr)) === i && i !== from;
+        el.classList.toggle('ring-2', on); el.classList.toggle('ring-brand-500', on);
+      });
+      box.addEventListener('pointerdown', (ev) => {
+        const h = (ev.target as HTMLElement).closest('[data-drag]');
+        const item = h?.closest<HTMLElement>(`[${attr}]`);
+        if (!h || !item) return;
+        ev.preventDefault();
+        from = over = Number(item.getAttribute(attr));
+        item.classList.add('opacity-50');
+        (h as HTMLElement).setPointerCapture(ev.pointerId);
+      });
+      // Auto-scroll near the viewport edges so a card can be dragged to a target that is off screen.
+      let vy = 0, lastX = 0, lastY = 0, raf = 0;
+      const hover = () => {
+        const el = document.elementFromPoint(lastX, lastY)?.closest<HTMLElement>(`[${attr}]`);
+        if (el && box.contains(el)) { over = Number(el.getAttribute(attr)); mark(over); }
+      };
+      const tick = () => { if (from < 0 || !vy) { raf = 0; return; } scrollBy(0, vy); hover(); raf = requestAnimationFrame(tick); };
+      box.addEventListener('pointermove', (ev) => {
+        if (from < 0) return;
+        lastX = ev.clientX; lastY = ev.clientY;
+        vy = lastY < 90 ? -14 : lastY > innerHeight - 90 ? 14 : 0;
+        if (vy && !raf) raf = requestAnimationFrame(tick);
+        hover();
+      });
+      const end = () => {
+        vy = 0;
+        if (from < 0) return;
+        const f = from, t = over;
+        from = over = -1;
+        box.querySelectorAll<HTMLElement>(`[${attr}]`).forEach((el) => el.classList.remove('opacity-50', 'ring-2', 'ring-brand-500'));
+        if (t >= 0 && t !== f) move(f, t);
+      };
+      box.addEventListener('pointerup', end); box.addEventListener('pointercancel', end);
+    };
+    const shift = <T,>(arr: T[], f: number, t: number) => { const [x] = arr.splice(f, 1); arr.splice(t, 0, x); return arr; };
+    sortable(list, 'data-pi', (f, t) => { shift(projects, f, t); drawProjects(); render(); });
+    sortable(q('[data-pf-layout]'), 'data-li', (f, t) => writeLayout(shift(readLayout(), f, t)));
+
+    window.addEventListener('message', (ev) => {
+      if (ev.source !== iframe.contentWindow || ev.data?.type !== 'pf-edit') return;
+      const key = String(ev.data.key), value = String(ev.data.value).slice(0, 2000);
+      const m = /^p(\d+)\.(title|cat|desc|challenge|solution|result)$/.exec(key);
+      const f = /^f:(stats|services|process|testimonials|experience|awards|clients):(\d+):(\d+)$/.exec(key);
+      if (m) {
+        const p = projects[Number(m[1])];
+        if (!p) return;
+        (p as any)[m[2]] = value;
+        const el = root.querySelector<HTMLInputElement>(`[data-pi="${m[1]}"] [data-pk="${m[2]}"]`);
+        if (el) el.value = value;
+      } else if (f) {
+        // Rewrite one cell of a "a | b | c" line (or one comma item for clients) in the matching textarea.
+        const el = root.querySelector<HTMLTextAreaElement>(`[data-pf-fields] [name="${f[1]}"]`);
+        if (!el) return;
+        const clean = value.replace(/[|\n]/g, ' ');
+        if (f[1] === 'clients') {
+          const items = el.value.split(',').map((x) => x.trim()).filter(Boolean);
+          if (Number(f[2]) >= items.length) return;
+          items[Number(f[2])] = clean.replace(/,/g, ' ');
+          el.value = items.join(', ');
+        } else {
+          const rows = el.value.split('\n');
+          const live = rows.map((l, i) => (l.trim() ? i : -1)).filter((i) => i >= 0);
+          const at = live[Number(f[2])];
+          if (at === undefined) return;
+          const cells = rows[at].split('|').map((x) => x.trim());
+          cells[Number(f[3])] = clean;
+          rows[at] = cells.join(' | ');
+          el.value = rows.join('\n');
+        }
+      } else {
+        const el = root.querySelector<HTMLInputElement>(`[data-pf-fields] [name="${key}"]`);
+        if (!el || !['name', 'role', 'bio', 'location'].includes(key)) return;
+        el.value = value;
+      }
+      render(true);
+    });
+    const editBtn = q<HTMLButtonElement>('[data-pf-editmode]');
+    editBtn.addEventListener('click', () => {
+      editMode = !editMode;
+      editBtn.classList.toggle('!bg-amber-100', editMode); editBtn.classList.toggle('!border-amber-400', editMode);
+      editBtn.setAttribute('aria-pressed', String(editMode));
+      render();
+    });
+
+    drawProjects(); drawLayout(); markStyle(); fit();
+    iframe.srcdoc = html(true);
+  });
+</script>

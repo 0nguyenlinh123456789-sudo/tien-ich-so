@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-20-trieu-ky-han-12-thang-lai-6-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 20 triệu kỳ hạn 12 tháng, lãi 6%/năm được bao nhiêu?",
+  "params": {
+    "p": 20000000,
+    "t": 12,
+    "r": 6
+  }
+}

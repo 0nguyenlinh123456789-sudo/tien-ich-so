@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "107-f-to-c",
+  "title": "107°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 107
+  }
+}

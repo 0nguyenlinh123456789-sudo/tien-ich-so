@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "6-f-to-c",
+  "title": "6°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 6
+  }
+}

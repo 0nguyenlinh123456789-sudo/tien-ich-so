@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "71-f-to-c",
+  "title": "71°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 71
+  }
+}

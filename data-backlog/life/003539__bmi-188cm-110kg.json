@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-188cm-110kg",
+  "title": "BMI for 188 cm and 110 kg",
+  "params": {
+    "h": 188,
+    "w": 110
+  }
+}

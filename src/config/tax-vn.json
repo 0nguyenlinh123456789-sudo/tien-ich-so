@@ -1,0 +1,54 @@
+{
+  "_note": "Kỳ tính thuế 2026. Giảm trừ gia cảnh: NQ 110/2025/UBTVQH15. Biểu thuế 5 bậc: Luật Thuế TNCN 109/2025/QH15 (áp dụng cho tiền lương từ kỳ tính thuế 2026). Lương tối thiểu vùng: NĐ 293/2025/NĐ-CP (từ 01/01/2026). Lương cơ sở 2.530.000đ: NĐ 161/2026/NĐ-CP (từ 01/07/2026). Trần BHXH/BHYT = 20 x lương cơ sở; trần BHTN = 20 x lương tối thiểu vùng.",
+  "effectiveFrom": "2026-01-01",
+  "personalDeduction": 15500000,
+  "dependentDeduction": 6200000,
+  "baseSalary": 2530000,
+  "regionalMinWage": {
+    "1": 5310000,
+    "2": 4730000,
+    "3": 4140000,
+    "4": 3700000
+  },
+  "insuranceCapMultiplier": 20,
+  "employee": {
+    "bhxh": 0.08,
+    "bhyt": 0.015,
+    "bhtn": 0.01
+  },
+  "employer": {
+    "bhxh": 0.17,
+    "tnld": 0.005,
+    "bhyt": 0.03,
+    "bhtn": 0.01
+  },
+  "taxBrackets": [
+    {
+      "upTo": 10000000,
+      "rate": 0.05
+    },
+    {
+      "upTo": 30000000,
+      "rate": 0.1
+    },
+    {
+      "upTo": 60000000,
+      "rate": 0.2
+    },
+    {
+      "upTo": 100000000,
+      "rate": 0.3
+    },
+    {
+      "upTo": null,
+      "rate": 0.35
+    }
+  ],
+  "sources": [
+    "https://luatvietnam.vn/tin-van-ban-moi/chinh-thuc-tang-luong-co-so-len-2530000-dong-thang-tu-01-7-2026-186-109005-article.html",
+    "https://luatvietnam.vn/tin-van-ban-moi/ap-dung-bieu-thue-luy-tien-5-bac-tu-ky-tinh-thue-2026-186-106263-article.html",
+    "https://baochinhphu.vn/tang-luong-toi-thieu-vung-tu-1-1-2026-102251110175033018.htm"
+  ],
+  "baseSalaryEffectiveFrom": "2026-07-01",
+  "verifiedAt": "2026-10-30"
+}

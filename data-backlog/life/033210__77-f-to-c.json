@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "77-f-to-c",
+  "title": "77°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 77
+  }
+}

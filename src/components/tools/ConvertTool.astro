@@ -1,0 +1,51 @@
+---
+import { UNITS } from '../../lib/units.js';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+---
+<div data-tool="convert" data-lang={lang} class="grid gap-5">
+  <div class="flex flex-wrap gap-2" data-cats>
+    {Object.entries(UNITS).map(([k, c], i) => <button type="button" data-cat={k} class={`rounded-full border px-3 py-1.5 text-sm font-semibold ${i === 0 ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300'}`}>{c.icon} {c.name[lang]}</button>)}
+  </div>
+  <div class="card grid items-end gap-3 sm:grid-cols-[1fr_auto_1fr]">
+    <div><input class="input text-2xl" type="number" step="any" data-v value="170" /><select class="input mt-2" data-from></select></div>
+    <button type="button" class="btn-ghost text-xl" data-swap aria-label="swap">⇄</button>
+    <div><div class="input bg-slate-50 text-2xl font-bold text-brand-700" data-res>—</div><select class="input mt-2" data-to></select></div>
+  </div>
+  <div class="card"><div class="table-wrap"><table class="data-table"><tbody data-all></tbody></table></div></div>
+  <p class="text-xs text-slate-500">{vi ? 'Hệ số chuyển đổi theo định nghĩa quốc tế: 1 inch = 2,54 cm; 1 lb = 0,45359237 kg.' : 'Exact international definitions: 1 in = 2.54 cm; 1 lb = 0.45359237 kg.'}</p>
+</div>
+
+<script>
+  import { UNITS, convert } from '../../lib/units.js';
+  document.querySelectorAll<HTMLElement>('[data-tool="convert"]').forEach((root) => {
+    const lang = root.dataset.lang === 'en' ? 'en' : 'vi';
+    const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const v = $<HTMLInputElement>('[data-v]'), from = $<HTMLSelectElement>('[data-from]'), to = $<HTMLSelectElement>('[data-to]');
+    let cat = Object.keys(UNITS)[0];
+    const fmt = (x: number) => Number.isFinite(x) ? x.toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-US', { maximumFractionDigits: 4 }) : '—';
+    const fill = () => {
+      const u = UNITS[cat].units;
+      const opts = Object.entries(u).map(([k, x]: any) => `<option value="${k}">${x.name[lang]}</option>`).join('');
+      from.innerHTML = opts; to.innerHTML = opts;
+      const keys = Object.keys(u); from.value = UNITS[cat].pair[0]; to.value = UNITS[cat].pair[1] || keys[1];
+    };
+    const calc = () => {
+      const x = Number(v.value);
+      $('[data-res]').textContent = v.value === '' ? '—' : fmt(convert(cat, x, from.value, to.value));
+      if (cat === 'length' && from.value === 'cm' && to.value === 'ftin' && v.value !== '') {
+        const tot = x / 2.54; $('[data-res]').textContent = `${Math.floor(tot / 12)}′ ${(tot % 12).toFixed(1)}″`;
+      }
+      $('[data-all]').innerHTML = Object.entries(UNITS[cat].units).filter(([k]) => k !== 'ftin').map(([k, u]: any) => `<tr><td>${u.name[lang]}</td><td class="num font-semibold">${v.value === '' ? '—' : fmt(convert(cat, x, from.value, k))}</td></tr>`).join('');
+    };
+    root.querySelectorAll<HTMLButtonElement>('[data-cat]').forEach((b) => b.addEventListener('click', () => {
+      cat = b.dataset.cat!;
+      root.querySelectorAll('[data-cat]').forEach((x) => x.className = `rounded-full border px-3 py-1.5 text-sm font-semibold ${x === b ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300'}`);
+      fill(); calc();
+    }));
+    $('[data-swap]').addEventListener('click', () => { const t = from.value; from.value = to.value; to.value = t; calc(); });
+    [v, from, to].forEach((el) => el.addEventListener('input', calc));
+    fill(); calc();
+  });
+</script>

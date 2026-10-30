@@ -1,0 +1,15 @@
+{
+  "section": "finance",
+  "lang": "en",
+  "tool": "loan",
+  "slug": "1-billion-vnd-loan-25-years-10-percent-monthly-payment",
+  "title": "1 billion VND loan over 25 years at 10%: monthly payment",
+  "params": {
+    "principal": 1000000000,
+    "months": 300,
+    "rate": 10,
+    "method": "annuity",
+    "promoMonths": 0,
+    "promoRate": 0
+  }
+}

@@ -1,0 +1,109 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+import { fmtNum } from '../../lib/format.js';
+import { t } from '../../i18n/ui.js';
+
+interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; autorun?: boolean; }
+const { lang = 'vi', preset = {}, autorun = false } = Astro.props;
+const p = { principal: 1000000000, rate: 10, months: 240, method: 'reducing', promoMonths: 12, promoRate: 7.5, ...preset };
+const vi = lang === 'vi';
+const L = t(lang);
+---
+<div data-tool="loan" data-lang={lang}>
+  <form class="card grid gap-4 md:grid-cols-3" data-tool-form data-autorun={String(autorun)}>
+    <div>
+      <label class="label" for="ln-p">{vi ? 'Số tiền vay (VNĐ)' : 'Loan amount (VND)'}</label>
+      <input id="ln-p" name="principal" class="input" inputmode="numeric" data-money required value={fmtNum(p.principal, 'vi')} />
+    </div>
+    <div>
+      <label class="label" for="ln-m">{vi ? 'Thời hạn vay (tháng)' : 'Term (months)'}</label>
+      <input id="ln-m" name="months" type="number" min="1" max="600" class="input" required value={p.months} />
+    </div>
+    <div>
+      <label class="label" for="ln-r">{vi ? 'Lãi suất sau ưu đãi (%/năm)' : 'Standard rate (%/year)'}</label>
+      <input id="ln-r" name="rate" type="number" step="0.01" min="0" max="100" class="input" required value={p.rate} />
+    </div>
+    <div>
+      <label class="label" for="ln-pm">{vi ? 'Số tháng ưu đãi' : 'Promo months'}</label>
+      <input id="ln-pm" name="promoMonths" type="number" min="0" max="600" class="input" value={p.promoMonths} />
+    </div>
+    <div>
+      <label class="label" for="ln-pr">{vi ? 'Lãi suất ưu đãi (%/năm)' : 'Promo rate (%/year)'}</label>
+      <input id="ln-pr" name="promoRate" type="number" step="0.01" min="0" max="100" class="input" value={p.promoRate} />
+    </div>
+    <div>
+      <label class="label" for="ln-me">{vi ? 'Phương thức trả' : 'Repayment method'}</label>
+      <select id="ln-me" name="method" class="input">
+        <option value="reducing" selected={p.method !== 'annuity'}>{vi ? 'Dư nợ giảm dần (gốc đều)' : 'Declining balance (equal principal)'}</option>
+        <option value="annuity" selected={p.method === 'annuity'}>{vi ? 'Niên kim (trả đều hàng tháng)' : 'Annuity (equal payments)'}</option>
+      </select>
+    </div>
+    <div class="md:col-span-3"><button class="btn-primary" type="submit">{vi ? 'Xem kết quả chi tiết' : 'View detailed result'}</button></div>
+  </form>
+
+  <MonetizedResult context="finance" lang={lang}>
+    <div data-out="summary"></div>
+    <div data-out="compare" class="mt-6"></div>
+    <div slot="bottom">
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-2">
+        <h3 class="font-semibold">{vi ? 'Lịch trả nợ từng tháng' : 'Monthly repayment schedule'}</h3>
+        <button type="button" class="btn-ghost py-2 text-sm" data-action="csv">⬇ {L.exportCsv}</button>
+      </div>
+      <div data-out="schedule" class="mt-2 max-h-[560px] overflow-y-auto"></div>
+    </div>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { loanSchedule, compareLoans } from '../../lib/loan.js';
+  import { fmtMoney, fmtNum, toCsv, downloadText } from '../../lib/format.js';
+  import { bindToolForm, showResult } from '../../scripts/form-state.js';
+
+  const T = {
+    vi: { first: 'Kỳ trả đầu tiên', last: 'Kỳ trả cuối', interest: 'Tổng tiền lãi', total: 'Tổng gốc + lãi', max: 'Kỳ trả cao nhất',
+      compare: 'So sánh 2 phương thức', method: 'Phương thức', reducing: 'Dư nợ giảm dần', annuity: 'Niên kim', diff: 'Chênh lệch tiền lãi',
+      month: 'Kỳ', rate: 'Lãi suất', payment: 'Phải trả', principal: 'Gốc', interestCol: 'Lãi', balance: 'Dư nợ còn lại', save: 'Dư nợ giảm dần tiết kiệm' },
+    en: { first: 'First payment', last: 'Last payment', interest: 'Total interest', total: 'Total paid', max: 'Highest payment',
+      compare: 'Method comparison', method: 'Method', reducing: 'Declining balance', annuity: 'Annuity', diff: 'Interest difference',
+      month: 'Month', rate: 'Rate', payment: 'Payment', principal: 'Principal', interestCol: 'Interest', balance: 'Balance', save: 'Declining balance saves' }
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-tool="loan"]').forEach((root) => {
+    const lang = (root.dataset.lang === 'en' ? 'en' : 'vi') as 'vi' | 'en';
+    const L = T[lang];
+    const m = (v: number) => fmtMoney(v, lang);
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    let last: any = null;
+
+    bindToolForm(root.querySelector<HTMLFormElement>('[data-tool-form]')!, (d: any) => {
+      const params = { principal: d.principal, annualRate: Number(d.rate), months: Number(d.months), promoMonths: Number(d.promoMonths), promoRate: Number(d.promoRate) };
+      const r = loanSchedule({ ...params, method: d.method });
+      const c = compareLoans(params);
+      last = r;
+      out('summary').innerHTML = `<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="stat bg-brand-50"><div class="stat-label">${L.first}</div><div class="stat-value text-brand-700">${m(r.firstPayment)}</div></div>
+        <div class="stat"><div class="stat-label">${L.last}</div><div class="stat-value">${m(r.lastPayment)}</div></div>
+        <div class="stat"><div class="stat-label">${L.interest}</div><div class="stat-value">${m(r.totalInterest)}</div></div>
+        <div class="stat"><div class="stat-label">${L.total}</div><div class="stat-value">${m(r.totalPaid)}</div></div></div>`;
+      const diff = c.annuity.totalInterest - c.reducing.totalInterest;
+      out('compare').innerHTML = `<h3 class="mb-2 font-semibold">${L.compare}</h3>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>${L.method}</th><th class="num">${L.first}</th><th class="num">${L.max}</th><th class="num">${L.interest}</th><th class="num">${L.total}</th></tr></thead><tbody>
+        <tr><td>${L.reducing}</td><td class="num">${m(c.reducing.firstPayment)}</td><td class="num">${m(c.reducing.maxPayment)}</td><td class="num">${m(c.reducing.totalInterest)}</td><td class="num">${m(c.reducing.totalPaid)}</td></tr>
+        <tr><td>${L.annuity}</td><td class="num">${m(c.annuity.firstPayment)}</td><td class="num">${m(c.annuity.maxPayment)}</td><td class="num">${m(c.annuity.totalInterest)}</td><td class="num">${m(c.annuity.totalPaid)}</td></tr>
+        </tbody></table></div>
+        <p class="mt-2 text-sm text-slate-600">${L.save}: <b>${m(diff)}</b> ${lang === 'vi' ? 'tiền lãi so với niên kim.' : 'in interest vs annuity.'}</p>`;
+      out('schedule').innerHTML = `<div class="table-wrap"><table class="data-table"><thead class="sticky top-0"><tr><th>${L.month}</th><th class="num">${L.rate}</th><th class="num">${L.payment}</th><th class="num">${L.principal}</th><th class="num">${L.interestCol}</th><th class="num">${L.balance}</th></tr></thead><tbody>
+        ${r.rows.map((x: any) => `<tr><td>${x.month}</td><td class="num">${fmtNum(x.rate, lang, 2)}%</td><td class="num">${m(x.payment)}</td><td class="num">${m(x.principal)}</td><td class="num">${m(x.interest)}</td><td class="num">${m(x.balance)}</td></tr>`).join('')}
+        </tbody></table></div>`;
+      showResult(root);
+    });
+
+    root.querySelector('[data-action="csv"]')?.addEventListener('click', () => {
+      if (!last) return;
+      const rows = [[L.month, L.rate + ' (%)', L.payment, L.principal, L.interestCol, L.balance],
+        ...last.rows.map((x: any) => [x.month, x.rate.toFixed(2), Math.round(x.payment), Math.round(x.principal), Math.round(x.interest), Math.round(x.balance)])];
+      downloadText(lang === 'vi' ? 'lich-tra-no.csv' : 'loan-schedule.csv', toCsv(rows));
+    });
+  });
+</script>
+

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-176cm-88kg",
+  "title": "BMI for 176 cm and 88 kg",
+  "params": {
+    "h": 176,
+    "w": 88
+  }
+}

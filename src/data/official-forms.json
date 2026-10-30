@@ -1,0 +1,65 @@
+{
+  "_rule": "Chỉ ghi số hiệu mẫu và căn cứ khi đã xác minh trên cổng .gov.vn. Mẫu chưa xác minh được chỉ dẫn tới trang thủ tục chính thức (luôn cung cấp mẫu đang áp dụng). Cập nhật verifiedAt mỗi lần kiểm tra lại.",
+  "verifiedAt": "2026-10-30",
+  "forms": [
+    {
+      "id": "tro-cap-that-nghiep",
+      "category": "Lao động – Bảo hiểm",
+      "name": "Đề nghị hưởng trợ cấp thất nghiệp",
+      "code": "Mẫu số 10",
+      "basis": "Nghị định 374/2025/NĐ-CP ngày 31/12/2025 quy định chi tiết một số điều của Luật Việc làm về bảo hiểm thất nghiệp",
+      "effective": "01/01/2026",
+      "status": "verified",
+      "note": "Nộp trong 03 tháng kể từ ngày chấm dứt hợp đồng lao động, trực tiếp tại Trung tâm Dịch vụ việc làm hoặc qua Cổng Dịch vụ công Quốc gia. Mẫu cũ (Mẫu 03 theo Thông tư 15/2023/TT-BLĐTBXH) không còn áp dụng.",
+      "officialUrl": "https://vanban.chinhphu.vn/?docid=216493&pageid=27160",
+      "sources": [
+        "https://vanban.chinhphu.vn/?docid=216493&pageid=27160",
+        "https://baohiemxahoi.gov.vn/tintuc/Pages/linh-vuc-bao-hiem-xa-hoi.aspx?ItemID=26068&CateID=168"
+      ]
+    },
+    {
+      "id": "dang-ky-ho-kinh-doanh",
+      "category": "Kinh doanh",
+      "name": "Giấy đề nghị đăng ký hộ kinh doanh (thành lập mới)",
+      "code": "Mẫu số 1, Phụ lục II",
+      "basis": "Thông tư 68/2025/TT-BTC",
+      "effective": "01/07/2025",
+      "status": "verified",
+      "note": "Mẫu cũ theo Thông tư 02/2023/TT-BKHĐT không còn áp dụng. Tải mẫu Word tại Cổng thông tin quốc gia về đăng ký doanh nghiệp.",
+      "officialUrl": "https://dangkykinhdoanh.gov.vn/vn/Pages/Noidunghuongdan.aspx?htID=114&lhID=91",
+      "sources": ["https://dangkykinhdoanh.gov.vn/vn/Pages/Noidunghuongdan.aspx?htID=114&lhID=91"]
+    },
+    {
+      "id": "thay-doi-cu-tru",
+      "category": "Cư trú – Hộ tịch",
+      "name": "Tờ khai thay đổi thông tin cư trú (đăng ký thường trú, tạm trú, tách hộ…)",
+      "code": "Mẫu CT01",
+      "basis": "Đang xác minh: Bộ Công an ban hành Thông tư 116/2026/TT-BCA (hiệu lực 01/07/2026) hướng dẫn Luật Cư trú; chưa xác nhận được trên cổng .gov.vn việc thông tư này thay mẫu CT01.",
+      "status": "pending",
+      "note": "Dùng mẫu được cung cấp ngay trên trang thủ tục của Bộ Công an hoặc khai trực tuyến qua VNeID / Cổng Dịch vụ công (biểu mẫu điện tử luôn là bản đang áp dụng).",
+      "officialUrl": "https://dichvucong.bocongan.gov.vn/bocongan/bothutuc/tthc?matt=26498",
+      "sources": ["https://dichvucong.bocongan.gov.vn/bocongan/bothutuc/tthc?matt=26498"]
+    },
+    {
+      "id": "quyet-toan-thue-tncn",
+      "category": "Thuế",
+      "name": "Tờ khai quyết toán thuế TNCN (cá nhân có thu nhập từ tiền lương, tiền công)",
+      "code": "Mẫu 02/QTT-TNCN",
+      "basis": "Đang xác minh: Thông tư 89/2026/TT-BTC (hiệu lực 01/07/2026) thay hệ thống mẫu khai thuế; hồ sơ có kỳ tính thuế trước 01/07/2026 vẫn dùng mẫu cũ theo quy định chuyển tiếp.",
+      "status": "pending",
+      "note": "Khai và nộp trên ứng dụng eTax Mobile hoặc Cổng thuế điện tử – hệ thống tự áp dụng mẫu đúng theo kỳ tính thuế.",
+      "officialUrl": "https://canhan.gdt.gov.vn/",
+      "sources": ["https://xaydungchinhsach.chinhphu.vn/noi-dung-moi-tai-thong-tu-89-2026-tt-btc-giam-thu-tuc-rut-ngan-thoi-gian-tao-thuan-loi-cho-nguoi-nop-thue-119260812152419765.htm"]
+    },
+    {
+      "id": "dang-ky-ket-hon",
+      "category": "Cư trú – Hộ tịch",
+      "name": "Tờ khai đăng ký kết hôn",
+      "basis": "Đang xác minh: các nguồn chưa thống nhất về văn bản ban hành mẫu hiện hành.",
+      "status": "pending",
+      "note": "Nộp trực tuyến trên Cổng Dịch vụ công Quốc gia (biểu mẫu điện tử tương tác) hoặc lấy mẫu tại UBND cấp xã nơi đăng ký.",
+      "officialUrl": "https://dichvucong.gov.vn/p/home/dvc-chi-tiet-thu-tuc-hanh-chinh.html?ma_thu_tuc=1.000894",
+      "sources": ["https://dichvucong.gov.vn/p/home/dvc-chi-tiet-thu-tuc-hanh-chinh.html?ma_thu_tuc=1.000894"]
+    }
+  ]
+}

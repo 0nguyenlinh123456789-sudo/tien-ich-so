@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-115-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 115 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 115000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

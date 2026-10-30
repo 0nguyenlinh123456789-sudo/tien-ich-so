@@ -1,0 +1,43 @@
+---
+/**
+ * MonetizedResult – the result frame used by every tool.
+ * Layout: [top result] → [contextual affiliate offers] → [display ad] → [bottom result] → [clearly-labelled sponsor link] → [share box]
+ * Hidden until the tool has produced a result (tool script removes the `hidden` attribute).
+ */
+import AffiliateCards from './AffiliateCards.astro';
+import AdSlot from './AdSlot.astro';
+import ShareBox from './ShareBox.astro';
+import { MONETIZATION, hasSmartLink } from '../lib/monetize.js';
+import { t } from '../i18n/ui.js';
+
+interface Props {
+  context: 'finance' | 'destiny' | 'tools';
+  lang?: 'vi' | 'en';
+  title?: string;
+  visible?: boolean;
+  share?: boolean;
+}
+const { context, lang = 'vi', title, visible = false, share = true } = Astro.props;
+const L = t(lang);
+const smart = hasSmartLink();
+---
+<section data-monetized hidden={!visible} class="mt-6 scroll-mt-24">
+  <div class="card">
+    <h2 class="mb-4 text-xl font-bold">{title || L.result}</h2>
+    <slot />
+    <AffiliateCards context={context} lang={lang} />
+    <AdSlot lang={lang} />
+    <slot name="bottom" />
+    {smart && (
+      <div class="mt-6 flex justify-center">
+        <a href={MONETIZATION.smartLinkUrl} target="_blank" rel="sponsored noopener nofollow"
+          class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+          <span class="rounded bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase">{L.ad}</span>
+          {MONETIZATION.smartLinkLabel?.[lang] || L.sponsored}
+        </a>
+      </div>
+    )}
+  </div>
+  {share && <ShareBox lang={lang} />}
+</section>
+

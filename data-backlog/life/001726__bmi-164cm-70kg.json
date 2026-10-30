@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-164cm-70kg",
+  "title": "BMI for 164 cm and 70 kg",
+  "params": {
+    "h": 164,
+    "w": 70
+  }
+}

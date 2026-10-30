@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "79-f-to-c",
+  "title": "79°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 79
+  }
+}

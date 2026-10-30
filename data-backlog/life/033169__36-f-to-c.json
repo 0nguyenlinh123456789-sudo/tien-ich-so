@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "36-f-to-c",
+  "title": "36°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 36
+  }
+}

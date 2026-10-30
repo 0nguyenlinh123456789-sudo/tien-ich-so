@@ -1,0 +1,207 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AffiliateCards from './AffiliateCards.astro';
+import { SECTIONS, toolsIn, toolUrl, sectionUrl, recordUrl, getTool } from '../data/tools.js';
+import { getAllRecords } from '../lib/routes.js';
+import site from '../config/site.json';
+
+interface Props { lang: 'vi' | 'en'; }
+const { lang } = Astro.props;
+const vi = lang === 'vi';
+const latest = getAllRecords().filter((r) => r.lang === lang).slice(-8).reverse();
+const title = vi ? `Lịch âm, tính lương, BHXH, tiền điện – ${site.siteName}` : `Lunar calendar, salary, BMI & life calculators – ${site.siteNameEn}`;
+const description = vi
+  ? 'Lịch âm hôm nay, tính lương Gross Net 2026, tiền thai sản, BHXH 1 lần, lương hưu, tiền điện, BMI, lãi tiết kiệm, CV và mẫu đơn. Miễn phí, không cần đăng ký.'
+  : 'Lunar calendar, BMI & calories, percentages, countdowns, loan and savings calculators, CV and portfolio builder. Free, no sign-up.';
+const jsonLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: vi ? site.siteName : site.siteNameEn, url: site.siteUrl };
+const salaryUrl = toolUrl(getTool('salary'), lang);
+
+// Problem-first entry points: people arrive with a question, not a category.
+const needs = [
+  { tool: 'age', emoji: '🎂', q: { vi: 'Năm nay tôi bao nhiêu tuổi?', en: 'How old am I exactly?' }, hint: { vi: 'Tuổi, sinh nhật tới', en: 'Age by date of birth' } },
+  { tool: 'mortgage', emoji: '🏡', q: { vi: 'Mua nhà ở Mỹ trả góp bao nhiêu?', en: 'What will my mortgage cost?' }, hint: { vi: 'Thuế, bảo hiểm, PMI', en: 'With taxes, insurance, PMI' } },
+  { tool: 'convert', emoji: '📏', q: { vi: '170 cm là bao nhiêu feet?', en: 'cm to inches, kg to lbs?' }, hint: { vi: 'Đổi đơn vị', en: 'Unit converter' } },
+  { tool: 'lunar', emoji: '🌙', q: { vi: 'Hôm nay ngày bao nhiêu âm?', en: 'Today in the lunar calendar?' }, hint: { vi: 'Lịch vạn niên', en: 'Lunar calendar' } },
+  { tool: 'bmi', emoji: '⚖️', q: { vi: 'Tôi có thừa cân không?', en: 'Am I overweight?' }, hint: { vi: 'BMI chuẩn châu Á', en: 'Asian BMI' } },
+  { tool: 'countdown', emoji: '⏳', q: { vi: 'Còn bao nhiêu ngày đến Tết?', en: 'Days until Tết?' }, hint: { vi: 'Đếm ngược', en: 'Countdown' } },
+  { tool: 'electric', emoji: '⚡', q: { vi: 'Tháng này tiền điện bao nhiêu?', en: 'How much is my power bill?' }, hint: { vi: 'Giá bậc thang EVN', en: 'EVN tiers' } },
+  { tool: 'savings', emoji: '🏦', q: { vi: 'Gửi 100 triệu lãi bao nhiêu?', en: 'What does my deposit earn?' }, hint: { vi: 'Lãi tiết kiệm', en: 'Savings interest' } },
+  { tool: 'maternity', emoji: '👶', q: { vi: 'Sinh con được nhận bao nhiêu?', en: 'How much maternity pay?' }, hint: { vi: 'Luật BHXH 2024', en: 'New law' } },
+  { tool: 'lumpsum', emoji: '💼', q: { vi: 'Rút BHXH 1 lần được bao nhiêu?', en: 'Lump-sum withdrawal?' }, hint: { vi: 'Theo năm đóng', en: 'By years paid' } },
+  { tool: 'address', emoji: '🗺️', q: { vi: 'Địa chỉ mới sau sáp nhập?', en: 'New address after merger?' }, hint: { vi: '34 tỉnh thành', en: '34 provinces' } },
+  { tool: 'forms', emoji: '📝', q: { vi: 'Cần đơn xin nghỉ việc?', en: 'Need a resignation letter?' }, hint: { vi: 'Điền, in ngay', en: 'Fill & print' } },
+  { tool: 'salary', emoji: '💵', q: { vi: 'Lương 20 triệu thực nhận bao nhiêu?', en: 'What is my take-home pay?' }, hint: { vi: 'Sau thuế, bảo hiểm', en: 'After insurance & income tax' } },
+  { tool: 'loan', emoji: '🏠', q: { vi: 'Vay 1 tỷ mỗi tháng trả bao nhiêu?', en: 'How much is my monthly loan payment?' }, hint: { vi: 'Lịch trả nợ', en: 'Full monthly schedule' } },
+  { tool: 'fire', emoji: '🔥', q: { vi: 'Bao nhiêu tuổi tôi được nghỉ hưu?', en: 'When can I retire?' }, hint: { vi: 'Lãi kép', en: 'Compound growth & inflation' } },
+  { tool: 'goodday', emoji: '📅', q: { vi: 'Ngày nào tốt để cưới, khai trương?', en: 'Which day is lucky for my event?' }, hint: { vi: 'Hoàng đạo, hợp tuổi', en: 'Lucky days & hours' } },
+  { tool: 'portfolio', emoji: '🎨', q: { vi: 'Cần portfolio ứng tuyển?', en: 'Need a stunning portfolio?' }, hint: { vi: '20 mẫu', en: '20 styles, built-in photo editor' } },
+  { tool: 'documents', emoji: '📄', q: { vi: 'Tạo CV xin việc', en: 'Make a standout CV' }, hint: { vi: 'Xuất PDF', en: '30 designs × 9 colours, PDF' } },
+  { tool: 'compress', emoji: '🗜️', q: { vi: 'Ảnh quá nặng?', en: 'Image too large to upload?' }, hint: { vi: 'Nén nhanh', en: 'Bulk, never uploaded' } }
+].filter((n) => getTool(n.tool));
+
+const sectionTone = {
+  life: 'from-sky-500 to-cyan-600',
+  finance: 'from-emerald-500 to-teal-600',
+  destiny: 'from-violet-500 to-fuchsia-600',
+  tools: 'from-amber-500 to-orange-600'
+};
+const trust = vi
+  ? [['🔒', 'Dữ liệu không rời máy bạn'], ['⚡', 'Kết quả tức thì, không đăng ký'], ['📜', 'Cập nhật luật thuế 2026'], ['💸', 'Miễn phí 100%']]
+  : [['🔒', 'Your data never leaves your device'], ['⚡', 'Instant, no sign-up'], ['📜', 'Updated for 2026 rules'], ['💸', '100% free']];
+---
+<Layout title={title} description={description} lang={lang} alternate={vi ? '/en' : '/'} jsonLd={jsonLd}>
+  <!-- HERO: value in the first 10 seconds -->
+  <section class="relative overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-10 text-white md:px-12 md:py-14">
+    <div class="pointer-events-none absolute -top-32 -right-24 h-96 w-96 rounded-full bg-brand-500/40 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-40 -left-20 h-96 w-96 rounded-full bg-violet-600/30 blur-3xl"></div>
+
+    <div class="relative grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>{vi ? 'Đã cập nhật giảm trừ gia cảnh 2026' : 'Updated for 2026 tax rules'}
+        </span>
+        <h1 class="mt-5 text-4xl leading-[1.1] font-black tracking-tight text-white md:text-6xl">
+          {vi ? <>Biết chính xác <span class="bg-gradient-to-r from-sky-300 to-emerald-300 bg-clip-text text-transparent">tiền của bạn</span> đi đâu.</> : <>Know exactly where <span class="bg-gradient-to-r from-sky-300 to-emerald-300 bg-clip-text text-transparent">your money</span> goes.</>}
+        </h1>
+        <p class="mt-5 max-w-xl text-lg text-white/70">
+          {vi ? 'Lương thực nhận, khoản vay, ngày nghỉ hưu: tính trong 10 giây, minh bạch từng đồng. Không quảng cáo che nội dung, không cần tài khoản.' : 'Take-home pay, loans, retirement date — answered in 10 seconds, every number explained. No account needed.'}
+        </p>
+        <ul class="mt-6 grid max-w-lg grid-cols-2 gap-x-4 gap-y-2 text-sm text-white/75">
+          {trust.map(([i, t]) => <li class="flex items-center gap-2"><span>{i}</span>{t}</li>)}
+        </ul>
+      </div>
+
+      <!-- Live mini calculator -->
+      <form id="quick-salary" action={salaryUrl} class="rounded-3xl bg-white p-6 text-slate-800 shadow-2xl shadow-brand-900/40" data-lang={lang}>
+        <input type="hidden" name="mode" value="gross" />
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-bold">💵 {vi ? 'Lương thực nhận của bạn' : 'Your take-home pay'}</h2>
+          <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">{vi ? 'Tính trực tiếp' : 'Live'}</span>
+        </div>
+        <label class="label mt-4" for="qs-amount">{vi ? 'Lương Gross / tháng (VNĐ)' : 'Monthly gross (VND)'}</label>
+        <input id="qs-amount" name="amount" inputmode="numeric" class="input text-2xl font-bold tabular-nums" value="20.000.000" autocomplete="off" />
+        <div class="mt-2 flex flex-wrap gap-1.5">
+          {[10, 15, 20, 30, 50].map((m) => <button type="button" data-preset={m * 1e6} class="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-brand-500 hover:text-brand-700">{m}{vi ? ' tr' : 'M'}</button>)}
+        </div>
+        <label class="label mt-4" for="qs-dep">{vi ? 'Số người phụ thuộc' : 'Dependents'}</label>
+        <div class="flex items-center gap-2">
+          <button type="button" data-step="-1" class="h-10 w-10 rounded-xl border border-slate-300 text-lg" aria-label="-">−</button>
+          <input id="qs-dep" name="dependents" type="number" min="0" max="20" value="0" class="input w-20 text-center" />
+          <button type="button" data-step="1" class="h-10 w-10 rounded-xl border border-slate-300 text-lg" aria-label="+">+</button>
+        </div>
+
+        <div class="mt-5 rounded-2xl bg-slate-50 p-4">
+          <div class="text-xs tracking-wide text-slate-500 uppercase">{vi ? 'Thực nhận mỗi tháng' : 'Take-home per month'}</div>
+          <div id="qs-net" class="mt-1 text-3xl font-black text-emerald-600 tabular-nums">–</div>
+          <div class="mt-3 flex h-2.5 overflow-hidden rounded-full bg-slate-200" aria-hidden="true">
+            <div id="qs-bar-net" class="bg-emerald-500 transition-all"></div>
+            <div id="qs-bar-ins" class="bg-sky-400 transition-all"></div>
+            <div id="qs-bar-tax" class="bg-rose-400 transition-all"></div>
+          </div>
+          <div class="mt-2 grid grid-cols-3 gap-2 text-xs">
+            <div><span class="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-500"></span>{vi ? 'Nhận' : 'Net'}</div>
+            <div><span class="mr-1 inline-block h-2 w-2 rounded-full bg-sky-400"></span>{vi ? 'Bảo hiểm' : 'Insurance'} <b id="qs-ins" class="block tabular-nums"></b></div>
+            <div><span class="mr-1 inline-block h-2 w-2 rounded-full bg-rose-400"></span>{vi ? 'Thuế' : 'Tax'} <b id="qs-tax" class="block tabular-nums"></b></div>
+          </div>
+        </div>
+        <button class="btn-primary mt-4 w-full">{vi ? 'Xem bảng chi tiết & cách tính →' : 'See full breakdown →'}</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- NEEDS -->
+  <section class="mt-14">
+    <h2 class="text-2xl font-bold md:text-3xl">{vi ? 'Hôm nay bạn cần giải quyết gì?' : 'What do you need today?'}</h2>
+    <p class="mt-1 text-slate-500">{vi ? 'Chọn câu hỏi, có câu trả lời ngay.' : 'Pick a question, get the answer.'}</p>
+    <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {needs.map((n) => (
+        <a href={toolUrl(getTool(n.tool), lang)} class="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-100">
+          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-slate-100 text-2xl transition group-hover:scale-110">{n.emoji}</span>
+          <span class="min-w-0 flex-1">
+            <span class="block font-semibold text-slate-900">{n.q[lang]}</span>
+            <span class="block text-sm text-slate-500">{n.hint[lang]}</span>
+          </span>
+          <span class="text-slate-300 transition group-hover:translate-x-1 group-hover:text-brand-600">→</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- ALL TOOLS by section -->
+  {Object.values(SECTIONS).map((s) => (
+    <section class="mt-14">
+      <div class="mb-5 flex items-end justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class={`grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br text-xl text-white shadow ${sectionTone[s.id] || 'from-brand-500 to-brand-700'}`}>{s.icon}</span>
+          <div>
+            <h2 class="text-xl font-bold md:text-2xl">{s.name[lang]}</h2>
+            <p class="hidden text-sm text-slate-500 md:block">{s.desc[lang]}</p>
+          </div>
+        </div>
+        <a href={sectionUrl(s.id, lang)} class="shrink-0 text-sm font-semibold text-brand-600 hover:underline">{vi ? 'Tất cả' : 'All'} →</a>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {toolsIn(s.id).map((tl) => (
+          <a href={toolUrl(tl, lang)} class="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-lg">
+            <div class="text-3xl">{tl.icon}</div>
+            <div class="mt-3 font-bold text-slate-900 group-hover:text-brand-700">{tl.title[lang]}</div>
+            <p class="mt-1 flex-1 text-sm text-slate-500">{tl.desc[lang]}</p>
+            <span class="mt-4 text-sm font-semibold text-brand-600 opacity-0 transition group-hover:opacity-100">{vi ? 'Dùng ngay' : 'Open'} →</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <AffiliateCards context="finance" lang={lang} limit={2} />
+
+  {latest.length > 0 && (
+    <section class="mt-14">
+      <h2 class="mb-4 text-xl font-bold md:text-2xl">{vi ? 'Mọi người đang tra cứu' : 'Popular lookups'}</h2>
+      <div class="flex flex-wrap gap-2">
+        {latest.map((r) => <a href={recordUrl(r)} class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition hover:border-brand-300 hover:text-brand-700">{r.title}</a>)}
+      </div>
+    </section>
+  )}
+</Layout>
+
+<script>
+  import { grossToNet } from '../lib/salary.js';
+  import { parseNum } from '../lib/format.js';
+
+  const form = document.getElementById('quick-salary') as HTMLFormElement | null;
+  if (form) {
+    const locale = form.dataset.lang === 'en' ? 'en-US' : 'vi-VN';
+    const amount = form.querySelector<HTMLInputElement>('#qs-amount')!;
+    const dep = form.querySelector<HTMLInputElement>('#qs-dep')!;
+    const $ = (id: string) => document.getElementById(id)!;
+    const fmt = (n: number) => new Intl.NumberFormat(locale).format(Math.round(n));
+    const vnd = (n: number) => fmt(n) + (locale === 'vi-VN' ? ' đ' : ' ₫');
+
+    const run = () => {
+      const gross = parseNum(amount.value);
+      const r = grossToNet({ gross, dependents: Number(dep.value) || 0 });
+      $('qs-net').textContent = gross ? vnd(r.net) : '–';
+      $('qs-ins').textContent = vnd(r.insurance);
+      $('qs-tax').textContent = vnd(r.pit);
+      const pct = (x: number) => (gross ? (x / gross) * 100 : 0) + '%';
+      $('qs-bar-net').style.width = pct(r.net);
+      $('qs-bar-ins').style.width = pct(r.insurance);
+      $('qs-bar-tax').style.width = pct(r.pit);
+    };
+
+    amount.addEventListener('input', () => {
+      const raw = amount.value.replace(/\D/g, '');
+      amount.value = raw ? fmt(Number(raw)) : '';
+      run();
+    });
+    dep.addEventListener('input', run);
+    form.querySelectorAll<HTMLButtonElement>('[data-preset]').forEach((b) =>
+      b.addEventListener('click', () => { amount.value = fmt(Number(b.dataset.preset)); run(); }));
+    form.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((b) =>
+      b.addEventListener('click', () => { dep.value = String(Math.max(0, Math.min(20, (Number(dep.value) || 0) + Number(b.dataset.step)))); run(); }));
+    // Send a clean numeric amount so the full tool restores it from the URL
+    form.addEventListener('submit', () => { amount.value = String(parseNum(amount.value)); });
+    run();
+  }
+</script>

@@ -1,0 +1,18 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "fire",
+  "slug": "tiet-kiem-15-trieu-moi-thang-lai-8-phan-tram-tu-25-tuoi-bao-gio-nghi-huu",
+  "title": "Tiết kiệm 15 triệu/tháng, lãi 8%/năm từ 25 tuổi: bao giờ nghỉ hưu?",
+  "params": {
+    "currentAge": 25,
+    "initial": 0,
+    "monthly": 15000000,
+    "annualReturn": 8,
+    "contributionGrowth": 5,
+    "annualExpenses": 270000000,
+    "inflation": 4,
+    "withdrawalRate": 4,
+    "years": 30
+  }
+}

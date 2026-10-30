@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "11-f-to-c",
+  "title": "11°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 11
+  }
+}

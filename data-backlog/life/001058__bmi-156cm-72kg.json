@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-156cm-72kg",
+  "title": "BMI for 156 cm and 72 kg",
+  "params": {
+    "h": 156,
+    "w": 72
+  }
+}

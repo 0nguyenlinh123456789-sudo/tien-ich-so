@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-500-trieu-ky-han-3-thang-lai-5-5-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 500 triệu kỳ hạn 3 tháng, lãi 5,5%/năm được bao nhiêu?",
+  "params": {
+    "p": 500000000,
+    "t": 3,
+    "r": 5.5
+  }
+}

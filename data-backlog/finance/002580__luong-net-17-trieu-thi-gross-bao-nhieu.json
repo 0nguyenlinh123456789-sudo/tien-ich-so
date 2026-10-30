@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-17-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 17 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 17000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

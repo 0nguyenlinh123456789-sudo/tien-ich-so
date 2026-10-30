@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "38-f-to-c",
+  "title": "38°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 38
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "101-f-to-c",
+  "title": "101°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 101
+  }
+}

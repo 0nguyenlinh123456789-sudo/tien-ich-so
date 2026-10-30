@@ -1,0 +1,93 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const spreads = [
+  ['one', vi ? '1 lá – Thông điệp hôm nay' : '1 card – Daily message'],
+  ['three', vi ? '3 lá – Quá khứ / Hiện tại / Tương lai' : '3 cards – Past / Present / Future'],
+  ['love', vi ? '3 lá – Tình yêu' : '3 cards – Love'],
+  ['career', vi ? '4 lá – Sự nghiệp & Tài chính' : '4 cards – Career & Money']
+];
+---
+<div data-tool="tarot" data-lang={lang}>
+  <form class="card grid gap-4 md:grid-cols-3" data-tool-form>
+    <div class="md:col-span-2">
+      <label class="label" for="tr-q">{vi ? 'Câu hỏi của bạn (tập trung suy nghĩ khi bốc bài)' : 'Your question (focus while drawing)'}</label>
+      <input id="tr-q" name="question" class="input" data-no-url placeholder={vi ? 'VD: Công việc của tôi tháng tới thế nào?' : 'e.g. What should I focus on this month?'} />
+    </div>
+    <div>
+      <label class="label" for="tr-s">{vi ? 'Kiểu trải bài' : 'Spread'}</label>
+      <select id="tr-s" name="spread" class="input">
+        {spreads.map(([v, l]) => <option value={v} selected={v === 'three'}>{l}</option>)}
+      </select>
+    </div>
+    <div class="md:col-span-3"><button class="btn-primary" type="submit">🃏 {vi ? 'Xào bài & Bốc' : 'Shuffle & Draw'}</button></div>
+  </form>
+
+  <MonetizedResult context="destiny" lang={lang}>
+    <div data-out="question" class="mb-4 text-slate-600 italic"></div>
+    <div data-out="cards" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"></div>
+    <div slot="bottom"><div data-out="reading" class="prose-lite mt-6"></div></div>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { drawSpread } from '../../lib/tarot.js';
+  import { escapeHtml } from '../../lib/format.js';
+  import { showResult } from '../../scripts/form-state.js';
+
+  const T = {
+    vi: { reversed: 'Ngược', upright: 'Xuôi', reading: 'Luận giải tổng hợp', major: 'Lá Ẩn Chính – sự kiện lớn, bài học quan trọng', majorCount: 'Số lá Ẩn Chính', flip: 'Chạm để lật', q: 'Câu hỏi',
+      sum: (n: number) => n >= 2 ? 'Nhiều lá Ẩn Chính xuất hiện: đây là giai đoạn mang tính bước ngoặt, các quyết định lúc này có ảnh hưởng lâu dài.' : 'Phần lớn là lá Ẩn Phụ: vấn đề nằm trong tầm kiểm soát của bạn qua các hành động hằng ngày.',
+      rev: (n: number) => n >= 2 ? 'Có nhiều lá ngược – năng lượng đang bị cản trở, hãy chậm lại và xem xét điều gì đang kìm hãm bạn.' : 'Năng lượng nhìn chung thuận chiều, hãy tự tin hành động.' },
+    en: { reversed: 'Reversed', upright: 'Upright', reading: 'Overall reading', major: 'Major Arcana – big lessons and turning points', majorCount: 'Major Arcana count', flip: 'Tap to flip', q: 'Question',
+      sum: (n: number) => n >= 2 ? 'Several Major Arcana: this is a pivotal period; decisions now have long-term impact.' : 'Mostly Minor Arcana: the situation is in your hands through everyday actions.',
+      rev: (n: number) => n >= 2 ? 'Several reversed cards – energy is blocked; slow down and see what is holding you back.' : 'The energy is mostly flowing – act with confidence.' }
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-tool="tarot"]').forEach((root) => {
+    const lang = (root.dataset.lang === 'en' ? 'en' : 'vi') as 'vi' | 'en';
+    const L = T[lang];
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    const form = root.querySelector<HTMLFormElement>('[data-tool-form]')!;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const q = String(fd.get('question') || '').trim();
+      const draw = drawSpread(String(fd.get('spread') || 'three'));
+      out('question').textContent = q ? `${L.q}: “${q}”` : '';
+      out('cards').innerHTML = draw.map((d: any, i: number) => `
+        <button type="button" class="tarot-card h-80 w-full text-left" data-idx="${i}" aria-label="${L.flip}">
+          <div class="tarot-inner h-full w-full">
+            <div class="tarot-face grid place-items-center rounded-2xl bg-gradient-to-br from-indigo-900 via-violet-800 to-fuchsia-700 text-white shadow-lg">
+              <div class="text-center"><div class="text-5xl">✦</div><div class="mt-2 text-sm opacity-80">${d.position[lang]}</div><div class="mt-1 text-xs opacity-60">${L.flip}</div></div>
+            </div>
+            <div class="tarot-face tarot-back-face flex flex-col rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 shadow-lg">
+              <div class="text-xs font-semibold uppercase text-amber-700">${d.position[lang]}</div>
+              <div class="my-3 text-center text-5xl ${d.reversed ? 'rotate-180' : ''}">${d.card.symbol}</div>
+              <div class="text-center text-lg font-bold">${d.card.name[lang]}</div>
+              <div class="text-center text-xs ${d.reversed ? 'text-rose-600' : 'text-emerald-700'}">${d.reversed ? L.reversed : L.upright}</div>
+              <p class="mt-3 text-sm text-slate-700">${(d.reversed ? d.card.reversed : d.card.upright)[lang]}</p>
+            </div>
+          </div>
+        </button>`).join('');
+      out('cards').querySelectorAll<HTMLElement>('.tarot-card').forEach((c, i) => {
+        c.addEventListener('click', () => c.classList.toggle('flipped'));
+        setTimeout(() => c.classList.add('flipped'), 500 + i * 450);
+      });
+      const majors = draw.filter((d: any) => d.card.arcana === 'major').length;
+      const revs = draw.filter((d: any) => d.reversed).length;
+      out('reading').innerHTML = `<h2>${L.reading}</h2>
+        ${draw.map((d: any) => `<h3>${escapeHtml(d.position[lang])}: ${d.card.name[lang]} (${d.reversed ? L.reversed : L.upright})</h3>
+          <p>${(d.reversed ? d.card.reversed : d.card.upright)[lang]} ${d.card.arcana === 'major' ? `<em>${L.major}.</em>` : ''}</p>`).join('')}
+        <p><b>${L.majorCount}: ${majors}/${draw.length}.</b> ${L.sum(majors)}</p>
+        <p>${L.rev(revs)}</p>`;
+      showResult(root);
+      root.querySelector('[data-monetized]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+

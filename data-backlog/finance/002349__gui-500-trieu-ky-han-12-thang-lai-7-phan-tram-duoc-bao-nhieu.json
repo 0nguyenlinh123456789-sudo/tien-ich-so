@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-500-trieu-ky-han-12-thang-lai-7-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 500 triệu kỳ hạn 12 tháng, lãi 7%/năm được bao nhiêu?",
+  "params": {
+    "p": 500000000,
+    "t": 12,
+    "r": 7
+  }
+}

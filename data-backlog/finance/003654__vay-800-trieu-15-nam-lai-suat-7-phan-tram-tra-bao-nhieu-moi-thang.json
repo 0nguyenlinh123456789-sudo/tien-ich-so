@@ -1,0 +1,15 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "loan",
+  "slug": "vay-800-trieu-15-nam-lai-suat-7-phan-tram-tra-bao-nhieu-moi-thang",
+  "title": "Vay 800 triệu trong 15 năm, lãi 7%/năm trả bao nhiêu mỗi tháng?",
+  "params": {
+    "principal": 800000000,
+    "months": 180,
+    "rate": 7,
+    "method": "reducing",
+    "promoMonths": 0,
+    "promoRate": 0
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-152cm-42kg",
+  "title": "BMI for 152 cm and 42 kg",
+  "params": {
+    "h": 152,
+    "w": 42
+  }
+}

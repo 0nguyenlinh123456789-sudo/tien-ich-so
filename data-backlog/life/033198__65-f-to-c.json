@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "65-f-to-c",
+  "title": "65°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 65
+  }
+}

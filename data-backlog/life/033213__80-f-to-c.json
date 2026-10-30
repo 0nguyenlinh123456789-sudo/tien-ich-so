@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "80-f-to-c",
+  "title": "80°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 80
+  }
+}

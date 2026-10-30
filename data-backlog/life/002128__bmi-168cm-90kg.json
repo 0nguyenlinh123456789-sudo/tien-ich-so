@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-168cm-90kg",
+  "title": "BMI for 168 cm and 90 kg",
+  "params": {
+    "h": 168,
+    "w": 90
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "43-f-to-c",
+  "title": "43°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 43
+  }
+}

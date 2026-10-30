@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "89-f-to-c",
+  "title": "89°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 89
+  }
+}

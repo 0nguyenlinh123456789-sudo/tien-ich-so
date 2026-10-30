@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "19-f-to-c",
+  "title": "19°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 19
+  }
+}

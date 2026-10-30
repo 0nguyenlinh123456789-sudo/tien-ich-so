@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-172cm-50kg",
+  "title": "BMI for 172 cm and 50 kg",
+  "params": {
+    "h": 172,
+    "w": 50
+  }
+}

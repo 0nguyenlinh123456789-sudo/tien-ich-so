@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-25-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 25 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 25000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

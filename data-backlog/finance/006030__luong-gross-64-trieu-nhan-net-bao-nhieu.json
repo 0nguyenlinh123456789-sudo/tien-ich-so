@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-64-trieu-nhan-net-bao-nhieu",
+  "title": "Lương Gross 64 triệu nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 64000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

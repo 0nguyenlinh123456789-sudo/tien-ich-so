@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-39-5-trieu-nhan-net-bao-nhieu",
+  "title": "Lương Gross 39,5 triệu nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 39500000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

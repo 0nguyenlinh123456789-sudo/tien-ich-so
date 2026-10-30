@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-10-trieu-ky-han-12-thang-lai-6-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 10 triệu kỳ hạn 12 tháng, lãi 6%/năm được bao nhiêu?",
+  "params": {
+    "p": 10000000,
+    "t": 12,
+    "r": 6
+  }
+}

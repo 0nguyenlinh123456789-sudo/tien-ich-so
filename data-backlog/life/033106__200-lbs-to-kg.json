@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "200-lbs-to-kg",
+  "title": "200 lbs to kg",
+  "params": {
+    "kind": "lb",
+    "v": 200
+  }
+}

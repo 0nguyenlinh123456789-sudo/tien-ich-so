@@ -1,0 +1,18 @@
+{
+  "section": "finance",
+  "lang": "en",
+  "tool": "fire",
+  "slug": "invest-1-million-vnd-per-month-10-percent-fire-retirement-age",
+  "title": "Invest 1 million VND/month at 10%: when can you retire?",
+  "params": {
+    "currentAge": 30,
+    "initial": 0,
+    "monthly": 1000000,
+    "annualReturn": 10,
+    "contributionGrowth": 5,
+    "annualExpenses": 60000000,
+    "inflation": 4,
+    "withdrawalRate": 4,
+    "years": 30
+  }
+}

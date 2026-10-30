@@ -1,0 +1,15 @@
+{
+  "section": "finance",
+  "lang": "en",
+  "tool": "loan",
+  "slug": "500-million-vnd-loan-5-years-8-percent-monthly-payment",
+  "title": "500 million VND loan over 5 years at 8%: monthly payment",
+  "params": {
+    "principal": 500000000,
+    "months": 60,
+    "rate": 8,
+    "method": "annuity",
+    "promoMonths": 0,
+    "promoRate": 0
+  }
+}

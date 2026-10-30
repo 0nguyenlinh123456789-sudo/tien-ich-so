@@ -1,0 +1,264 @@
+{
+  "_help": "Điền link 1 lần ở đây, toàn bộ trang sẽ tự nhận. Để trống \"\" để tắt từng mục. Offer có url rỗng sẽ không hiện. adsTxt: dán dòng ads.txt AdSense cấp, vd \"google.com, pub-XXXX, DIRECT, f08c47fec0942fa0\". downloadAdHtml: quảng cáo hiện vài giây trước khi tải file/in (để trống = tải ngay). stickyAdHtml: thanh quảng cáo dính đáy màn hình điện thoại. Offer có \"tools\" chỉ hiện ở đúng công cụ đó.",
+  "smartLinkUrl": "",
+  "smartLinkLabel": {
+    "vi": "Ưu đãi từ nhà tài trợ",
+    "en": "Sponsored offer"
+  },
+  "bannerScriptUrl": "",
+  "bannerScriptAttributes": {},
+  "inContentAdHtml": "",
+  "accesstradeDeepLinkPrefix": "",
+  "adsTxt": "",
+  "topAffiliateOffers": [
+    {
+      "id": "bmi-scale",
+      "tools": [
+        "bmi"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Cân sức khỏe điện tử đo mỡ",
+      "description": "Theo dõi cân nặng, % mỡ, cơ mỗi ngày.",
+      "cta": "Xem giá",
+      "url": "https://shopee.vn/search?keyword=can%20dien%20tu%20do%20mo",
+      "wrapWithAccesstrade": true,
+      "icon": "⚖️"
+    },
+    {
+      "id": "bmi-food",
+      "tools": [
+        "bmi"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Yến mạch, hạt, đồ ăn eat clean",
+      "description": "Bữa sáng ít calo, no lâu.",
+      "cta": "Xem ưu đãi",
+      "url": "https://shopee.vn/search?keyword=yen%20mach%20eat%20clean",
+      "wrapWithAccesstrade": true,
+      "icon": "🥣"
+    },
+    {
+      "id": "preg-vitamin",
+      "tools": [
+        "pregnancy"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Đồ dùng mẹ bầu & sơ sinh",
+      "description": "Gối bầu, bình sữa, tã – hàng chính hãng.",
+      "cta": "Xem ngay",
+      "url": "https://shopee.vn/search?keyword=do%20so%20sinh",
+      "wrapWithAccesstrade": true,
+      "icon": "🍼"
+    },
+    {
+      "id": "preg-test",
+      "tools": [
+        "pregnancy"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Que thử thai, que thử rụng trứng",
+      "description": "Biết sớm, kín đáo, giao nhanh.",
+      "cta": "Xem giá",
+      "url": "https://shopee.vn/search?keyword=que%20thu%20rung%20trung",
+      "wrapWithAccesstrade": true,
+      "icon": "🧪"
+    },
+    {
+      "id": "elec-save",
+      "tools": [
+        "electric"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Ổ cắm hẹn giờ, bóng LED tiết kiệm điện",
+      "description": "Cắt điện chờ, giảm hóa đơn mỗi tháng.",
+      "cta": "Xem ưu đãi",
+      "url": "https://shopee.vn/search?keyword=o%20cam%20hen%20gio%20tiet%20kiem%20dien",
+      "wrapWithAccesstrade": true,
+      "icon": "💡"
+    },
+    {
+      "id": "elec-inverter",
+      "tools": [
+        "electric"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Máy lạnh Inverter tiết kiệm điện",
+      "description": "Tiết kiệm điện hơn máy thường khi chạy lâu.",
+      "cta": "So sánh giá",
+      "url": "https://shopee.vn/search?keyword=may%20lanh%20inverter",
+      "wrapWithAccesstrade": true,
+      "icon": "❄️"
+    },
+    {
+      "id": "lunar-calendar",
+      "tools": [
+        "lunar",
+        "countdown"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Lịch treo tường, lịch bloc 2027",
+      "description": "Lịch âm dương, đặt sớm giá tốt.",
+      "cta": "Xem mẫu",
+      "url": "https://shopee.vn/search?keyword=lich%20bloc%202027",
+      "wrapWithAccesstrade": true,
+      "icon": "📆"
+    },
+    {
+      "id": "forms-office",
+      "tools": [
+        "forms",
+        "documents"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Giấy A4, bìa hồ sơ xin việc",
+      "description": "Bộ hồ sơ, bút ký, giao trong ngày.",
+      "cta": "Mua ngay",
+      "url": "https://shopee.vn/search?keyword=bo%20ho%20so%20xin%20viec",
+      "wrapWithAccesstrade": true,
+      "icon": "🗂️"
+    },
+    {
+      "id": "bmi-en",
+      "tools": [
+        "bmi"
+      ],
+      "lang": [
+        "en"
+      ],
+      "title": "Smart body-fat scales",
+      "description": "Track weight, body fat and muscle.",
+      "cta": "See deals",
+      "url": "",
+      "wrapWithAccesstrade": false,
+      "icon": "⚖️"
+    },
+    {
+      "id": "bank-card",
+      "contexts": [
+        "finance"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Mở thẻ tín dụng hoàn tiền – nhận quà đến 500.000đ",
+      "description": "Mở online 100% bằng CCCD, duyệt nhanh, hoàn tiền khi chi tiêu.",
+      "cta": "Mở thẻ ngay",
+      "url": "",
+      "wrapWithAccesstrade": true,
+      "icon": "💳"
+    },
+    {
+      "id": "bank-account",
+      "contexts": [
+        "finance",
+        "tools"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Mở tài khoản ngân hàng số miễn phí",
+      "description": "Miễn phí chuyển khoản, chọn số tài khoản đẹp, nhận thưởng khi đăng ký.",
+      "cta": "Đăng ký",
+      "url": "",
+      "wrapWithAccesstrade": true,
+      "icon": "🏦"
+    },
+    {
+      "id": "shopee-fengshui",
+      "contexts": [
+        "destiny"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Vật phẩm phong thủy hợp mệnh – Shopee Mall",
+      "description": "Vòng tay đá, tỳ hưu, cây phong thủy chính hãng, freeship.",
+      "cta": "Xem trên Shopee",
+      "url": "https://shopee.vn/search?keyword=vat%20pham%20phong%20thuy",
+      "wrapWithAccesstrade": true,
+      "icon": "🧿"
+    },
+    {
+      "id": "lazada-sale",
+      "contexts": [
+        "destiny",
+        "tools",
+        "finance"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Săn sale Lazada hôm nay",
+      "description": "Mã giảm giá, flash sale khung giờ vàng cập nhật mỗi ngày.",
+      "cta": "Săn sale",
+      "url": "https://www.lazada.vn/",
+      "wrapWithAccesstrade": true,
+      "icon": "🛍️"
+    },
+    {
+      "id": "office-software",
+      "contexts": [
+        "tools"
+      ],
+      "lang": [
+        "vi",
+        "en"
+      ],
+      "title": "Office & PDF software deals",
+      "description": "Edit PDF, sign documents and design CVs with pro templates.",
+      "cta": "See deal",
+      "url": "",
+      "wrapWithAccesstrade": false,
+      "icon": "🧰"
+    },
+    {
+      "id": "intl-broker",
+      "contexts": [
+        "finance"
+      ],
+      "lang": [
+        "en"
+      ],
+      "title": "Start investing with low-fee index funds",
+      "description": "Open a brokerage account and automate your FIRE plan.",
+      "cta": "Learn more",
+      "url": "",
+      "wrapWithAccesstrade": false,
+      "icon": "📈"
+    },
+    {
+      "id": "intl-tarot",
+      "contexts": [
+        "destiny"
+      ],
+      "lang": [
+        "en"
+      ],
+      "title": "Crystal & tarot decks bestsellers",
+      "description": "Hand-picked tarot decks and healing crystals.",
+      "cta": "Shop now",
+      "url": "",
+      "wrapWithAccesstrade": false,
+      "icon": "🔮"
+    }
+  ],
+  "downloadAdHtml": "",
+  "downloadAdSeconds": 5,
+  "stickyAdHtml": ""
+}

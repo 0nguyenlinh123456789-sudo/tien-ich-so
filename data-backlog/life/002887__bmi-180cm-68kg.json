@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-180cm-68kg",
+  "title": "BMI for 180 cm and 68 kg",
+  "params": {
+    "h": 180,
+    "w": 68
+  }
+}

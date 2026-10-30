@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #d9eaff;
+  --color-brand-300: #93b8ff;
+  --color-brand-500: #2f6bff;
+  --color-brand-600: #1f55e6;
+  --color-brand-700: #1a45b8;
+  --color-gold-400: #f5b83d;
+  --font-sans: "Be Vietnam Pro", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-[#f6f7fb] text-slate-800 antialiased; }
+  h1, h2 { letter-spacing: -0.02em; }
+  h1, h2, h3 { @apply text-slate-900; }
+}
+
+@layer components {
+  .card { @apply rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,.04),0_8px_24px_-12px_rgba(15,23,42,.08)]; }
+  .label { @apply mb-1 block text-sm font-medium text-slate-700; }
+  .input { @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-slate-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100; }
+  .btn { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60; }
+  .btn-primary { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 bg-brand-600 text-white shadow hover:bg-brand-700; }
+  .btn-ghost { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 border border-slate-300 bg-white text-slate-700 hover:bg-slate-100; }
+  .table-wrap { @apply overflow-x-auto rounded-xl border border-slate-200; }
+  .data-table { @apply w-full text-sm; }
+  .data-table th { @apply bg-slate-100 px-3 py-2 text-left font-semibold whitespace-nowrap text-slate-700; }
+  .data-table td { @apply border-t border-slate-100 px-3 py-2 whitespace-nowrap; }
+  .data-table td.num, .data-table th.num { @apply text-right tabular-nums; }
+  .stat { @apply rounded-xl bg-slate-50 p-4; }
+  .stat-label { @apply text-xs tracking-wide text-slate-500 uppercase; }
+  .stat-value { @apply mt-1 text-xl font-bold text-slate-900 tabular-nums; }
+  .prose-lite p { @apply mb-3 leading-relaxed; }
+  .prose-lite h2 { @apply mt-6 mb-2 text-xl font-bold; }
+  .prose-lite h3 { @apply mt-4 mb-2 text-lg font-semibold; }
+  .prose-lite ul { @apply mb-3 list-disc pl-6; }
+}
+
+.tarot-card { perspective: 1000px; }
+.tarot-inner { transition: transform 0.7s; transform-style: preserve-3d; position: relative; }
+.tarot-card.flipped .tarot-inner { transform: rotateY(180deg); }
+.tarot-face { backface-visibility: hidden; position: absolute; inset: 0; }
+.tarot-back-face { transform: rotateY(180deg); }
+
+@media print {
+  body * { visibility: hidden !important; }
+  .print-area, .print-area * { visibility: visible !important; }
+  .print-area { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: 0 !important; }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "52-f-to-c",
+  "title": "52°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 52
+  }
+}

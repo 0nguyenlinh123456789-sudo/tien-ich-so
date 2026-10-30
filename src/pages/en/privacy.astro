@@ -1,0 +1,19 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import site from '../../config/site.json';
+---
+<Layout title="Privacy Policy" description="Privacy, cookies and advertising policy." lang="en" alternate="/chinh-sach-bao-mat">
+  <article class="prose-lite card max-w-3xl">
+    <h1 class="text-3xl font-bold">Privacy Policy</h1>
+    <p>All tools on {site.siteNameEn} run entirely in your browser. We do not collect or store the data you enter (salary, birth date, images, document content) on any server.</p>
+    <h2>Local storage</h2>
+    <p>Some tools (e.g. CV / contract builder) save drafts in your browser's localStorage. Clear your site data at any time to remove them.</p>
+    <h2>Advertising & affiliate links</h2>
+    <p>This site shows third-party ads and may contain affiliate links, labelled "Ad" or "Sponsored". We may earn a commission at no extra cost to you. Ad partners may use cookies under their own policies.</p>
+    <h2>Disclaimer</h2>
+    <p>Financial results are estimates; verify with current regulations. Numerology, tarot and lucky-day content is for entertainment and cultural interest.</p>
+    <h2>Contact</h2>
+    <p>Email: <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+  </article>
+</Layout>
+

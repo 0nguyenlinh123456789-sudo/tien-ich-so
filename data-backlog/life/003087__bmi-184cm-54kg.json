@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-184cm-54kg",
+  "title": "BMI for 184 cm and 54 kg",
+  "params": {
+    "h": 184,
+    "w": 54
+  }
+}

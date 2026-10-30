@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-300-trieu-ky-han-24-thang-lai-5-5-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 300 triệu kỳ hạn 24 tháng, lãi 5,5%/năm được bao nhiêu?",
+  "params": {
+    "p": 300000000,
+    "t": 24,
+    "r": 5.5
+  }
+}

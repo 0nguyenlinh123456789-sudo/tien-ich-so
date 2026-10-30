@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "27-f-to-c",
+  "title": "27°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 27
+  }
+}

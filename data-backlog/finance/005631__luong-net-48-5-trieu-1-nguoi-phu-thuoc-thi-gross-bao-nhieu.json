@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-48-5-trieu-1-nguoi-phu-thuoc-thi-gross-bao-nhieu",
+  "title": "Lương Net 48,5 triệu 1 người phụ thuộc thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 48500000,
+    "dependents": 1,
+    "region": "1"
+  }
+}

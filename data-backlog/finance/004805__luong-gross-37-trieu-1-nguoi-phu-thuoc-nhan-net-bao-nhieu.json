@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-37-trieu-1-nguoi-phu-thuoc-nhan-net-bao-nhieu",
+  "title": "Lương Gross 37 triệu 1 người phụ thuộc nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 37000000,
+    "dependents": 1,
+    "region": "1"
+  }
+}

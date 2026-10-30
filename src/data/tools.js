@@ -1,0 +1,337 @@
+// Central registry for sections & tools (drives routing, nav, sitemap).
+
+export const SECTIONS = {
+  life: {
+    id: 'life',
+    slug: { vi: 'doi-song', en: 'life' },
+    name: { vi: 'Đời sống', en: 'Everyday' },
+    desc: { vi: 'Lịch âm, tiền điện, địa chỉ mới.', en: 'Lunar calendar, BMI, percent, countdown.' },
+    icon: '🌿',
+    context: 'tools'
+  },
+  finance: {
+    id: 'finance',
+    slug: { vi: 'tai-chinh', en: 'finance' },
+    name: { vi: 'Tài chính & Tiền bạc', en: 'Finance & Money' },
+    desc: {
+      vi: 'Lương, vay, tiết kiệm, nghỉ hưu.',
+      en: 'Salary, loans, savings, retirement.'
+    },
+    icon: '💰',
+    context: 'finance'
+  },
+  destiny: {
+    id: 'destiny',
+    slug: { vi: 'van-menh', en: 'destiny' },
+    name: { vi: 'Thần số học, Tarot & Vận mệnh', en: 'Numerology, Tarot & Destiny' },
+    desc: {
+      vi: 'Thần số học, Tarot, ngày tốt.',
+      en: 'Numerology, tarot, lucky days.'
+    },
+    icon: '🔮',
+    context: 'destiny'
+  },
+  tools: {
+    id: 'tools',
+    slug: { vi: 'cong-cu', en: 'tools' },
+    name: { vi: 'Hồ sơ & Văn phòng', en: 'Career & Office' },
+    desc: {
+      vi: 'CV, portfolio, hợp đồng, nén ảnh.',
+      en: 'CV, portfolio, contracts, images.'
+    },
+    icon: '🧰',
+    context: 'tools'
+  }
+};
+
+export const TOOLS = [
+  {
+    id: 'lunar', section: 'life', icon: '🌙',
+    slug: { vi: 'lich-am-hom-nay', en: 'vietnamese-lunar-calendar' },
+    title: { vi: 'Lịch âm hôm nay', en: 'Lunar Calendar Today' },
+    seo: { vi: 'Lịch âm hôm nay – Lịch vạn niên, đổi ngày âm dương', en: 'Vietnamese Lunar Calendar Today – Solar/Lunar Converter' },
+    desc: { vi: 'Âm dương, can chi, giờ tốt.', en: 'Lunar date, Can Chi, lucky hours.' },
+    faq: [
+      { q: { vi: 'Lịch âm Việt Nam khác lịch Trung Quốc không?', en: 'Is the Vietnamese lunar calendar the same as the Chinese one?' }, a: { vi: 'Gần giống nhưng tính theo múi giờ GMT+7 (Trung Quốc dùng GMT+8), nên đôi khi ngày đầu tháng, thậm chí Tết, lệch nhau một ngày.', en: 'Almost, but Vietnam computes it for GMT+7 (China uses GMT+8), so a month start, even Tết, can differ by one day.' } },
+      { q: { vi: 'Năm nhuận âm lịch là gì?', en: 'What is a lunar leap year?' }, a: { vi: 'Năm có 13 tháng: thêm một tháng nhuận để lịch âm không lệch mùa. Khoảng 19 năm có 7 năm nhuận.', en: 'A 13-month year with an extra leap month to keep the calendar aligned with seasons, about 7 in every 19 years.' } },
+      { q: { vi: 'Giờ hoàng đạo là gì?', en: 'What are lucky hours?' }, a: { vi: 'Theo quan niệm dân gian, mỗi ngày có 6 trong 12 canh giờ được xem là tốt để bắt đầu việc quan trọng. Đây là tham khảo văn hóa, không phải căn cứ khoa học.', en: 'By folk tradition, 6 of the 12 two-hour periods each day are considered auspicious. Cultural reference only.' } }
+    ]
+  },
+  {
+    id: 'bmi', section: 'life', icon: '⚖️',
+    slug: { vi: 'tinh-bmi', en: 'bmi-tdee-calculator' },
+    title: { vi: 'BMI & calo mỗi ngày', en: 'BMI & Daily Calories' },
+    seo: { vi: 'Tính BMI chuẩn người châu Á & TDEE – cần ăn bao nhiêu calo', en: 'BMI & TDEE Calculator – How Many Calories Do I Need' },
+    desc: { vi: 'Cân nặng chuẩn, calo cần ăn.', en: 'Healthy weight, calorie needs.' },
+    faq: [
+      { q: { vi: 'Vì sao người châu Á dùng ngưỡng BMI khác?', en: 'Why do Asians use different BMI cut-offs?' }, a: { vi: 'Ở cùng chỉ số BMI, người châu Á thường có tỷ lệ mỡ cao hơn. Năm 2000, Văn phòng WHO khu vực Tây Thái Bình Dương (WPRO) đề xuất: thừa cân từ 23, béo phì từ 25 (thay vì 25 và 30).', en: 'At the same BMI, Asians tend to carry more body fat. In 2000 the WHO Western Pacific office proposed overweight from 23 and obesity from 25 (instead of 25 and 30).' } },
+      { q: { vi: 'TDEE là gì?', en: 'What is TDEE?' }, a: { vi: 'Tổng năng lượng cơ thể đốt mỗi ngày = BMR (năng lượng nghỉ, công thức Mifflin–St Jeor) × hệ số vận động. Ăn thấp hơn TDEE khoảng 500 kcal là mức giảm cân phổ biến.', en: 'Total daily energy expenditure = BMR (Mifflin–St Jeor) × activity factor. Eating about 500 kcal below TDEE is a common deficit.' } },
+      { q: { vi: 'BMI có chính xác cho người tập gym?', en: 'Is BMI accurate for athletes?' }, a: { vi: 'Không hoàn toàn. BMI không phân biệt cơ và mỡ, nên người nhiều cơ có thể bị xếp thừa cân. Hãy đo thêm vòng eo.', en: 'Not fully: BMI cannot tell muscle from fat. Measure your waist too.' } }
+    ]
+  },
+  {
+    id: 'percent', section: 'life', icon: '➗',
+    slug: { vi: 'tinh-phan-tram', en: 'percentage-calculator' },
+    title: { vi: 'Tính phần trăm', en: 'Percentage Calculator' },
+    seo: { vi: 'Tính phần trăm online – % của số, tăng giảm, giảm giá', en: 'Percentage Calculator – percent of, change, discount' },
+    desc: { vi: 'Tăng giảm, giảm giá, tỷ lệ.', en: 'Change, discount, ratio.' },
+    faq: [
+      { q: { vi: 'Cách tính phần trăm tăng giảm?', en: 'How to calculate percentage change?' }, a: { vi: '(Giá trị mới − giá trị cũ) ÷ giá trị cũ × 100. Ví dụ 80 lên 100 là tăng 25%.', en: '(new − old) ÷ old × 100. From 80 to 100 is +25%.' } },
+      { q: { vi: 'Giảm 20% rồi tăng 20% có về giá cũ không?', en: 'Does −20% then +20% return to the original?' }, a: { vi: 'Không. 100 giảm 20% còn 80, tăng 20% chỉ được 96.', en: 'No. 100 → 80 → 96.' } }
+    ]
+  },
+  {
+    id: 'countdown', section: 'life', icon: '⏳',
+    slug: { vi: 'dem-nguoc-tet', en: 'countdown' },
+    title: { vi: 'Đếm ngược Tết', en: 'Holiday Countdown' },
+    seo: { vi: 'Đếm ngược Tết – còn bao nhiêu ngày nữa đến Tết', en: 'How Many Days Until Christmas? Holiday Countdown' },
+    desc: { vi: 'Tết, lễ, ngày của bạn.', en: 'Tết, holidays, your date.' },
+    faq: [
+      { q: { vi: 'Tết Nguyên đán được tính thế nào?', en: 'How is Tết dated?' }, a: { vi: 'Là ngày mùng 1 tháng Giêng âm lịch, tính theo múi giờ Việt Nam. Trang này tự tính từ lịch âm, không nhập tay.', en: 'It is day 1 of the first lunar month for Vietnam time; computed here from the lunar calendar.' } },
+      { q: { vi: 'Có tạo đếm ngược riêng được không?', en: 'Can I make my own countdown?' }, a: { vi: 'Có. Nhập tên và ngày, rồi gửi link cho bạn bè, link giữ nguyên sự kiện.', en: 'Yes. Enter a name and date, then share the link.' } }
+    ]
+  },
+  {
+    id: 'electric', section: 'life', icon: '⚡',
+    slug: { vi: 'tinh-tien-dien', en: 'electricity-bill-calculator' },
+    title: { vi: 'Tính tiền điện', en: 'Electricity Bill' },
+    seo: { vi: 'Tính tiền điện online – giá điện sinh hoạt bậc thang mới nhất', en: 'Vietnam Electricity Bill Calculator – residential tiers' },
+    desc: { vi: '6 bậc giá EVN, tính ngược từ hóa đơn.', en: 'EVN 6 tiers, reverse from bill.' },
+    faq: [
+      { q: { vi: 'Giá điện sinh hoạt hiện nay bao nhiêu?', en: 'What is the current residential price?' }, a: { vi: 'Từ 10/5/2025 theo Quyết định 1279/QĐ-BCT: 1.984 đ/kWh (0–50 kWh) đến 3.460 đ/kWh (từ 401 kWh), chưa gồm thuế GTGT.', en: 'Since 10 May 2025 (Decision 1279/QĐ-BCT): 1,984 to 3,460 VND/kWh before VAT.' } },
+      { q: { vi: 'Đã áp dụng giá điện 5 bậc chưa?', en: 'Is the 5-tier tariff in effect?' }, a: { vi: 'Quyết định 14/2025/QĐ-TTg quy định cơ cấu 5 bậc nhưng chưa đưa vào hóa đơn; hiện vẫn tính 6 bậc. Trang sẽ cập nhật khi có quyết định giá mới.', en: 'Decision 14/2025/QĐ-TTg defines 5 tiers but bills still use 6 tiers for now.' } },
+      { q: { vi: 'Vì sao tiền điện mùa hè tăng vọt?', en: 'Why do summer bills jump?' }, a: { vi: 'Giá tăng theo bậc: mỗi kWh vượt 400 kWh đắt gần gấp 1,75 lần bậc 1. Dùng thêm 100 kWh ở bậc cao tốn hơn nhiều so với ở bậc thấp.', en: 'Higher tiers cost up to ~1.75× tier 1, so extra usage is expensive.' } }
+    ]
+  },
+  {
+    id: 'pregnancy', section: 'life', icon: '🤰',
+    slug: { vi: 'tinh-ngay-du-sinh', en: 'due-date-ovulation-calculator' },
+    title: { vi: 'Ngày dự sinh & rụng trứng', en: 'Due Date & Ovulation' },
+    seo: { vi: 'Tính ngày dự sinh, tuần thai & ngày rụng trứng online', en: 'Due Date, Pregnancy Week & Ovulation Calculator' },
+    desc: { vi: 'Tuần thai, ngày dễ thụ thai.', en: 'Pregnancy week, fertile days.' },
+    faq: [
+      { q: { vi: 'Tính ngày dự sinh thế nào?', en: 'How is the due date calculated?' }, a: { vi: 'Quy tắc Naegele: ngày đầu kỳ kinh cuối + 280 ngày (40 tuần), cộng/trừ phần chu kỳ dài/ngắn hơn 28 ngày.', en: 'Naegele’s rule: last period + 280 days, adjusted for cycles longer or shorter than 28 days.' } },
+      { q: { vi: 'Ngày dự sinh có chính xác không?', en: 'Is the due date exact?' }, a: { vi: 'Chỉ là ước tính; phần lớn em bé chào đời trong khoảng vài tuần quanh ngày này. Siêu âm 3 tháng đầu cho kết quả tin cậy hơn.', en: 'It is an estimate; first-trimester ultrasound is more reliable.' } },
+      { q: { vi: 'Ngày nào dễ thụ thai nhất?', en: 'Which days are most fertile?' }, a: { vi: 'Khoảng 5 ngày trước và ngày rụng trứng, vì tinh trùng sống được vài ngày còn trứng sống khoảng 1 ngày. Không dùng cách này để tránh thai.', en: 'About 5 days before and the day of ovulation. Not a contraception method.' } }
+    ]
+  },
+  {
+    id: 'address', section: 'life', icon: '🗺️',
+    slug: { vi: 'dia-chi-sau-sap-nhap', en: 'vietnam-province-merger-2025' },
+    title: { vi: 'Địa chỉ sau sáp nhập', en: 'Address After Merger' },
+    seo: { vi: 'Tra cứu địa chỉ sau sáp nhập tỉnh 2025 – 34 tỉnh thành mới', en: 'Vietnam 2025 Province Merger – old to new address' },
+    desc: { vi: 'Tỉnh cũ đổi thành tỉnh nào.', en: 'Old province to new.' },
+    faq: [
+      { q: { vi: 'Cả nước còn bao nhiêu tỉnh, thành?', en: 'How many provinces now?' }, a: { vi: '34 (28 tỉnh, 6 thành phố) theo Nghị quyết 202/2025/QH15; chính quyền mới hoạt động từ 1/7/2025.', en: '34 (28 provinces, 6 cities) under Resolution 202/2025/QH15, from 1 July 2025.' } },
+      { q: { vi: 'Địa chỉ mới viết thế nào?', en: 'How to write the new address?' }, a: { vi: 'Bỏ cấp huyện: Số nhà, đường, xã/phường, tỉnh/thành phố. Ví dụ: 12 Lê Lợi, phường X, TP. Hồ Chí Minh.', en: 'Drop the district: street, ward/commune, province.' } },
+      { q: { vi: 'Có phải đổi CCCD, giấy tờ không?', en: 'Must I update my ID?' }, a: { vi: 'Không bắt buộc. Giấy tờ đã cấp vẫn còn giá trị sử dụng; khi cấp đổi theo nhu cầu sẽ ghi địa chỉ mới.', en: 'No; existing documents remain valid.' } }
+    ]
+  },
+  {
+    id: 'age', section: 'life', icon: '🎂',
+    slug: { vi: 'tinh-tuoi', en: 'age-calculator' },
+    title: { vi: 'Tính tuổi', en: 'Age Calculator' },
+    seo: { vi: 'Tính tuổi theo ngày sinh – bao nhiêu tuổi, bao nhiêu ngày', en: 'Age Calculator by Date of Birth – years, months, days' },
+    desc: { vi: 'Tuổi chính xác, sinh nhật tới.', en: 'Exact age, next birthday.' },
+    faq: [
+      { q: { vi: 'Tính tuổi chính xác thế nào?', en: 'How is exact age calculated?' }, a: { vi: 'Lấy năm, tháng, ngày hiện tại trừ ngày sinh; nếu chưa tới ngày sinh trong tháng thì mượn số ngày của tháng trước.', en: 'Subtract the birth date from the target date, borrowing days from the previous month when needed.' } },
+      { q: { vi: 'Tuổi mụ khác tuổi thật thế nào?', en: 'What is East Asian age?' }, a: { vi: 'Tuổi mụ tính thêm 1 tuổi lúc sinh và cộng tuổi vào mỗi Tết âm lịch, nên thường hơn tuổi thật 1–2 tuổi.', en: 'Traditional age counts 1 at birth and adds a year at each Lunar New Year.' } }
+    ]
+  },
+  {
+    id: 'datediff', section: 'life', icon: '📆',
+    slug: { vi: 'tinh-khoang-cach-ngay', en: 'date-calculator' },
+    title: { vi: 'Tính số ngày', en: 'Date Calculator' },
+    seo: { vi: 'Tính số ngày giữa hai ngày, cộng trừ ngày, ngày làm việc', en: 'Date Calculator – days between dates, add days, business days' },
+    desc: { vi: 'Khoảng cách, cộng trừ ngày.', en: 'Days between, add days.' },
+    faq: [
+      { q: { vi: 'Có tính cả ngày cuối không?', en: 'Is the end date included?' }, a: { vi: 'Mặc định không. Chọn "Tính cả ngày cuối" khi cần đếm cả hai đầu, ví dụ số ngày nghỉ phép.', en: 'Not by default; tick "Include end date" to count both ends.' } },
+      { q: { vi: 'Ngày làm việc tính thế nào?', en: 'How are business days counted?' }, a: { vi: 'Từ thứ Hai đến thứ Sáu, chưa trừ ngày lễ.', en: 'Monday to Friday; public holidays are not excluded.' } }
+    ]
+  },
+  {
+    id: 'convert', section: 'life', icon: '📏',
+    slug: { vi: 'doi-don-vi', en: 'unit-converter' },
+    title: { vi: 'Đổi đơn vị', en: 'Unit Converter' },
+    seo: { vi: 'Đổi đơn vị online – cm sang inch, kg sang pound, độ F sang độ C', en: 'Unit Converter – cm to inches, kg to lbs, °F to °C' },
+    desc: { vi: 'Độ dài, cân nặng, nhiệt độ.', en: 'Length, weight, temperature.' },
+    faq: [
+      { q: { vi: '1 inch bằng bao nhiêu cm?', en: 'How many cm in an inch?' }, a: { vi: 'Đúng 2,54 cm (định nghĩa quốc tế từ 1959).', en: 'Exactly 2.54 cm (international definition since 1959).' } },
+      { q: { vi: '1 kg bằng bao nhiêu pound?', en: 'How many pounds in a kg?' }, a: { vi: 'Khoảng 2,2046 lb; 1 lb = 0,45359237 kg.', en: 'About 2.2046 lb; 1 lb = 0.45359237 kg exactly.' } },
+      { q: { vi: 'Đổi độ F sang độ C thế nào?', en: 'How to convert °F to °C?' }, a: { vi: '°C = (°F − 32) × 5/9. Ví dụ 100°F ≈ 37,8°C.', en: '°C = (°F − 32) × 5/9; 100°F ≈ 37.8°C.' } }
+    ]
+  },
+  {
+    id: 'tip', section: 'life', icon: '🧾',
+    slug: { vi: 'tinh-tien-tip', en: 'tip-calculator' },
+    title: { vi: 'Tính tiền tip', en: 'Tip Calculator' },
+    seo: { vi: 'Tính tiền tip & chia hóa đơn', en: 'Tip Calculator – tip and split the bill' },
+    desc: { vi: 'Tip, chia hóa đơn.', en: 'Tip and split the bill.' },
+    faq: [
+      { q: { vi: 'Ở Mỹ tip bao nhiêu là chuẩn?', en: 'How much should I tip in the US?' }, a: { vi: 'Nhà hàng thường 15–20%, dịch vụ tốt 20% trở lên. Đây là thông lệ, không phải quy định.', en: 'Restaurants commonly 15–20%, 20%+ for great service. A custom, not a rule.' } },
+      { q: { vi: 'Tip tính trên giá trước hay sau thuế?', en: 'Tip before or after tax?' }, a: { vi: 'Phổ biến là tính trên giá trước thuế; nhiều người tính trên tổng cho đơn giản.', en: 'Commonly on the pre-tax amount; many simply tip on the total.' } }
+    ]
+  },
+  {
+    id: 'salary', section: 'finance', icon: '💵',
+    slug: { vi: 'tinh-luong-gross-net', en: 'gross-net-salary-calculator' },
+    title: { vi: 'Lương Gross – Net 2026', en: 'Gross – Net Salary 2026' },
+    seo: { vi: 'Tính lương Gross sang Net 2026 – thuế TNCN, BHXH mới nhất', en: 'Vietnam Gross to Net Salary Calculator 2026' },
+    desc: { vi: 'Bảo hiểm, thuế TNCN, giảm trừ.', en: 'Insurance, income tax, deductions.' }
+  },
+  {
+    id: 'loan', section: 'finance', icon: '🏠',
+    slug: { vi: 'tinh-lai-vay', en: 'loan-calculator' },
+    title: { vi: 'Lãi vay & trả góp', en: 'Loan Calculator' },
+    seo: { vi: 'Tính lãi vay ngân hàng mua nhà, mua xe – lịch trả nợ hàng tháng', en: 'Loan & Mortgage Calculator – monthly schedule' },
+    desc: { vi: 'Lịch trả nợ từng tháng.', en: 'Monthly schedule.' }
+  },
+  {
+    id: 'savings', section: 'finance', icon: '🏦',
+    slug: { vi: 'tinh-lai-tiet-kiem', en: 'savings-interest-calculator' },
+    title: { vi: 'Lãi tiết kiệm', en: 'Savings Interest' },
+    seo: { vi: 'Tính lãi suất tiết kiệm ngân hàng – gửi bao nhiêu nhận bao nhiêu', en: 'Bank Savings Interest Calculator' },
+    desc: { vi: 'Gửi bao nhiêu, nhận bao nhiêu.', en: 'What your deposit earns.' },
+    faq: [
+      { q: { vi: 'Cách tính lãi tiết kiệm ngân hàng?', en: 'How is savings interest calculated?' }, a: { vi: 'Lãi = tiền gửi × lãi suất năm × số tháng kỳ hạn ÷ 12. Ví dụ 100 triệu, 5,5%/năm, kỳ hạn 12 tháng: lãi 5,5 triệu.', en: 'Interest = deposit × annual rate × months ÷ 12.' } },
+      { q: { vi: 'Tái tục gốc và lãi có lợi hơn không?', en: 'Does rolling over help?' }, a: { vi: 'Có: lãi kỳ trước được cộng vào gốc kỳ sau (lãi kép). Gửi càng lâu chênh lệch càng lớn.', en: 'Yes, interest compounds each term.' } },
+      { q: { vi: 'Rút trước hạn có mất lãi không?', en: 'Early withdrawal?' }, a: { vi: 'Thường chỉ được hưởng lãi không kỳ hạn rất thấp cho phần rút trước hạn, tùy quy định từng ngân hàng.', en: 'Usually only the low demand rate applies; depends on the bank.' } }
+    ]
+  },
+  {
+    id: 'maternity', section: 'finance', icon: '👶',
+    slug: { vi: 'tinh-tien-thai-san', en: 'maternity-benefit-calculator' },
+    title: { vi: 'Tiền thai sản', en: 'Maternity Pay' },
+    seo: { vi: 'Tính tiền thai sản 2026 online – mẹ sinh con, bố nghỉ chăm vợ', en: 'Vietnam Maternity Benefit Calculator 2026' },
+    desc: { vi: 'Mẹ 6 tháng, bố 5–10 ngày.', en: 'Mother 6 months, father 5–10 days.' },
+    faq: [
+      { q: { vi: 'Sinh con được nhận bao nhiêu tiền?', en: 'How much is maternity pay?' }, a: { vi: 'Mẹ nghỉ 6 tháng, mỗi tháng nhận 100% lương đóng BHXH bình quân 6 tháng trước khi nghỉ, cộng trợ cấp một lần 2 lần mức tham chiếu cho mỗi con (5.060.000 đ từ 1/7/2026).', en: '6 months at 100% of the 6-month insured average, plus 2× the reference level per child.' } },
+      { q: { vi: 'Bố được nghỉ mấy ngày khi vợ sinh?', en: 'How many days for fathers?' }, a: { vi: '5 ngày làm việc nếu sinh thường; 7 ngày nếu sinh mổ hoặc dưới 32 tuần; 10 ngày nếu sinh đôi, từ sinh ba thêm 3 ngày mỗi con. Nghỉ trong 60 ngày kể từ ngày vợ sinh.', en: '5 working days; 7 for C-section or <32 weeks; 10 for twins; within 60 days of birth.' } },
+      { q: { vi: 'Điều kiện hưởng thai sản là gì?', en: 'Eligibility?' }, a: { vi: 'Đóng BHXH bắt buộc từ đủ 6 tháng trở lên trong 12 tháng trước khi sinh con.', en: 'At least 6 months of contributions in the 12 months before birth.' } }
+    ]
+  },
+  {
+    id: 'lumpsum', section: 'finance', icon: '💼',
+    slug: { vi: 'tinh-bhxh-1-lan', en: 'social-insurance-lump-sum' },
+    title: { vi: 'BHXH một lần', en: 'Social Insurance Lump Sum' },
+    seo: { vi: 'Tính tiền BHXH 1 lần online theo Luật BHXH 2024', en: 'Vietnam Social Insurance Lump-Sum Calculator' },
+    desc: { vi: 'Rút một lần được bao nhiêu.', en: 'What a lump-sum withdrawal pays.' },
+    faq: [
+      { q: { vi: 'Cách tính BHXH một lần?', en: 'How is it calculated?' }, a: { vi: 'Mỗi năm đóng trước 2014 được 1,5 tháng, từ 2014 được 2 tháng lương đóng BHXH bình quân (khoản 3 Điều 70 Luật BHXH 2024).', en: '1.5 months of average salary per year before 2014, 2 months per year from 2014.' } },
+      { q: { vi: 'Khi nào được rút BHXH một lần?', en: 'When can I withdraw?' }, a: { vi: 'Ví dụ: đủ tuổi nghỉ hưu mà chưa đủ 15 năm đóng; ra nước ngoài định cư; bệnh hiểm nghèo; hoặc đã đóng trước 1/7/2025, nghỉ 12 tháng không đóng và chưa đủ 20 năm.', en: 'E.g. retirement age with under 15 years, emigration, serious illness, or contributions before 1/7/2025 with a 12-month gap and under 20 years.' } },
+      { q: { vi: 'Có nên rút BHXH một lần?', en: 'Should I withdraw?' }, a: { vi: 'Cân nhắc kỹ: rút rồi sẽ mất toàn bộ thời gian đóng để tính lương hưu và thẻ BHYT do quỹ cấp khi về hưu.', en: 'Think twice: you lose those years toward a pension.' } }
+    ]
+  },
+  {
+    id: 'pension', section: 'finance', icon: '👴',
+    slug: { vi: 'tinh-luong-huu', en: 'pension-calculator' },
+    title: { vi: 'Lương hưu', en: 'Pension' },
+    seo: { vi: 'Tính lương hưu online theo Luật BHXH 2024 – nam, nữ', en: 'Vietnam Pension Calculator (Social Insurance Law 2024)' },
+    desc: { vi: 'Tỷ lệ hưởng, tiền mỗi tháng.', en: 'Rate and monthly amount.' },
+    faq: [
+      { q: { vi: 'Đóng bao nhiêu năm được lương hưu?', en: 'How many years for a pension?' }, a: { vi: 'Tối thiểu 15 năm (Luật BHXH 2024, hiệu lực 1/7/2025), thay cho 20 năm trước đây.', en: 'At least 15 years since 1 July 2025.' } },
+      { q: { vi: 'Tỷ lệ lương hưu tính thế nào?', en: 'How is the rate set?' }, a: { vi: 'Nữ: 45% khi đủ 15 năm, thêm 2%/năm. Nam: 40% khi đủ 15 năm, thêm 1%/năm đến 45% ở 20 năm, sau đó thêm 2%/năm. Tối đa 75%.', en: 'Women 45% at 15 years +2%/year; men 40% at 15, 45% at 20, then +2%/year; max 75%.' } },
+      { q: { vi: 'Đóng bao lâu thì đạt 75%?', en: 'When do I reach 75%?' }, a: { vi: 'Nữ 30 năm, nam 35 năm. Mỗi năm đóng vượt được trợ cấp 1 lần bằng 0,5 tháng lương bình quân khi nghỉ hưu.', en: 'Women 30 years, men 35. Each extra year adds a lump sum of 0.5 month.' } }
+    ]
+  },
+  {
+    id: 'mortgage', section: 'finance', icon: '🏡',
+    slug: { vi: 'tinh-tra-gop-mua-nha-my', en: 'mortgage-calculator' },
+    title: { vi: 'Trả góp mua nhà (USD)', en: 'Mortgage Calculator' },
+    seo: { vi: 'Tính trả góp mua nhà ở Mỹ – thuế, bảo hiểm, PMI', en: 'Mortgage Calculator with Taxes, Insurance, PMI & Extra Payments' },
+    desc: { vi: 'Gồm thuế, bảo hiểm, trả thêm gốc.', en: 'Taxes, insurance, extra payments.' },
+    faq: [
+      { q: { vi: 'PITI là gì?', en: 'What is PITI?' }, a: { vi: 'Principal, Interest, Taxes, Insurance: gốc, lãi, thuế nhà đất và bảo hiểm nhà – tổng chi phí hằng tháng thực tế.', en: 'Principal, interest, taxes and insurance: your true monthly housing cost.' } },
+      { q: { vi: 'Trả thêm gốc tiết kiệm bao nhiêu?', en: 'How much do extra payments save?' }, a: { vi: 'Mỗi đồng trả thêm giảm dư nợ, nên giảm lãi các tháng sau; công cụ cho thấy số lãi tiết kiệm và thời gian trả xong.', en: 'Each extra dollar cuts the balance and future interest; the tool shows the savings and payoff date.' } },
+      { q: { vi: 'Khi nào phải đóng PMI?', en: 'When is PMI required?' }, a: { vi: 'Thường khi khoản vay thông thường có trả trước dưới 20% giá nhà; mức phí thực tế tùy người cho vay.', en: 'Usually on conventional loans with under 20% down; actual rates vary by lender.' } }
+    ]
+  },
+  {
+    id: 'fire', section: 'finance', icon: '🔥',
+    slug: { vi: 'tinh-lai-kep-nghi-huu-som', en: 'compound-interest-fire-calculator' },
+    title: { vi: 'Lãi kép & nghỉ hưu sớm', en: 'Compound & FIRE' },
+    seo: { vi: 'Tính lãi kép & kế hoạch nghỉ hưu sớm FIRE', en: 'Compound Interest & FIRE Retirement Calculator' },
+    desc: { vi: 'Khi nào tự do tài chính?', en: 'When can you retire?' }
+  },
+  {
+    id: 'numerology', section: 'destiny', icon: '🔢',
+    slug: { vi: 'than-so-hoc', en: 'numerology-calculator' },
+    title: { vi: 'Thần số học', en: 'Numerology' },
+    seo: { vi: 'Thần số học Pitago – tra con số chủ đạo theo ngày sinh', en: 'Pythagorean Numerology Calculator' },
+    desc: { vi: 'Số chủ đạo, năm cá nhân.', en: 'Life path, personal year.' }
+  },
+  {
+    id: 'tarot', section: 'destiny', icon: '🃏',
+    slug: { vi: 'boc-bai-tarot', en: 'tarot-reading' },
+    title: { vi: 'Bốc bài Tarot', en: 'Tarot Reading' },
+    seo: { vi: 'Bốc bài Tarot online miễn phí – tình yêu, sự nghiệp', en: 'Free Online Tarot Reading' },
+    desc: { vi: 'Tình yêu, sự nghiệp.', en: 'Love, career.' }
+  },
+  {
+    id: 'goodday', section: 'destiny', icon: '📅',
+    slug: { vi: 'xem-ngay-tot-xau', en: 'auspicious-day-finder' },
+    title: { vi: 'Xem ngày tốt', en: 'Lucky Days' },
+    seo: { vi: 'Xem ngày tốt xấu, giờ hoàng đạo – cưới hỏi, khai trương', en: 'Auspicious Day & Lucky Hour Finder' },
+    desc: { vi: 'Cưới hỏi, khai trương.', en: 'Weddings, openings.' }
+  },
+  {
+    id: 'compress', section: 'tools', icon: '🗜️',
+    slug: { vi: 'nen-anh-hang-loat', en: 'bulk-image-compressor' },
+    title: { vi: 'Nén ảnh', en: 'Compress Images' },
+    seo: { vi: 'Nén ảnh online hàng loạt – giảm dung lượng JPG, PNG', en: 'Bulk Image Compressor online' },
+    desc: { vi: 'Nhẹ để nộp hồ sơ.', en: 'Small enough to upload.' }
+  },
+  {
+    id: 'moneywords', section: 'tools', icon: '🔤',
+    slug: { vi: 'doc-so-tien-thanh-chu', en: 'amount-in-words' },
+    title: { vi: 'Số tiền bằng chữ', en: 'Amount in Words' },
+    seo: { vi: 'Đọc số tiền thành chữ chuẩn hóa đơn (VNĐ, USD)', en: 'Amount in Words (VND, USD)' },
+    desc: { vi: 'Cho hóa đơn, chứng từ.', en: 'For invoices.' }
+  },
+  {
+    id: 'documents', section: 'tools', icon: '📄',
+    slug: { vi: 'tao-cv-hop-dong-mau', en: 'cv-contract-templates' },
+    title: { vi: 'CV & Hợp đồng', en: 'CV & Contracts' },
+    seo: { vi: 'Tạo CV xin việc online & hợp đồng mẫu miễn phí – xuất PDF, Word', en: 'Free CV Builder & Contract Templates' },
+    desc: { vi: 'Xuất PDF, Word.', en: 'PDF, Word export.' }
+  },
+  {
+    id: 'forms', section: 'tools', icon: '📝',
+    slug: { vi: 'mau-don', en: 'letter-templates' },
+    title: { vi: 'Mẫu đơn', en: 'Letter Templates' },
+    seo: { vi: 'Mẫu đơn xin nghỉ việc, xin việc, nghỉ phép, nghỉ học – điền online, in ngay', en: 'Vietnamese Letter Templates – resignation, leave, job application' },
+    desc: { vi: 'Nghỉ việc, xin việc, nghỉ phép.', en: 'Resignation, leave, application.' },
+    faq: [
+      { q: { vi: 'Xin nghỉ việc phải báo trước bao lâu?', en: 'Notice period?' }, a: { vi: 'Theo Điều 35 Bộ luật Lao động 2019: 45 ngày với HĐ không xác định thời hạn, 30 ngày với HĐ 12–36 tháng, 3 ngày làm việc với HĐ dưới 12 tháng.', en: 'Labour Code 2019 Art. 35: 45 days, 30 days, or 3 working days depending on contract.' } },
+      { q: { vi: 'Có mẫu đơn xin nghỉ việc bắt buộc không?', en: 'Is there a mandatory form?' }, a: { vi: 'Không. Pháp luật không quy định mẫu; chỉ cần thông báo bằng văn bản, rõ ngày nghỉ. Nhiều công ty có mẫu riêng.', en: 'No mandatory form; a written notice with the date is enough.' } },
+      { q: { vi: 'Mẫu đơn ly hôn lấy ở đâu?', en: 'Divorce forms?' }, a: { vi: 'Đơn ly hôn là mẫu của Tòa án (đơn khởi kiện ly hôn đơn phương, đơn yêu cầu công nhận thuận tình ly hôn). Hãy lấy mẫu đang áp dụng tại Tòa án nơi nộp hồ sơ để tránh bị trả đơn.', en: 'Divorce petitions use court forms; get the current one from the court.' } }
+    ]
+  },
+  {
+    id: 'portfolio', section: 'tools', icon: '🎨',
+    slug: { vi: 'tao-portfolio-online', en: 'portfolio-website-builder' },
+    title: { vi: 'Portfolio', en: 'Portfolio' },
+    seo: { vi: 'Tạo portfolio online miễn phí – 20 mẫu, tải sản phẩm & chỉnh ảnh', en: 'Free Portfolio Website Builder' },
+    desc: { vi: 'Tải sản phẩm, chỉnh ảnh.', en: 'Upload and edit your work.' }
+  }
+];
+
+export const getTool = (id) => TOOLS.find((t) => t.id === id);
+export const toolsIn = (section) => TOOLS.filter((t) => t.section === section);
+
+export function sectionUrl(sectionId, lang = 'vi') {
+  const s = SECTIONS[sectionId];
+  return (lang === 'en' ? '/en/' : '/') + s.slug[lang];
+}
+
+export function toolUrl(toolOrId, lang = 'vi') {
+  const t = typeof toolOrId === 'string' ? getTool(toolOrId) : toolOrId;
+  return sectionUrl(t.section, lang) + '/' + t.slug[lang];
+}
+
+export function recordUrl(record) {
+  return sectionUrl(record.section, record.lang) + '/' + record.slug;
+}
+
+export const homeUrl = (lang) => (lang === 'en' ? '/en' : '/');
+

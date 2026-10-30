@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-68-trieu-2-nguoi-phu-thuoc-thi-gross-bao-nhieu",
+  "title": "Lương Net 68 triệu 2 người phụ thuộc thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 68000000,
+    "dependents": 2,
+    "region": "1"
+  }
+}

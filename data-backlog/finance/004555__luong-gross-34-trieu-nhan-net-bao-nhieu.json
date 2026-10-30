@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-34-trieu-nhan-net-bao-nhieu",
+  "title": "Lương Gross 34 triệu nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 34000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

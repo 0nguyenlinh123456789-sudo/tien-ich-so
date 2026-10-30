@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-180cm-100kg",
+  "title": "BMI for 180 cm and 100 kg",
+  "params": {
+    "h": 180,
+    "w": 100
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-42-5-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 42,5 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 42500000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

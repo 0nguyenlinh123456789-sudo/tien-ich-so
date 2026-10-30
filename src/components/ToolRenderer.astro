@@ -1,0 +1,57 @@
+---
+import LunarTool from './tools/LunarTool.astro';
+import BmiTool from './tools/BmiTool.astro';
+import PercentTool from './tools/PercentTool.astro';
+import CountdownTool from './tools/CountdownTool.astro';
+import ElectricTool from './tools/ElectricTool.astro';
+import PregnancyTool from './tools/PregnancyTool.astro';
+import SavingsTool from './tools/SavingsTool.astro';
+import BhxhTool from './tools/BhxhTool.astro';
+import AddressTool from './tools/AddressTool.astro';
+import FormsTool from './tools/FormsTool.astro';
+import DateTool from './tools/DateTool.astro';
+import ConvertTool from './tools/ConvertTool.astro';
+import MortgageTool from './tools/MortgageTool.astro';
+import TipTool from './tools/TipTool.astro';
+import SalaryTool from './tools/SalaryTool.astro';
+import LoanTool from './tools/LoanTool.astro';
+import FireTool from './tools/FireTool.astro';
+import NumerologyTool from './tools/NumerologyTool.astro';
+import TarotTool from './tools/TarotTool.astro';
+import GoodDayTool from './tools/GoodDayTool.astro';
+import CompressTool from './tools/CompressTool.astro';
+import MoneyWordsTool from './tools/MoneyWordsTool.astro';
+import DocumentsTool from './tools/DocumentsTool.astro';
+import PortfolioTool from './tools/PortfolioTool.astro';
+
+interface Props { toolId: string; lang: 'vi' | 'en'; preset?: Record<string, any>; autorun?: boolean; }
+const { toolId, lang, preset = {}, autorun = false } = Astro.props;
+---
+{toolId === 'salary' && <SalaryTool lang={lang} preset={preset} autorun={autorun} />}
+{toolId === 'loan' && <LoanTool lang={lang} preset={preset} autorun={autorun} />}
+{toolId === 'fire' && <FireTool lang={lang} preset={preset} autorun={autorun} />}
+{toolId === 'numerology' && <NumerologyTool lang={lang} preset={preset} autorun={autorun} />}
+{toolId === 'tarot' && <TarotTool lang={lang} />}
+{toolId === 'goodday' && <GoodDayTool lang={lang} preset={preset} autorun={autorun} />}
+{toolId === 'compress' && <CompressTool lang={lang} />}
+{toolId === 'moneywords' && <MoneyWordsTool lang={lang} preset={preset} autorun={autorun} />}
+{toolId === 'documents' && <DocumentsTool lang={lang} />}
+{toolId === 'portfolio' && <PortfolioTool lang={lang} />}
+
+{toolId === 'lunar' && <LunarTool lang={lang} />}
+{toolId === 'bmi' && <BmiTool lang={lang} />}
+{toolId === 'percent' && <PercentTool lang={lang} />}
+{toolId === 'countdown' && <CountdownTool lang={lang} />}
+{toolId === 'electric' && <ElectricTool lang={lang} />}
+{toolId === 'pregnancy' && <PregnancyTool lang={lang} />}
+{toolId === 'savings' && <SavingsTool lang={lang} />}
+{toolId === 'maternity' && <BhxhTool lang={lang} mode="maternity" />}
+{toolId === 'lumpsum' && <BhxhTool lang={lang} mode="lumpsum" />}
+{toolId === 'pension' && <BhxhTool lang={lang} mode="pension" />}
+{toolId === 'address' && <AddressTool lang={lang} />}
+{toolId === 'forms' && <FormsTool lang={lang} />}
+{toolId === 'age' && <DateTool lang={lang} mode="age" />}
+{toolId === 'datediff' && <DateTool lang={lang} mode="diff" />}
+{toolId === 'convert' && <ConvertTool lang={lang} />}
+{toolId === 'mortgage' && <MortgageTool lang={lang} />}
+{toolId === 'tip' && <TipTool lang={lang} />}

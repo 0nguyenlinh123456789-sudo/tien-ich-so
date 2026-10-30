@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-164cm-44kg",
+  "title": "BMI for 164 cm and 44 kg",
+  "params": {
+    "h": 164,
+    "w": 44
+  }
+}

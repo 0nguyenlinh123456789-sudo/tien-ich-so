@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "13-f-to-c",
+  "title": "13°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 13
+  }
+}

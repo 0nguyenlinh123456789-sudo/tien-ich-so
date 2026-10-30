@@ -1,0 +1,27 @@
+---
+// Contextual affiliate offers – rendered at build time from src/config/monetization.json
+import { offersFor } from '../lib/monetize.js';
+import { t } from '../i18n/ui.js';
+
+interface Props { context: string; lang?: 'vi' | 'en'; limit?: number; tool?: string; }
+const { context, lang = 'vi', limit = 2, tool } = Astro.props;
+const offers = offersFor(context, lang, limit, tool);
+const L = t(lang);
+---
+{offers.length > 0 && (
+  <aside class="my-6 grid gap-3 sm:grid-cols-2" aria-label={L.sponsored}>
+    {offers.map((o) => (
+      <a href={o.href} target="_blank" rel="sponsored noopener nofollow"
+        class="group flex items-start gap-3 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-4 transition hover:shadow-md">
+        <span class="text-3xl">{o.icon}</span>
+        <span class="flex-1">
+          <span class="mb-1 inline-block rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-amber-700 uppercase">{L.sponsored}</span>
+          <span class="block font-semibold text-slate-900 group-hover:text-brand-700">{o.title}</span>
+          <span class="mt-1 block text-sm text-slate-600">{o.description}</span>
+          <span class="mt-2 inline-block text-sm font-semibold text-brand-600">{o.cta} →</span>
+        </span>
+      </a>
+    ))}
+  </aside>
+)}
+

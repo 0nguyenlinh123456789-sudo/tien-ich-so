@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-8-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 8 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 8000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

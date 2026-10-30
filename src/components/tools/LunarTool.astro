@@ -1,0 +1,107 @@
+---
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+---
+<div data-tool="lunar" data-lang={lang} class="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+  <div class="grid gap-4">
+    <div class="card text-center" data-today></div>
+    <form class="card grid gap-3" data-conv>
+      <div class="flex gap-2 text-sm font-semibold">
+        <label class="flex items-center gap-1"><input type="radio" name="dir" value="s2l" checked /> {vi ? 'Dương → Âm' : 'Solar → Lunar'}</label>
+        <label class="ml-4 flex items-center gap-1"><input type="radio" name="dir" value="l2s" /> {vi ? 'Âm → Dương' : 'Lunar → Solar'}</label>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <input class="input" name="d" type="number" min="1" max="31" placeholder={vi ? 'Ngày' : 'Day'} />
+        <input class="input" name="m" type="number" min="1" max="12" placeholder={vi ? 'Tháng' : 'Month'} />
+        <input class="input" name="y" type="number" min="1900" max="2199" placeholder={vi ? 'Năm' : 'Year'} />
+      </div>
+      <label class="flex items-center gap-2 text-sm text-slate-600" data-leapwrap hidden><input type="checkbox" name="leap" /> {vi ? 'Tháng nhuận' : 'Leap month'}</label>
+      <button class="btn-primary" type="submit">{vi ? 'Đổi ngày' : 'Convert'}</button>
+      <div data-convout class="text-lg font-semibold text-brand-700"></div>
+    </form>
+  </div>
+  <div class="card">
+    <div class="mb-3 flex items-center justify-between">
+      <button type="button" class="btn-ghost px-3 py-1.5" data-nav="-1" aria-label="prev">‹</button>
+      <div class="font-bold" data-mtitle></div>
+      <button type="button" class="btn-ghost px-3 py-1.5" data-nav="1" aria-label="next">›</button>
+    </div>
+    <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500" data-wd></div>
+    <div class="mt-1 grid grid-cols-7 gap-1" data-grid></div>
+    <p class="mt-3 text-xs text-slate-500">{vi ? 'Số nhỏ: ngày âm. Chấm xanh: ngày hoàng đạo.' : 'Small number: lunar day. Green dot: auspicious day.'}</p>
+  </div>
+</div>
+
+<script>
+  import { solarToLunar, evaluateDay } from '../../lib/lunar.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="lunar"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const WD = vi ? ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    const WDL = vi ? ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'] : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const $ = (s: string) => root.querySelector<HTMLElement>(s)!;
+    const now = new Date();
+    let cy = now.getFullYear(), cm = now.getMonth() + 1;
+
+    const t = evaluateDay(now.getDate(), cm, cy);
+    const lm = (l: any) => `${l.month}${l.leap ? (vi ? ' nhuận' : ' leap') : ''}`;
+    $('[data-today]').innerHTML = `
+      <div class="text-sm text-slate-500">${WDL[t.weekday]}, ${now.getDate()}/${cm}/${cy}</div>
+      <div class="my-2 text-6xl font-extrabold text-brand-700">${t.lunar.day}</div>
+      <div class="font-semibold">${vi ? 'Tháng' : 'Month'} ${lm(t.lunar)} · ${vi ? 'Năm' : 'Year'} ${t.canChi.year}</div>
+      <div class="mt-1 text-sm text-slate-600">${vi ? 'Ngày' : 'Day'} ${t.canChi.day} · ${vi ? 'Tháng' : 'Month'} ${t.canChi.month}</div>
+      <div class="mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold ${t.star.good ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${t.star.good ? (vi ? 'Hoàng đạo' : 'Auspicious') : (vi ? 'Hắc đạo' : 'Inauspicious')}</div>
+      <div class="mt-3 text-sm text-slate-600"><b>${vi ? 'Giờ tốt' : 'Lucky hours'}:</b> ${t.hours.map((h: any) => `${vi ? h.name : h.nameEn} (${h.range})`).join(', ')}</div>`;
+
+    $('[data-wd]').innerHTML = WD.map((w) => `<div>${w}</div>`).join('');
+    const draw = () => {
+      $('[data-mtitle]').textContent = `${vi ? 'Tháng' : 'Month'} ${cm}/${cy}`;
+      const first = new Date(cy, cm - 1, 1).getDay();
+      const days = new Date(cy, cm, 0).getDate();
+      let h = '<div></div>'.repeat(first);
+      for (let d = 1; d <= days; d++) {
+        const e = evaluateDay(d, cm, cy);
+        const today = d === now.getDate() && cm === now.getMonth() + 1 && cy === now.getFullYear();
+        const ld = e.lunar.day === 1 ? `${e.lunar.day}/${e.lunar.month}` : e.lunar.day;
+        h += `<div class="relative rounded-lg border p-1 text-center ${today ? 'border-brand-500 bg-brand-50' : 'border-slate-100'}">
+          <div class="font-semibold">${d}</div><div class="text-[11px] ${e.lunar.day === 1 || e.lunar.day === 15 ? 'font-bold text-rose-600' : 'text-slate-400'}">${ld}</div>
+          ${e.star.good ? '<span class="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-emerald-500"></span>' : ''}</div>`;
+      }
+      $('[data-grid]').innerHTML = h;
+    };
+    draw();
+    root.querySelectorAll<HTMLElement>('[data-nav]').forEach((b) => b.addEventListener('click', () => {
+      cm += Number(b.dataset.nav);
+      if (cm < 1) { cm = 12; cy--; } else if (cm > 12) { cm = 1; cy++; }
+      draw();
+    }));
+
+    const form = root.querySelector<HTMLFormElement>('[data-conv]')!;
+    const leapWrap = $('[data-leapwrap]');
+    form.addEventListener('change', () => { leapWrap.hidden = (form.elements.namedItem('dir') as RadioNodeList).value !== 'l2s'; });
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const f = new FormData(form);
+      const d = Number(f.get('d')), m = Number(f.get('m')), y = Number(f.get('y'));
+      const out = $('[data-convout]');
+      if (!d || !m || !y) { out.textContent = vi ? 'Nhập đủ ngày, tháng, năm.' : 'Enter day, month and year.'; return; }
+      if (f.get('dir') === 's2l') {
+        const l = solarToLunar(d, m, y);
+        out.textContent = `${vi ? 'Âm lịch' : 'Lunar'}: ${l.day}/${lm(l)}/${l.year} (${evaluateDay(d, m, y).canChi.year})`;
+        return;
+      }
+      // Lunar → solar: scan the window where that lunar date can fall.
+      const leap = f.get('leap') ? 1 : 0;
+      for (let k = 0; k < 420; k++) {
+        const dt = new Date(y, 0, 1 + k);
+        const l = solarToLunar(dt.getDate(), dt.getMonth() + 1, dt.getFullYear());
+        if (l.day === d && l.month === m && l.year === y && l.leap === leap) {
+          out.textContent = `${vi ? 'Dương lịch' : 'Solar'}: ${WDL[dt.getDay()]}, ${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`;
+          return;
+        }
+      }
+      out.textContent = vi ? 'Ngày âm này không tồn tại.' : 'That lunar date does not exist.';
+    });
+  });
+</script>

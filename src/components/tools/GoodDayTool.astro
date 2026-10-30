@@ -1,0 +1,107 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+
+interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; autorun?: boolean; }
+const { lang = 'vi', preset = {}, autorun = false } = Astro.props;
+const now = new Date();
+const p = { month: now.getMonth() + 1, year: now.getFullYear(), birthYear: '', purpose: 'general', ...preset };
+const vi = lang === 'vi';
+const purposes = vi
+  ? [['general', 'Việc chung'], ['wedding', 'Cưới hỏi'], ['move', 'Nhập trạch, chuyển nhà'], ['business', 'Khai trương, ký hợp đồng'], ['travel', 'Xuất hành, đi xa'], ['build', 'Động thổ, sửa nhà']]
+  : [['general', 'General'], ['wedding', 'Wedding'], ['move', 'Moving house'], ['business', 'Opening a business / signing'], ['travel', 'Travel'], ['build', 'Construction / renovation']];
+---
+<div data-tool="goodday" data-lang={lang}>
+  <form class="card grid gap-4 md:grid-cols-4" data-tool-form data-autorun={String(autorun)}>
+    <div>
+      <label class="label" for="gd-m">{vi ? 'Tháng (dương lịch)' : 'Month'}</label>
+      <select id="gd-m" name="month" class="input">
+        {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => <option value={String(m)} selected={Number(p.month) === m}>{vi ? `Tháng ${m}` : `Month ${m}`}</option>)}
+      </select>
+    </div>
+    <div>
+      <label class="label" for="gd-y">{vi ? 'Năm' : 'Year'}</label>
+      <input id="gd-y" name="year" type="number" min="1900" max="2199" class="input" value={p.year} />
+    </div>
+    <div>
+      <label class="label" for="gd-b">{vi ? 'Năm sinh của bạn (xem hợp/xung)' : 'Your birth year (optional)'}</label>
+      <input id="gd-b" name="birthYear" type="number" min="1900" max="2199" class="input" value={p.birthYear} />
+    </div>
+    <div>
+      <label class="label" for="gd-p">{vi ? 'Mục đích' : 'Purpose'}</label>
+      <select id="gd-p" name="purpose" class="input">
+        {purposes.map(([v, l]) => <option value={v} selected={p.purpose === v}>{l}</option>)}
+      </select>
+    </div>
+    <div class="md:col-span-4"><button class="btn-primary" type="submit">{vi ? 'Xem lịch ngày tốt' : 'Show good days'}</button></div>
+  </form>
+
+  <MonetizedResult context="destiny" lang={lang}>
+    <div data-out="best"></div>
+    <div data-out="calendar" class="mt-6"></div>
+    <div slot="bottom"><div data-out="detail" class="mt-6"></div></div>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { monthDays, yearCanChi } from '../../lib/lunar.js';
+  import { bindToolForm, showResult } from '../../scripts/form-state.js';
+
+  const WD = { vi: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'], en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] };
+  const NOTE = {
+    vi: { hoangDao: 'Ngày Hoàng đạo', hacDao: 'Ngày Hắc đạo', tamNuong: 'Ngày Tam Nương (kỵ khởi sự)', nguyetKy: 'Ngày Nguyệt Kỵ', mung1: 'Mùng 1 âm lịch', ram: 'Ngày Rằm',
+      xungTuoi: 'Xung tuổi bạn (lục xung)', lucHop: 'Lục hợp với tuổi bạn', tamHop: 'Tam hợp với tuổi bạn' },
+    en: { hoangDao: 'Auspicious (Hoàng Đạo) day', hacDao: 'Inauspicious (Hắc Đạo) day', tamNuong: 'Tam Nương day (avoid starting things)', nguyetKy: 'Nguyệt Kỵ day', mung1: '1st lunar day', ram: 'Full-moon day',
+      xungTuoi: 'Clashes with your zodiac', lucHop: 'Harmonious with your zodiac', tamHop: 'Trine with your zodiac' }
+  };
+  const T = {
+    vi: { best: 'Ngày đẹp nhất trong tháng', good: 'Tốt', normal: 'Bình thường', bad: 'Xấu', lunar: 'Âm lịch', hours: 'Giờ hoàng đạo', dayCC: 'Ngày', monthCC: 'Tháng', yearCC: 'Năm', star: 'Sao trực nhật', detail: 'Chi tiết từng ngày', date: 'Ngày', rating: 'Đánh giá', notes: 'Ghi chú', none: 'Không có ngày đạt chuẩn tốt – chọn ngày Bình thường có giờ hoàng đạo.', yourAge: 'Tuổi của bạn',
+      purpose: { general: '', wedding: 'Cưới hỏi nên ưu tiên ngày Hoàng đạo, tránh Tam Nương, Nguyệt Kỵ và ngày xung tuổi cô dâu chú rể.', move: 'Nhập trạch nên chọn giờ hoàng đạo buổi sáng, mang theo bếp, gạo, nước vào nhà trước.', business: 'Khai trương nên chọn ngày Hoàng đạo hợp tuổi chủ, tiến hành trong giờ hoàng đạo đầu ngày.', travel: 'Xuất hành nên khởi hành trong giờ hoàng đạo, tránh ngày Nguyệt Kỵ.', build: 'Động thổ cần tránh ngày xung tuổi gia chủ, ưu tiên ngày có sao Thanh Long, Kim Quỹ.' } },
+    en: { best: 'Best days this month', good: 'Good', normal: 'Neutral', bad: 'Bad', lunar: 'Lunar', hours: 'Lucky hours', dayCC: 'Day', monthCC: 'Month', yearCC: 'Year', star: 'Day star', detail: 'Day-by-day detail', date: 'Date', rating: 'Rating', notes: 'Notes', none: 'No highly auspicious day – choose a neutral day and act during lucky hours.', yourAge: 'Your zodiac',
+      purpose: { general: '', wedding: 'For weddings prefer Hoàng Đạo days, avoid Tam Nương, Nguyệt Kỵ and days clashing with the couple.', move: 'Move in during a morning lucky hour.', business: 'Open on a Hoàng Đạo day that suits the owner, in the first lucky hour.', travel: 'Depart during a lucky hour, avoid Nguyệt Kỵ days.', build: 'Avoid days clashing with the owner; prefer Azure Dragon and Golden Coffer days.' } }
+  };
+  const color = { good: 'bg-emerald-100 text-emerald-800 border-emerald-300', normal: 'bg-white text-slate-700 border-slate-200', bad: 'bg-rose-50 text-rose-700 border-rose-200' };
+
+  document.querySelectorAll<HTMLElement>('[data-tool="goodday"]').forEach((root) => {
+    const lang = (root.dataset.lang === 'en' ? 'en' : 'vi') as 'vi' | 'en';
+    const L = T[lang];
+    const N = NOTE[lang];
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+
+    bindToolForm(root.querySelector<HTMLFormElement>('[data-tool-form]')!, (d: any) => {
+      const month = Number(d.month), year = Number(d.year);
+      const birthYear = Number(d.birthYear) || undefined;
+      const days = monthDays(month, year, birthYear);
+      const best = days.filter((x: any) => x.rating === 'good').sort((a: any, b: any) => b.score - a.score).slice(0, 6);
+      const purposeNote = (L.purpose as any)[d.purpose] || '';
+
+      out('best').innerHTML = `<h3 class="mb-2 text-lg font-semibold">⭐ ${L.best} ${month}/${year}${birthYear ? ` · ${L.yourAge}: ${yearCanChi(birthYear).text}` : ''}</h3>
+        ${purposeNote ? `<p class="mb-3 text-sm text-slate-600">${purposeNote}</p>` : ''}
+        ${best.length ? `<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">${best.map((x: any) => `
+          <div class="rounded-2xl border border-emerald-300 bg-emerald-50 p-4">
+            <div class="text-lg font-bold text-emerald-800">${WD[lang][x.weekday]}, ${x.solar.day}/${x.solar.month}/${x.solar.year}</div>
+            <div class="text-sm">${L.lunar}: ${x.lunar.day}/${x.lunar.month}${x.lunar.leap ? ' (nhuận)' : ''} · ${x.canChi.day}</div>
+            <div class="mt-1 text-sm">${L.star}: <b>${x.star[lang]}</b></div>
+            <div class="mt-1 text-xs text-slate-600">${L.hours}: ${x.hours.map((h: any) => `${lang === 'vi' ? h.name : h.nameEn} (${h.range})`).join(', ')}</div>
+          </div>`).join('')}</div>` : `<p>${L.none}</p>`}`;
+
+      const firstWd = days[0].weekday;
+      const cells = Array(firstWd).fill('<div></div>').concat(days.map((x: any) => `
+        <div class="rounded-xl border p-1.5 text-center ${(color as any)[x.rating]}" title="${x.canChi.day}">
+          <div class="text-base font-bold">${x.solar.day}</div>
+          <div class="text-[10px] opacity-75">${x.lunar.day === 1 ? `${x.lunar.day}/${x.lunar.month}` : x.lunar.day}</div>
+          <div class="text-[10px] font-semibold">${(L as any)[x.rating]}</div>
+        </div>`));
+      out('calendar').innerHTML = `<div class="grid grid-cols-7 gap-1 text-sm">${WD[lang].map((w) => `<div class="py-1 text-center text-xs font-semibold text-slate-500">${w}</div>`).join('')}${cells.join('')}</div>`;
+
+      out('detail').innerHTML = `<h3 class="mb-2 text-lg font-semibold">${L.detail}</h3>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>${L.date}</th><th>${L.lunar}</th><th>${L.dayCC}</th><th>${L.rating}</th><th>${L.hours}</th><th>${L.notes}</th></tr></thead><tbody>
+        ${days.map((x: any) => `<tr><td>${WD[lang][x.weekday]} ${x.solar.day}/${x.solar.month}</td><td>${x.lunar.day}/${x.lunar.month}</td><td>${x.canChi.day}</td>
+          <td><span class="rounded-full border px-2 py-0.5 text-xs ${(color as any)[x.rating]}">${(L as any)[x.rating]}</span></td>
+          <td class="whitespace-normal text-xs">${x.hours.map((h: any) => (lang === 'vi' ? h.name : h.nameEn)).join(', ')}</td>
+          <td class="whitespace-normal text-xs">${x.notes.map((n: any) => `${(N as any)[n.key]}${n.star ? ` (${n.star[lang]})` : ''}`).join('; ')}</td></tr>`).join('')}
+        </tbody></table></div>`;
+      showResult(root);
+    });
+  });
+</script>
+

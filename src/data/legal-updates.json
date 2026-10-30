@@ -1,0 +1,53 @@
+{
+  "source": "Cổng Thông tin điện tử Chính phủ – vanban.chinhphu.vn",
+  "updatedAt": "2026-10-30T08:27:34.866Z",
+  "topics": [
+    {
+      "id": "luong",
+      "label": "Tiền lương"
+    },
+    {
+      "id": "thue",
+      "label": "Thuế TNCN"
+    },
+    {
+      "id": "baohiem",
+      "label": "Bảo hiểm"
+    },
+    {
+      "id": "laodong",
+      "label": "Lao động – Việc làm"
+    },
+    {
+      "id": "dansu",
+      "label": "Dân sự – Hợp đồng"
+    },
+    {
+      "id": "nhadat",
+      "label": "Nhà ở – Đất đai"
+    },
+    {
+      "id": "thuongmai",
+      "label": "Thương mại – Doanh nghiệp"
+    },
+    {
+      "id": "bieumau",
+      "label": "Biểu mẫu – Thủ tục"
+    }
+  ],
+  "items": [
+    {
+      "code": "28/2026/TT-BNV",
+      "type": "Thông tư",
+      "date": "23/10/2026",
+      "title": "Hướng dẫn xác định, lập danh sách đối tượng tham gia bảo hiểm y tế thuộc phạm vi quản lý nhà nước của Bộ Nội vụ",
+      "url": "https://vanban.chinhphu.vn/?pageid=27160&docid=220091",
+      "file": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/10/28-bnv.signed.pdf",
+      "topics": [
+        "baohiem"
+      ],
+      "impact": true,
+      "checkedAt": "2026-10-30"
+    }
+  ]
+}

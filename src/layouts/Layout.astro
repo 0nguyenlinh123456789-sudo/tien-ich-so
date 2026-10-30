@@ -1,0 +1,133 @@
+---
+import '../styles/global.css';
+import site from '../config/site.json';
+import { MONETIZATION } from '../lib/monetize.js';
+import { t } from '../i18n/ui.js';
+import { SECTIONS, sectionUrl, homeUrl } from '../data/tools.js';
+
+interface Props {
+  title: string;
+  description: string;
+  lang?: 'vi' | 'en';
+  alternate?: string | null;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[] | null;
+  noindex?: boolean;
+}
+
+const { title, description, lang = 'vi', alternate = null, jsonLd = null, noindex = false } = Astro.props;
+const L = t(lang);
+const siteName = lang === 'en' ? site.siteNameEn : site.siteName;
+const canonical = new URL(Astro.url.pathname, site.siteUrl).href;
+const altLang = lang === 'en' ? 'vi' : 'en';
+const altHref = alternate ? new URL(alternate, site.siteUrl).href : null;
+// Skip the brand suffix when it would push the title past ~60 chars (Google truncates).
+const fullTitle = title.includes(siteName) || title.length + siteName.length + 3 > 62 ? title : `${title} | ${siteName}`;
+const dlAd = (MONETIZATION.downloadAdHtml || '').trim();
+const stickyAd = (MONETIZATION.stickyAdHtml || '').trim();
+const bannerAttrs = MONETIZATION.bannerScriptAttributes || {};
+const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    {altHref && <link rel="alternate" hreflang={altLang} href={altHref} />}
+    <link rel="alternate" hreflang="x-default" href={lang === 'vi' ? canonical : (altHref || canonical)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content={lang === 'vi' ? 'vi_VN' : 'en_US'} />
+    <meta property="og:image" content={new URL('/og.png', site.siteUrl).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#1f55e6" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+    {MONETIZATION.bannerScriptUrl && (
+      <script is:inline async data-cfasync="false" src={MONETIZATION.bannerScriptUrl} {...bannerAttrs}></script>
+    )}
+  </head>
+  <body class="min-h-screen">
+    <header class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-lg">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
+        <a href={homeUrl(lang)} class="flex items-center gap-2 text-lg font-extrabold text-brand-700">
+          <span class="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white">⚡</span>
+          <span>{siteName}</span>
+        </a>
+        <nav class="ml-auto hidden gap-1 md:flex">
+          {Object.values(SECTIONS).map((s) => (
+            <a href={sectionUrl(s.id, lang)} class="rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">
+              {s.icon} {s.name[lang]}
+            </a>
+          ))}
+        </nav>
+        {altHref ? (
+          <a href={alternate} hreflang={altLang} class="ml-auto rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium md:ml-2">{L.langName}</a>
+        ) : (
+          <a href={homeUrl(altLang)} hreflang={altLang} class="ml-auto rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium md:ml-2">{L.langName}</a>
+        )}
+      </div>
+      <nav class="flex gap-1 overflow-x-auto border-t border-slate-100 px-2 py-1 md:hidden">
+        {Object.values(SECTIONS).map((s) => (
+          <a href={sectionUrl(s.id, lang)} class="rounded-lg px-3 py-1.5 text-sm whitespace-nowrap text-slate-600">{s.icon} {s.name[lang]}</a>
+        ))}
+      </nav>
+    </header>
+
+    {dlAd && (
+      <div id="dl-gate" hidden data-seconds={MONETIZATION.downloadAdSeconds || 5} class="fixed inset-0 z-[60] grid place-items-center bg-slate-900/60 p-4">
+        <div class="card relative w-full max-w-md text-center">
+          <button type="button" data-dl-close class="absolute top-2 right-3 text-xl text-slate-400" aria-label="close">×</button>
+          <div class="text-sm font-semibold">{lang === 'vi' ? 'File của bạn đang được chuẩn bị…' : 'Preparing your file…'}</div>
+          <div class="mt-1 text-[10px] tracking-widest text-slate-400 uppercase">{L.ad}</div>
+          <div class="mt-1 flex min-h-[250px] items-center justify-center overflow-hidden rounded-xl bg-slate-100" set:html={dlAd} />
+          <button type="button" data-dl-go data-label={lang === 'vi' ? '⬇ Tải ngay' : '⬇ Download'} class="btn-primary mt-4 w-full" disabled></button>
+        </div>
+      </div>
+    )}
+    {stickyAd && (
+      <div id="sticky-ad" class="fixed inset-x-0 bottom-0 z-50 flex justify-center border-t border-slate-200 bg-white/95 md:hidden">
+        <button type="button" class="absolute -top-6 right-2 rounded-t bg-white px-2 text-sm text-slate-500" onclick="this.parentElement.remove()" aria-label="close">×</button>
+        <div class="max-h-[60px] overflow-hidden" set:html={stickyAd} />
+      </div>
+    )}
+    <main class="mx-auto max-w-6xl px-4 py-6 md:py-10">
+      <slot />
+    </main>
+
+    <footer class="mt-12 border-t border-slate-200 bg-white">
+      <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm text-slate-600 md:grid-cols-5">
+        <div class="md:col-span-1">
+          <div class="font-bold text-slate-900">{siteName}</div>
+          <p class="mt-2">{L.disclaimer}</p>
+        </div>
+        {Object.values(SECTIONS).map((s) => (
+          <div>
+            <a href={sectionUrl(s.id, lang)} class="font-semibold text-slate-900">{s.icon} {s.name[lang]}</a>
+            <p class="mt-2">{s.desc[lang]}</p>
+          </div>
+        ))}
+      </div>
+      <div class="border-t border-slate-100 py-4 text-center text-xs text-slate-500">
+        © {new Date().getFullYear()} {siteName} ·
+        <a class="underline" href={lang === 'en' ? '/en/privacy' : '/chinh-sach-bao-mat'}>{L.privacy}</a> ·
+        {lang === 'vi' && <><a class="underline" href="/van-ban-moi">Văn bản pháp luật mới</a> · <a class="underline" href="/bieu-mau-nha-nuoc">Biểu mẫu nhà nước</a> ·</>}
+        <a class="underline" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+      </div>
+    </footer>
+  </body>
+</html>
+

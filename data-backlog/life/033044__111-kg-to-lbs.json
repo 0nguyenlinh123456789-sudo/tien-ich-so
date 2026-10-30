@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "111-kg-to-lbs",
+  "title": "111 kg to lbs",
+  "params": {
+    "kind": "kg",
+    "v": 111
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "bmi",
+  "slug": "bmi-148cm-52kg",
+  "title": "BMI for 148 cm and 52 kg",
+  "params": {
+    "h": 148,
+    "w": 52
+  }
+}

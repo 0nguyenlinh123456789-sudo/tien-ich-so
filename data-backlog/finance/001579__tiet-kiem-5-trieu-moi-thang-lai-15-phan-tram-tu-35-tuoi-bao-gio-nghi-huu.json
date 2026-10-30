@@ -1,0 +1,18 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "fire",
+  "slug": "tiet-kiem-5-trieu-moi-thang-lai-15-phan-tram-tu-35-tuoi-bao-gio-nghi-huu",
+  "title": "Tiết kiệm 5 triệu/tháng, lãi 15%/năm từ 35 tuổi: bao giờ nghỉ hưu?",
+  "params": {
+    "currentAge": 35,
+    "initial": 0,
+    "monthly": 5000000,
+    "annualReturn": 15,
+    "contributionGrowth": 5,
+    "annualExpenses": 90000000,
+    "inflation": 4,
+    "withdrawalRate": 4,
+    "years": 30
+  }
+}

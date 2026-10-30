@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-100-trieu-ky-han-6-thang-lai-4-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 100 triệu kỳ hạn 6 tháng, lãi 4%/năm được bao nhiêu?",
+  "params": {
+    "p": 100000000,
+    "t": 6,
+    "r": 4
+  }
+}

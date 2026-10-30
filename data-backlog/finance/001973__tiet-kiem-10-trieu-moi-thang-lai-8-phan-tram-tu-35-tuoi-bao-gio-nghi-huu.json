@@ -1,0 +1,18 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "fire",
+  "slug": "tiet-kiem-10-trieu-moi-thang-lai-8-phan-tram-tu-35-tuoi-bao-gio-nghi-huu",
+  "title": "Tiết kiệm 10 triệu/tháng, lãi 8%/năm từ 35 tuổi: bao giờ nghỉ hưu?",
+  "params": {
+    "currentAge": 35,
+    "initial": 0,
+    "monthly": 10000000,
+    "annualReturn": 8,
+    "contributionGrowth": 5,
+    "annualExpenses": 180000000,
+    "inflation": 4,
+    "withdrawalRate": 4,
+    "years": 30
+  }
+}

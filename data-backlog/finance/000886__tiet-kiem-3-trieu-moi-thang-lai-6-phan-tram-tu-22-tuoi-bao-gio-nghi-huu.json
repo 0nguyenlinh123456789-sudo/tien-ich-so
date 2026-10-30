@@ -1,0 +1,18 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "fire",
+  "slug": "tiet-kiem-3-trieu-moi-thang-lai-6-phan-tram-tu-22-tuoi-bao-gio-nghi-huu",
+  "title": "Tiết kiệm 3 triệu/tháng, lãi 6%/năm từ 22 tuổi: bao giờ nghỉ hưu?",
+  "params": {
+    "currentAge": 22,
+    "initial": 0,
+    "monthly": 3000000,
+    "annualReturn": 6,
+    "contributionGrowth": 5,
+    "annualExpenses": 60000000,
+    "inflation": 4,
+    "withdrawalRate": 4,
+    "years": 30
+  }
+}

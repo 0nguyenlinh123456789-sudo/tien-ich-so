@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "94-f-to-c",
+  "title": "94°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 94
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "96-f-to-c",
+  "title": "96°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 96
+  }
+}

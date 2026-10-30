@@ -1,0 +1,18 @@
+{
+  "section": "finance",
+  "lang": "en",
+  "tool": "fire",
+  "slug": "invest-5-million-vnd-per-month-6-percent-fire-retirement-age",
+  "title": "Invest 5 million VND/month at 6%: when can you retire?",
+  "params": {
+    "currentAge": 30,
+    "initial": 0,
+    "monthly": 5000000,
+    "annualReturn": 6,
+    "contributionGrowth": 5,
+    "annualExpenses": 90000000,
+    "inflation": 4,
+    "withdrawalRate": 4,
+    "years": 30
+  }
+}

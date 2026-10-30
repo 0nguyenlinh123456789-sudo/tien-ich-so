@@ -1,0 +1,165 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+import { TAX_CONFIG } from '../../lib/salary.js';
+import { fmtNum } from '../../lib/format.js';
+import legal from '../../data/legal-updates.json';
+
+interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; autorun?: boolean; }
+const { lang = 'vi', preset = {}, autorun = false } = Astro.props;
+const p = { mode: 'gross', amount: 20000000, dependents: 0, region: '1', insuranceSalary: '', nonTaxable: '', ...preset };
+const vi = lang === 'vi';
+const money = (v: any) => (v ? fmtNum(Number(v), 'vi') : '');
+// Documents found by scripts/legal-watch.mjs after the tax figures were last verified (tax-vn.json -> verifiedAt).
+const isoDate = (d: string) => d.split('/').reverse().join('-');
+const pending = (legal.items || []).filter((i: any) => i.impact && isoDate(i.date) > ((TAX_CONFIG as any).verifiedAt || ''));
+---
+<div data-tool="salary" data-lang={lang}>
+  <form class="card grid gap-4 md:grid-cols-2" data-tool-form data-autorun={String(autorun)}>
+    <div class="md:col-span-2 flex gap-2">
+      <label class="flex-1 cursor-pointer rounded-xl border border-slate-300 p-3 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+        <input type="radio" name="mode" value="gross" class="mr-2" checked={p.mode !== 'net'} />{vi ? 'Gross → Net' : 'Gross → Net'}
+      </label>
+      <label class="flex-1 cursor-pointer rounded-xl border border-slate-300 p-3 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
+        <input type="radio" name="mode" value="net" class="mr-2" checked={p.mode === 'net'} />{vi ? 'Net → Gross' : 'Net → Gross'}
+      </label>
+    </div>
+    <div>
+      <label class="label" for="sal-amount">{vi ? 'Mức lương (VNĐ/tháng)' : 'Salary (VND/month)'}</label>
+      <input id="sal-amount" name="amount" class="input" inputmode="numeric" data-money required value={money(p.amount)} />
+    </div>
+    <div>
+      <label class="label" for="sal-dep">{vi ? 'Số người phụ thuộc' : 'Dependents'}</label>
+      <input id="sal-dep" name="dependents" type="number" min="0" max="20" class="input" value={p.dependents} />
+    </div>
+    <div>
+      <label class="label" for="sal-region">{vi ? 'Vùng lương tối thiểu' : 'Minimum-wage region'}</label>
+      <select id="sal-region" name="region" class="input">
+        {[1, 2, 3, 4].map((r) => (
+          <option value={String(r)} selected={String(p.region) === String(r)}>
+            {vi ? `Vùng ${r}` : `Region ${r}`} – {fmtNum((TAX_CONFIG.regionalMinWage as any)[String(r)], 'vi')} ₫
+          </option>
+        ))}
+      </select>
+    </div>
+    <div>
+      <label class="label" for="sal-ins">{vi ? 'Lương đóng bảo hiểm (để trống = lương chính thức)' : 'Insurance salary (blank = full salary)'}</label>
+      <input id="sal-ins" name="insuranceSalary" class="input" inputmode="numeric" data-money value={money(p.insuranceSalary)} />
+    </div>
+    <div class="md:col-span-2">
+      <label class="label" for="sal-nt">{vi ? 'Phụ cấp không chịu thuế đã gồm trong lương (ăn trưa, điện thoại…)' : 'Tax-exempt allowances included (meal, phone…)'}</label>
+      <input id="sal-nt" name="nonTaxable" class="input" inputmode="numeric" data-money value={money(p.nonTaxable)} />
+    </div>
+    {vi && pending.length > 0 && (
+      <div class="md:col-span-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
+        ⚠️ Có văn bản mới có thể liên quan đến cách tính ({pending.map((p: any) => p.code).join(', ')}); số liệu đang được rà soát. <a href="/van-ban-moi" class="font-semibold underline">Xem văn bản</a>
+      </div>
+    )}
+    <div class="md:col-span-2 flex flex-wrap items-center gap-3">
+      <button class="btn-primary" type="submit">{vi ? 'Xem kết quả chi tiết' : 'View detailed result'}</button>
+      <span class="text-xs text-slate-500">
+        {vi
+          ? `Áp dụng từ ${TAX_CONFIG.effectiveFrom}: giảm trừ bản thân ${fmtNum(TAX_CONFIG.personalDeduction)} ₫, người phụ thuộc ${fmtNum(TAX_CONFIG.dependentDeduction)} ₫, biểu thuế 5 bậc. Trần đóng BHXH, BHYT ${fmtNum(TAX_CONFIG.baseSalary * TAX_CONFIG.insuranceCapMultiplier)} ₫ (20 × lương cơ sở ${fmtNum(TAX_CONFIG.baseSalary)} ₫, từ ${TAX_CONFIG.baseSalaryEffectiveFrom}); trần BHTN 20 × lương tối thiểu vùng.`
+          : `From ${TAX_CONFIG.effectiveFrom}: personal deduction ${fmtNum(TAX_CONFIG.personalDeduction, 'en')} VND, dependent ${fmtNum(TAX_CONFIG.dependentDeduction, 'en')} VND, 5 tax brackets. Social/health insurance cap ${fmtNum(TAX_CONFIG.baseSalary * TAX_CONFIG.insuranceCapMultiplier, 'en')} VND (20 × base salary, from ${TAX_CONFIG.baseSalaryEffectiveFrom}); unemployment insurance cap 20 × regional minimum wage.`}
+      </span>
+    </div>
+  </form>
+
+  <MonetizedResult context="finance" lang={lang}>
+    <div data-out="summary"></div>
+    <div data-out="breakdown" class="mt-6"></div>
+    <div slot="bottom">
+      <div data-out="brackets" class="mt-6"></div>
+      <div data-out="employer" class="mt-6"></div>
+    </div>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { calcSalary } from '../../lib/salary.js';
+  import { fmtMoney, fmtPct } from '../../lib/format.js';
+  import { bindToolForm, showResult } from '../../scripts/form-state.js';
+
+  const T = {
+    vi: {
+      gross: 'Lương Gross', net: 'Lương Net (thực nhận)', tax: 'Thuế TNCN', ins: 'Bảo hiểm NLĐ đóng',
+      item: 'Khoản mục', amount: 'Số tiền', bhxh: 'BHXH (8%)', bhyt: 'BHYT (1,5%)', bhtn: 'BHTN (1%)',
+      taxable: 'Thu nhập chịu thuế', personal: 'Giảm trừ bản thân', dependent: 'Giảm trừ người phụ thuộc',
+      assessable: 'Thu nhập tính thuế', bracketTitle: 'Chi tiết thuế TNCN theo biểu lũy tiến', bracket: 'Bậc',
+      range: 'Phần thu nhập tính thuế', rate: 'Thuế suất', taxAmt: 'Tiền thuế', employerTitle: 'Chi phí doanh nghiệp phải trả',
+      erBhxh: 'BHXH (17%)', erTnld: 'Quỹ TNLĐ-BNN (0,5%)', erBhyt: 'BHYT (3%)', erBhtn: 'BHTN (1%)', erTotal: 'Tổng chi phí NSDLĐ',
+      breakdown: 'Diễn giải chi tiết', effective: 'Thuế suất thực tế', takeHome: 'Tỷ lệ thực nhận', over: 'Trên', upTo: 'Đến',
+      insBase: 'Lương đóng bảo hiểm', yearly: 'Thu nhập Net cả năm (12 tháng)'
+    },
+    en: {
+      gross: 'Gross salary', net: 'Net salary (take-home)', tax: 'Personal income tax', ins: 'Employee insurance',
+      item: 'Item', amount: 'Amount', bhxh: 'Social insurance (8%)', bhyt: 'Health insurance (1.5%)', bhtn: 'Unemployment insurance (1%)',
+      taxable: 'Taxable income', personal: 'Personal deduction', dependent: 'Dependent deduction',
+      assessable: 'Assessable income', bracketTitle: 'Progressive PIT breakdown', bracket: 'Bracket',
+      range: 'Assessable income band', rate: 'Rate', taxAmt: 'Tax', employerTitle: 'Total employer cost',
+      erBhxh: 'Social insurance (17%)', erTnld: 'Occupational accident fund (0.5%)', erBhyt: 'Health insurance (3%)', erBhtn: 'Unemployment insurance (1%)', erTotal: 'Total employer cost',
+      breakdown: 'Detailed breakdown', effective: 'Effective tax rate', takeHome: 'Take-home ratio', over: 'Over', upTo: 'Up to',
+      insBase: 'Insurance salary', yearly: 'Annual net income (12 months)'
+    }
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-tool="salary"]').forEach((root) => {
+    const lang = (root.dataset.lang === 'en' ? 'en' : 'vi') as 'vi' | 'en';
+    const L = T[lang];
+    const m = (v: number) => fmtMoney(v, lang);
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    const form = root.querySelector<HTMLFormElement>('[data-tool-form]')!;
+
+    bindToolForm(form, (d: any) => {
+      const r = calcSalary(d);
+      out('summary').innerHTML = `
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="stat"><div class="stat-label">${L.gross}</div><div class="stat-value">${m(r.gross)}</div></div>
+          <div class="stat bg-emerald-50"><div class="stat-label">${L.net}</div><div class="stat-value text-emerald-700">${m(r.net)}</div></div>
+          <div class="stat"><div class="stat-label">${L.ins}</div><div class="stat-value">${m(r.insurance)}</div></div>
+          <div class="stat"><div class="stat-label">${L.tax}</div><div class="stat-value">${m(r.pit)}</div></div>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-4 text-sm text-slate-600">
+          <span>${L.effective}: <b>${fmtPct(r.effectiveTaxRate, lang, 2)}</b></span>
+          <span>${L.takeHome}: <b>${fmtPct(r.takeHomeRate, lang, 1)}</b></span>
+          <span>${L.yearly}: <b>${m(r.net * 12)}</b></span>
+        </div>`;
+
+      const rows: [string, number, string?][] = [
+        [L.gross, r.gross, 'font-semibold'],
+        [L.insBase, r.insBase],
+        ['– ' + L.bhxh, -r.bhxh],
+        ['– ' + L.bhyt, -r.bhyt],
+        ['– ' + L.bhtn, -r.bhtn],
+        [L.taxable, r.taxableIncome],
+        ['– ' + L.personal, -r.personalDeduction],
+        ['– ' + L.dependent + ` (${r.dependents})`, -r.dependentDeduction],
+        [L.assessable, r.assessable, 'font-semibold'],
+        ['– ' + L.tax, -r.pit],
+        [L.net, r.net, 'font-bold text-emerald-700']
+      ];
+      out('breakdown').innerHTML = `<h3 class="mb-2 font-semibold">${L.breakdown}</h3>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>${L.item}</th><th class="num">${L.amount}</th></tr></thead><tbody>
+        ${rows.map(([k, v, c]) => `<tr class="${c || ''}"><td>${k}</td><td class="num">${m(v)}</td></tr>`).join('')}
+        </tbody></table></div>`;
+
+      out('brackets').innerHTML = `<h3 class="mb-2 font-semibold">${L.bracketTitle}</h3>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>${L.bracket}</th><th>${L.range}</th><th class="num">${L.rate}</th><th class="num">${L.taxAmt}</th></tr></thead><tbody>
+        ${r.brackets.map((b: any, i: number) => `<tr class="${b.taxable > 0 ? '' : 'text-slate-400'}"><td>${i + 1}</td>
+          <td>${b.to == null ? `${L.over} ${m(b.from)}` : `${m(b.from)} – ${m(b.to)}`}</td>
+          <td class="num">${fmtPct(b.rate, lang, 0)}</td><td class="num">${m(b.tax)}</td></tr>`).join('')}
+        </tbody></table></div>`;
+
+      out('employer').innerHTML = `<h3 class="mb-2 font-semibold">${L.employerTitle}</h3>
+        <div class="table-wrap"><table class="data-table"><tbody>
+          <tr><td>${L.gross}</td><td class="num">${m(r.gross)}</td></tr>
+          <tr><td>+ ${L.erBhxh}</td><td class="num">${m(r.employer.bhxh)}</td></tr>
+          <tr><td>+ ${L.erTnld}</td><td class="num">${m(r.employer.tnld)}</td></tr>
+          <tr><td>+ ${L.erBhyt}</td><td class="num">${m(r.employer.bhyt)}</td></tr>
+          <tr><td>+ ${L.erBhtn}</td><td class="num">${m(r.employer.bhtn)}</td></tr>
+          <tr class="font-bold"><td>${L.erTotal}</td><td class="num">${m(r.employerCost)}</td></tr>
+        </tbody></table></div>`;
+      showResult(root);
+    });
+  });
+</script>
+

@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-130-trieu-nhan-net-bao-nhieu",
+  "title": "Lương Gross 130 triệu nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 130000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

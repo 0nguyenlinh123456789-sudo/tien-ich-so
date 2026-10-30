@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-300-trieu-ky-han-6-thang-lai-6-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 300 triệu kỳ hạn 6 tháng, lãi 6%/năm được bao nhiêu?",
+  "params": {
+    "p": 300000000,
+    "t": 6,
+    "r": 6
+  }
+}

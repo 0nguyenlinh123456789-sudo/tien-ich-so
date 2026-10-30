@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-7-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 7 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 7000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "loan",
+  "slug": "vay-1-ty-5-nam-lai-suat-8-phan-tram-tra-bao-nhieu-moi-thang",
+  "title": "Vay 1 tỷ trong 5 năm, lãi 8%/năm trả bao nhiêu mỗi tháng?",
+  "params": {
+    "principal": 1000000000,
+    "months": 60,
+    "rate": 8,
+    "method": "reducing",
+    "promoMonths": 0,
+    "promoRate": 0
+  }
+}

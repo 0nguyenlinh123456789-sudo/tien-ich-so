@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "en",
+  "tool": "salary",
+  "slug": "gross-salary-36-million-vnd-net-take-home-vietnam",
+  "title": "Gross salary 36 million VND: take-home pay in Vietnam",
+  "params": {
+    "mode": "gross",
+    "amount": 36000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

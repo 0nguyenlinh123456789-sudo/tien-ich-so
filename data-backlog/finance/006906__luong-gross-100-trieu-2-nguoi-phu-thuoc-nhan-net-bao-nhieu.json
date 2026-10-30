@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-100-trieu-2-nguoi-phu-thuoc-nhan-net-bao-nhieu",
+  "title": "Lương Gross 100 triệu 2 người phụ thuộc nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 100000000,
+    "dependents": 2,
+    "region": "1"
+  }
+}

@@ -1,0 +1,96 @@
+---
+// One component, three modes: maternity | lumpsum | pension.
+interface Props { lang?: 'vi' | 'en'; mode: 'maternity' | 'lumpsum' | 'pension'; }
+const { lang = 'vi', mode } = Astro.props;
+const vi = lang === 'vi';
+const avgLabel = mode === 'maternity'
+  ? (vi ? 'Lương đóng BHXH bình quân 6 tháng trước khi nghỉ (đồng)' : 'Average insured salary, last 6 months (VND)')
+  : (vi ? 'Lương đóng BHXH bình quân (đồng)' : 'Average insured salary (VND)');
+---
+<div data-tool="bhxh" data-mode={mode} data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid gap-3 sm:grid-cols-2" data-f>
+    <div class="sm:col-span-2"><label class="label">{avgLabel}</label><input class="input text-lg" name="avg" data-money inputmode="numeric" value="10.000.000" /></div>
+    {mode === 'maternity' && (
+      <>
+        <div><label class="label">{vi ? 'Người nghỉ' : 'Who'}</label><select class="input" name="who"><option value="mom">{vi ? 'Mẹ sinh con' : 'Mother'}</option><option value="dad">{vi ? 'Bố (vợ sinh)' : 'Father'}</option></select></div>
+        <div><label class="label">{vi ? 'Số con sinh lần này' : 'Babies'}</label><input class="input" name="children" type="number" min="1" max="5" value="1" /></div>
+        <div class="sm:col-span-2" data-dadonly hidden><label class="label">{vi ? 'Cách sinh' : 'Birth'}</label><select class="input" name="kind"><option value="normal">{vi ? 'Sinh thường' : 'Normal'}</option><option value="c">{vi ? 'Sinh mổ hoặc dưới 32 tuần' : 'C-section or <32 weeks'}</option></select></div>
+      </>
+    )}
+    {mode === 'lumpsum' && (
+      <>
+        <div><label class="label">{vi ? 'Số năm đóng trước 2014' : 'Years before 2014'}</label><input class="input" name="yb" type="number" min="0" value="0" /></div>
+        <div><label class="label">{vi ? '+ tháng lẻ' : '+ months'}</label><input class="input" name="mb" type="number" min="0" max="11" value="0" /></div>
+        <div><label class="label">{vi ? 'Số năm đóng từ 2014' : 'Years from 2014'}</label><input class="input" name="ya" type="number" min="0" value="5" /></div>
+        <div><label class="label">{vi ? '+ tháng lẻ' : '+ months'}</label><input class="input" name="ma" type="number" min="0" max="11" value="0" /></div>
+      </>
+    )}
+    {mode === 'pension' && (
+      <>
+        <div><label class="label">{vi ? 'Giới tính' : 'Sex'}</label><select class="input" name="sex"><option value="m">{vi ? 'Nam' : 'Male'}</option><option value="f">{vi ? 'Nữ' : 'Female'}</option></select></div>
+        <div class="grid grid-cols-2 gap-2"><div><label class="label">{vi ? 'Năm đóng' : 'Years'}</label><input class="input" name="y" type="number" min="0" value="25" /></div><div><label class="label">{vi ? 'Tháng lẻ' : 'Months'}</label><input class="input" name="m" type="number" min="0" max="11" value="0" /></div></div>
+      </>
+    )}
+  </form>
+  <div class="card" data-out></div>
+</div>
+
+<script>
+  import { maternity, paternity, lumpSum, pension, BASE_SALARY } from '../../lib/bhxh.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="bhxh"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const mode = root.dataset.mode;
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const n = (x: number) => Math.round(x).toLocaleString('vi-VN');
+    const avgIn = form.elements.namedItem('avg') as HTMLInputElement;
+    avgIn.addEventListener('input', () => { const d = avgIn.value.replace(/\D/g, ''); avgIn.value = d ? Number(d).toLocaleString('vi-VN') : ''; });
+    const big = (label: string, v: string, sub = '') => `<div class="text-sm text-slate-500">${label}</div><div class="text-4xl font-extrabold text-brand-700">${v}</div>${sub ? `<div class="mt-1 text-sm text-slate-600">${sub}</div>` : ''}`;
+    const row = (k: string, v: string) => `<tr><td>${k}</td><td class="num font-semibold">${v}</td></tr>`;
+    const note = (s: string) => `<p class="mt-4 text-xs text-slate-500">${s}</p>`;
+
+    const calc = () => {
+      const f = new FormData(form);
+      const g = (k: string) => Number(f.get(k)) || 0;
+      const avg = Number(String(f.get('avg')).replace(/\D/g, '')) || 0;
+      if (mode === 'maternity') {
+        const dad = f.get('who') === 'dad';
+        root.querySelector<HTMLElement>('[data-dadonly]')!.hidden = !dad;
+        if (dad) {
+          const r = paternity({ avg, kind: String(f.get('kind')), children: g('children') });
+          out.innerHTML = big(vi ? 'Bố được nhận' : 'Father receives', `${n(r.amount)} đ`, vi ? `Nghỉ ${r.days} ngày làm việc, trong 60 ngày kể từ ngày vợ sinh` : `${r.days} working days within 60 days of birth`)
+            + note(vi ? 'Mức hưởng 1 ngày = lương bình quân 6 tháng ÷ 24. Luật BHXH 2024.' : 'Daily rate = 6-month average ÷ 24. Social Insurance Law 2024.');
+        } else {
+          const r = maternity({ avg, children: g('children') });
+          out.innerHTML = big(vi ? 'Tổng tiền thai sản' : 'Total maternity pay', `${n(r.total)} đ`)
+            + `<div class="table-wrap mt-4"><table class="data-table"><tbody>
+              ${row(vi ? `Nghỉ ${r.months} tháng × ${n(r.monthly)}` : `${r.months} months × ${n(r.monthly)}`, n(r.leavePay) + ' đ')}
+              ${row(vi ? `Trợ cấp 1 lần: 2 × ${n(BASE_SALARY)} × ${g('children')} con` : `Lump sum: 2 × ${n(BASE_SALARY)} × ${g('children')}`, n(r.lump) + ' đ')}
+            </tbody></table></div>`
+            + note(vi ? 'Điều kiện: đóng BHXH đủ 6 tháng trong 12 tháng trước khi sinh. Mức tham chiếu tính bằng lương cơ sở 2.530.000 đ (từ 1/7/2026). Luật BHXH 2024.' : 'Requires 6 months of contributions in the 12 months before birth. Social Insurance Law 2024.');
+        }
+      } else if (mode === 'lumpsum') {
+        const r = lumpSum({ avg, yBefore: g('yb'), mBefore: g('mb'), yAfter: g('ya'), mAfter: g('ma') });
+        out.innerHTML = r.short
+          ? big(vi ? 'Tối đa nhận' : 'At most', `${n(r.amount)} đ`, vi ? 'Đóng chưa đủ 1 năm: nhận bằng số tiền đã đóng, không quá 2 tháng lương bình quân.' : 'Under one year: what you paid, capped at 2 months.')
+          : big(vi ? 'BHXH một lần ước tính' : 'Estimated lump sum', `${n(r.amount)} đ`, vi ? `${r.months} tháng lương bình quân` : `${r.months} months of average salary`)
+            + `<div class="table-wrap mt-4"><table class="data-table"><tbody>
+              ${r.before ? row(vi ? `Trước 2014: ${r.before} năm × 1,5 tháng` : `Before 2014: ${r.before} × 1.5`, n(r.before * 1.5 * avg) + ' đ') : ''}
+              ${r.after ? row(vi ? `Từ 2014: ${r.after} năm × 2 tháng` : `From 2014: ${r.after} × 2`, n(r.after * 2 * avg) + ' đ') : ''}
+            </tbody></table></div>`;
+        out.innerHTML += note(vi ? 'Khoản 3 Điều 70 Luật BHXH 2024. Lương bình quân thực tế được điều chỉnh theo hệ số trượt giá hằng năm nên số nhận có thể cao hơn. Tháng lẻ: 1–6 tháng tính nửa năm, 7–11 tháng tính 1 năm. Rút một lần sẽ mất thời gian đóng để tính lương hưu.' : 'Art. 70(3), Social Insurance Law 2024. Actual average is indexed for inflation.');
+      } else {
+        const r = pension({ sex: String(f.get('sex')), years: g('y'), months: g('m'), avg });
+        out.innerHTML = r.rate === 0
+          ? big(vi ? 'Chưa đủ điều kiện' : 'Not eligible', vi ? 'Dưới 15 năm' : '< 15 years', vi ? 'Cần đóng tối thiểu 15 năm để hưởng lương hưu.' : 'At least 15 years required.')
+          : big(vi ? 'Lương hưu mỗi tháng' : 'Monthly pension', `${n(r.monthly)} đ`, vi ? `Tỷ lệ ${r.rate}% · ${r.years} năm đóng` : `Rate ${r.rate}% · ${r.years} years`)
+            + (r.extraYears ? `<div class="mt-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">${vi ? `Đóng vượt ${r.extraYears} năm: trợ cấp 1 lần khi nghỉ hưu ${n(r.extraLump)} đ` : `Extra ${r.extraYears} years: lump sum ${n(r.extraLump)} VND`}</div>` : '');
+        out.innerHTML += note(vi ? 'Điều 66 Luật BHXH 2024: nữ 45% khi đủ 15 năm; nam 40% khi đủ 15 năm (thêm 1%/năm), 45% khi đủ 20 năm; sau đó thêm 2%/năm, tối đa 75%. Chưa tính giảm tỷ lệ khi nghỉ hưu trước tuổi và điều chỉnh trượt giá.' : 'Art. 66, Social Insurance Law 2024. Excludes early-retirement reduction and indexation.');
+      }
+    };
+    form.addEventListener('input', calc);
+    form.addEventListener('change', calc);
+    calc();
+  });
+</script>

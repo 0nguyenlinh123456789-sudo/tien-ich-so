@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "lumpsum",
+  "slug": "dong-bhxh-3-nam-luong-7-trieu-rut-1-lan-duoc-bao-nhieu",
+  "title": "Đóng BHXH 3 năm, lương 7 triệu rút 1 lần được bao nhiêu?",
+  "params": {
+    "avg": 7000000,
+    "years": 3
+  }
+}

@@ -1,0 +1,59 @@
+---
+import MonetizedResult from '../MonetizedResult.astro';
+interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; autorun?: boolean; }
+const { lang = 'vi', preset = {}, autorun = false } = Astro.props;
+const p = { amount: '', currency: 'VND', outLang: lang, ...preset };
+const vi = lang === 'vi';
+---
+<div data-tool="moneywords" data-lang={lang}>
+  <form class="card grid gap-4 md:grid-cols-4" data-tool-form data-autorun={String(autorun)}>
+    <div class="md:col-span-2">
+      <label class="label" for="mw-a">{vi ? 'Số tiền' : 'Amount'}</label>
+      <input id="mw-a" name="amount" class="input text-lg" required placeholder="1.250.000" value={p.amount} />
+    </div>
+    <div>
+      <label class="label" for="mw-c">{vi ? 'Loại tiền' : 'Currency'}</label>
+      <select id="mw-c" name="currency" class="input">
+        <option value="VND" selected={p.currency === 'VND'}>VNĐ</option>
+        <option value="USD" selected={p.currency === 'USD'}>USD</option>
+      </select>
+    </div>
+    <div>
+      <label class="label" for="mw-l">{vi ? 'Ngôn ngữ đọc' : 'Output language'}</label>
+      <select id="mw-l" name="outLang" class="input">
+        <option value="vi" selected={p.outLang === 'vi'}>Tiếng Việt</option>
+        <option value="en" selected={p.outLang === 'en'}>English</option>
+      </select>
+    </div>
+    <div class="md:col-span-4"><button class="btn-primary" type="submit">{vi ? 'Đọc thành chữ' : 'Convert to words'}</button></div>
+  </form>
+
+  <MonetizedResult context="tools" lang={lang}>
+    <div data-out="main" class="rounded-2xl bg-brand-50 p-5 text-xl font-semibold text-brand-700"></div>
+    <div class="mt-3 flex gap-2"><button type="button" class="btn-ghost py-2 text-sm" data-action="copy">📋 {vi ? 'Copy' : 'Copy'}</button><span data-out="copied" class="hidden self-center text-sm text-emerald-700">✓</span></div>
+    <div slot="bottom"><div data-out="all" class="mt-6"></div></div>
+  </MonetizedResult>
+</div>
+
+<script>
+  import { moneyToWords } from '../../lib/numwords.js';
+  import { bindToolForm, showResult } from '../../scripts/form-state.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="moneywords"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+    bindToolForm(root.querySelector<HTMLFormElement>('[data-tool-form]')!, (d: any) => {
+      if (!String(d.amount).trim()) return;
+      out('main').textContent = moneyToWords(d.amount, d.currency, d.outLang);
+      const combos: [string, string, string][] = [['VND', 'vi', 'VNĐ – Tiếng Việt'], ['VND', 'en', 'VND – English'], ['USD', 'vi', 'USD – Tiếng Việt'], ['USD', 'en', 'USD – English']];
+      out('all').innerHTML = `<h3 class="mb-2 font-semibold">${vi ? 'Tất cả cách đọc' : 'All variants'}</h3><div class="table-wrap"><table class="data-table"><tbody>
+        ${combos.map(([c, l, label]) => `<tr><td class="font-medium">${label}</td><td class="whitespace-normal">${moneyToWords(d.amount, c, l)}</td></tr>`).join('')}
+        </tbody></table></div>`;
+      showResult(root);
+    });
+    root.querySelector('[data-action="copy"]')?.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(out('main').textContent || ''); out('copied').classList.remove('hidden'); setTimeout(() => out('copied').classList.add('hidden'), 2000); } catch { /* ignore */ }
+    });
+  });
+</script>
+

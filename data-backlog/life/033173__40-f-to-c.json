@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "40-f-to-c",
+  "title": "40°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 40
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "150-lbs-to-kg",
+  "title": "150 lbs to kg",
+  "params": {
+    "kind": "lb",
+    "v": 150
+  }
+}

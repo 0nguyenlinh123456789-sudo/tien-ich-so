@@ -1,0 +1,15 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "loan",
+  "slug": "vay-3-ty-3-nam-lai-suat-7-phan-tram-tra-bao-nhieu-moi-thang",
+  "title": "Vay 3 tỷ trong 3 năm, lãi 7%/năm trả bao nhiêu mỗi tháng?",
+  "params": {
+    "principal": 3000000000,
+    "months": 36,
+    "rate": 7,
+    "method": "reducing",
+    "promoMonths": 0,
+    "promoRate": 0
+  }
+}

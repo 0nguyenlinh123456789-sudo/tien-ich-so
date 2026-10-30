@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-2-ty-ky-han-12-thang-lai-5-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 2 tỷ kỳ hạn 12 tháng, lãi 5%/năm được bao nhiêu?",
+  "params": {
+    "p": 2000000000,
+    "t": 12,
+    "r": 5
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-55-trieu-3-nguoi-phu-thuoc-thi-gross-bao-nhieu",
+  "title": "Lương Net 55 triệu 3 người phụ thuộc thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 55000000,
+    "dependents": 3,
+    "region": "1"
+  }
+}

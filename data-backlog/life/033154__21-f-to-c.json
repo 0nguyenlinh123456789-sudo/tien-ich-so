@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "21-f-to-c",
+  "title": "21°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 21
+  }
+}

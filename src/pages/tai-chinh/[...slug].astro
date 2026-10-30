@@ -1,0 +1,7 @@
+---
+import SectionPage from '../../components/SectionPage.astro';
+import { getSectionPaths } from '../../lib/routes.js';
+export function getStaticPaths() { return getSectionPaths('finance', 'vi'); }
+---
+<SectionPage {...(Astro.props as any)} />
+

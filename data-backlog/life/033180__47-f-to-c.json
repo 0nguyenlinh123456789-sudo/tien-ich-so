@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "47-f-to-c",
+  "title": "47°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 47
+  }
+}

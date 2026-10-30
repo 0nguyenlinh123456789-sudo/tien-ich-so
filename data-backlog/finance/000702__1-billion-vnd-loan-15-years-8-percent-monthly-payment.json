@@ -1,0 +1,15 @@
+{
+  "section": "finance",
+  "lang": "en",
+  "tool": "loan",
+  "slug": "1-billion-vnd-loan-15-years-8-percent-monthly-payment",
+  "title": "1 billion VND loan over 15 years at 8%: monthly payment",
+  "params": {
+    "principal": 1000000000,
+    "months": 180,
+    "rate": 8,
+    "method": "annuity",
+    "promoMonths": 0,
+    "promoRate": 0
+  }
+}

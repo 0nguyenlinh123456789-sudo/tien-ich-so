@@ -1,0 +1,90 @@
+---
+/**
+ * ShareBox – viral sharing without gating content.
+ * The URL contains the tool inputs (see src/scripts/form-state.js), so recipients land on the same result.
+ */
+import { t } from '../i18n/ui.js';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const L = t(lang);
+---
+<div class="mt-4 rounded-2xl border border-brand-100 bg-brand-50 p-5" data-sharebox data-copied={L.copied} data-copied-zalo={L.copiedZalo}>
+  <div class="font-semibold text-slate-900">📣 {L.share}</div>
+  <p class="mt-1 text-sm text-slate-600">{L.shareDesc}</p>
+  <div class="mt-3 flex flex-wrap gap-2">
+    <button type="button" data-share="native" class="btn-primary hidden py-2 text-sm">{L.nativeShare}</button>
+    <button type="button" data-share="zalo" class="btn-ghost py-2 text-sm"><span class="font-bold text-[#0068ff]">Zalo</span></button>
+    <button type="button" data-share="messenger" class="btn-ghost py-2 text-sm"><span class="font-bold text-[#0084ff]">Messenger</span></button>
+    <button type="button" data-share="facebook" class="btn-ghost py-2 text-sm"><span class="font-bold text-[#1877f2]">Facebook</span></button>
+    <button type="button" data-share="x" class="btn-ghost py-2 text-sm"><span class="font-bold">X</span></button>
+    <button type="button" data-share="copy" class="btn-ghost py-2 text-sm">🔗 {L.copyLink}</button>
+  </div>
+  <div data-share-toast class="mt-2 hidden text-sm font-medium text-emerald-700"></div>
+</div>
+
+<script>
+  const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  async function copy(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-sharebox]').forEach((box) => {
+    const toast = box.querySelector<HTMLElement>('[data-share-toast]')!;
+    const show = (msg: string) => {
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3500);
+    };
+    const nativeBtn = box.querySelector<HTMLElement>('[data-share="native"]');
+    if (navigator.share && nativeBtn) nativeBtn.classList.remove('hidden');
+
+    box.addEventListener('click', async (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-share]');
+      if (!btn) return;
+      const url = location.href;
+      const title = document.title;
+      const enc = encodeURIComponent(url);
+      switch (btn.dataset.share) {
+        case 'native':
+          try { await navigator.share({ title, url }); } catch { /* user cancelled */ }
+          break;
+        case 'zalo':
+          if (navigator.share && isMobile()) {
+            try { await navigator.share({ title, url }); } catch { /* cancelled */ }
+          } else if (await copy(url)) {
+            show(box.dataset.copiedZalo || '');
+            window.open('https://chat.zalo.me/', '_blank', 'noopener');
+          }
+          break;
+        case 'messenger':
+          if (isMobile()) location.href = `fb-messenger://share/?link=${enc}`;
+          else window.open(`https://www.facebook.com/sharer/sharer.php?u=${enc}`, '_blank', 'noopener,width=640,height=560');
+          break;
+        case 'facebook':
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${enc}`, '_blank', 'noopener,width=640,height=560');
+          break;
+        case 'x':
+          window.open(`https://twitter.com/intent/tweet?url=${enc}&text=${encodeURIComponent(title)}`, '_blank', 'noopener,width=640,height=560');
+          break;
+        case 'copy':
+          if (await copy(url)) show(box.dataset.copied || '');
+          break;
+      }
+    });
+  });
+</script>
+

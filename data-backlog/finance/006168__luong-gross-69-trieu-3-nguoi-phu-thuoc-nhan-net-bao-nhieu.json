@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-69-trieu-3-nguoi-phu-thuoc-nhan-net-bao-nhieu",
+  "title": "Lương Gross 69 triệu 3 người phụ thuộc nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 69000000,
+    "dependents": 3,
+    "region": "1"
+  }
+}

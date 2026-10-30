@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-46-5-trieu-3-nguoi-phu-thuoc-nhan-net-bao-nhieu",
+  "title": "Lương Gross 46,5 triệu 3 người phụ thuộc nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 46500000,
+    "dependents": 3,
+    "region": "1"
+  }
+}

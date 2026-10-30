@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import site from '../config/site.json';
+---
+<Layout title="Chính sách bảo mật" description="Chính sách bảo mật, cookie và quảng cáo." lang="vi" alternate="/en/privacy">
+  <article class="prose-lite card max-w-3xl">
+    <h1 class="text-3xl font-bold">Chính sách bảo mật</h1>
+    <p>Mọi công cụ trên {site.siteName} chạy hoàn toàn trên trình duyệt của bạn. Chúng tôi không thu thập hay lưu trữ dữ liệu bạn nhập (mức lương, ngày sinh, hình ảnh, nội dung hợp đồng…) trên máy chủ.</p>
+    <h2>Dữ liệu lưu cục bộ</h2>
+    <p>Một số công cụ (ví dụ: Tạo CV / Hợp đồng) lưu bản nháp vào localStorage trên thiết bị của bạn để tiện sử dụng lại. Bạn có thể xóa bất cứ lúc nào bằng cách xóa dữ liệu trang web trong trình duyệt.</p>
+    <h2>Quảng cáo & liên kết tiếp thị</h2>
+    <p>Website hiển thị quảng cáo từ đối tác bên thứ ba và có thể chứa liên kết tiếp thị liên kết (affiliate). Các liên kết này được gắn nhãn "Quảng cáo" hoặc "Tài trợ". Khi bạn mua hàng qua liên kết, chúng tôi có thể nhận hoa hồng mà không làm tăng giá bạn phải trả. Đối tác quảng cáo có thể sử dụng cookie theo chính sách riêng của họ.</p>
+    <h2>Miễn trừ trách nhiệm</h2>
+    <p>Kết quả tài chính mang tính tham khảo; hãy đối chiếu văn bản pháp luật hiện hành. Nội dung thần số học, tarot, xem ngày mang tính giải trí và văn hóa.</p>
+    <h2>Liên hệ</h2>
+    <p>Email: <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+  </article>
+</Layout>
+

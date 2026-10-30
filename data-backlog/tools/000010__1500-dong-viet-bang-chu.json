@@ -1,0 +1,12 @@
+{
+  "section": "tools",
+  "lang": "vi",
+  "tool": "moneywords",
+  "slug": "1500-dong-viet-bang-chu",
+  "title": "1.500 đồng viết bằng chữ",
+  "params": {
+    "amount": "1500",
+    "currency": "VND",
+    "outLang": "vi"
+  }
+}

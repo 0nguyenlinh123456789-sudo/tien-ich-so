@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-gross-26-trieu-nhan-net-bao-nhieu",
+  "title": "Lương Gross 26 triệu nhận Net bao nhiêu?",
+  "params": {
+    "mode": "gross",
+    "amount": 26000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

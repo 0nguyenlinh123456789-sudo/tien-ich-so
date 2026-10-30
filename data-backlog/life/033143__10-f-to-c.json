@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "10-f-to-c",
+  "title": "10°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 10
+  }
+}

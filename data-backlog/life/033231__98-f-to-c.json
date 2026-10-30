@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "en",
+  "tool": "convert",
+  "slug": "98-f-to-c",
+  "title": "98°F to °C",
+  "params": {
+    "kind": "f",
+    "v": 98
+  }
+}

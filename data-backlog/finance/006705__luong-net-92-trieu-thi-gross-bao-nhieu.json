@@ -1,0 +1,13 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "salary",
+  "slug": "luong-net-92-trieu-thi-gross-bao-nhieu",
+  "title": "Lương Net 92 triệu thì Gross bao nhiêu?",
+  "params": {
+    "mode": "net",
+    "amount": 92000000,
+    "dependents": 0,
+    "region": "1"
+  }
+}

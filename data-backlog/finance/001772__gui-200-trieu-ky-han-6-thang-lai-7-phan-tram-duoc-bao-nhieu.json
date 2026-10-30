@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "savings",
+  "slug": "gui-200-trieu-ky-han-6-thang-lai-7-phan-tram-duoc-bao-nhieu",
+  "title": "Gửi 200 triệu kỳ hạn 6 tháng, lãi 7%/năm được bao nhiêu?",
+  "params": {
+    "p": 200000000,
+    "t": 6,
+    "r": 7
+  }
+}
