@@ -1,15 +1,16 @@
 ---
 // Self-authored letters with no mandated legal form. Court forms (divorce) are only linked, never reproduced.
-interface Props { lang?: 'vi' | 'en'; }
-const { lang = 'vi' } = Astro.props;
+interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; }
+const { lang = 'vi', preset = {} } = Astro.props;
+const start = preset.kind || 'nghiviec';
 const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['nghiphep', 'Xin nghỉ phép'], ['nghihoc', 'Xin nghỉ học']];
 ---
 <div data-tool="forms" data-lang={lang} class="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
   <form class="card grid content-start gap-3" data-f>
     <div class="flex flex-wrap gap-2" data-kinds>
-      {KINDS.map(([k, l], i) => <button type="button" data-kind={k} class={`rounded-full border px-3 py-1.5 text-sm font-semibold ${i === 0 ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300'}`}>{l}</button>)}
+      {KINDS.map(([k, l]) => <button type="button" data-kind={k} class={`rounded-full border px-3 py-1.5 text-sm font-semibold ${k === start ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300'}`}>{l}</button>)}
     </div>
-    <input type="hidden" name="kind" value="nghiviec" />
+    <input type="hidden" name="kind" value={start} />
     <div><label class="label">Kính gửi</label><input class="input" name="to" value="Ban Giám đốc Công ty …" /></div>
     <div class="grid grid-cols-2 gap-2">
       <div><label class="label">Họ và tên</label><input class="input" name="name" placeholder="Nguyễn Văn A" /></div>

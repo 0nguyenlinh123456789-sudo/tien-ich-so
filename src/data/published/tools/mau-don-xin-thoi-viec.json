@@ -1,0 +1,11 @@
+{
+  "section": "tools",
+  "lang": "vi",
+  "tool": "forms",
+  "slug": "mau-don-xin-thoi-viec",
+  "title": "Mẫu đơn xin thôi việc – điền online, tải PDF",
+  "params": {
+    "kind": "nghiviec",
+    "alias": "đơn xin thôi việc"
+  }
+}

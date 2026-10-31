@@ -49,7 +49,7 @@ const { toolId, lang, preset = {}, autorun = false } = Astro.props;
 {toolId === 'lumpsum' && <BhxhTool lang={lang} mode="lumpsum" />}
 {toolId === 'pension' && <BhxhTool lang={lang} mode="pension" />}
 {toolId === 'address' && <AddressTool lang={lang} />}
-{toolId === 'forms' && <FormsTool lang={lang} />}
+{toolId === 'forms' && <FormsTool lang={lang} preset={preset} />}
 {toolId === 'age' && <DateTool lang={lang} mode="age" />}
 {toolId === 'datediff' && <DateTool lang={lang} mode="diff" />}
 {toolId === 'convert' && <ConvertTool lang={lang} />}

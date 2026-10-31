@@ -243,6 +243,33 @@ export function buildRecordContent(record) {
           };
       break;
     }
+    case 'forms': {
+      const K = {
+        nghiviec: { name: p.alias || 'đơn xin nghỉ việc', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Ban Giám đốc / Phòng Nhân sự', 'Họ tên, chức vụ, bộ phận', 'Ngày nghỉ việc dự kiến', 'Lý do nghỉ', 'Cam kết bàn giao công việc', 'Ngày tháng, chữ ký'] },
+        nghiphep: { name: 'đơn xin nghỉ phép', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Trưởng bộ phận / Ban Giám đốc', 'Họ tên, chức vụ, bộ phận', 'Nghỉ từ ngày … đến ngày …', 'Lý do', 'Người nhận bàn giao', 'Ngày tháng, chữ ký'] },
+        nghihoc: { name: 'đơn xin nghỉ học', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Giáo viên chủ nhiệm', 'Họ tên học sinh, lớp, trường', 'Nghỉ từ ngày … đến ngày …', 'Lý do', 'Cam kết chép bài', 'Chữ ký học sinh và phụ huynh'] },
+        xinviec: { name: 'đơn xin việc', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Phòng Nhân sự công ty', 'Họ tên, ngày sinh', 'Vị trí ứng tuyển, nguồn tin tuyển dụng', 'Kinh nghiệm, kỹ năng nổi bật', 'Ngày có thể bắt đầu', 'Chữ ký, hồ sơ đính kèm'] }
+      }[p.kind];
+      const notice = p.kind === 'nghiviec'
+        ? [`<b>Phải báo trước bao lâu?</b> Theo Điều 35 Bộ luật Lao động 2019: ít nhất <b>45 ngày</b> với hợp đồng không xác định thời hạn, <b>30 ngày</b> với hợp đồng 12–36 tháng, <b>3 ngày làm việc</b> với hợp đồng dưới 12 tháng. Một số ngành nghề đặc thù có thời hạn riêng.`,
+           `Có trường hợp được nghỉ <b>không cần báo trước</b>, ví dụ: không được trả lương đủ, đúng hạn; bị ngược đãi, quấy rối; không được bố trí đúng công việc, địa điểm đã thỏa thuận (khoản 2 Điều 35).`]
+        : p.kind === 'nghiphep'
+          ? [`Người lao động làm đủ 12 tháng được nghỉ hằng năm hưởng nguyên lương ít nhất <b>12 ngày làm việc</b> (Điều 113 Bộ luật Lao động 2019); điều kiện nặng nhọc, độc hại được nhiều hơn.`]
+          : [];
+      out = {
+        h1: record.title,
+        intro: [
+          `Điền thông tin ở công cụ bên dưới, ${K.name} hiện ngay theo đúng bố cục, rồi bấm <b>In / Lưu PDF</b>. Không cần đăng ký, dữ liệu không rời máy bạn.`,
+          ...notice,
+          `Pháp luật không bắt buộc một mẫu cố định cho ${K.name}; điều quan trọng là nội dung rõ ràng, có ngày và chữ ký. Nếu công ty, nhà trường có mẫu riêng, hãy dùng mẫu đó.`
+        ],
+        table: K.parts.map((x, i) => [`Phần ${i + 1}`, x]),
+        faq: p.kind === 'nghiviec'
+          ? [{ q: 'Xin nghỉ việc phải báo trước bao nhiêu ngày?', a: '45 ngày (HĐ không xác định thời hạn), 30 ngày (HĐ 12–36 tháng), 3 ngày làm việc (HĐ dưới 12 tháng) – Điều 35 Bộ luật Lao động 2019.' }, { q: 'Đơn xin nghỉ việc có cần viết tay không?', a: 'Không bắt buộc. Đơn đánh máy có chữ ký đều hợp lệ; chỉ cần thể hiện rõ ngày nghỉ và được gửi cho người sử dụng lao động.' }]
+          : [{ q: `${K.name[0].toUpperCase() + K.name.slice(1)} gồm những nội dung gì?`, a: K.parts.join('; ') + '.' }]
+      };
+      break;
+    }
     case 'lunar': {
       if (!p.d) {
       const mm = Number(p.m), yy = Number(p.y);

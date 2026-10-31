@@ -1,0 +1,10 @@
+{
+  "section": "tools",
+  "lang": "vi",
+  "tool": "forms",
+  "slug": "mau-don-xin-viec",
+  "title": "Mẫu đơn xin việc – điền online, in ngay",
+  "params": {
+    "kind": "xinviec"
+  }
+}

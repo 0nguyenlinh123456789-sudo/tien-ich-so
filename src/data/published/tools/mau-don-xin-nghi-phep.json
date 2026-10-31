@@ -1,0 +1,10 @@
+{
+  "section": "tools",
+  "lang": "vi",
+  "tool": "forms",
+  "slug": "mau-don-xin-nghi-phep",
+  "title": "Mẫu đơn xin nghỉ phép – điền online, in ngay",
+  "params": {
+    "kind": "nghiphep"
+  }
+}
