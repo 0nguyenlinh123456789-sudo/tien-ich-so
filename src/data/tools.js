@@ -205,6 +205,17 @@ export const TOOLS = [
     ]
   },
   {
+    id: 'holidays', section: 'life', icon: '🏖️',
+    slug: { vi: 'lich-nghi-le-2027', en: 'vietnam-public-holidays-2027' },
+    title: { vi: 'Lịch nghỉ lễ 2027', en: 'Vietnam Holidays 2027' },
+    seo: { vi: 'Lịch nghỉ lễ, nghỉ Tết 2027 chính thức – còn bao nhiêu ngày', en: 'Vietnam Public Holidays 2027' },
+    desc: { vi: 'Tết, 30/4, 2/9 – còn mấy ngày.', en: 'Tết, 30/4, 2/9 dates.' },
+    faq: [
+      { q: { vi: 'Tết Nguyên đán 2027 nghỉ mấy ngày?', en: 'How long is Tết 2027?' }, a: { vi: 'Cán bộ, công chức, viên chức nghỉ 7 ngày liên tục từ thứ Năm 04/02 đến thứ Tư 10/02/2027 (Thông báo 11483/TB-BNV). Doanh nghiệp tự chọn lịch, tối thiểu 5 ngày.', en: 'Public sector: 7 days, 4–10 Feb 2027.' } },
+      { q: { vi: 'Một năm có bao nhiêu ngày nghỉ lễ?', en: 'How many public holidays?' }, a: { vi: 'Theo Điều 112 Bộ luật Lao động 2019: Tết Dương lịch 1 ngày, Tết Âm lịch 5 ngày, Giỗ Tổ 1 ngày, 30/4 1 ngày, 1/5 1 ngày, Quốc khánh 2 ngày – tổng 11 ngày hưởng nguyên lương.', en: '11 paid days under the Labour Code 2019, Art. 112.' } }
+    ]
+  },
+  {
     id: 'salary', section: 'finance', icon: '💵',
     slug: { vi: 'tinh-luong-gross-net', en: 'gross-net-salary-calculator' },
     title: { vi: 'Lương Gross – Net 2026', en: 'Gross – Net Salary 2026' },
@@ -276,6 +287,28 @@ export const TOOLS = [
       { q: { vi: 'PITI là gì?', en: 'What is PITI?' }, a: { vi: 'Principal, Interest, Taxes, Insurance: gốc, lãi, thuế nhà đất và bảo hiểm nhà – tổng chi phí hằng tháng thực tế.', en: 'Principal, interest, taxes and insurance: your true monthly housing cost.' } },
       { q: { vi: 'Trả thêm gốc tiết kiệm bao nhiêu?', en: 'How much do extra payments save?' }, a: { vi: 'Mỗi đồng trả thêm giảm dư nợ, nên giảm lãi các tháng sau; công cụ cho thấy số lãi tiết kiệm và thời gian trả xong.', en: 'Each extra dollar cuts the balance and future interest; the tool shows the savings and payoff date.' } },
       { q: { vi: 'Khi nào phải đóng PMI?', en: 'When is PMI required?' }, a: { vi: 'Thường khi khoản vay thông thường có trả trước dưới 20% giá nhà; mức phí thực tế tùy người cho vay.', en: 'Usually on conventional loans with under 20% down; actual rates vary by lender.' } }
+    ]
+  },
+  {
+    id: 'fx', section: 'finance', icon: '💱',
+    slug: { vi: 'ty-gia-doi-tien', en: 'usd-vnd-exchange-rate' },
+    title: { vi: 'Tỷ giá & đổi tiền', en: 'USD to VND Rate' },
+    seo: { vi: 'Tỷ giá USD hôm nay – đổi đô sang tiền Việt (Vietcombank)', en: 'USD to VND Exchange Rate Today – converter' },
+    desc: { vi: 'USD, EUR, JPY sang VND.', en: 'USD, EUR, JPY to VND.' },
+    faq: [
+      { q: { vi: 'Tỷ giá ở đây lấy từ đâu?', en: 'Where do the rates come from?' }, a: { vi: 'Bảng tỷ giá tham khảo công khai của Vietcombank, tự cập nhật mỗi sáng. Giá giao dịch thực tế tại ngân hàng có thể khác.', en: 'Vietcombank public reference rates, refreshed every morning.' } },
+      { q: { vi: 'Giá mua và giá bán khác nhau thế nào?', en: 'Buy vs sell?' }, a: { vi: 'Giá mua là giá ngân hàng mua ngoại tệ của bạn (bạn bán đô lấy tiền Việt); giá bán là giá ngân hàng bán ngoại tệ cho bạn.', en: 'Buy: the bank buys your foreign currency. Sell: the bank sells it to you.' } }
+    ]
+  },
+  {
+    id: 'vat', section: 'finance', icon: '🧾',
+    slug: { vi: 'tinh-thue-vat', en: 'vat-calculator' },
+    title: { vi: 'Tính thuế VAT', en: 'VAT Calculator' },
+    seo: { vi: 'Tính thuế VAT 8%, 10% – tính ngược giá chưa thuế', en: 'VAT Calculator – add or remove 8% / 10% VAT' },
+    desc: { vi: 'Cộng thuế, tính ngược.', en: 'Add or remove VAT.' },
+    faq: [
+      { q: { vi: 'Thuế VAT năm 2026 là 8% hay 10%?', en: 'Is VAT 8% or 10% in 2026?' }, a: { vi: 'Phần lớn hàng hóa, dịch vụ chịu 10% được giảm còn 8% đến hết 31/12/2026 (Nghị quyết 204/2025/QH15). Viễn thông, tài chính – ngân hàng, chứng khoán và hàng trong phụ lục Nghị định 174/2025/NĐ-CP vẫn 10%.', en: 'Most 10% items are cut to 8% until 31 Dec 2026; some sectors stay at 10%.' } },
+      { q: { vi: 'Cách tính ngược giá chưa thuế?', en: 'How to remove VAT?' }, a: { vi: 'Giá chưa thuế = giá có thuế ÷ (1 + thuế suất). Ví dụ 1.080.000 đ với thuế 8%: 1.080.000 ÷ 1,08 = 1.000.000 đ.', en: 'Net = gross ÷ (1 + rate).' } }
     ]
   },
   {

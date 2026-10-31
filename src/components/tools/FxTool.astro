@@ -1,0 +1,42 @@
+---
+import FX from '../../data/fx.json';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const codes = Object.keys(FX.rates);
+const fmt = (x: number | null) => (x ? x.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : '–');
+---
+<div data-tool="fx" data-lang={lang} class="grid gap-5">
+  <div class="card grid items-end gap-3 sm:grid-cols-[1fr_auto_1fr]">
+    <div><label class="label">{vi ? 'Số tiền' : 'Amount'}</label><input class="input text-2xl" type="number" min="0" step="any" value="100" data-v /><select class="input mt-2" data-cur>{codes.map((c) => <option value={c} selected={c === 'USD'}>{c} – {(FX.rates as any)[c].name}</option>)}</select></div>
+    <button type="button" class="btn-ghost text-xl" data-swap aria-label="swap">⇄</button>
+    <div><label class="label" data-tolabel>VND</label><div class="input bg-slate-50 text-2xl font-bold text-brand-700" data-res>—</div><div class="mt-2 text-sm text-slate-500" data-dir></div></div>
+  </div>
+  <p class="text-xs text-slate-500">{vi ? `Tỷ giá tham khảo ${FX.source}, cập nhật ${FX.updated}. Đổi ngoại tệ sang VND dùng giá mua chuyển khoản; VND sang ngoại tệ dùng giá bán. Giá thực tế tại quầy có thể khác.` : `Reference rates from ${FX.source}, updated ${FX.updated}.`}</p>
+  <div class="card"><div class="table-wrap"><table class="data-table">
+    <thead><tr><th>{vi ? 'Ngoại tệ' : 'Currency'}</th><th class="num">{vi ? 'Mua tiền mặt' : 'Buy cash'}</th><th class="num">{vi ? 'Mua chuyển khoản' : 'Buy transfer'}</th><th class="num">{vi ? 'Bán' : 'Sell'}</th></tr></thead>
+    <tbody>{codes.map((c) => { const r = (FX.rates as any)[c]; return <tr><td class="font-semibold">{c}</td><td class="num">{fmt(r.buy)}</td><td class="num">{fmt(r.transfer)}</td><td class="num">{fmt(r.sell)}</td></tr>; })}</tbody>
+  </table></div></div>
+  <script type="application/json" data-fx set:html={JSON.stringify(FX.rates).replace(/</g, '\\u003c')} />
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tool="fx"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const R = JSON.parse(root.querySelector('[data-fx]')!.textContent || '{}');
+    const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const v = $<HTMLInputElement>('[data-v]'), cur = $<HTMLSelectElement>('[data-cur]');
+    let toVnd = true;
+    const calc = () => {
+      const r = R[cur.value], x = Number(v.value);
+      if (!r || !(x >= 0)) { $('[data-res]').textContent = '—'; return; }
+      const res = toVnd ? x * r.transfer : x / r.sell;
+      $('[data-res]').textContent = res.toLocaleString('vi-VN', { maximumFractionDigits: toVnd ? 0 : 2 }) + (toVnd ? ' ₫' : ' ' + cur.value);
+      $('[data-tolabel]').textContent = toVnd ? 'VND' : cur.value;
+      $('[data-dir]').textContent = toVnd ? `${vi ? 'Đổi' : 'Convert'} ${cur.value} → VND (${r.transfer.toLocaleString('vi-VN')})` : `VND → ${cur.value} (${r.sell.toLocaleString('vi-VN')})`;
+    };
+    $('[data-swap]').addEventListener('click', () => { toVnd = !toVnd; calc(); });
+    v.addEventListener('input', calc); cur.addEventListener('change', calc);
+    calc();
+  });
+</script>

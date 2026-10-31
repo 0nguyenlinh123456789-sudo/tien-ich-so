@@ -1,0 +1,53 @@
+---
+// Public holidays (Bộ luật Lao động 2019, Điều 112) with dates for the coming year.
+// Tết 2027 dates come from Thông báo 11483/TB-BNV (public sector). Update HOLIDAYS when a new notice is issued.
+import { solarToLunar } from '../../lib/lunar.js';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const Y = 2027;
+// Giỗ Tổ Hùng Vương = 10/3 âm lịch, computed from the lunar calendar.
+let hung = '';
+for (let k = 0; k < 120; k++) {
+  const d = new Date(Y, 2, 1 + k);
+  const l = solarToLunar(d.getDate(), d.getMonth() + 1, d.getFullYear());
+  if (l.day === 10 && l.month === 3 && !l.leap) { hung = `${Y}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; break; }
+}
+const HOLIDAYS = [
+  { name: vi ? 'Tết Dương lịch' : 'New Year', from: `${Y}-01-01`, to: `${Y}-01-01`, note: vi ? '1 ngày (Điều 112 BLLĐ).' : '1 day.' },
+  { name: vi ? 'Tết Nguyên đán Đinh Mùi' : 'Lunar New Year', from: `${Y}-02-04`, to: `${Y}-02-10`, note: vi ? '7 ngày liên tục cho cán bộ, công chức, viên chức (Thông báo 11483/TB-BNV). Doanh nghiệp tự chọn lịch nhưng phải bảo đảm đủ 5 ngày nghỉ Tết.' : '7 days for the public sector; companies choose their own schedule (min. 5 days).' },
+  { name: vi ? 'Giỗ Tổ Hùng Vương (10/3 âm lịch)' : 'Hung Kings Festival', from: hung, to: hung, note: vi ? '1 ngày.' : '1 day.' },
+  { name: vi ? 'Ngày Giải phóng miền Nam' : 'Reunification Day', from: `${Y}-04-30`, to: `${Y}-04-30`, note: vi ? '1 ngày.' : '1 day.' },
+  { name: vi ? 'Quốc tế Lao động' : 'Labour Day', from: `${Y}-05-01`, to: `${Y}-05-01`, note: vi ? '1 ngày; trùng ngày nghỉ hằng tuần thì được nghỉ bù vào ngày làm việc kế tiếp.' : '1 day.' },
+  { name: vi ? 'Quốc khánh' : 'National Day', from: `${Y}-09-02`, to: `${Y}-09-02`, note: vi ? '2 ngày (2/9 và 1 ngày liền kề trước hoặc sau). Công chức nghỉ 4 ngày liên tục theo Thông báo 11483/TB-BNV – xem ngày cụ thể trong thông báo.' : '2 days; public sector 4 consecutive days.' }
+];
+---
+<div data-tool="holidays" data-lang={lang} class="grid gap-3">
+  {HOLIDAYS.map((h) => (
+    <div class="card flex flex-wrap items-center gap-4" data-from={h.from}>
+      <div class="min-w-24 rounded-2xl bg-brand-50 px-3 py-2 text-center"><div class="text-2xl font-extrabold text-brand-700" data-left>–</div><div class="text-xs text-slate-500">{vi ? 'ngày nữa' : 'days'}</div></div>
+      <div class="flex-1">
+        <div class="font-bold">{h.name}</div>
+        <div class="text-sm" data-range data-to={h.to}></div>
+        <div class="mt-1 text-xs text-slate-500">{h.note}</div>
+      </div>
+    </div>
+  ))}
+  <p class="text-xs text-slate-500">{vi ? 'Căn cứ: Điều 112 Bộ luật Lao động 2019; Thông báo 11483/TB-BNV về lịch nghỉ Tết và Quốc khánh 2027. Người lao động trong doanh nghiệp theo lịch do công ty thông báo.' : 'Basis: Labour Code 2019, Art. 112; Ministry of Home Affairs notice 11483/TB-BNV.'}</p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tool="holidays"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const p = (s: string) => new Date(s + 'T00:00:00');
+    const f = (d: Date) => d.toLocaleDateString(vi ? 'vi-VN' : 'en-GB', { weekday: 'short', day: 'numeric', month: 'numeric', year: 'numeric' });
+    root.querySelectorAll<HTMLElement>('[data-from]').forEach((card) => {
+      const from = p(card.dataset.from!), rangeEl = card.querySelector<HTMLElement>('[data-range]')!, to = p(rangeEl.dataset.to!);
+      const days = Math.round((+to - +from) / 864e5) + 1;
+      rangeEl.textContent = days > 1 ? `${f(from)} → ${f(to)} (${days} ${vi ? 'ngày' : 'days'})` : f(from);
+      const left = Math.round((+from - +today) / 864e5);
+      card.querySelector('[data-left]')!.textContent = left < 0 ? '✓' : String(left);
+    });
+  });
+</script>

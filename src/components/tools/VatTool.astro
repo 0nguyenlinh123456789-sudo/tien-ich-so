@@ -1,0 +1,47 @@
+---
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+---
+<div data-tool="vat" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid content-start gap-3" data-f>
+    <div class="flex gap-4 text-sm font-semibold">
+      <label class="flex items-center gap-1"><input type="radio" name="dir" value="add" checked /> {vi ? 'Giá chưa thuế → có thuế' : 'Net → gross'}</label>
+      <label class="flex items-center gap-1"><input type="radio" name="dir" value="rev" /> {vi ? 'Tính ngược từ giá có thuế' : 'Reverse from gross'}</label>
+    </div>
+    <div><label class="label" data-l>{vi ? 'Giá chưa thuế' : 'Net price'}</label><input class="input text-2xl" name="v" inputmode="numeric" value="1.000.000" /></div>
+    <div><label class="label">{vi ? 'Thuế suất GTGT' : 'VAT rate'}</label>
+      <div class="flex flex-wrap gap-2">{[0, 5, 8, 10].map((r) => <label class="cursor-pointer"><input type="radio" name="r" value={r} checked={r === 8} class="peer sr-only" /><span class="block rounded-xl border border-slate-300 px-4 py-2 font-semibold peer-checked:border-brand-600 peer-checked:bg-brand-600 peer-checked:text-white">{r}%</span></label>)}</div></div>
+    <p class="text-xs text-slate-500">{vi ? 'Thuế suất 10% được giảm còn 8% từ 01/7/2025 đến hết 31/12/2026 (Nghị quyết 204/2025/QH15, Nghị định 174/2025/NĐ-CP), trừ một số nhóm như viễn thông, tài chính – ngân hàng, chứng khoán và hàng hóa trong phụ lục. Kiểm tra mặt hàng của bạn trước khi xuất hóa đơn.' : 'Vietnam: the 10% rate is cut to 8% from 1 Jul 2025 to 31 Dec 2026 for most goods (Resolution 204/2025/QH15).'}</p>
+  </form>
+  <div class="card" data-out></div>
+</div>
+
+<script>
+  import { moneyToWords } from '../../lib/numwords.js';
+  document.querySelectorAll<HTMLElement>('[data-tool="vat"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const vIn = form.elements.namedItem('v') as HTMLInputElement;
+    const n = (x: number) => Math.round(x).toLocaleString('vi-VN');
+    vIn.addEventListener('input', () => { const d = vIn.value.replace(/\D/g, ''); vIn.value = d ? Number(d).toLocaleString('vi-VN') : ''; });
+    const calc = () => {
+      const f = new FormData(form);
+      const rev = f.get('dir') === 'rev', r = Number(f.get('r')) / 100;
+      const v = Number(String(f.get('v')).replace(/\D/g, '')) || 0;
+      root.querySelector('[data-l]')!.textContent = rev ? (vi ? 'Giá đã có thuế' : 'Gross price') : (vi ? 'Giá chưa thuế' : 'Net price');
+      const net = rev ? v / (1 + r) : v, tax = net * r, gross = net + tax;
+      out.innerHTML = `<div class="table-wrap"><table class="data-table"><tbody>
+        <tr><td>${vi ? 'Giá chưa thuế' : 'Net'}</td><td class="num text-lg font-bold">${n(net)} đ</td></tr>
+        <tr><td>${vi ? 'Thuế GTGT' : 'VAT'} ${r * 100}%</td><td class="num text-lg font-bold">${n(tax)} đ</td></tr>
+        <tr><td>${vi ? 'Tổng thanh toán' : 'Total'}</td><td class="num text-2xl font-extrabold text-brand-700">${n(gross)} đ</td></tr>
+      </tbody></table></div>
+      ${vi && gross ? `<p class="mt-3 text-sm text-slate-600"><b>Bằng chữ:</b> ${moneyToWords(String(Math.round(gross)), 'VND', 'vi')}</p>` : ''}
+      <p class="mt-3 text-xs text-slate-500">${rev ? (vi ? `Công thức: giá chưa thuế = giá có thuế ÷ ${1 + r}` : `Net = gross ÷ ${1 + r}`) : (vi ? `Công thức: thuế = giá chưa thuế × ${r * 100}%` : `VAT = net × ${r * 100}%`)}</p>`;
+    };
+    form.addEventListener('input', calc);
+    form.addEventListener('change', calc);
+    calc();
+  });
+</script>

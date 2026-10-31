@@ -16,6 +16,9 @@ import TipTool from './tools/TipTool.astro';
 import AreaTool from './tools/AreaTool.astro';
 import GpaTool from './tools/GpaTool.astro';
 import IeltsTool from './tools/IeltsTool.astro';
+import FxTool from './tools/FxTool.astro';
+import VatTool from './tools/VatTool.astro';
+import HolidaysTool from './tools/HolidaysTool.astro';
 import SalaryTool from './tools/SalaryTool.astro';
 import LoanTool from './tools/LoanTool.astro';
 import FireTool from './tools/FireTool.astro';
@@ -61,3 +64,6 @@ const { toolId, lang, preset = {}, autorun = false } = Astro.props;
 {toolId === 'area' && <AreaTool lang={lang} />}
 {toolId === 'gpa' && <GpaTool lang={lang} />}
 {toolId === 'ielts' && <IeltsTool lang={lang} />}
+{toolId === 'fx' && <FxTool lang={lang} />}
+{toolId === 'vat' && <VatTool lang={lang} />}
+{toolId === 'holidays' && <HolidaysTool lang={lang} />}

@@ -137,6 +137,7 @@ async function main() {
 
   if (!NO_BUILD) {
     try {
+      try { sh('node scripts/fetch-fx.mjs'); } catch { /* keep previous rates */ }
       sh('npm run build');
       sh('node scripts/check-site.mjs');
     } catch (e) {
@@ -147,7 +148,7 @@ async function main() {
   }
 
   if (!NO_GIT) {
-    sh('git add -A src/data/published data-backlog');
+    sh('git add -A src/data/published data-backlog src/data/fx.json');
     const status = sh('git status --porcelain');
     if (status) {
       sh(`git commit -m "chore(drip): publish ${batch.length} pages ${publishedAt.slice(0, 10)}"`);
