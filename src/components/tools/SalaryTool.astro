@@ -15,6 +15,7 @@ const pending = (legal.items || []).filter((i: any) => i.impact && isoDate(i.dat
 ---
 <div data-tool="salary" data-lang={lang}>
   <form class="card grid gap-4 md:grid-cols-2" data-tool-form data-autorun={String(autorun)}>
+    <svg class="viz-art md:col-span-2" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="2" y="10" width="64" height="40" rx="8" fill="#d9eaff"/><rect x="10" y="20" width="30" height="5" rx="2.5" fill="#2f6bff"/><rect x="10" y="31" width="44" height="4" rx="2" fill="#93b8ff"/><rect x="10" y="39" width="22" height="4" rx="2" fill="#93b8ff"/><path d="M78 30h28m-6-6 6 6-6 6" stroke="#1f55e6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="140" cy="30" r="20" fill="#eef6ff" stroke="#2f6bff" stroke-width="7" stroke-dasharray="90 36"/><circle cx="140" cy="30" r="20" fill="none" stroke="#f5b83d" stroke-width="7" stroke-dasharray="20 106" stroke-dashoffset="-90"/><rect x="180" y="16" width="56" height="30" rx="8" fill="#0d9488"/><text x="208" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">NET</text></svg>
     <div class="md:col-span-2 flex gap-2">
       <label class="flex-1 cursor-pointer rounded-xl border border-slate-300 p-3 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50">
         <input type="radio" name="mode" value="gross" class="mr-2" checked={p.mode !== 'net'} />{vi ? 'Gross → Net' : 'Gross → Net'}
@@ -66,6 +67,7 @@ const pending = (legal.items || []).filter((i: any) => i.impact && isoDate(i.dat
 
   <MonetizedResult context="finance" lang={lang}>
     <div data-out="summary"></div>
+    <div data-out="viz" class="mt-6 grid gap-6 lg:grid-cols-2"></div>
     <div data-out="breakdown" class="mt-6"></div>
     <div slot="bottom">
       <div data-out="brackets" class="mt-6"></div>
@@ -77,6 +79,7 @@ const pending = (legal.items || []).filter((i: any) => i.impact && isoDate(i.dat
 <script>
   import { calcSalary } from '../../lib/salary.js';
   import { fmtMoney, fmtPct } from '../../lib/format.js';
+  import { donut, flow, statCards } from '../../lib/viz.js';
   import { bindToolForm, showResult } from '../../scripts/form-state.js';
 
   const T = {
@@ -88,7 +91,8 @@ const pending = (legal.items || []).filter((i: any) => i.impact && isoDate(i.dat
       range: 'Phần thu nhập tính thuế', rate: 'Thuế suất', taxAmt: 'Tiền thuế', employerTitle: 'Chi phí doanh nghiệp phải trả',
       erBhxh: 'BHXH (17%)', erTnld: 'Quỹ TNLĐ-BNN (0,5%)', erBhyt: 'BHYT (3%)', erBhtn: 'BHTN (1%)', erTotal: 'Tổng chi phí NSDLĐ',
       breakdown: 'Diễn giải chi tiết', effective: 'Thuế suất thực tế', takeHome: 'Tỷ lệ thực nhận', over: 'Trên', upTo: 'Đến',
-      insBase: 'Lương đóng bảo hiểm', yearly: 'Thu nhập Net cả năm (12 tháng)'
+      insBase: 'Lương đóng bảo hiểm', yearly: 'Thu nhập Net cả năm (12 tháng)',
+      structure: 'Cơ cấu lương Gross', howTitle: 'Cách tính Gross → Net', deductions: 'Giảm trừ gia cảnh', progressive: 'Biểu lũy tiến 5 bậc'
     },
     en: {
       gross: 'Gross salary', net: 'Net salary (take-home)', tax: 'Personal income tax', ins: 'Employee insurance',
@@ -98,7 +102,8 @@ const pending = (legal.items || []).filter((i: any) => i.impact && isoDate(i.dat
       range: 'Assessable income band', rate: 'Rate', taxAmt: 'Tax', employerTitle: 'Total employer cost',
       erBhxh: 'Social insurance (17%)', erTnld: 'Occupational accident fund (0.5%)', erBhyt: 'Health insurance (3%)', erBhtn: 'Unemployment insurance (1%)', erTotal: 'Total employer cost',
       breakdown: 'Detailed breakdown', effective: 'Effective tax rate', takeHome: 'Take-home ratio', over: 'Over', upTo: 'Up to',
-      insBase: 'Insurance salary', yearly: 'Annual net income (12 months)'
+      insBase: 'Insurance salary', yearly: 'Annual net income (12 months)',
+      structure: 'Gross salary breakdown', howTitle: 'How Gross → Net works', deductions: 'Family deductions', progressive: '5-bracket progressive rate'
     }
   };
 
@@ -111,18 +116,32 @@ const pending = (legal.items || []).filter((i: any) => i.impact && isoDate(i.dat
 
     bindToolForm(form, (d: any) => {
       const r = calcSalary(d);
-      out('summary').innerHTML = `
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div class="stat"><div class="stat-label">${L.gross}</div><div class="stat-value">${m(r.gross)}</div></div>
-          <div class="stat bg-emerald-50"><div class="stat-label">${L.net}</div><div class="stat-value text-emerald-700">${m(r.net)}</div></div>
-          <div class="stat"><div class="stat-label">${L.ins}</div><div class="stat-value">${m(r.insurance)}</div></div>
-          <div class="stat"><div class="stat-label">${L.tax}</div><div class="stat-value">${m(r.pit)}</div></div>
-        </div>
+      out('summary').innerHTML = statCards([
+          { label: L.gross, value: m(r.gross), tone: 'brand' },
+          { label: L.net, value: m(r.net), tone: 'green' },
+          { label: L.ins, value: m(r.insurance), tone: 'sky' },
+          { label: L.tax, value: m(r.pit), tone: 'amber' }
+        ]) + `
         <div class="mt-3 flex flex-wrap gap-4 text-sm text-slate-600">
           <span>${L.effective}: <b>${fmtPct(r.effectiveTaxRate, lang, 2)}</b></span>
           <span>${L.takeHome}: <b>${fmtPct(r.takeHomeRate, lang, 1)}</b></span>
           <span>${L.yearly}: <b>${m(r.net * 12)}</b></span>
         </div>`;
+      const deduct = r.personalDeduction + r.dependentDeduction;
+      out('viz').innerHTML = `<div class="min-w-0">${donut([
+          { label: L.net, value: r.net, color: 'var(--viz-2)' },
+          { label: L.bhxh, value: r.bhxh, color: 'var(--viz-1)' },
+          { label: L.bhyt, value: r.bhyt, color: 'var(--viz-6)' },
+          { label: L.bhtn, value: r.bhtn, color: 'var(--viz-5)' },
+          { label: L.tax, value: r.pit, color: 'var(--viz-3)' }
+        ], fmtPct(r.takeHomeRate, lang, 0), { title: L.structure, format: m })}</div>
+        <div class="min-w-0">${flow([
+          { title: L.gross, text: m(r.gross) },
+          { title: '− ' + L.ins, text: `${m(r.gross)} − ${m(r.insurance)} = ${m(r.gross - r.insurance)}` },
+          { title: '− ' + L.deductions, text: `${m(Math.max(0, r.taxableIncome - r.insurance))} − ${m(deduct)} → ${L.assessable}: ${m(r.assessable)}` },
+          { title: '− ' + L.tax, text: `${L.progressive}: ${m(r.pit)}` },
+          { title: '= ' + L.net, text: m(r.net) }
+        ], { title: L.howTitle })}</div>`;
 
       const rows: [string, number, string?][] = [
         [L.gross, r.gross, 'font-semibold'],

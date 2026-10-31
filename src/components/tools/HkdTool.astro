@@ -7,6 +7,7 @@ const vi = lang === 'vi';
 ---
 <div data-tool="hkd" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
   <form class="card grid content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><path d="M6 22 16 6h68l10 16z" fill="#2f6bff"/><path d="M6 22h88v4a11 11 0 0 1-22 0 11 11 0 0 1-22 0 11 11 0 0 1-22 0 11 11 0 0 1-22 0z" fill="#93b8ff"/><rect x="14" y="30" width="72" height="22" fill="#eef6ff" stroke="#93b8ff" stroke-width="2"/><rect x="40" y="36" width="20" height="16" fill="#1a45b8"/><rect x="118" y="10" width="44" height="42" rx="5" fill="#fff" stroke="#cbd5e1" stroke-width="2"/><path d="M126 22h28M126 31h28M126 40h16" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/><circle cx="196" cy="30" r="20" fill="#f5b83d"/><text x="196" y="37" text-anchor="middle" font-size="20" font-weight="700" fill="#7c2d12">%</text></svg>
     <div><label class="label">{vi ? 'Doanh thu cả năm (đồng)' : 'Annual revenue (VND)'}</label><input class="input text-lg" name="rev" data-money inputmode="numeric" value="2.000.000.000" /></div>
     <div><label class="label">{vi ? 'Ngành nghề' : 'Business sector'}</label><select class="input" name="sector">{SECTORS.map((s) => <option value={s.id}>{vi ? s.vi : s.en}</option>)}</select></div>
     <div data-exp><label class="label">{vi ? 'Chi phí có hóa đơn cả năm (tùy chọn)' : 'Invoiced expenses per year (optional)'}</label><input class="input" name="exp" data-money inputmode="numeric" value="" /></div>
@@ -16,6 +17,7 @@ const vi = lang === 'vi';
 
 <script>
   import { hkdTax, THRESHOLD } from '../../lib/hkd.js';
+  import { bars, donut, flow } from '../../lib/viz.js';
 
   document.querySelectorAll<HTMLElement>('[data-tool="hkd"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
@@ -39,6 +41,22 @@ const vi = lang === 'vi';
         h += note(vi ? `Doanh thu ≤ ${n(THRESHOLD)} đ/năm: không phải nộp thuế GTGT và thuế TNCN.` : `Revenue ≤ ${n(THRESHOLD)} VND/year: no VAT and no PIT.`);
       } else {
         h += `<div class="mt-4 border-t pt-2">${row(vi ? 'Thuế GTGT' : 'VAT', `${n(r.vat)}${d}`)}${row(vi ? 'Thuế TNCN' : 'PIT', `${n(r.pit)}${d}`)}</div>`;
+        h += donut([
+          { label: vi ? 'Thuế GTGT' : 'VAT', value: r.vat, color: 'var(--viz-1)' },
+          { label: vi ? 'Thuế TNCN' : 'PIT', value: r.pit, color: 'var(--viz-3)' }
+        ], r.revenue > 0 ? pct(r.total / r.revenue) : '', { title: vi ? 'Cơ cấu thuế (giữa: tổng thuế / doanh thu)' : 'Tax mix (centre: total tax / revenue)', format: (v: number) => `${n(v)}${d}` });
+        if (r.mode === 'choice') h += bars([
+          { label: `(A) ${vi ? 'Theo tỷ lệ' : 'Rate method'}`, value: r.rateAmt!, color: 'var(--viz-1)', note: r.lower === 'rate' ? (vi ? 'thấp hơn' : 'lower') : '' },
+          { label: `(B) ${vi ? 'Theo thu nhập' : 'Income method'}`, value: r.incomeAmt!, color: 'var(--viz-5)', note: r.lower === 'income' ? (vi ? 'thấp hơn' : 'lower') : '' }
+        ], { title: vi ? 'So sánh thuế TNCN 2 phương án' : 'PIT under the 2 methods', format: (v: number) => `${n(v)}${d}` });
+        h += flow([
+          { title: vi ? 'Doanh thu cả năm' : 'Annual revenue', text: `${n(r.revenue)}${d}` },
+          { title: vi ? 'Thuế GTGT' : 'VAT', text: `${n(r.revenue)} × ${pct(r.sector.vat)} = ${n(r.vat)}${d}` },
+          { title: vi ? 'Thuế TNCN' : 'PIT', text: (r.mode === 'rent' || (r.mode === 'choice' && r.lower === 'rate'))
+            ? `(${n(r.revenue)} − ${n(THRESHOLD)}) × ${pct(r.sector.pit)} = ${n(r.pit)}${d}`
+            : `max(0, ${n(r.revenue)} − ${n(r.expenses)}) × ${pct(r.incomeRate ?? 0.15)} = ${n(r.pit)}${d}` },
+          { title: vi ? 'Tổng thuế phải nộp' : 'Total tax', text: `${n(r.vat)} + ${n(r.pit)} = ${n(r.total)}${d}` }
+        ], { title: vi ? 'Cách tính' : 'How it is calculated' });
         h += note((vi ? `GTGT = ${n(r.revenue)} × ${pct(r.sector.vat)}` : `VAT = ${n(r.revenue)} × ${pct(r.sector.vat)}`) + (r.sector.vatEst ? (vi ? ' (tỷ lệ ước tính)' : ' (estimated rate)') : '') + (vi ? '. Ước tính trên toàn bộ doanh thu theo phương pháp trực tiếp, Luật Thuế GTGT 48/2024/QH15.' : '. Estimated on total revenue, direct method, VAT Law 48/2024/QH15.'));
         if (r.mode === 'rent') {
           h += note(vi ? `TNCN = (${n(r.revenue)} − ${n(THRESHOLD)}) × 5%. Cho thuê bất động sản không áp dụng phương pháp thu nhập (khoản 4 Điều 7 Luật 109/2025/QH15).` : `PIT = (revenue − 1 bn) × 5%. Real-estate leasing has no income method (Law 109/2025/QH15, Art. 7(4)).`);

@@ -10,6 +10,7 @@ const years = Array.from({ length: 15 }, (_, i) => 2021 + i);
 ---
 <div data-tool="retireage" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
   <form class="card grid min-w-0 content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><path d="M8 30h200" stroke="#d9eaff" stroke-width="6" stroke-linecap="round"/><path d="M8 30h120" stroke="#2f6bff" stroke-width="6" stroke-linecap="round"/><circle cx="8" cy="30" r="7" fill="#2f6bff"/><circle cx="128" cy="30" r="8" fill="#d97706" stroke="#fde68a" stroke-width="4"/><circle cx="208" cy="30" r="7" fill="#fff" stroke="#0d9488" stroke-width="4"/><path d="M222 8h12v14h-12z" fill="#0d9488"/><path d="M222 8v40" stroke="#0d9488" stroke-width="2.5"/><circle cx="66" cy="14" r="5" fill="#93b8ff"/><path d="M60 26q6-8 12 0" fill="#93b8ff"/></svg>
     <div class="min-w-0"><label class="label">{vi ? 'Giới tính' : 'Sex'}</label>
       <div class="flex gap-2">
         <label class={blk}><input type="radio" name="sex" value="male" class="mr-2" checked />{vi ? 'Nam' : 'Male'}</label>
@@ -29,6 +30,7 @@ const years = Array.from({ length: 15 }, (_, i) => 2021 + i);
 
 <script>
   import { retirementAge, MIN_YEAR, MAX_YEAR } from '../../lib/retirement-age.js';
+  import { timeline, progress } from '../../lib/viz.js';
 
   document.querySelectorAll<HTMLElement>('[data-tool="retireage"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
@@ -53,6 +55,27 @@ const years = Array.from({ length: 15 }, (_, i) => 2021 + i);
       const left = r.reached ? (vi ? 'Đã đủ tuổi' : 'Already reached')
         : (r.leftYears || r.leftMonths) ? (vi ? `${r.leftYears} năm ${r.leftMonths} tháng` : `${en(r.leftYears, 'year')} ${en(r.leftMonths, 'month')}`)
         : (vi ? 'Đủ tuổi trong tháng này' : 'Reached this month');
+      {
+        // Tiến độ quãng đi làm tính từ 18 tuổi đến tháng đủ tuổi nghỉ hưu (theo tháng)
+        const now = new Date();
+        const bm = Number(get('month')), by = Number(get('year'));
+        const startIdx = (by + 18) * 12 + (bm - 1);
+        const endIdx = r.retireYear * 12 + (r.retireMonth - 1);
+        const nowIdx = now.getFullYear() * 12 + now.getMonth();
+        const span = endIdx - startIdx;
+        const ratio = span > 0 ? (nowIdx - startIdx) / span : 1;
+        const st = (idx: number) => (nowIdx > idx ? 'done' : 'next');
+        const pensionIdx = r.pensionYear * 12 + r.pensionMonth - 1;
+        const steps = [
+          { i: startIdx - 216, date: `${p2(bm)}/${by}`, title: vi ? 'Năm sinh' : 'Born', state: 'done' },
+          { i: startIdx, date: `${p2(bm)}/${by + 18}`, title: vi ? 'Đủ 18 tuổi – bắt đầu tính quãng đi làm' : 'Age 18 – working life starts', state: st(startIdx) },
+          { i: nowIdx + 0.5, date: `${p2(now.getDate())}/${p2(now.getMonth() + 1)}/${now.getFullYear()}`, title: vi ? 'Hôm nay' : 'Today', note: left, state: 'now' },
+          { i: endIdx, date: `${p2(r.retireDay)}/${p2(r.retireMonth)}/${r.retireYear}`, title: vi ? 'Nghỉ hưu' : 'Retirement', note: age(r.ageYears, r.ageMonths), state: st(endIdx) },
+          { i: pensionIdx, date: `01/${p2(r.pensionMonth)}/${r.pensionYear}`, title: vi ? 'Bắt đầu hưởng lương hưu' : 'Pension starts', state: st(pensionIdx) }
+        ].sort((a, b) => a.i - b.i);
+        h += timeline(steps, { title: vi ? 'Dòng thời gian' : 'Timeline' });
+        h += progress(ratio, vi ? 'Quãng đường đi làm đã qua (từ 18 tuổi)' : 'Working life elapsed (from age 18)');
+      }
       h += `<div class="mt-4 border-t pt-2">${row(vi ? 'Thời điểm nghỉ hưu' : 'Retirement date', `${p2(r.retireDay)}/${p2(r.retireMonth)}/${r.retireYear}`, true)}${row(vi ? 'Hưởng lương hưu từ' : 'Pension starts', `01/${p2(r.pensionMonth)}/${r.pensionYear}`)}${row(vi ? 'Còn lại (tính từ hôm nay)' : 'Time left (from today)', left)}</div>`;
       if (r.retireYear < 2021) h += note(vi ? 'Mốc này trước năm 2021 nên áp dụng quy định cũ (BLLĐ 2012, Luật BHXH 2014); đối chiếu với cơ quan BHXH.' : 'This falls before 2021, when the previous rules (Labour Code 2012) applied; check with the social insurance agency.');
       h += note(vi ? 'Thời điểm nghỉ hưu là kết thúc ngày cuối cùng của tháng đủ tuổi; lương hưu hưởng từ ngày 01 tháng liền kề.' : 'Retirement takes effect at the end of the last day of the month you reach the age; the pension starts on the 1st of the following month.');

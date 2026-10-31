@@ -6,6 +6,7 @@ const vi = lang === 'vi';
 ---
 <div data-tool="electric" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
   <form class="card grid gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="4" y="38" width="24" height="14" rx="3" fill="#2f6bff"/><rect x="34" y="32" width="24" height="20" rx="3" fill="#0d9488"/><rect x="64" y="26" width="24" height="26" rx="3" fill="#0284c7"/><rect x="94" y="20" width="24" height="32" rx="3" fill="#7c3aed"/><rect x="124" y="13" width="24" height="39" rx="3" fill="#d97706"/><rect x="154" y="6" width="24" height="46" rx="3" fill="#e11d48"/><path d="M212 4 196 30h12l-6 22 22-30h-13l7-18z" fill="#f5b83d" stroke="#b45309" stroke-width="1.5" stroke-linejoin="round"/></svg>
     <div class="flex gap-4 text-sm font-semibold">
       <label class="flex items-center gap-1"><input type="radio" name="mode" value="kwh" checked /> {vi ? 'Từ số kWh' : 'From kWh'}</label>
       <label class="flex items-center gap-1"><input type="radio" name="mode" value="bill" /> {vi ? 'Từ số tiền' : 'From bill'}</label>
@@ -26,6 +27,9 @@ const vi = lang === 'vi';
 
 <script>
   import { ELECTRIC_TIERS, electricBill, kwhFromBill } from '../../lib/electric.js';
+  import { barStack, statCards } from '../../lib/viz.js';
+  // Màu bậc 1→6 tăng dần độ "nóng": xanh dương, xanh ngọc, lam, tím, cam, đỏ
+  const TIER_C = [1, 2, 6, 5, 3, 4];
 
   document.querySelectorAll<HTMLElement>('[data-tool="electric"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
@@ -44,7 +48,13 @@ const vi = lang === 'vi';
       out.innerHTML = `
         <div class="text-sm text-slate-500">${byBill ? (vi ? 'Bạn đã dùng khoảng' : 'You used about') : (vi ? 'Tiền điện phải trả' : 'Your bill')}</div>
         <div class="text-4xl font-extrabold text-brand-700">${byBill ? `${kwh.toFixed(0)} kWh` : `${n(r.total)} đ`}</div>
-        <div class="mt-1 text-sm text-slate-500">${vi ? 'Chưa thuế' : 'Before VAT'} ${n(r.subtotal)} đ · ${vi ? 'Thuế' : 'VAT'} ${n(r.tax)} đ · ${vi ? 'Bình quân' : 'Avg'} ${kwh ? n(r.total / kwh) : 0} đ/kWh</div>
+        <div class="mt-3">${statCards([
+          { label: vi ? 'Tổng tiền' : 'Total', value: `${n(r.total)} đ`, tone: 'brand' },
+          { label: vi ? 'Chưa thuế' : 'Before VAT', value: `${n(r.subtotal)} đ`, tone: 'sky' },
+          { label: vi ? `Thuế GTGT ${Math.round(vat * 100)}%` : `VAT ${Math.round(vat * 100)}%`, value: `${n(r.tax)} đ`, tone: 'amber' },
+          { label: vi ? 'Bình quân / kWh' : 'Avg / kWh', value: `${kwh ? n(r.total / kwh) : 0} đ`, tone: 'green' }
+        ])}</div>
+        ${barStack(r.rows.filter((x) => x.kwh > 0).map((x) => ({ label: `${vi ? 'Bậc' : 'Tier'} ${x.tier} · ${x.kwh.toFixed(0)} kWh`, value: x.amount, color: `var(--viz-${TIER_C[x.tier - 1] || 1})` })), { title: vi ? 'Tiền điện theo bậc (chưa thuế)' : 'Charge by tier (before VAT)', format: (v: number) => `${n(v)} đ` })}
         <div class="table-wrap mt-4"><table class="data-table"><tbody>
           ${r.rows.filter((x) => x.kwh > 0).map((x) => `<tr><td>${vi ? 'Bậc' : 'Tier'} ${x.tier}</td><td class="num">${x.kwh.toFixed(0)} kWh × ${n(x.price)}</td><td class="num font-semibold">${n(x.amount)} đ</td></tr>`).join('')}
         </tbody></table></div>

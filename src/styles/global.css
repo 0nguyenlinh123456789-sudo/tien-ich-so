@@ -39,6 +39,65 @@
   .prose-lite ul { @apply mb-3 list-disc pl-6; }
 }
 
+/* ---- viz (src/lib/viz.js): bảng màu phân loại 6 màu, tương phản >= 3:1 trên nền trắng ---- */
+:root {
+  --viz-1: #2f6bff; --viz-2: #0d9488; --viz-3: #d97706; --viz-4: #e11d48; --viz-5: #7c3aed; --viz-6: #0284c7;
+  --viz-track: #e2e8f0; --viz-text: #0f172a; --viz-muted: #64748b;
+}
+/* Biến thể tối (site hiện chưa bật dark mode; sẵn sàng cho class .dark) */
+.dark {
+  --viz-1: #7aa2ff; --viz-2: #2dd4bf; --viz-3: #fbbf24; --viz-4: #fb7185; --viz-5: #a78bfa; --viz-6: #38bdf8;
+  --viz-track: #334155; --viz-text: #f1f5f9; --viz-muted: #94a3b8;
+}
+.viz { margin: 1rem 0 0; min-width: 0; }
+.viz-title { font-weight: 600; font-size: .875rem; margin-bottom: .5rem; color: var(--viz-text); }
+.viz-stack { display: flex; height: 1.25rem; border-radius: 999px; overflow: hidden; background: var(--viz-track); }
+.viz-seg { display: block; height: 100%; min-width: 3px; }
+.viz-seg + .viz-seg { box-shadow: inset 2px 0 0 #fff; }
+.viz-legend { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; gap: .3rem; font-size: .8125rem; min-width: 0; }
+.viz-legend li { display: flex; align-items: center; gap: .45rem; min-width: 0; }
+.viz-legend i { width: .75rem; height: .75rem; border-radius: 3px; flex: none; }
+.viz-lg-l { flex: 1; min-width: 0; overflow-wrap: anywhere; color: #334155; }
+.viz-legend b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.viz-legend small { color: var(--viz-muted); width: 3.2rem; text-align: right; flex: none; font-variant-numeric: tabular-nums; }
+.viz-donut-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.viz-donut-row svg { flex: none; width: 140px; height: 140px; transform: rotate(0); }
+.viz-donut-row .viz-legend { flex: 1 1 12rem; margin: 0; }
+.viz-donut-c { font-size: 6px; font-weight: 700; fill: var(--viz-text); }
+.viz-bar + .viz-bar { margin-top: .55rem; }
+.viz-bar-h { display: flex; justify-content: space-between; gap: .75rem; font-size: .8125rem; margin-bottom: .25rem; }
+.viz-bar-h span { min-width: 0; overflow-wrap: anywhere; color: #334155; }
+.viz-bar-h em { font-style: normal; font-size: .75rem; color: #15803d; background: #dcfce7; border-radius: 4px; padding: 0 .3rem; }
+.viz-bar-h b { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.viz-bar-t { height: .75rem; border-radius: 999px; background: var(--viz-track); overflow: hidden; }
+.viz-bar-t span { display: block; height: 100%; border-radius: 999px; }
+.viz-tl { list-style: none; margin: 0; padding: 0 0 0 .25rem; }
+.viz-tl li { position: relative; display: flex; gap: .75rem; padding-bottom: .9rem; }
+.viz-tl li:not(:last-child)::before { content: ""; position: absolute; left: .4rem; top: 1rem; bottom: 0; width: 2px; background: var(--viz-track); }
+.viz-tl-done:not(:last-child)::before { background: var(--viz-1) !important; }
+.viz-tl-dot { flex: none; width: .85rem; height: .85rem; margin-top: .2rem; border-radius: 999px; border: 2px solid var(--viz-1); background: #fff; position: relative; z-index: 1; }
+.viz-tl-done .viz-tl-dot { background: var(--viz-1); }
+.viz-tl-now .viz-tl-dot { background: var(--viz-3); border-color: var(--viz-3); box-shadow: 0 0 0 4px #fde68a; }
+.viz-tl-d { font-size: .75rem; color: var(--viz-muted); font-variant-numeric: tabular-nums; }
+.viz-tl-t { font-weight: 600; font-size: .875rem; color: var(--viz-text); }
+.viz-tl-n { font-size: .75rem; color: var(--viz-muted); }
+.viz-flow { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.viz-flow li { position: relative; display: flex; align-items: flex-start; gap: .65rem; padding: .55rem .7rem; border-radius: .75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid var(--c); min-width: 0; }
+.viz-flow li:not(:last-child)::after { content: ""; position: absolute; left: 1.45rem; bottom: -.5rem; border: .3rem solid transparent; border-top-color: #94a3b8; transform: translateY(.3rem); }
+.viz-flow-n { flex: none; width: 1.6rem; height: 1.6rem; border-radius: 999px; background: var(--c); color: #fff; font-weight: 700; font-size: .8rem; display: grid; place-items: center; }
+.viz-flow-t { font-weight: 600; font-size: .875rem; color: var(--viz-text); }
+.viz-flow-x { font-size: .8125rem; color: #475569; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.viz-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: .6rem; }
+.viz-stat { border-radius: .85rem; padding: .7rem .85rem; border: 1px solid; min-width: 0; }
+.viz-stat-l { font-size: .7rem; text-transform: uppercase; letter-spacing: .03em; opacity: .85; }
+.viz-stat-v { font-size: 1.15rem; font-weight: 800; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.viz-tone-brand { background: #eef6ff; border-color: #d9eaff; color: #1a45b8; }
+.viz-tone-green { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
+.viz-tone-amber { background: #fffbeb; border-color: #fde68a; color: #b45309; }
+.viz-tone-rose { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+.viz-tone-sky { background: #f0f9ff; border-color: #bae6fd; color: #0369a1; }
+.viz-art { display: block; width: 100%; max-width: 15rem; height: 3.5rem; margin-bottom: .5rem; }
+
 .tarot-card { perspective: 1000px; }
 .tarot-inner { transition: transform 0.7s; transform-style: preserve-3d; position: relative; }
 .tarot-card.flipped .tarot-inner { transform: rotateY(180deg); }

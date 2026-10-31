@@ -9,6 +9,7 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
 ---
 <div data-tool="water" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
   <form class="card grid min-w-0 content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><path d="M30 4C22 18 14 27 14 36a16 16 0 0 0 32 0c0-9-8-18-16-32z" fill="#0284c7"/><path d="M22 36a8 8 0 0 0 8 8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="62" y="40" width="34" height="12" rx="3" fill="#93b8ff"/><rect x="102" y="32" width="34" height="20" rx="3" fill="#2f6bff"/><rect x="142" y="22" width="34" height="30" rx="3" fill="#0d9488"/><rect x="182" y="10" width="34" height="42" rx="3" fill="#1a45b8"/><path d="M58 53h170" stroke="#cbd5e1" stroke-width="2"/></svg>
     <div class="min-w-0"><label class="label">{vi ? 'Khu vực' : 'Area'}</label>
       <select class="input w-full min-w-0" name="region">
         <option value="hanoi">Hà Nội</option>
@@ -56,6 +57,7 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
 
 <script>
   import { waterBill, m3FromBill, CUSTOM_DEFAULT } from '../../lib/water.js';
+  import { barStack, statCards } from '../../lib/viz.js';
 
   document.querySelectorAll<HTMLElement>('[data-tool="water"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
@@ -116,6 +118,13 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
       if (!inv) h += `<div class="text-sm text-slate-500">${vi ? 'Tổng tiền nước' : 'Total water bill'}</div><div class="text-4xl font-extrabold text-brand-700 break-words">${money(r.total)}</div>`;
 
       const used = r.rows.filter((x) => x.m3 > 0);
+      h += `<div class="mt-3">${statCards([
+        { label: vi ? 'Tổng cộng' : 'Total', value: money(r.total), tone: 'brand' },
+        { label: vi ? 'Tiền nước chưa VAT' : 'Water excl. VAT', value: money(r.subtotal), tone: 'sky' },
+        { label: vi ? 'Thuế & phí' : 'Taxes & fees', value: money(r.total - r.subtotal), tone: 'amber' },
+        { label: vi ? 'Bình quân / m³' : 'Avg / m³', value: m3 > 0 ? money(r.total / m3) : '0', tone: 'green' }
+      ])}</div>`;
+      h += barStack(used.map((x) => ({ label: `${vi ? 'Bậc' : 'Tier'} ${x.tier} · ${n2(x.m3)} m³`, value: x.amount })), { title: vi ? 'Tiền nước theo bậc (chưa VAT)' : 'Charge by tier (excl. VAT)', format: money });
       if (used.length) {
         h += `<div class="mt-4 overflow-x-auto"><table class="w-full text-left text-sm"><thead class="text-slate-500"><tr><th>${vi ? 'Bậc' : 'Tier'}</th><th>m³</th><th class="text-right">${vi ? 'Đơn giá' : 'Price'}</th><th class="text-right">${vi ? 'Thành tiền' : 'Amount'}</th></tr></thead><tbody>`;
         h += used.map((x) => `<tr><td>${x.tier} <span class="text-xs text-slate-400">(${n2(x.from)}–${x.to === Infinity ? '…' : n2(x.to)})</span></td><td>${n2(x.m3)}</td><td class="text-right">${Math.round(x.price).toLocaleString(vi ? 'vi-VN' : 'en-US')}</td><td class="text-right">${money(x.amount)}</td></tr>`).join('');
