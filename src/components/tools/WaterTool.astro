@@ -1,0 +1,142 @@
+---
+// Tính tiền nước sinh hoạt. Logic: src/lib/water.js
+// HN: QĐ 3541/QĐ-UBND (2023); TP.HCM: QĐ 25/2019/QĐ-UBND; HP: QĐ 05/2024/QĐ-UBND; NĐ 346/2025/NĐ-CP; Luật GTGT 48/2024/QH15
+import { CUSTOM_DEFAULT } from '../../lib/water.js';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-3 text-sm has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50';
+---
+<div data-tool="water" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid min-w-0 content-start gap-3" data-f>
+    <div class="min-w-0"><label class="label">{vi ? 'Khu vực' : 'Area'}</label>
+      <select class="input w-full min-w-0" name="region">
+        <option value="hanoi">Hà Nội</option>
+        <option value="hcm">{vi ? 'TP.HCM (vùng Sawaco)' : 'Ho Chi Minh City (Sawaco area)'}</option>
+        <option value="haiphong_urban">{vi ? 'Hải Phòng – đô thị' : 'Hai Phong – urban'}</option>
+        <option value="haiphong_rural">{vi ? 'Hải Phòng – nông thôn' : 'Hai Phong – rural'}</option>
+        <option value="custom">{vi ? 'Tỉnh khác – tự nhập biểu giá' : 'Other province – enter tariff'}</option>
+      </select></div>
+    <div class="min-w-0"><label class="label">{vi ? 'Chế độ' : 'Mode'}</label>
+      <div class="flex gap-2">
+        <label class={blk}><input type="radio" name="mode" value="fwd" class="mr-2" checked />{vi ? 'Biết số m³' : 'From m³'}</label>
+        <label class={blk}><input type="radio" name="mode" value="inv" class="mr-2" />{vi ? 'Biết số tiền' : 'From bill amount'}</label>
+      </div></div>
+    <div class="min-w-0" data-fwd><label class="label">{vi ? 'Lượng nước tiêu thụ (m³/tháng)' : 'Water used (m³/month)'}</label><input class="input w-full min-w-0" name="m3" inputmode="decimal" value="15" /></div>
+    <div class="hidden min-w-0" data-inv><label class="label">{vi ? 'Tổng tiền trên hóa đơn (đồng)' : 'Bill total (VND)'}</label><input class="input w-full min-w-0" name="amount" inputmode="numeric" value="200000" /></div>
+    <div class="hidden min-w-0" data-hcm><label class="label">{vi ? 'Số nhân khẩu đăng ký định mức' : 'Registered household members'}</label><input class="input w-full min-w-0" name="people" inputmode="numeric" value="4" /></div>
+    <label class="flex min-w-0 cursor-pointer items-start gap-2 text-sm" data-poor><input type="checkbox" name="poor" class="mt-1" /><span class="min-w-0 break-words">{vi ? 'Hộ nghèo / cận nghèo (Hà Nội: cả hộ chính sách) – giá ưu đãi bậc 1' : 'Poor / near-poor household (Hanoi: also policy households) – reduced tier-1 price'}</span></label>
+    <div class="hidden min-w-0" data-fee><label class="label">{vi ? 'Phí BVMT / thoát nước (theo hóa đơn của bạn)' : 'Wastewater / drainage fee (as on your bill)'}</label>
+      <div class="flex gap-2">
+        <label class={blk}><input type="radio" name="fee" value="0.1" class="mr-2" checked />10%</label>
+        <label class={blk}><input type="radio" name="fee" value="0" class="mr-2" />0%</label>
+      </div></div>
+    <div class="hidden min-w-0" data-custom>
+      <label class="label">{vi ? 'Biểu giá (đồng/m³)' : 'Tariff (VND/m³)'}</label>
+      <div class="grid gap-2">
+        {CUSTOM_DEFAULT.map((t, i) => (
+          <div class="flex min-w-0 items-center gap-2 text-sm">
+            <span class="w-14 shrink-0">{vi ? `Bậc ${i + 1}` : `Tier ${i + 1}`}</span>
+            {t.to === Infinity
+              ? <span class="min-w-0 flex-1 text-slate-500">{vi ? 'phần còn lại' : 'the rest'}</span>
+              : <input class="input w-full min-w-0 flex-1" name={`to${i}`} inputmode="decimal" value={t.to} aria-label={vi ? `Đến m³ bậc ${i + 1}` : `Up to m³, tier ${i + 1}`} />}
+            <input class="input w-full min-w-0 flex-1" name={`price${i}`} inputmode="numeric" value={t.price} aria-label={vi ? `Đơn giá bậc ${i + 1}` : `Price tier ${i + 1}`} />
+          </div>))}
+      </div>
+      <p class="mt-1 text-xs text-slate-500">{vi ? 'Cột trái: đến bao nhiêu m³ (cộng dồn); cột phải: đơn giá. Số mẫu – sửa theo biểu giá tỉnh bạn.' : 'Left: up to m³ (cumulative); right: price. Sample values – edit to match your province.'}</p>
+      <div class="mt-2 flex gap-2">
+        <label class={blk}><input type="radio" name="inc" value="0" class="mr-2" checked />{vi ? 'Giá chưa VAT' : 'Excl. VAT'}</label>
+        <label class={blk}><input type="radio" name="inc" value="1" class="mr-2" />{vi ? 'Giá đã gồm VAT' : 'Incl. VAT'}</label>
+      </div>
+    </div>
+    <p class="text-xs text-slate-500">{vi ? 'Áp dụng biểu giá vùng tỉnh cũ trước sáp nhập; Bình Dương, Bà Rịa–Vũng Tàu, Quảng Nam… vẫn dùng giá riêng – chọn "Tự nhập".' : 'Uses pre-merger provincial tariffs; Binh Duong, Ba Ria–Vung Tau, Quang Nam… keep their own prices – choose "Other province".'}</p>
+  </form>
+  <div class="card min-w-0" data-out></div>
+</div>
+
+<script>
+  import { waterBill, m3FromBill, CUSTOM_DEFAULT } from '../../lib/water.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="water"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const get = (k: string) => String(new FormData(form).get(k) ?? '');
+    const parse = (s: string) => { const t = s.replace(/\s/g, ''); return t === '' ? NaN : Number(vi ? t.replace(/\./g, '').replace(',', '.') : t.replace(/,/g, '')); };
+    const parseM3 = (s: string) => { const t = s.trim(); return t === '' ? NaN : Number(t.replace(',', '.')); };
+    const money = (x: number) => Math.round(x).toLocaleString(vi ? 'vi-VN' : 'en-US') + (vi ? ' đ' : ' VND');
+    const n2 = (x: number) => (Math.round(x * 100) / 100).toLocaleString(vi ? 'vi-VN' : 'en-US');
+    const warn = (s: string) => `<div class="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-800">${s}</div>`;
+    const note = (s: string) => `<p class="mt-3 text-xs text-slate-500">${s}</p>`;
+    const row = (l: string, v: string, b = false) => `<div class="flex justify-between gap-3 py-1 text-sm ${b ? 'font-semibold' : ''}"><span class="min-w-0 break-words">${l}</span><span class="min-w-0 break-words text-right">${v}</span></div>`;
+    const show = (sel: string, on: boolean) => root.querySelector(sel)!.classList.toggle('hidden', !on);
+
+    const calc = () => {
+      const region = get('region');
+      const inv = get('mode') === 'inv';
+      show('[data-fwd]', !inv); show('[data-inv]', inv);
+      show('[data-hcm]', region === 'hcm');
+      show('[data-poor]', region === 'hanoi' || region === 'hcm');
+      show('[data-fee]', region.startsWith('haiphong') || region === 'custom');
+      show('[data-custom]', region === 'custom');
+
+      const opts: any = { region, poor: (region === 'hanoi' || region === 'hcm') && get('poor') === 'on', feeRate: Number(get('fee')), now: new Date() };
+      if (region === 'hcm') {
+        const p = parse(get('people'));
+        if (!Number.isInteger(p) || p < 1 || p > 100) { out.innerHTML = warn(vi ? 'Nhập số nhân khẩu từ 1 đến 100.' : 'Enter 1 to 100 household members.'); return; }
+        opts.people = p;
+      }
+      if (region === 'custom') {
+        const tiers = CUSTOM_DEFAULT.map((t, i) => ({ to: t.to === Infinity ? Infinity : parseM3(get(`to${i}`)), price: parse(get(`price${i}`)) }));
+        let prev = 0;
+        for (const t of tiers) {
+          if (!Number.isFinite(t.price) || t.price < 0 || t.price > 1e6) { out.innerHTML = warn(vi ? 'Đơn giá mỗi bậc phải là số từ 0 đến 1.000.000.' : 'Each price must be 0 to 1,000,000.'); return; }
+          if (t.to !== Infinity) {
+            if (!Number.isFinite(t.to) || t.to <= prev || t.to > 10000) { out.innerHTML = warn(vi ? 'Ngưỡng m³ phải là số dương, tăng dần qua từng bậc.' : 'Thresholds must be positive and increasing.'); return; }
+            prev = t.to;
+          }
+        }
+        opts.customTiers = tiers;
+        opts.customVatIncluded = get('inc') === '1';
+      }
+
+      let m3: number;
+      let h = '';
+      if (inv) {
+        const amt = parse(get('amount'));
+        if (!Number.isFinite(amt) || amt <= 0 || amt > 1e9) { out.innerHTML = warn(vi ? 'Nhập số tiền lớn hơn 0 (tối đa 1 tỷ đồng).' : 'Enter an amount above 0 (max 1 billion VND).'); return; }
+        if (waterBill({ ...opts, m3: 100000 }).total <= 0) { out.innerHTML = warn(vi ? 'Biểu giá toàn 0 đồng – không suy ra được số m³.' : 'All prices are zero – cannot derive m³.'); return; }
+        m3 = m3FromBill(amt, opts);
+        h += `<div class="text-sm text-slate-500">${vi ? 'Lượng nước tương ứng' : 'Equivalent water use'}</div><div class="text-4xl font-extrabold text-brand-700 break-words">${n2(m3)} m³</div>`;
+      } else {
+        m3 = parseM3(get('m3'));
+        if (!Number.isFinite(m3) || m3 < 0 || m3 > 10000) { out.innerHTML = warn(vi ? 'Nhập số m³ từ 0 đến 10.000.' : 'Enter 0 to 10,000 m³.'); return; }
+      }
+      const r = waterBill({ ...opts, m3 });
+      if (!inv) h += `<div class="text-sm text-slate-500">${vi ? 'Tổng tiền nước' : 'Total water bill'}</div><div class="text-4xl font-extrabold text-brand-700 break-words">${money(r.total)}</div>`;
+
+      const used = r.rows.filter((x) => x.m3 > 0);
+      if (used.length) {
+        h += `<div class="mt-4 overflow-x-auto"><table class="w-full text-left text-sm"><thead class="text-slate-500"><tr><th>${vi ? 'Bậc' : 'Tier'}</th><th>m³</th><th class="text-right">${vi ? 'Đơn giá' : 'Price'}</th><th class="text-right">${vi ? 'Thành tiền' : 'Amount'}</th></tr></thead><tbody>`;
+        h += used.map((x) => `<tr><td>${x.tier} <span class="text-xs text-slate-400">(${n2(x.from)}–${x.to === Infinity ? '…' : n2(x.to)})</span></td><td>${n2(x.m3)}</td><td class="text-right">${Math.round(x.price).toLocaleString(vi ? 'vi-VN' : 'en-US')}</td><td class="text-right">${money(x.amount)}</td></tr>`).join('');
+        h += `</tbody></table></div>`;
+      }
+      h += `<div class="mt-3 border-t pt-2">${row(vi ? 'Tiền nước (chưa VAT)' : 'Water charge (excl. VAT)', money(r.subtotal))}${row(vi ? 'VAT 5%' : 'VAT 5%', money(r.vat))}`;
+      if (r.fee > 0) h += row(vi ? `Phí BVMT nước thải ${Math.round(r.fee * 100)}%` : `Wastewater fee ${Math.round(r.fee * 100)}%`, money(r.feeAmt));
+      if (r.drainage > 0) h += row(vi ? 'Giá dịch vụ thoát nước 30%' : 'Drainage service 30%', money(r.drainAmt)) + row(vi ? `VAT thoát nước ${Math.round(r.drainVat * 100)}%` : `Drainage VAT ${Math.round(r.drainVat * 100)}%`, money(r.drainVatAmt));
+      h += row(vi ? 'Tổng cộng' : 'Total', money(r.total), true) + `</div>`;
+      if (region === 'hcm') h += note(vi ? `Định mức: ${opts.people} người × 4 m³ = ${opts.people * 4} m³ bậc 1; đến ${opts.people * 6} m³ là bậc 2. Không thu thêm phí BVMT nước thải.` : `Allowance: ${opts.people} people × 4 m³ = ${opts.people * 4} m³ at tier 1; up to ${opts.people * 6} m³ at tier 2. No separate wastewater fee.`);
+      h += note(vi ? 'Hóa đơn thực tế có thể chênh vài đồng do làm tròn.' : 'Your actual bill may differ by a few VND due to rounding.');
+      h += `<details class="mt-3 text-xs text-slate-500"><summary class="cursor-pointer">${vi ? 'Căn cứ' : 'Sources'}</summary><ul class="mt-1 list-disc pl-4">`
+        + (vi
+          ? '<li>Hà Nội: QĐ 3541/QĐ-UBND ngày 07/7/2023, áp dụng từ 01/01/2024 (bậc theo m³/đồng hồ/tháng).</li><li>TP.HCM (vùng Sawaco, trước sáp nhập; không áp dụng khu vực Bình Dương, Bà Rịa–Vũng Tàu cũ): lộ trình QĐ 25/2019/QĐ-UBND, giữ nguyên năm 2026; giá dịch vụ thoát nước 30% tiền nước chưa VAT, VAT 8% đến 31/12/2026 (NQ 204/2025/QH15).</li><li>Hải Phòng: QĐ 05/2024/QĐ-UBND, hiệu lực 01/3/2024.</li><li>Phí BVMT nước thải 10% giá nước chưa VAT (NĐ 346/2025/NĐ-CP); VAT nước sạch 5% (Luật Thuế GTGT 48/2024/QH15).</li>'
+          : '<li>Hanoi: Decision 3541/QĐ-UBND of 07/7/2023, from 01/01/2024 (tiers per m³/meter/month).</li><li>HCMC (Sawaco area, pre-merger; not former Binh Duong, Ba Ria–Vung Tau): Decision 25/2019/QĐ-UBND roadmap, unchanged in 2026; drainage service 30% of pre-VAT water charge, VAT 8% until 31/12/2026 (Resolution 204/2025/QH15).</li><li>Hai Phong: Decision 05/2024/QĐ-UBND, effective 01/3/2024.</li><li>Wastewater fee 10% of pre-VAT water price (Decree 346/2025/ND-CP); clean water VAT 5% (VAT Law 48/2024/QH15).</li>')
+        + `</ul></details>`;
+      h += `<p class="mt-3 text-xs font-semibold text-amber-700">${vi ? 'Tham khảo; số tiền chính thức theo hóa đơn công ty cấp nước. Cập nhật 10/2026.' : 'Reference only; the official amount is on your water company bill. Updated 10/2026.'}</p>`;
+      out.innerHTML = h;
+    };
+    form.addEventListener('input', calc);
+    form.addEventListener('change', calc);
+    calc();
+  });
+</script>

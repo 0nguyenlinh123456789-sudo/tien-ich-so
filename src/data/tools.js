@@ -348,6 +348,30 @@ export const TOOLS = [
     ]
   },
   {
+    id: 'retireage', section: 'finance', icon: '👴',
+    slug: { vi: 'tinh-tuoi-nghi-huu', en: 'vietnam-retirement-age-calculator' },
+    title: { vi: 'Tuổi nghỉ hưu', en: 'Retirement Age' },
+    seo: { vi: 'Tính tuổi nghỉ hưu theo năm sinh – nam, nữ (NĐ 135)', en: 'Vietnam Retirement Age Calculator' },
+    desc: { vi: 'Khi nào nghỉ hưu?', en: 'When do you retire?' },
+    faq: [
+      { q: { vi: 'Tuổi nghỉ hưu năm 2026 là bao nhiêu?', en: 'What is the retirement age in 2026?' }, a: { vi: 'Trong điều kiện lao động bình thường, năm 2026 tuổi nghỉ hưu của nam là 61 tuổi 6 tháng, của nữ là 57 tuổi (Điều 169 BLLĐ 2019, Phụ lục I NĐ 135/2020/NĐ-CP). Mỗi năm sau đó tăng nam 3 tháng (đến 62 tuổi năm 2028), nữ 4 tháng (đến 60 tuổi năm 2035).', en: 'Under normal conditions, in 2026 it is 61 years 6 months for men and 57 years for women (Labour Code 2019 Art. 169, Decree 135/2020 Appendix I). It then rises 3 months/year for men (to 62 in 2028) and 4 months/year for women (to 60 in 2035).' } },
+      { q: { vi: 'Nam sinh năm 1970 nghỉ hưu năm nào?', en: 'When does a man born in 1970 retire?' }, a: { vi: 'Nam sinh năm 1970 nghỉ hưu khi đủ 62 tuổi, tức năm 2032 (ví dụ sinh tháng 6/1970: nghỉ hưu 30/06/2032, hưởng lương hưu từ 01/07/2032), nếu đủ 15 năm đóng BHXH.', en: 'A man born in 1970 retires at 62, i.e. in 2032 (e.g. born 6/1970: retires 30/06/2032, pension from 01/07/2032), provided he has 15 years of contributions.' } },
+      { q: { vi: 'Nghỉ hưu sớm được bao nhiêu tuổi?', en: 'How early can you retire?' }, a: { vi: 'Tối đa 5 tuổi thấp hơn tuổi nghỉ hưu bình thường nếu có đủ 15 năm làm nghề nặng nhọc, độc hại, nguy hiểm hoặc ở vùng đặc biệt khó khăn, hoặc suy giảm khả năng lao động từ 61% (Điều 169 k3 BLLĐ, Điều 5 NĐ 135/2020/NĐ-CP). Ví dụ năm 2026: nam 56 tuổi 6 tháng, nữ 52 tuổi.', en: 'Up to 5 years below the normal age with 15+ years in arduous, hazardous or dangerous jobs or extremely difficult areas, or work capacity reduced by 61%+ (Labour Code Art. 169(3), Decree 135/2020 Art. 5). In 2026: men 56y6m, women 52.' } }
+    ]
+  },
+  {
+    id: 'water', section: 'life', icon: '💧',
+    slug: { vi: 'tinh-tien-nuoc', en: 'vietnam-water-bill-calculator' },
+    title: { vi: 'Tính tiền nước', en: 'Water Bill' },
+    seo: { vi: 'Tính tiền nước sinh hoạt 2026 – Hà Nội, TP.HCM, Hải Phòng', en: 'Vietnam Water Bill Calculator 2026' },
+    desc: { vi: 'Giá nước bậc thang, VAT, phí.', en: 'Tiered water price, VAT, fees.' },
+    faq: [
+      { q: { vi: 'Hà Nội dùng 15 m³ nước thì trả bao nhiêu tiền?', en: 'How much is 15 m³ of water in Hanoi?' }, a: { vi: 'Theo QĐ 3541/QĐ-UBND: 10 m³ × 8.500 + 5 m³ × 9.900 = 134.500 đ (chưa VAT); VAT 5% = 6.725 đ; phí BVMT nước thải 10% = 13.450 đ. Tổng 154.675 đ.', en: 'Per Decision 3541/QĐ-UBND: 10 m³ × 8,500 + 5 m³ × 9,900 = 134,500 VND (excl. VAT); VAT 5% = 6,725; wastewater fee 10% = 13,450. Total 154,675 VND.' } },
+      { q: { vi: 'TP.HCM hộ 4 người dùng 20 m³ thì tiền nước bao nhiêu?', en: 'HCMC, 4-person household using 20 m³: how much?' }, a: { vi: 'Định mức bậc 1 = 4 người × 4 m³ = 16 m³; bậc 2 đến 24 m³. Tiền nước: 16 × 6.700 + 4 × 12.900 = 158.800 đ; VAT 5% = 7.940 đ; giá thoát nước 30% = 47.640 đ, VAT 8% = 3.811 đ. Tổng khoảng 218.191 đ (năm 2026).', en: 'Tier 1 = 4 people × 4 m³ = 16 m³; tier 2 up to 24 m³. Water: 16 × 6,700 + 4 × 12,900 = 158,800 VND; VAT 5% = 7,940; drainage 30% = 47,640, VAT 8% = 3,811. Total about 218,191 VND (2026).' } },
+      { q: { vi: 'Tiền nước phải chịu những khoản thuế, phí nào?', en: 'Which taxes and fees apply to water bills?' }, a: { vi: 'VAT 5% trên tiền nước (Luật Thuế GTGT 48/2024/QH15) và phí BVMT đối với nước thải 10% giá nước chưa VAT (NĐ 346/2025/NĐ-CP). Ở TP.HCM thay phí BVMT bằng giá dịch vụ thoát nước 30% tiền nước, chịu VAT 8% đến hết 2026.', en: 'VAT 5% on water (VAT Law 48/2024/QH15) and a wastewater fee of 10% of the pre-VAT price (Decree 346/2025/ND-CP). HCMC instead charges a drainage service of 30% of the water charge, with 8% VAT through 2026.' } }
+    ]
+  },
+  {
     id: 'diemtb', section: 'life', icon: '📚',
     slug: { vi: 'tinh-diem-trung-binh-mon', en: 'vietnam-school-grade-average' },
     title: { vi: 'Điểm trung bình môn', en: 'School Grade Average' },
