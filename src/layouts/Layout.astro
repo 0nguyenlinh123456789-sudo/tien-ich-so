@@ -60,6 +60,8 @@ const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     {MONETIZATION.bannerScriptUrl && (
       <script is:inline async data-cfasync="false" src={MONETIZATION.bannerScriptUrl} {...bannerAttrs}></script>
     )}
+    <!-- Cloudflare Web Analytics (free, cookieless) -->
+    <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "4343af725375427a853c13ed23b30011"}'></script>
   </head>
   <body class="min-h-screen">
     <header class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-lg">
