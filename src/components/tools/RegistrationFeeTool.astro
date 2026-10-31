@@ -8,6 +8,7 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
 ---
 <div data-tool="truocba" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
   <form class="card grid min-w-0 content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><path d="M8 34l8-14a6 6 0 0 1 5-3h30a6 6 0 0 1 5 3l8 14z" fill="#93b8ff"/><rect x="4" y="32" width="68" height="14" rx="5" fill="#2f6bff"/><circle cx="20" cy="47" r="6" fill="#1e293b"/><circle cx="56" cy="47" r="6" fill="#1e293b"/><path d="M84 30h18m-6-6 6 6-6 6" stroke="#94a3b8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="112" y="10" width="40" height="40" rx="4" fill="#fff" stroke="#d97706" stroke-width="2.5"/><path d="M120 22h24M120 30h24M120 38h14" stroke="#d97706" stroke-width="3" stroke-linecap="round"/><rect x="164" y="18" width="70" height="24" rx="4" fill="#fff" stroke="#0f172a" stroke-width="2.5"/><text x="199" y="35" text-anchor="middle" font-size="12" font-weight="700" font-family="monospace" fill="#0f172a">15A-123</text></svg>
     <div class="min-w-0"><label class="label">{vi ? 'Loại xe' : 'Vehicle type'}</label><select class="input w-full min-w-0" name="vehicle">{VEHICLES.map((v) => <option value={v.id}>{vi ? v.vi : v.en}</option>)}</select>
       <p class="mt-1 text-xs text-slate-500">{vi ? 'Theo tên loại xe trên giấy đăng kiểm: "xe con pick-up" chọn nhóm ≤ 9 chỗ.' : 'Follow the vehicle type on the inspection certificate: a "passenger pick-up" (xe con pick-up) belongs to the ≤ 9 seats group.'}</p></div>
     <div class="flex gap-2">
@@ -29,6 +30,7 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
 
 <script>
   import { registrationFee, EV_FREE_UNTIL } from '../../lib/registration-fee.js';
+  import { donut, statCards } from '../../lib/viz.js';
 
   document.querySelectorAll<HTMLElement>('[data-tool="truocba"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
@@ -54,6 +56,15 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
         return;
       }
       let h = `<div class="text-sm text-slate-500">${vi ? 'Tổng thuế/phí nhà nước khi lăn bánh' : 'Total government fees to register'}</div><div class="text-4xl font-extrabold text-brand-700 break-all">${n(r.total)}${d}</div>`;
+      h += `<div class="mt-4">${statCards([
+        { label: `${vi ? 'Lệ phí trước bạ' : 'Registration tax'} (${pct(r.rate)})`, value: `${n(r.tax)}${d}`, tone: 'brand' },
+        { label: vi ? 'Phí biển số' : 'Plate fee', value: first ? `${n(r.plate)}${d}` : (vi ? 'không áp dụng' : 'n/a'), tone: 'amber' },
+        { label: vi ? 'Tổng' : 'Total', value: `${n(r.total)}${d}`, tone: 'green' }
+      ])}</div>`;
+      h += donut([
+        { label: vi ? 'Lệ phí trước bạ' : 'Registration tax', value: r.tax, color: 'var(--viz-1)' },
+        { label: vi ? 'Phí đăng ký, cấp biển số' : 'Plate & registration fee', value: first ? r.plate : 0, color: 'var(--viz-3)' }
+      ], r.total > 0 ? `${Math.round((r.tax / r.total) * 100)}%` : '', { title: vi ? 'Cơ cấu tổng phí' : 'Fee breakdown', format: (v: number) => `${n(v)}${d}` });
       h += `<div class="mt-4 border-t pt-2">${row(`${vi ? 'Lệ phí trước bạ' : 'Registration tax'} (${pct(r.rate)})`, `${n(r.tax)}${d}`)}${row(vi ? 'Phí đăng ký, cấp biển số' : 'Plate & registration fee', first ? `${n(r.plate)}${d}` : (vi ? 'không áp dụng' : 'n/a'))}${row(vi ? 'Tổng' : 'Total', `${n(r.total)}${d}`, true)}</div>`;
       let f = `${vi ? 'Trước bạ' : 'Tax'} = ${n(r.price)} × ${pct(r.rate)} = ${n(r.tax)}${d}`;
       if (r.vehicle === 'pickup' && first) f += vi ? ` (60% × ${pct(r.carRate)} mức ô tô con)` : ` (60% × ${pct(r.carRate)} car rate)`;

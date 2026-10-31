@@ -6,11 +6,13 @@ const vi = lang === 'vi';
 const codes = Object.keys(FX.rates);
 const fmt = (x: number | null) => (x ? x.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : '–');
 ---
-<div data-tool="fx" data-lang={lang} class="grid gap-5">
-  <div class="card grid items-end gap-3 sm:grid-cols-[1fr_auto_1fr]">
-    <div><label class="label">{vi ? 'Số tiền' : 'Amount'}</label><input class="input text-2xl" type="number" min="0" step="any" value="100" data-v /><select class="input mt-2" data-cur>{codes.map((c) => <option value={c} selected={c === 'USD'}>{c} – {(FX.rates as any)[c].name}</option>)}</select></div>
+<div data-tool="fx" data-lang={lang} class="grid grid-cols-1 gap-5">
+  <div class="card grid min-w-0 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+    <svg class="viz-art sm:col-span-3" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><circle cx="28" cy="28" r="22" fill="#0d9488"/><text x="28" y="35" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">$</text><path d="M62 20h44m-7-7 7 7-7 7M106 38H62m7-7-7 7 7 7" stroke="#94a3b8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="140" cy="28" r="22" fill="#e11d48"/><text x="140" y="35" text-anchor="middle" font-size="20" font-weight="800" fill="#fde68a">₫</text><rect x="176" y="14" width="58" height="28" rx="5" fill="#eef6ff" stroke="#2f6bff" stroke-width="2"/><path d="M184 34l10-8 8 5 10-11 14 6" stroke="#2f6bff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="min-w-0"><label class="label">{vi ? 'Số tiền' : 'Amount'}</label><input class="input w-full min-w-0 text-2xl" type="number" min="0" step="any" value="100" data-v /><select class="input mt-2 w-full min-w-0" data-cur>{codes.map((c) => <option value={c} selected={c === 'USD'}>{c} – {(FX.rates as any)[c].name}</option>)}</select></div>
     <button type="button" class="btn-ghost text-xl" data-swap aria-label="swap">⇄</button>
-    <div><label class="label" data-tolabel>VND</label><div class="input bg-slate-50 text-2xl font-bold text-brand-700" data-res>—</div><div class="mt-2 text-sm text-slate-500" data-dir></div></div>
+    <div class="min-w-0"><label class="label" data-tolabel>VND</label><div class="input bg-slate-50 text-2xl font-bold text-brand-700" data-res>—</div><div class="mt-2 text-sm text-slate-500" data-dir></div></div>
+    <div class="sm:col-span-3" data-stats></div>
   </div>
   <p class="text-xs text-slate-500">{vi ? `Tỷ giá tham khảo ${FX.source}, cập nhật ${FX.updated}. Đổi ngoại tệ sang VND dùng giá mua chuyển khoản; VND sang ngoại tệ dùng giá bán. Giá thực tế tại quầy có thể khác.` : `Reference rates from ${FX.source}, updated ${FX.updated}.`}</p>
   <div class="card"><div class="table-wrap"><table class="data-table">
@@ -21,6 +23,7 @@ const fmt = (x: number | null) => (x ? x.toLocaleString('vi-VN', { maximumFracti
 </div>
 
 <script>
+  import { statCards } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="fx"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const R = JSON.parse(root.querySelector('[data-fx]')!.textContent || '{}');
@@ -33,6 +36,11 @@ const fmt = (x: number | null) => (x ? x.toLocaleString('vi-VN', { maximumFracti
       const res = toVnd ? x * r.transfer : x / r.sell;
       $('[data-res]').textContent = res.toLocaleString('vi-VN', { maximumFractionDigits: toVnd ? 0 : 2 }) + (toVnd ? ' ₫' : ' ' + cur.value);
       $('[data-tolabel]').textContent = toVnd ? 'VND' : cur.value;
+      $('[data-stats]').innerHTML = statCards([
+        { label: vi ? 'Mua chuyển khoản' : 'Buy (transfer)', value: r.transfer ? r.transfer.toLocaleString('vi-VN') : '–', tone: 'green' },
+        { label: vi ? 'Giá bán' : 'Sell', value: r.sell ? r.sell.toLocaleString('vi-VN') : '–', tone: 'amber' },
+        { label: vi ? 'Chênh lệch mua–bán' : 'Buy–sell spread', value: r.transfer && r.sell ? (r.sell - r.transfer).toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : '–', tone: 'sky' }
+      ]);
       $('[data-dir]').textContent = toVnd ? `${vi ? 'Đổi' : 'Convert'} ${cur.value} → VND (${r.transfer.toLocaleString('vi-VN')})` : `VND → ${cur.value} (${r.sell.toLocaleString('vi-VN')})`;
     };
     $('[data-swap]').addEventListener('click', () => { toVnd = !toVnd; calc(); });

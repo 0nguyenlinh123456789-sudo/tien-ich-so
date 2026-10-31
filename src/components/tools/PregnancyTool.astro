@@ -4,15 +4,17 @@ const { lang = 'vi' } = Astro.props;
 const vi = lang === 'vi';
 ---
 <div data-tool="pregnancy" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
-  <form class="card grid gap-3" data-f>
+  <form class="card grid min-w-0 content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><circle cx="28" cy="28" r="22" fill="#fce7f3"/><path d="M28 40s-12-7-12-15a7 7 0 0 1 12-4 7 7 0 0 1 12 4c0 8-12 15-12 15z" fill="#ec4899"/><path d="M62 28h16" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 4"/><rect x="88" y="10" width="64" height="40" rx="6" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/><rect x="88" y="10" width="64" height="11" rx="5" fill="#2f6bff"/><path d="M102 6v8M138 6v8" stroke="#1a45b8" stroke-width="3" stroke-linecap="round"/><circle cx="120" cy="35" r="7" fill="#f5b83d"/><rect x="164" y="24" width="20" height="8" rx="4" fill="#93b8ff"/><rect x="186" y="24" width="20" height="8" rx="4" fill="#2f6bff"/><rect x="208" y="24" width="26" height="8" rx="4" fill="#ec4899"/></svg>
     <div><label class="label">{vi ? 'Ngày đầu kỳ kinh gần nhất' : 'First day of last period'}</label><input class="input" name="lmp" type="date" /></div>
     <div><label class="label">{vi ? 'Độ dài chu kỳ (ngày)' : 'Cycle length (days)'}</label><input class="input" name="c" type="number" min="21" max="45" value="28" /></div>
     <p class="text-xs text-slate-500">{vi ? 'Ngày dự sinh theo quy tắc Naegele (kỳ kinh cuối + 280 ngày, chỉnh theo chu kỳ). Rụng trứng ước tính 14 ngày trước kỳ kinh sau. Chỉ để tham khảo, siêu âm và bác sĩ cho kết quả chính xác hơn.' : 'Due date by Naegele’s rule (LMP + 280 days, adjusted for cycle). Ovulation ≈ 14 days before the next period. Reference only.'}</p>
   </form>
-  <div class="card" data-out></div>
+  <div class="card min-w-0" data-out></div>
 </div>
 
 <script>
+  import { progress, timeline } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="pregnancy"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const form = root.querySelector<HTMLFormElement>('[data-f]')!;
@@ -38,7 +40,12 @@ const vi = lang === 'vi';
         <div class="text-4xl font-extrabold text-brand-700">${f(due)}</div>
         <div class="mt-2 text-lg font-semibold">${vi ? `Thai ${w} tuần ${d} ngày · Tam cá nguyệt ${tri}` : `${w} weeks ${d} days · Trimester ${tri}`}</div>
         <div class="text-sm text-slate-500">${vi ? `Còn ${Math.max(0, Math.round((+due - +today) / 864e5))} ngày` : `${Math.max(0, Math.round((+due - +today) / 864e5))} days to go`}</div>
-        <div class="mt-4 h-3 overflow-hidden rounded-full bg-slate-100"><div class="h-full bg-brand-500" style="width:${Math.min(100, days / 2.8)}%"></div></div>`
+        ${progress(Math.min(280, days) / 280, vi ? `Tuần ${w}/40 của thai kỳ` : `Week ${w} of 40`)}
+        ${timeline([
+          { date: `${f(lmp)} – ${f(add(lmp, 13 * 7 - 1))}`, title: vi ? 'Tam cá nguyệt 1 (tuần 1–12)' : 'Trimester 1 (weeks 1–12)', state: tri > 1 ? 'done' : 'now' },
+          { date: `${f(add(lmp, 13 * 7))} – ${f(add(lmp, 27 * 7 - 1))}`, title: vi ? 'Tam cá nguyệt 2 (tuần 13–26)' : 'Trimester 2 (weeks 13–26)', state: tri > 2 ? 'done' : tri === 2 ? 'now' : 'next' },
+          { date: `${f(add(lmp, 27 * 7))} – ${f(due)}`, title: vi ? 'Tam cá nguyệt 3 (tuần 27–40)' : 'Trimester 3 (weeks 27–40)', state: tri === 3 ? 'now' : 'next' }
+        ], { title: vi ? 'Các giai đoạn thai kỳ' : 'Pregnancy stages' })}`
       : `
         <div class="text-sm text-slate-500">${vi ? 'Ngày rụng trứng dự kiến' : 'Estimated ovulation'}</div>
         <div class="text-4xl font-extrabold text-rose-600">${f(ov)}</div>

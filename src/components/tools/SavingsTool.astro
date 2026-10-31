@@ -4,8 +4,9 @@ const { lang = 'vi' } = Astro.props;
 const vi = lang === 'vi';
 ---
 <div data-tool="savings" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
-  <form class="card grid gap-3 sm:grid-cols-2" data-f>
-    <div class="sm:col-span-2"><label class="label">{vi ? 'Số tiền gửi (đồng)' : 'Deposit (VND)'}</label><input class="input text-lg" name="p" inputmode="numeric" value="100.000.000" /></div>
+  <form class="card grid min-w-0 content-start gap-3 sm:grid-cols-2" data-f>
+    <svg class="viz-art sm:col-span-2" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><ellipse cx="34" cy="32" rx="26" ry="19" fill="#f9a8d4"/><circle cx="58" cy="26" r="7" fill="#f9a8d4"/><rect x="18" y="46" width="8" height="8" rx="2" fill="#ec4899"/><rect x="40" y="46" width="8" height="8" rx="2" fill="#ec4899"/><rect x="28" y="14" width="14" height="4" rx="2" fill="#9d174d"/><circle cx="48" cy="27" r="2" fill="#9d174d"/><circle cx="35" cy="6" r="6" fill="#f5b83d" stroke="#b45309" stroke-width="1.5"/><path d="M80 30h20m-6-6 6 6-6 6" stroke="#94a3b8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="112" y="40" width="20" height="12" rx="2" fill="#0d9488"/><rect x="138" y="33" width="20" height="19" rx="2" fill="#0d9488"/><rect x="164" y="25" width="20" height="27" rx="2" fill="#0d9488"/><rect x="190" y="15" width="20" height="37" rx="2" fill="#0d9488"/><rect x="190" y="8" width="20" height="7" rx="2" fill="#f5b83d"/><rect x="216" y="4" width="20" height="48" rx="2" fill="#2f6bff"/></svg>
+    <div class="sm:col-span-2"><label class="label">{vi ? 'Số tiền gửi (đồng)' : 'Deposit (VND)'}</label><input class="input w-full min-w-0 text-lg" name="p" inputmode="numeric" value="100.000.000" /></div>
     <div><label class="label">{vi ? 'Lãi suất (%/năm)' : 'Rate (%/year)'}</label><input class="input" name="r" type="number" step="0.01" value="5.5" /></div>
     <div><label class="label">{vi ? 'Kỳ hạn (tháng)' : 'Term (months)'}</label>
       <select class="input" name="t">{[1, 3, 6, 9, 12, 18, 24, 36].map((m) => <option value={m} selected={m === 12}>{m}</option>)}</select></div>
@@ -13,10 +14,11 @@ const vi = lang === 'vi';
     <label class="flex items-center gap-2 text-sm sm:col-span-2"><input type="checkbox" name="roll" checked /> {vi ? 'Đáo hạn tự gửi lại cả gốc lẫn lãi' : 'Roll over principal + interest at maturity'}</label>
     <p class="text-xs text-slate-500 sm:col-span-2">{vi ? 'Lãi tính theo kỳ hạn: gốc × lãi suất × số tháng ÷ 12, giả định lãi suất không đổi. Lãi suất mỗi ngân hàng khác nhau, xem trên web ngân hàng.' : 'Interest per term = principal × rate × months ÷ 12, assuming a constant rate.'}</p>
   </form>
-  <div class="card" data-out></div>
+  <div class="card min-w-0" data-out></div>
 </div>
 
 <script>
+  import { bars, statCards } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="savings"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const form = root.querySelector<HTMLFormElement>('[data-f]')!;
@@ -32,9 +34,11 @@ const vi = lang === 'vi';
       const terms = Math.floor((years * 12) / t);
       let bal = p0, paid = 0;
       const rows: string[] = [];
+      const pts: { k: number; v: number }[] = []; // số dư cuối mỗi kỳ (chỉ để vẽ)
       for (let k = 1; k <= terms; k++) {
         const i = (roll ? bal : p0) * r * t / 12;
         if (roll) bal += i; else paid += i;
+        pts.push({ k, v: roll ? bal : p0 + paid });
         if (k <= 12 || k === terms) rows.push(`<tr><td>${vi ? 'Kỳ' : 'Term'} ${k} (${vi ? 'tháng' : 'month'} ${k * t})</td><td class="num">+${n(i)}</td><td class="num font-semibold">${n(roll ? bal : p0 + paid)}</td></tr>`);
       }
       const end = roll ? bal : p0 + paid;
@@ -43,6 +47,20 @@ const vi = lang === 'vi';
         <div class="text-4xl font-extrabold text-brand-700">${n(end)} đ</div>
         <div class="mt-1 text-emerald-700 font-semibold">${vi ? 'Tiền lãi' : 'Interest'}: +${n(end - p0)} đ</div>
         <div class="text-sm text-slate-500">${vi ? 'Lãi mỗi tháng trung bình' : 'Avg per month'}: ${n((end - p0) / Math.max(1, terms * t))} đ</div>
+        <div class="mt-4">${statCards([
+          { label: vi ? 'Tiền gốc' : 'Principal', value: `${n(p0)} đ`, tone: 'brand' },
+          { label: vi ? 'Tiền lãi' : 'Interest', value: `+${n(end - p0)} đ`, tone: 'green' },
+          { label: vi ? 'Tổng nhận' : 'Total', value: `${n(end)} đ`, tone: 'amber' }
+        ])}</div>
+        ${(() => {
+          // ≤ 12 kỳ: mỗi kỳ 1 cột; nhiều hơn: lấy kỳ cuối của mỗi năm (tối đa 12 cột + kỳ cuối)
+          let sel = pts.length <= 12 ? pts : pts.filter((x) => (x.k * t) % 12 === 0);
+          if (sel.length > 12) { const st = Math.ceil(sel.length / 12); sel = sel.filter((_, i) => i % st === 0); }
+          if (pts.length && sel[sel.length - 1] !== pts[pts.length - 1]) sel = [...sel, pts[pts.length - 1]];
+          const yearly = pts.length > 12;
+          return bars(sel.map((x) => ({ label: yearly && (x.k * t) % 12 === 0 ? (vi ? `Năm ${(x.k * t) / 12}` : `Year ${(x.k * t) / 12}`) : (vi ? `Tháng ${x.k * t}` : `Month ${x.k * t}`), value: x.v, color: 'var(--viz-2)' })),
+            { title: vi ? 'Số dư theo thời gian' : 'Balance over time', format: (v: number) => `${n(v)} đ` });
+        })()}
         ${terms === 0 ? `<p class="mt-3 text-sm text-amber-700">${vi ? 'Thời gian gửi ngắn hơn kỳ hạn.' : 'Period shorter than the term.'}</p>` : `<div class="table-wrap mt-4"><table class="data-table"><tbody>${rows.join('')}</tbody></table></div>`}`;
     };
     form.addEventListener('input', calc);

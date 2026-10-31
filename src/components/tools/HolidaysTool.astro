@@ -23,6 +23,10 @@ const HOLIDAYS = [
 ];
 ---
 <div data-tool="holidays" data-lang={lang} class="grid gap-3">
+  <div class="card min-w-0">
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="4" y="8" width="54" height="44" rx="6" fill="#fff" stroke="#e11d48" stroke-width="2.5"/><rect x="4" y="8" width="54" height="13" rx="5" fill="#e11d48"/><path d="M16 4v9M46 4v9" stroke="#9f1239" stroke-width="3" stroke-linecap="round"/><path d="m31 26 3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6L22 33l6-1z" fill="#f5b83d"/><path d="M70 30h150" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round"/><circle cx="80" cy="30" r="6" fill="#2f6bff"/><circle cx="110" cy="30" r="6" fill="#2f6bff"/><circle cx="145" cy="30" r="9" fill="#d97706" stroke="#fde68a" stroke-width="4"/><circle cx="180" cy="30" r="6" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/><circle cx="214" cy="30" r="6" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/></svg>
+    <div data-tl></div>
+  </div>
   {HOLIDAYS.map((h) => (
     <div class="card flex flex-wrap items-center gap-4" data-from={h.from}>
       <div class="min-w-24 rounded-2xl bg-brand-50 px-3 py-2 text-center"><div class="text-2xl font-extrabold text-brand-700" data-left>–</div><div class="text-xs text-slate-500">{vi ? 'ngày nữa' : 'days'}</div></div>
@@ -37,6 +41,7 @@ const HOLIDAYS = [
 </div>
 
 <script>
+  import { timeline } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="holidays"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -49,5 +54,16 @@ const HOLIDAYS = [
       const left = Math.round((+from - +today) / 864e5);
       card.querySelector('[data-left]')!.textContent = left < 0 ? '✓' : String(left);
     });
+    // Dòng thời gian: kỳ đã qua = done, kỳ sắp tới gần nhất = now (nổi bật), còn lại = next.
+    const items = [...root.querySelectorAll<HTMLElement>('[data-from]')].map((card) => {
+      const from = p(card.dataset.from!), to = p(card.querySelector<HTMLElement>('[data-range]')!.dataset.to!);
+      return { from, to, name: card.querySelector('.font-bold')?.textContent || '', range: card.querySelector('[data-range]')?.textContent || '' };
+    }).filter((x) => Number.isFinite(+x.from));
+    const nextIdx = items.findIndex((x) => +x.to >= +today);
+    const tl = root.querySelector<HTMLElement>('[data-tl]');
+    if (tl) tl.innerHTML = timeline(items.map((x, i) => {
+      const left = Math.round((+x.from - +today) / 864e5);
+      return { date: x.range, title: x.name, note: i === nextIdx ? (left > 0 ? (vi ? `Kỳ nghỉ sắp tới · còn ${left} ngày` : `Next holiday · ${left} days to go`) : (vi ? 'Đang nghỉ' : 'On holiday now')) : '', state: nextIdx < 0 || i < nextIdx ? 'done' : i === nextIdx ? 'now' : 'next' };
+    }), { title: vi ? 'Các kỳ nghỉ lễ 2027' : '2027 public holidays' });
   });
 </script>

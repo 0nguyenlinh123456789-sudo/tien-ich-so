@@ -8,8 +8,9 @@ const avgLabel = mode === 'maternity'
   : (vi ? 'Lương đóng BHXH bình quân (đồng)' : 'Average insured salary (VND)');
 ---
 <div data-tool="bhxh" data-mode={mode} data-lang={lang} class="grid gap-5 lg:grid-cols-2">
-  <form class="card grid gap-3 sm:grid-cols-2" data-f>
-    <div class="sm:col-span-2"><label class="label">{avgLabel}</label><input class="input text-lg" name="avg" data-money inputmode="numeric" value="10.000.000" /></div>
+  <form class="card grid min-w-0 content-start gap-3 sm:grid-cols-2" data-f>
+    <svg class="viz-art sm:col-span-2" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><path d="M30 3 52 11v15c0 13-9 22-22 27C17 48 8 39 8 26V11z" fill="#2f6bff"/><path d="M30 39s-11-7-11-14a6 6 0 0 1 11-3 6 6 0 0 1 11 3c0 7-11 14-11 14z" fill="#fff"/><path d="M66 28h22m-6-6 6 6-6 6" stroke="#94a3b8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="98" y="12" width="52" height="34" rx="6" fill="#0d9488"/><circle cx="124" cy="29" r="9" fill="#ccfbf1"/><text x="124" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="#0f766e">đ</text><rect x="160" y="34" width="14" height="12" rx="2" fill="#93b8ff"/><rect x="180" y="26" width="14" height="20" rx="2" fill="#2f6bff"/><rect x="200" y="18" width="14" height="28" rx="2" fill="#1a45b8"/><rect x="220" y="8" width="14" height="38" rx="2" fill="#d97706"/></svg>
+    <div class="sm:col-span-2"><label class="label">{avgLabel}</label><input class="input w-full min-w-0 text-lg" name="avg" data-money inputmode="numeric" value="10.000.000" /></div>
     {mode === 'maternity' && (
       <>
         <div><label class="label">{vi ? 'Người nghỉ' : 'Who'}</label><select class="input" name="who"><option value="mom">{vi ? 'Mẹ sinh con' : 'Mother'}</option><option value="dad">{vi ? 'Bố (vợ sinh)' : 'Father'}</option></select></div>
@@ -32,11 +33,12 @@ const avgLabel = mode === 'maternity'
       </>
     )}
   </form>
-  <div class="card" data-out></div>
+  <div class="card min-w-0" data-out></div>
 </div>
 
 <script>
-  import { maternity, paternity, lumpSum, pension, BASE_SALARY } from '../../lib/bhxh.js';
+  import { maternity, paternity, lumpSum, pension, pensionRate, BASE_SALARY } from '../../lib/bhxh.js';
+  import { bars, flow, statCards } from '../../lib/viz.js';
 
   document.querySelectorAll<HTMLElement>('[data-tool="bhxh"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
@@ -60,10 +62,31 @@ const avgLabel = mode === 'maternity'
         if (dad) {
           const r = paternity({ avg, kind: String(f.get('kind')), children: g('children') });
           out.innerHTML = big(vi ? 'Bố được nhận' : 'Father receives', `${n(r.amount)} đ`, vi ? `Nghỉ ${r.days} ngày làm việc, trong 60 ngày kể từ ngày vợ sinh` : `${r.days} working days within 60 days of birth`)
+            + `<div class="mt-4">${statCards([
+              { label: vi ? 'Số ngày nghỉ' : 'Days off', value: `${r.days} ${vi ? 'ngày' : 'days'}`, tone: 'sky' },
+              { label: vi ? 'Mức 1 ngày' : 'Daily rate', value: `${n(avg / 24)} đ`, tone: 'amber' },
+              { label: vi ? 'Tổng nhận' : 'Total', value: `${n(r.amount)} đ`, tone: 'green' }
+            ])}</div>`
+            + flow([
+              { title: vi ? 'Lương bình quân 6 tháng' : '6-month average', text: `${n(avg)} đ` },
+              { title: vi ? '÷ 24 ngày công' : '÷ 24 working days', text: `${n(avg / 24)} đ/${vi ? 'ngày' : 'day'}` },
+              { title: vi ? `× ${r.days} ngày nghỉ` : `× ${r.days} days`, text: `= ${n(r.amount)} đ` }
+            ], { title: vi ? 'Cách tính' : 'How it is calculated' })
             + note(vi ? 'Mức hưởng 1 ngày = lương bình quân 6 tháng ÷ 24. Luật BHXH 2024.' : 'Daily rate = 6-month average ÷ 24. Social Insurance Law 2024.');
         } else {
           const r = maternity({ avg, children: g('children') });
           out.innerHTML = big(vi ? 'Tổng tiền thai sản' : 'Total maternity pay', `${n(r.total)} đ`)
+            + `<div class="mt-4">${statCards([
+              { label: vi ? 'Thời gian nghỉ' : 'Leave', value: `${r.months} ${vi ? 'tháng' : 'months'}`, tone: 'sky' },
+              { label: vi ? 'Tiền nghỉ sinh' : 'Leave pay', value: `${n(r.leavePay)} đ`, tone: 'brand' },
+              { label: vi ? 'Trợ cấp 1 lần' : 'Lump sum', value: `${n(r.lump)} đ`, tone: 'amber' }
+            ])}</div>`
+            + flow([
+              { title: vi ? 'Lương bình quân 6 tháng' : '6-month average', text: `${n(r.monthly)} đ/${vi ? 'tháng' : 'month'} (100%)` },
+              { title: vi ? `× ${r.months} tháng nghỉ` : `× ${r.months} months`, text: `= ${n(r.leavePay)} đ` },
+              { title: vi ? '+ Trợ cấp 1 lần' : '+ Lump sum', text: `2 × ${n(BASE_SALARY)} × ${g('children')} = ${n(r.lump)} đ` },
+              { title: vi ? '= Tổng' : '= Total', text: `${n(r.total)} đ` }
+            ], { title: vi ? 'Cách tính' : 'How it is calculated' })
             + `<div class="table-wrap mt-4"><table class="data-table"><tbody>
               ${row(vi ? `Nghỉ ${r.months} tháng × ${n(r.monthly)}` : `${r.months} months × ${n(r.monthly)}`, n(r.leavePay) + ' đ')}
               ${row(vi ? `Trợ cấp 1 lần: 2 × ${n(BASE_SALARY)} × ${g('children')} con` : `Lump sum: 2 × ${n(BASE_SALARY)} × ${g('children')}`, n(r.lump) + ' đ')}
@@ -75,6 +98,16 @@ const avgLabel = mode === 'maternity'
         out.innerHTML = r.short
           ? big(vi ? 'Tối đa nhận' : 'At most', `${n(r.amount)} đ`, vi ? 'Đóng chưa đủ 1 năm: nhận bằng số tiền đã đóng, không quá 2 tháng lương bình quân.' : 'Under one year: what you paid, capped at 2 months.')
           : big(vi ? 'BHXH một lần ước tính' : 'Estimated lump sum', `${n(r.amount)} đ`, vi ? `${r.months} tháng lương bình quân` : `${r.months} months of average salary`)
+            + `<div class="mt-4">${statCards([
+              { label: vi ? 'Năm trước 2014' : 'Years before 2014', value: `${r.before} × ${vi ? '1,5' : '1.5'}`, tone: 'sky' },
+              { label: vi ? 'Năm từ 2014' : 'Years from 2014', value: `${r.after} × 2`, tone: 'brand' },
+              { label: vi ? 'Số tháng lương' : 'Months of salary', value: String(r.months), tone: 'amber' }
+            ])}</div>`
+            + flow([
+              { title: vi ? 'Quy đổi thời gian đóng' : 'Round contribution time', text: vi ? 'Tháng lẻ 1–6 = 0,5 năm; 7–11 = 1 năm' : 'Odd months 1–6 = 0.5 yr; 7–11 = 1 yr' },
+              { title: vi ? 'Cộng số tháng lương' : 'Months of salary', text: `${r.before} × ${vi ? '1,5' : '1.5'} + ${r.after} × 2 = ${r.months}` },
+              { title: vi ? '× Lương bình quân' : '× Average salary', text: `${r.months} × ${n(avg)} = ${n(r.amount)} đ` }
+            ], { title: vi ? 'Cách tính' : 'How it is calculated' })
             + `<div class="table-wrap mt-4"><table class="data-table"><tbody>
               ${r.before ? row(vi ? `Trước 2014: ${r.before} năm × 1,5 tháng` : `Before 2014: ${r.before} × 1.5`, n(r.before * 1.5 * avg) + ' đ') : ''}
               ${r.after ? row(vi ? `Từ 2014: ${r.after} năm × 2 tháng` : `From 2014: ${r.after} × 2`, n(r.after * 2 * avg) + ' đ') : ''}
@@ -85,7 +118,22 @@ const avgLabel = mode === 'maternity'
         out.innerHTML = r.rate === 0
           ? big(vi ? 'Chưa đủ điều kiện' : 'Not eligible', vi ? 'Dưới 15 năm' : '< 15 years', vi ? 'Cần đóng tối thiểu 15 năm để hưởng lương hưu.' : 'At least 15 years required.')
           : big(vi ? 'Lương hưu mỗi tháng' : 'Monthly pension', `${n(r.monthly)} đ`, vi ? `Tỷ lệ ${r.rate}% · ${r.years} năm đóng` : `Rate ${r.rate}% · ${r.years} years`)
-            + (r.extraYears ? `<div class="mt-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">${vi ? `Đóng vượt ${r.extraYears} năm: trợ cấp 1 lần khi nghỉ hưu ${n(r.extraLump)} đ` : `Extra ${r.extraYears} years: lump sum ${n(r.extraLump)} VND`}</div>` : '');
+            + (r.extraYears ? `<div class="mt-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">${vi ? `Đóng vượt ${r.extraYears} năm: trợ cấp 1 lần khi nghỉ hưu ${n(r.extraLump)} đ` : `Extra ${r.extraYears} years: lump sum ${n(r.extraLump)} VND`}</div>` : '')
+            + `<div class="mt-4">${statCards([
+              { label: vi ? 'Số năm đóng' : 'Years paid', value: String(r.years), tone: 'sky' },
+              { label: vi ? 'Tỷ lệ hưởng' : 'Rate', value: `${r.rate}%`, tone: 'amber' },
+              { label: vi ? 'Lương hưu/tháng' : 'Pension/month', value: `${n(r.monthly)} đ`, tone: 'green' }
+            ])}</div>`;
+        {
+          const sex = String(f.get('sex')) === 'f' ? 'f' : 'm';
+          const yrs = [15, 20, 25, 30, 35].filter((y) => sex === 'm' || y <= 30);
+          const uy = Math.min(50, r.years);
+          if (uy >= 15 && !yrs.includes(uy)) { yrs.push(uy); yrs.sort((a, b) => a - b); }
+          out.innerHTML += bars(yrs.map((y) => ({
+            label: `${y} ${vi ? 'năm' : 'yrs'}`, value: pensionRate(sex, y), hi: y === uy && r.rate > 0,
+            note: y === uy && r.rate > 0 ? (vi ? 'Bạn' : 'You') : '', color: y === uy && r.rate > 0 ? 'var(--viz-3)' : 'var(--viz-1)'
+          })), { max: 75, format: (v: number) => `${v}%`, title: vi ? `Tỷ lệ lương hưu theo số năm đóng (${sex === 'f' ? 'nữ' : 'nam'})` : `Pension rate by years paid (${sex === 'f' ? 'female' : 'male'})` });
+        }
         out.innerHTML += note(vi ? 'Điều 66 Luật BHXH 2024: nữ 45% khi đủ 15 năm; nam 40% khi đủ 15 năm (thêm 1%/năm), 45% khi đủ 20 năm; sau đó thêm 2%/năm, tối đa 75%. Chưa tính giảm tỷ lệ khi nghỉ hưu trước tuổi và điều chỉnh trượt giá.' : 'Art. 66, Social Insurance Law 2024. Excludes early-retirement reduction and indexation.');
       }
     };

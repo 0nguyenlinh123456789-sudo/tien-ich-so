@@ -27,9 +27,10 @@
   .btn-ghost { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 border border-slate-300 bg-white text-slate-700 hover:bg-slate-100; }
   .table-wrap { @apply overflow-x-auto rounded-xl border border-slate-200; }
   .data-table { @apply w-full text-sm; }
-  .data-table th { @apply bg-slate-100 px-3 py-2 text-left font-semibold whitespace-nowrap text-slate-700; }
-  .data-table td { @apply border-t border-slate-100 px-3 py-2 whitespace-nowrap; }
-  .data-table td.num, .data-table th.num { @apply text-right tabular-nums; }
+  .data-table th { @apply bg-slate-100 px-2 py-2 text-left font-semibold text-slate-700 sm:px-3; }
+  /* Nhãn được xuống dòng; cột số giữ trên 1 dòng để không cắt mép phải ở 375px */
+  .data-table td { @apply border-t border-slate-100 px-2 py-2 sm:px-3; overflow-wrap: break-word; }
+  .data-table td.num, .data-table th.num { @apply text-right tabular-nums whitespace-nowrap; overflow-wrap: normal; }
   .stat { @apply rounded-xl bg-slate-50 p-4; }
   .stat-label { @apply text-xs tracking-wide text-slate-500 uppercase; }
   .stat-value { @apply mt-1 text-xl font-bold text-slate-900 tabular-nums; }
@@ -96,6 +97,26 @@
 .viz-tone-amber { background: #fffbeb; border-color: #fde68a; color: #b45309; }
 .viz-tone-rose { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
 .viz-tone-sky { background: #f0f9ff; border-color: #bae6fd; color: #0369a1; }
+.viz-bar-t { position: relative; }
+.viz-mark { position: absolute; top: -2px; bottom: -2px; width: 2px; margin-left: -1px; background: #0f172a; opacity: .55; }
+.viz-bar-hi .viz-bar-h span, .viz-bar-hi .viz-bar-h b { color: var(--viz-3); font-weight: 700; }
+.viz-bar-hi .viz-bar-t { box-shadow: 0 0 0 2px #fde68a; }
+.viz-marks-l { display: flex; flex-wrap: wrap; gap: .25rem .8rem; margin-top: .5rem; font-size: .75rem; color: var(--viz-muted); }
+.viz-marks-l i { display: inline-block; width: 2px; height: .7rem; background: #0f172a; opacity: .55; margin-right: .3rem; vertical-align: -1px; }
+.viz-cols { display: block; width: 100%; height: auto; max-height: 12rem; }
+.viz-col-x { font-size: 8px; fill: var(--viz-muted); }
+.viz-col-v { font-size: 8.5px; font-weight: 700; fill: var(--viz-text); }
+.viz-scale { position: relative; padding: 1.6rem 0 1.1rem; }
+.viz-scale-bar { position: relative; height: .8rem; border-radius: 999px; overflow: visible; background: var(--viz-track); }
+.viz-scale-in { position: absolute; inset: 0; border-radius: 999px; overflow: hidden; }
+.viz-scale-in span { position: absolute; top: 0; bottom: 0; }
+.viz-scale-bar small { position: absolute; top: 1.05rem; transform: translateX(-50%); font-size: .7rem; color: var(--viz-muted); font-variant-numeric: tabular-nums; }
+.viz-needle { position: absolute; top: .35rem; bottom: .7rem; width: 3px; margin-left: -1.5px; background: #0f172a; border-radius: 2px; }
+.viz-needle em { position: absolute; top: -.35rem; left: 50%; transform: translate(-50%, -50%); font-style: normal; font-size: .75rem; font-weight: 800; background: #0f172a; color: #fff; border-radius: 6px; padding: 0 .35rem; white-space: nowrap; }
+.viz-scale-l { list-style: none; margin: .35rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .3rem .75rem; font-size: .75rem; color: #475569; }
+.viz-scale-l li { display: flex; align-items: center; gap: .3rem; }
+.viz-scale-l i { width: .65rem; height: .65rem; border-radius: 3px; }
+.viz-scale-cur { font-weight: 700; color: var(--viz-text) !important; }
 .viz-art { display: block; width: 100%; max-width: 15rem; height: 3.5rem; margin-bottom: .5rem; }
 
 .tarot-card { perspective: 1000px; }
