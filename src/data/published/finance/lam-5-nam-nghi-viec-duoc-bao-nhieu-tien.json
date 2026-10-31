@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "severance",
+  "slug": "lam-5-nam-nghi-viec-duoc-bao-nhieu-tien",
+  "title": "Làm 5 năm nghỉ việc được bao nhiêu tiền trợ cấp?",
+  "params": {
+    "kind": "years",
+    "years": 5
+  },
+  "publishedAt": "2026-10-31T15:12:17.906Z"
+}

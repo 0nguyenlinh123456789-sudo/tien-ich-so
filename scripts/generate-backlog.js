@@ -292,6 +292,23 @@ const groups = []; // each group = array of records of one kind (interleaved lat
   groups.push(vi);
 }
 
+// 19) Severance / unemployment (BLLĐ 2019 Đ46–47, NĐ 145/2020; Luật Việc làm 74/2025/QH15 Đ38–39)
+// early: 2 → prefix '000002-NNNN__' (after the 000001 batch).
+{
+  const vi = [];
+  for (let n = 1; n <= 20; n++) vi.push({ section: 'finance', lang: 'vi', tool: 'severance', early: 2, slug: `lam-${n}-nam-nghi-viec-duoc-bao-nhieu-tien`, title: `Làm ${n} năm nghỉ việc được bao nhiêu tiền trợ cấp?`, params: { kind: 'years', years: n } });
+  for (const x of [5, 6, 7, 8, 10, 12, 15, 20, 25, 30, 40, 50]) vi.push({ section: 'finance', lang: 'vi', tool: 'severance', early: 2, slug: `tro-cap-that-nghiep-luong-${x}-trieu`, title: `Trợ cấp thất nghiệp lương ${x} triệu được bao nhiêu?`, params: { kind: 'ui', salary: x * 1e6 } });
+  groups.push(vi);
+}
+
+// 20) School grades (TT 22/2021/TT-BGDĐT Điều 9): final-exam target & level criteria
+{
+  const vi = [];
+  for (const x of [5, 6.5, 8]) vi.push({ section: 'life', lang: 'vi', tool: 'diemtb', early: 2, slug: `can-bao-nhieu-diem-cuoi-ky-de-dat-${String(x).replace('.', '-')}`, title: `Cần bao nhiêu điểm cuối kỳ để được ${String(x).replace('.', ',')}?`, params: { kind: 'target', target: x } });
+  for (const [lv, name] of [['tot', 'Tốt'], ['kha', 'Khá'], ['dat', 'Đạt']]) vi.push({ section: 'life', lang: 'vi', tool: 'diemtb', early: 2, slug: `hoc-luc-${lv}-can-dieu-kien-gi`, title: `Học lực ${name} cần điều kiện gì?`, params: { kind: 'level', level: lv } });
+  groups.push(vi);
+}
+
 // ---------- write ----------
 function existingSlugs() {
   const set = new Set();
@@ -314,14 +331,14 @@ let prio = 0;
 let written = 0;
 let startPrio = 0;
 // Early records ('000001-NNNN__') sort after hand-picked '000000-*' files but before every numbered one.
-let earlyPrio = 0;
+const earlyPrio = { 1: 0, 2: 0 };
 if (fs.existsSync(BACKLOG)) {
   for (const sec of fs.readdirSync(BACKLOG)) {
     const dir = path.join(BACKLOG, sec);
     if (!fs.statSync(dir).isDirectory()) continue;
     for (const f of fs.readdirSync(dir)) {
       const m = f.match(/^(\d+)__/); if (m) startPrio = Math.max(startPrio, Number(m[1]) + 1);
-      const e = f.match(/^000001-(\d+)__/); if (e) earlyPrio = Math.max(earlyPrio, Number(e[1]) + 1);
+      const e = f.match(/^00000([12])-(\d+)__/); if (e) earlyPrio[e[1]] = Math.max(earlyPrio[e[1]], Number(e[2]) + 1);
     }
   }
 }
@@ -337,7 +354,8 @@ while (queues.some((q) => q.length)) {
     const dir = path.join(BACKLOG, rec.section);
     fs.mkdirSync(dir, { recursive: true });
     const { early, ...data } = rec;
-    const name = early ? `000001-${String(earlyPrio++).padStart(4, '0')}` : String(prio++).padStart(6, '0');
+    const tier = early === 2 ? 2 : early ? 1 : 0;
+    const name = tier ? `00000${tier}-${String(earlyPrio[tier]++).padStart(4, '0')}` : String(prio++).padStart(6, '0');
     fs.writeFileSync(path.join(dir, `${name}__${rec.slug}.json`), JSON.stringify(data, null, 2));
     written++;
   }

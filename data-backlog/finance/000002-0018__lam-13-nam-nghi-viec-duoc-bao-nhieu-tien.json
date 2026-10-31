@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "severance",
+  "slug": "lam-13-nam-nghi-viec-duoc-bao-nhieu-tien",
+  "title": "Làm 13 năm nghỉ việc được bao nhiêu tiền trợ cấp?",
+  "params": {
+    "kind": "years",
+    "years": 13
+  }
+}

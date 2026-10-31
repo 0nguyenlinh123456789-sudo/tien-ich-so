@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "vi",
+  "tool": "diemtb",
+  "slug": "can-bao-nhieu-diem-cuoi-ky-de-dat-5",
+  "title": "Cần bao nhiêu điểm cuối kỳ để được 5?",
+  "params": {
+    "kind": "target",
+    "target": 5
+  }
+}

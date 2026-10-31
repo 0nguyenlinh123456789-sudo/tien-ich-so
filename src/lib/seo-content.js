@@ -13,6 +13,8 @@ import { retirementAge } from './retirement-age.js';
 import { registrationFee } from './registration-fee.js';
 import { waterBill, WATER_REGIONS, WATER_VAT, drainageVat } from './water.js';
 import { hkdTax, SECTORS as HKD_SECTORS, THRESHOLD as HKD_THRESHOLD } from './hkd.js';
+import { severance, jobLoss, unemployment } from './severance.js';
+import { semesterAvg, round1, classify, LEVELS } from './grade-avg.js';
 import NUM from '../data/numerology.json';
 
 // "1,2 tỷ", "40 triệu" – short Vietnamese money words for titles.
@@ -538,6 +540,126 @@ export function buildRecordContent(record) {
         faq: [
           { q: `Doanh thu ${rt} nộp thuế bao nhiêu?`, a: `Khoảng ${m(r.total)}/năm với ngành ${s.vi.toLowerCase()} (phương pháp tỷ lệ).` },
           { q: 'Doanh thu bao nhiêu thì không phải nộp thuế?', a: 'Từ 1 tỷ đồng/năm trở xuống không phải nộp GTGT và TNCN (NĐ 141/2026/NĐ-CP, từ 01/01/2026).' }
+        ]
+      };
+      break;
+    }
+    case 'severance': {
+      // Căn cứ: BLLĐ 45/2019/QH14 Điều 46, 47; NĐ 145/2020/NĐ-CP Điều 8;
+      // Luật Việc làm 74/2025/QH15 Điều 38, 39 (từ 01/01/2026); lương tối thiểu vùng NĐ 293/2025/NĐ-CP.
+      const tr = (v) => `${String(+(v / 1e6).toFixed(2)).replace('.', ',')} triệu`;
+      const basis = 'Căn cứ: Điều 46, 47 Bộ luật Lao động 2019; Điều 8 NĐ 145/2020/NĐ-CP; Điều 38, 39 Luật Việc làm 74/2025/QH15; lương tối thiểu vùng theo NĐ 293/2025/NĐ-CP.';
+      if (p.kind === 'ui') {
+        const S = Number(p.salary);
+        if (!Number.isFinite(S) || S <= 0) { out = { h1: record.title || record.slug, intro: [record.title || ''], table: [], faq: [] }; break; }
+        const reg = [1, 2, 3, 4].map((r) => unemployment(S, 36, r));
+        const rows = Array.from({ length: 12 }, (_, i) => ({ y: i + 1, u: unemployment(S, (i + 1) * 12, 1) }));
+        const capped = reg[0].capped;
+        out = {
+          h1: `Trợ cấp thất nghiệp lương ${tr(S)} được bao nhiêu?`,
+          intro: [
+            `Lương đóng bảo hiểm thất nghiệp bình quân 6 tháng cuối <b>${tr(S)}</b>: trợ cấp thất nghiệp <b>${m(reg[0].monthly)}/tháng</b> (vùng I)${capped ? `, đã bị giới hạn ở mức trần 5 lần lương tối thiểu vùng (60% lương là ${m(0.6 * S)})` : ` (60% mức lương)`}.`,
+            `Đóng đủ 12–36 tháng được hưởng 3 tháng, tổng <b>${m(rows[0].u.total)}</b>; sau đó cứ thêm đủ 12 tháng được thêm 1 tháng, tối đa 12 tháng (đóng từ 144 tháng): tổng tối đa <b>${m(rows[11].u.total)}</b>. ${reg.some((x) => x.capped) ? `Ở vùng có lương tối thiểu thấp, mức trần nhỏ hơn: vùng II ${m(reg[1].monthly)}, vùng III ${m(reg[2].monthly)}, vùng IV ${m(reg[3].monthly)}/tháng.` : ''}`,
+            `Điều kiện: đã đóng BHTN từ đủ 12 tháng trong 24 tháng trước khi nghỉ việc, chấm dứt hợp đồng đúng luật (không tự ý bỏ việc trái luật). ${basis}`
+          ],
+          table: [1, 2, 3, 4].map((r, i) => [`Mức hưởng/tháng – vùng ${['I', 'II', 'III', 'IV'][i]} (trần ${m(reg[i].cap)})`, m(reg[i].monthly)]).concat(
+            rows.map(({ y, u }) => [`Đóng ${y} năm (${y * 12} tháng) – vùng I`, `${u.duration} tháng × ${m(u.monthly)} = ${m(u.total)}`])
+          ),
+          faq: [
+            { q: `Lương ${tr(S)} thất nghiệp được bao nhiêu một tháng?`, a: `${m(reg[0].monthly)}/tháng ở vùng I${capped ? ' (mức trần)' : ''}; vùng IV ${m(reg[3].monthly)}.` },
+            { q: 'Đóng bao lâu thì được hưởng 12 tháng trợ cấp thất nghiệp?', a: 'Từ đủ 144 tháng (12 năm) đóng BHTN trở lên; 12–36 tháng được 3 tháng, mỗi 12 tháng thêm được thêm 1 tháng.' }
+          ]
+        };
+        break;
+      }
+      const N = Math.trunc(Number(p.years));
+      if (!(N >= 1 && N <= 60)) { out = { h1: record.title || record.slug, intro: [record.title || ''], table: [], faq: [] }; break; }
+      const mo = N * 12;
+      const SAL = [7e6, 10e6, 15e6, 20e6, 30e6];
+      const s10 = severance(10e6, mo), j10 = jobLoss(10e6, mo), u10 = unemployment(10e6, mo, 1);
+      out = {
+        h1: `Làm ${N} năm nghỉ việc được bao nhiêu tiền trợ cấp?`,
+        intro: [
+          `Làm việc ${N} năm (${mo} tháng), lương bình quân 10 triệu, <b>chưa từng đóng bảo hiểm thất nghiệp</b>: trợ cấp thôi việc = 1/2 tháng lương × ${N} năm = <b>${m(s10.amount)}</b>; nếu bị mất việc do tái cơ cấu, thay đổi công nghệ thì trợ cấp mất việc là <b>${m(j10.amount)}</b> (1 tháng lương mỗi năm, ít nhất 2 tháng).`,
+          `Lưu ý: thời gian <b>đã đóng BHTN không được tính</b> trợ cấp thôi việc – thay vào đó được hưởng trợ cấp thất nghiệp. Nếu cả ${N} năm đều đã đóng BHTN với lương 10 triệu, trợ cấp thôi việc bằng 0 nhưng được trợ cấp thất nghiệp ${u10.duration} tháng × ${m(u10.monthly)} = <b>${m(u10.total)}</b>.`,
+          `Bảng dưới so sánh hai trường hợp theo các mức lương (trợ cấp thất nghiệp tính ở vùng I, 60% lương, trần 5 lần lương tối thiểu vùng). ${basis}`
+        ],
+        table: SAL.map((S) => {
+          const sv = severance(S, mo), u = unemployment(S, mo, 1);
+          return [`Lương ${tr(S)}`, `Chưa đóng BHTN: thôi việc ${m(sv.amount)} | Đã đóng BHTN cả ${N} năm: thất nghiệp ${u.duration} tháng × ${m(u.monthly)} = ${m(u.total)}`];
+        }),
+        faq: [
+          { q: `Làm ${N} năm đã đóng bảo hiểm thất nghiệp có được trợ cấp thôi việc không?`, a: `Không cho phần thời gian đã đóng BHTN (Điều 46 BLLĐ 2019); bù lại được trợ cấp thất nghiệp ${u10.duration} tháng nếu đủ điều kiện.` },
+          { q: 'Tiền lương tính trợ cấp thôi việc là lương nào?', a: 'Tiền lương bình quân theo hợp đồng của 6 tháng liền kề trước khi nghỉ việc (Điều 8 NĐ 145/2020/NĐ-CP).' }
+        ]
+      };
+      break;
+    }
+    case 'diemtb': {
+      // Căn cứ: TT 22/2021/TT-BGDĐT Điều 5 k3 (làm tròn 1 chữ số), Điều 6 k2 (số ĐĐGtx), Điều 9 k1, k2, k3.
+      const basis = 'Căn cứ: Điều 5, 6, 9 Thông tư 22/2021/TT-BGDĐT (đánh giá học sinh THCS, THPT).';
+      const fmt1 = (v) => String(v).replace('.', ',');
+      if (p.kind === 'target') {
+        const X = Number(p.target);
+        if (!(X > 0 && X <= 10)) { out = { h1: record.title || record.slug, intro: [record.title || ''], table: [], faq: [] }; break; }
+        // Điểm cuối kỳ nhỏ nhất (bước 0,1) để ĐTB học kỳ (đã làm tròn) ≥ X; null nếu kể cả 10 cũng không đủ.
+        const need = (n, t) => {
+          for (let k = 0; k <= 100; k++) {
+            const ck = round1(k / 10);
+            const r = semesterAvg(Array(n).fill(t), t, ck);
+            if (r && r.avg >= X) return { ck, avg: r.avg };
+          }
+          return null;
+        };
+        const combos = [];
+        for (const n of [2, 3, 4]) for (const t of [6, 7, 8]) combos.push({ n, t, r: need(n, t) });
+        const show = (c) => (c.r ? (c.r.ck === 0 ? 'đã đạt (kể cả 0 điểm)' : `${fmt1(c.r.ck)} điểm (ĐTB ${fmt1(c.r.avg)})`) : 'không thể đạt, kể cả 10 điểm');
+        const ex = combos.find((c) => c.n === 3 && c.t === 7);
+        const hard = combos.filter((c) => !c.r).length;
+        out = {
+          h1: `Cần bao nhiêu điểm cuối kỳ để được ${fmt1(X)}?`,
+          intro: [
+            `Môn có 3 điểm thường xuyên (TX) trung bình 7 và giữa kỳ 7: muốn điểm trung bình học kỳ đạt <b>${fmt1(X)}</b> cần thi cuối kỳ <b>${show(ex)}</b>. Công thức (TT 22): ĐTB học kỳ = (tổng điểm TX + 2 × giữa kỳ + 3 × cuối kỳ) / (số cột TX + 5), làm tròn 1 chữ số.`,
+            `Bảng dưới tính sẵn 9 trường hợp: 2, 3 hoặc 4 cột TX (môn 35 tiết, đến 70 tiết, trên 70 tiết/năm), điểm TX trung bình và giữa kỳ cùng bằng 6, 7 hoặc 8. ${hard ? `Có ${hard} trường hợp không thể đạt ${fmt1(X)} dù cuối kỳ được 10.` : ''} Điểm cuối kỳ có hệ số 3 nên mỗi 0,1 điểm thi kéo ĐTB lên nhiều nhất.`,
+            basis
+          ],
+          table: combos.map((c) => [`${c.n} cột TX, TX = giữa kỳ = ${c.t}`, show(c)]),
+          faq: [
+            { q: `TX 7, giữa kỳ 7 thì cuối kỳ bao nhiêu để được ${fmt1(X)}?`, a: `Với 3 cột TX: ${show(ex)}. Với 2 cột: ${show(combos.find((c) => c.n === 2 && c.t === 7))}; 4 cột: ${show(combos.find((c) => c.n === 4 && c.t === 7))}.` },
+            { q: 'Điểm trung bình môn làm tròn thế nào?', a: 'Làm tròn đến 1 chữ số thập phân (Điều 5 TT 22/2021), ví dụ 6,45 thành 6,5; 6,44 thành 6,4.' }
+          ]
+        };
+        break;
+      }
+      const LV = { tot: 3, kha: 2, dat: 1 }[p.level];
+      if (!LV) { out = { h1: record.title || record.slug, intro: [record.title || ''], table: [], faq: [] }; break; }
+      const name = LEVELS[LV].vi;
+      const crit = {
+        3: 'tất cả môn đánh giá bằng nhận xét đều Đạt; tất cả môn tính điểm có ĐTB từ 6,5 trở lên, trong đó ít nhất 6 môn từ 8,0 trở lên',
+        2: 'tất cả môn đánh giá bằng nhận xét đều Đạt; tất cả môn tính điểm có ĐTB từ 5,0 trở lên, trong đó ít nhất 6 môn từ 6,5 trở lên',
+        1: 'có nhiều nhất 1 môn nhận xét Chưa đạt; ít nhất 6 môn tính điểm có ĐTB từ 5,0 trở lên; không có môn nào dưới 3,5'
+      }[LV];
+      const ok9 = { 3: [8.5, 8.0, 8.2, 9.0, 8.1, 8.0, 7.0, 6.8, 7.5], 2: [7.0, 6.5, 6.8, 7.2, 6.6, 6.5, 5.5, 5.0, 6.0], 1: [5.0, 5.5, 6.0, 5.2, 5.0, 5.1, 4.0, 3.5, 4.5] }[LV];
+      const miss = ok9.slice(); miss[8] = { 3: 6.4, 2: 4.9, 1: 3.4 }[LV];
+      const adj = ok9.slice(); adj[8] = { 3: 3.0, 2: 3.0, 1: 2.0 }[LV];
+      const lv = (r) => (r.level == null ? '–' : LEVELS[r.level].vi);
+      const cases = [
+        { label: `Đủ điều kiện ${name}`, s: ok9, r: classify(ok9) },
+        { label: `Thiếu 1 môn (môn thứ 9 = ${fmt1(miss[8])})`, s: miss, r: classify(miss) },
+        { label: `1 môn rất thấp (môn thứ 9 = ${fmt1(adj[8])})`, s: adj, r: classify(adj) }
+      ];
+      const desc = (c) => `${c.s.map(fmt1).join('; ')} → ${lv(c.r)}${c.r.adjusted ? ` (mức gốc ${LEVELS[c.r.base].vi}, được nâng 1 bậc theo Điều 9 k3)` : ''}`;
+      out = {
+        h1: `Học lực ${name} cần điều kiện gì?`,
+        intro: [
+          `Theo Thông tư 22/2021, kết quả học tập mức <b>${name}</b> khi: ${crit}. Ví dụ 9 môn tính điểm ${ok9.map(fmt1).join('; ')} được xếp <b>${lv(cases[0].r)}</b>.`,
+          `Chỉ cần môn thứ 9 xuống ${fmt1(miss[8])} là xếp <b>${lv(cases[1].r)}</b>. Nếu chỉ vì đúng 1 môn mà bị hạ từ 2 bậc trở lên, học sinh được điều chỉnh lên 1 bậc (Điều 9 k3): ví dụ môn thứ 9 chỉ ${fmt1(adj[8])} thì kết quả là <b>${lv(cases[2].r)}</b>${cases[2].r.adjusted ? ` thay vì ${LEVELS[cases[2].r.base].vi}` : ''}.`,
+          `Mức đánh giá áp dụng cho học kỳ (theo ĐTB học kỳ) và cả năm (theo ĐTB cả năm). ${basis}`
+        ],
+        table: cases.map((c) => [c.label, desc(c)]),
+        faq: [
+          { q: `Có 1 môn dưới ${LV === 3 ? '6,5' : LV === 2 ? '5,0' : '3,5'} có được ${name} không?`, a: `Không đạt mức ${name} theo Điều 9 k2; nhưng nếu chỉ vì môn đó mà bị hạ từ 2 bậc trở lên thì được điều chỉnh lên 1 bậc.` },
+          { q: 'Tiểu học có xếp học lực theo điểm trung bình không?', a: 'Không. Tiểu học đánh giá theo TT 27/2020/TT-BGDĐT, không tính điểm trung bình; TT 22/2021 áp dụng cho THCS, THPT.' }
         ]
       };
       break;

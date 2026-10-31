@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "severance",
+  "slug": "tro-cap-that-nghiep-luong-8-trieu",
+  "title": "Trợ cấp thất nghiệp lương 8 triệu được bao nhiêu?",
+  "params": {
+    "kind": "ui",
+    "salary": 8000000
+  }
+}

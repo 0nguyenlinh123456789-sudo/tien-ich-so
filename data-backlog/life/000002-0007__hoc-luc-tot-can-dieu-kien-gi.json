@@ -1,0 +1,11 @@
+{
+  "section": "life",
+  "lang": "vi",
+  "tool": "diemtb",
+  "slug": "hoc-luc-tot-can-dieu-kien-gi",
+  "title": "Học lực Tốt cần điều kiện gì?",
+  "params": {
+    "kind": "level",
+    "level": "tot"
+  }
+}
