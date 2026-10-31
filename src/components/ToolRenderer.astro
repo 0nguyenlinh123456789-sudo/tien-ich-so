@@ -13,6 +13,9 @@ import DateTool from './tools/DateTool.astro';
 import ConvertTool from './tools/ConvertTool.astro';
 import MortgageTool from './tools/MortgageTool.astro';
 import TipTool from './tools/TipTool.astro';
+import AreaTool from './tools/AreaTool.astro';
+import GpaTool from './tools/GpaTool.astro';
+import IeltsTool from './tools/IeltsTool.astro';
 import SalaryTool from './tools/SalaryTool.astro';
 import LoanTool from './tools/LoanTool.astro';
 import FireTool from './tools/FireTool.astro';
@@ -55,3 +58,6 @@ const { toolId, lang, preset = {}, autorun = false } = Astro.props;
 {toolId === 'convert' && <ConvertTool lang={lang} />}
 {toolId === 'mortgage' && <MortgageTool lang={lang} />}
 {toolId === 'tip' && <TipTool lang={lang} />}
+{toolId === 'area' && <AreaTool lang={lang} />}
+{toolId === 'gpa' && <GpaTool lang={lang} />}
+{toolId === 'ielts' && <IeltsTool lang={lang} />}

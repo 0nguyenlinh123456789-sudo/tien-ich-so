@@ -1,0 +1,10 @@
+{
+  "section": "tools",
+  "lang": "vi",
+  "tool": "forms",
+  "slug": "mau-email-gui-cv-xin-viec",
+  "title": "Mẫu email gửi CV xin việc – viết sẵn, copy ngay",
+  "params": {
+    "kind": "emailcv"
+  }
+}

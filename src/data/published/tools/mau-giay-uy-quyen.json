@@ -1,0 +1,10 @@
+{
+  "section": "tools",
+  "lang": "vi",
+  "tool": "forms",
+  "slug": "mau-giay-uy-quyen",
+  "title": "Mẫu giấy ủy quyền – điền online, in ngay",
+  "params": {
+    "kind": "uyquyen"
+  }
+}

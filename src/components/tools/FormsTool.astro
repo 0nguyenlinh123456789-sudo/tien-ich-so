@@ -3,7 +3,7 @@
 interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; }
 const { lang = 'vi', preset = {} } = Astro.props;
 const start = preset.kind || 'nghiviec';
-const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['nghiphep', 'Xin nghỉ phép'], ['nghihoc', 'Xin nghỉ học']];
+const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['nghiphep', 'Xin nghỉ phép'], ['nghihoc', 'Xin nghỉ học'], ['uyquyen', 'Giấy ủy quyền'], ['emailcv', 'Email gửi CV']];
 ---
 <div data-tool="forms" data-lang={lang} class="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
   <form class="card grid content-start gap-3" data-f>
@@ -49,11 +49,14 @@ const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['n
       nghiviec: 'Báo trước theo Điều 35 Bộ luật Lao động 2019: ít nhất 45 ngày (HĐ không xác định thời hạn), 30 ngày (HĐ 12–36 tháng), 3 ngày làm việc (HĐ dưới 12 tháng). Một số ngành nghề đặc thù có thời hạn khác.',
       xinviec: 'Đơn xin việc nên ngắn gọn, nêu vị trí, kinh nghiệm chính và đính kèm CV.',
       nghiphep: 'Người làm đủ 12 tháng được nghỉ hằng năm ít nhất 12 ngày làm việc (Điều 113 Bộ luật Lao động 2019).',
-      nghihoc: 'Nộp cho giáo viên chủ nhiệm; học sinh dưới 18 tuổi cần phụ huynh ký.'
+      nghihoc: 'Nộp cho giáo viên chủ nhiệm; học sinh dưới 18 tuổi cần phụ huynh ký.',
+      uyquyen: 'Giấy ủy quyền phù hợp việc đơn giản (nhận hồ sơ, nhận lương, nộp giấy tờ). Việc liên quan nhà đất, xe, tài sản lớn thường phải lập hợp đồng ủy quyền có công chứng – hỏi trước nơi tiếp nhận.',
+      emailcv: 'Tiêu đề email nên ghi rõ: [Ứng tuyển] Vị trí – Họ tên. Đính kèm CV dạng PDF, đặt tên file không dấu.'
     };
     const LABELS: Record<string, [string, string, string]> = {
       nghiviec: ['Chức vụ', 'Bộ phận', 'Nghỉ từ ngày'], xinviec: ['Vị trí ứng tuyển', 'Kinh nghiệm', 'Có thể bắt đầu'],
-      nghiphep: ['Chức vụ', 'Bộ phận', 'Từ ngày'], nghihoc: ['Lớp', 'Trường', 'Từ ngày']
+      nghiphep: ['Chức vụ', 'Bộ phận', 'Từ ngày'], nghihoc: ['Lớp', 'Trường', 'Từ ngày'],
+      uyquyen: ['Người được ủy quyền', 'CCCD người được ủy quyền', 'Hiệu lực từ ngày'], emailcv: ['Vị trí ứng tuyển', 'Tên công ty', 'Có thể bắt đầu']
     };
     const draw = () => {
       const v = Object.fromEntries(new FormData(form)) as Record<string, string>;
@@ -64,14 +67,19 @@ const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['n
       root.querySelector('[data-l="from"]')!.textContent = lf;
       tip.textContent = TIPS[k];
       const now = new Date();
-      const title = { nghiviec: 'ĐƠN XIN NGHỈ VIỆC', xinviec: 'ĐƠN XIN VIỆC', nghiphep: 'ĐƠN XIN NGHỈ PHÉP', nghihoc: 'ĐƠN XIN NGHỈ HỌC' }[k];
+      const title = { nghiviec: 'ĐƠN XIN NGHỈ VIỆC', xinviec: 'ĐƠN XIN VIỆC', nghiphep: 'ĐƠN XIN NGHỈ PHÉP', nghihoc: 'ĐƠN XIN NGHỈ HỌC', uyquyen: 'GIẤY ỦY QUYỀN', emailcv: '' }[k];
       const me = k === 'nghihoc' ? 'Em' : 'Tôi';
       const body: Record<string, string> = {
         nghiviec: `${me} hiện đang làm việc tại vị trí ${dot(v.role)}, bộ phận ${dot(v.dept)}. Nay ${me.toLowerCase()} làm đơn này xin được nghỉ việc kể từ ngày ${dot(vd(v.from))}.</p><p>Lý do: ${dot(v.reason, 40)}.</p><p>${me} sẽ bàn giao đầy đủ công việc, tài liệu và tài sản cho ${dot(v.handover)} trước ngày nghỉ. Kính mong Ban Giám đốc xem xét, chấp thuận.`,
         xinviec: `Qua thông tin tuyển dụng, ${me.toLowerCase()} được biết Quý Công ty đang cần tuyển vị trí ${dot(v.role)}. ${me} có kinh nghiệm: ${dot(v.dept, 30)}.</p><p>${dot(v.reason, 40)}</p><p>${me} có thể bắt đầu làm việc từ ngày ${dot(vd(v.from))}. Kèm theo đơn là CV và các giấy tờ liên quan. Rất mong có cơ hội được phỏng vấn.`,
         nghiphep: `${me} là nhân viên vị trí ${dot(v.role)}, bộ phận ${dot(v.dept)}. Nay ${me.toLowerCase()} làm đơn xin nghỉ phép từ ngày ${dot(vd(v.from))} đến ngày ${dot(vd(v.until))}.</p><p>Lý do: ${dot(v.reason, 40)}.</p><p>Trong thời gian nghỉ, công việc được bàn giao cho ${dot(v.handover)}. Kính mong được chấp thuận.`,
-        nghihoc: `${me} là học sinh/sinh viên lớp ${dot(v.role)}, trường ${dot(v.dept)}. ${me} xin phép được nghỉ học từ ngày ${dot(vd(v.from))} đến ngày ${dot(vd(v.until))}.</p><p>Lý do: ${dot(v.reason, 40)}.</p><p>${me} xin hứa sẽ chép bài và hoàn thành bài tập đầy đủ. Kính mong thầy/cô chấp thuận.`
+        nghihoc: `${me} là học sinh/sinh viên lớp ${dot(v.role)}, trường ${dot(v.dept)}. ${me} xin phép được nghỉ học từ ngày ${dot(vd(v.from))} đến ngày ${dot(vd(v.until))}.</p><p>Lý do: ${dot(v.reason, 40)}.</p><p>${me} xin hứa sẽ chép bài và hoàn thành bài tập đầy đủ. Kính mong thầy/cô chấp thuận.`,
+        uyquyen: `${me} ủy quyền cho ông/bà ${dot(v.role)}, số CCCD ${dot(v.dept)}, được thay mặt ${me.toLowerCase()} thực hiện công việc sau: ${dot(v.reason, 40)}.</p><p>Thời hạn ủy quyền: từ ngày ${dot(vd(v.from))} đến ngày ${dot(vd(v.until))}.</p><p>${me} chịu trách nhiệm về nội dung ủy quyền này. ${v.handover ? esc(v.handover) : ''}`
       };
+      if (k === 'emailcv') {
+        doc.innerHTML = `<p><b>Tiêu đề:</b> [Ứng tuyển] ${dot(v.role)} – ${dot(v.name)}</p><hr class="my-3"><p>Kính gửi ${dot(v.to, 30)},</p><p class="mt-2">Tôi là ${dot(v.name)}, xin ứng tuyển vị trí ${dot(v.role)} tại ${dot(v.dept)}.</p><p class="mt-2">${dot(v.reason, 40)}</p><p class="mt-2">Tôi có thể bắt đầu từ ngày ${dot(vd(v.from))}. CV chi tiết được đính kèm trong email này. Rất mong được trao đổi thêm với Quý Công ty trong buổi phỏng vấn.</p><p class="mt-4">Trân trọng,<br>${dot(v.name)}${v.handover ? `<br>${esc(v.handover)}` : ''}</p>`;
+        return;
+      }
       doc.innerHTML = `
         <p class="text-center font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
         <p class="text-center font-bold underline underline-offset-4">Độc lập – Tự do – Hạnh phúc</p>
@@ -80,7 +88,7 @@ const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['n
         <p class="mt-4">${me} tên là: ${dot(v.name)}${v.dob ? `, sinh ngày ${esc(v.dob)}` : ''}.</p>
         <p class="mt-2">${body[k]}</p>
         <p class="mt-2">${me} xin chân thành cảm ơn!</p>
-        <div class="mt-8 ml-auto w-64 text-center"><i>${esc(v.place || '')}, ngày ${now.getDate()} tháng ${now.getMonth() + 1} năm ${now.getFullYear()}</i><br><b>Người làm đơn</b><br><i>(Ký, ghi rõ họ tên)</i><div class="h-16"></div><b>${esc(v.name || '')}</b></div>`;
+        <div class="mt-8 ml-auto w-64 text-center"><i>${esc(v.place || '')}, ngày ${now.getDate()} tháng ${now.getMonth() + 1} năm ${now.getFullYear()}</i><br><b>${k === 'uyquyen' ? 'Người ủy quyền' : 'Người làm đơn'}</b><br><i>(Ký, ghi rõ họ tên)</i><div class="h-16"></div><b>${esc(v.name || '')}</b></div>`;
     };
     root.querySelectorAll<HTMLButtonElement>('[data-kind]').forEach((b) => b.addEventListener('click', () => {
       kindIn.value = b.dataset.kind!;

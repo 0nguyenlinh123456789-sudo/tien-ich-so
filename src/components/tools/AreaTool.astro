@@ -1,0 +1,66 @@
+---
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+// [id, label, inputs]
+const SHAPES: [string, string, string[]][] = [
+  ['rect', vi ? 'Hình chữ nhật' : 'Rectangle', [vi ? 'Chiều dài' : 'Length', vi ? 'Chiều rộng' : 'Width']],
+  ['square', vi ? 'Hình vuông' : 'Square', [vi ? 'Cạnh' : 'Side']],
+  ['tri', vi ? 'Tam giác (đáy, cao)' : 'Triangle (base, height)', [vi ? 'Đáy' : 'Base', vi ? 'Chiều cao' : 'Height']],
+  ['tri3', vi ? 'Tam giác (3 cạnh)' : 'Triangle (3 sides)', ['a', 'b', 'c']],
+  ['circle', vi ? 'Hình tròn' : 'Circle', [vi ? 'Bán kính' : 'Radius']],
+  ['trap', vi ? 'Hình thang' : 'Trapezoid', [vi ? 'Đáy lớn' : 'Base a', vi ? 'Đáy nhỏ' : 'Base b', vi ? 'Chiều cao' : 'Height']],
+  ['para', vi ? 'Hình bình hành' : 'Parallelogram', [vi ? 'Đáy' : 'Base', vi ? 'Chiều cao' : 'Height']]
+];
+---
+<div data-tool="area" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid content-start gap-3" data-f>
+    <div class="flex flex-wrap gap-2">
+      {SHAPES.map(([id, l], i) => <label class="cursor-pointer"><input type="radio" name="shape" value={id} checked={i === 0} class="peer sr-only" /><span class="block rounded-full border border-slate-300 px-3 py-1.5 text-sm font-semibold peer-checked:border-brand-600 peer-checked:bg-brand-600 peer-checked:text-white">{l}</span></label>)}
+    </div>
+    {SHAPES.map(([id, , inputs], i) => (
+      <div data-shape={id} hidden={i !== 0} class="grid grid-cols-2 gap-2">
+        {inputs.map((l, k) => <div><label class="label">{l}</label><input class="input" type="number" min="0" step="any" name={`${id}${k}`} value={['5', '3', '4'][k] || '2'} /></div>)}
+      </div>
+    ))}
+    <div><label class="label">{vi ? 'Đơn vị' : 'Unit'}</label><select class="input" name="u"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option><option value="km">km</option></select></div>
+  </form>
+  <div class="card" data-out></div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tool="area"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const n = (x: number) => x.toLocaleString(vi ? 'vi-VN' : 'en-US', { maximumFractionDigits: 4 });
+    const FORMULA: Record<string, (v: number[]) => [number, number, string]> = {
+      rect: ([a, b]) => [a * b, 2 * (a + b), vi ? 'S = dài × rộng' : 'A = l × w'],
+      square: ([a]) => [a * a, 4 * a, vi ? 'S = cạnh × cạnh' : 'A = s²'],
+      tri: ([a, h]) => [(a * h) / 2, NaN, vi ? 'S = đáy × cao ÷ 2' : 'A = b × h ÷ 2'],
+      tri3: ([a, b, c]) => { const p = (a + b + c) / 2; const s = p * (p - a) * (p - b) * (p - c); return [s > 0 ? Math.sqrt(s) : NaN, a + b + c, vi ? 'Công thức Heron: S = √(p(p−a)(p−b)(p−c)), p = nửa chu vi' : "Heron's formula"]; },
+      circle: ([r]) => [Math.PI * r * r, 2 * Math.PI * r, vi ? 'S = π × r²; chu vi = 2πr' : 'A = πr²; C = 2πr'],
+      trap: ([a, b, h]) => [((a + b) * h) / 2, NaN, vi ? 'S = (đáy lớn + đáy nhỏ) × cao ÷ 2' : 'A = (a + b) × h ÷ 2'],
+      para: ([a, h]) => [a * h, NaN, vi ? 'S = đáy × chiều cao' : 'A = b × h']
+    };
+    const calc = () => {
+      const f = new FormData(form);
+      const shape = String(f.get('shape'));
+      root.querySelectorAll<HTMLElement>('[data-shape]').forEach((el) => (el.hidden = el.dataset.shape !== shape));
+      const vals = [0, 1, 2].map((k) => Number(f.get(`${shape}${k}`)) || 0);
+      const u = String(f.get('u'));
+      const [s, p, formula] = FORMULA[shape](vals);
+      if (!Number.isFinite(s) || s <= 0) { out.innerHTML = `<p class="text-slate-500">${vi ? 'Nhập kích thước hợp lệ (3 cạnh phải tạo được tam giác).' : 'Enter valid sizes.'}</p>`; return; }
+      const toM2 = { m: 1, cm: 1e-4, mm: 1e-6, km: 1e6 }[u]!;
+      out.innerHTML = `<div class="text-sm text-slate-500">${vi ? 'Diện tích' : 'Area'}</div>
+        <div class="text-4xl font-extrabold text-brand-700">${n(s)} ${u}²</div>
+        ${Number.isFinite(p) ? `<div class="mt-1 text-lg font-semibold">${vi ? 'Chu vi' : 'Perimeter'}: ${n(p)} ${u}</div>` : ''}
+        <div class="mt-3 rounded-xl bg-slate-50 p-3 text-sm">${formula}</div>
+        ${u !== 'm' ? `<div class="mt-2 text-sm text-slate-600">= ${n(s * toM2)} m²</div>` : ''}
+        ${u === 'm' && s >= 1000 ? `<div class="mt-2 text-sm text-slate-600">= ${n(s / 10000)} ha</div>` : ''}`;
+    };
+    form.addEventListener('input', calc);
+    form.addEventListener('change', calc);
+    calc();
+  });
+</script>

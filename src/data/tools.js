@@ -173,6 +173,38 @@ export const TOOLS = [
     ]
   },
   {
+    id: 'area', section: 'life', icon: '📐',
+    slug: { vi: 'tinh-dien-tich', en: 'area-calculator' },
+    title: { vi: 'Tính diện tích', en: 'Area Calculator' },
+    seo: { vi: 'Tính diện tích hình chữ nhật, tam giác, hình tròn, hình thang – có công thức', en: 'Area Calculator – rectangle, triangle, circle, trapezoid' },
+    desc: { vi: 'Diện tích, chu vi, công thức.', en: 'Area, perimeter, formula.' },
+    faq: [
+      { q: { vi: 'Công thức diện tích hình tam giác?', en: 'Triangle area formula?' }, a: { vi: 'S = đáy × chiều cao ÷ 2. Nếu chỉ biết 3 cạnh, dùng công thức Heron: S = √(p(p−a)(p−b)(p−c)), với p là nửa chu vi.', en: 'A = base × height ÷ 2, or Heron’s formula from three sides.' } },
+      { q: { vi: '1 mét vuông bằng bao nhiêu cm²?', en: 'How many cm² in 1 m²?' }, a: { vi: '1 m² = 10.000 cm²; 1 ha = 10.000 m².', en: '1 m² = 10,000 cm²; 1 ha = 10,000 m².' } }
+    ]
+  },
+  {
+    id: 'gpa', section: 'life', icon: '🎓',
+    slug: { vi: 'tinh-diem-gpa', en: 'gpa-calculator' },
+    title: { vi: 'Tính GPA', en: 'GPA Calculator' },
+    seo: { vi: 'Tính điểm GPA hệ 4 từ thang 10 – xếp loại tốt nghiệp', en: 'GPA Calculator – 10-point to 4.0 scale' },
+    desc: { vi: 'Đổi hệ 10 sang hệ 4, xếp loại.', en: '10-point to 4.0, class.' },
+    faq: [
+      { q: { vi: 'GPA bao nhiêu thì bằng giỏi?', en: 'What GPA is "very good"?' }, a: { vi: 'Theo Thông tư 08/2021/TT-BGDĐT: Xuất sắc từ 3,6; Giỏi từ 3,2 đến dưới 3,6; Khá từ 2,5; Trung bình từ 2,0 (hệ 4). Có thể bị hạ một bậc nếu học lại nhiều hoặc bị kỷ luật.', en: 'Excellent from 3.6, very good from 3.2, good from 2.5, average from 2.0 (Circular 08/2021).' } },
+      { q: { vi: 'Đổi điểm hệ 10 sang hệ 4 thế nào?', en: 'How to convert 10-point to 4.0?' }, a: { vi: 'Mỗi môn đổi sang điểm chữ (A từ 8,5 = 4; B từ 7,0 = 3; C từ 5,5 = 2; D từ 4,0 = 1; nhiều trường thêm B+, C+, D+), rồi lấy trung bình có trọng số tín chỉ.', en: 'Convert each course to a letter, then take the credit-weighted average.' } }
+    ]
+  },
+  {
+    id: 'ielts', section: 'life', icon: '🇬🇧',
+    slug: { vi: 'tinh-diem-ielts', en: 'ielts-band-calculator' },
+    title: { vi: 'Tính điểm IELTS', en: 'IELTS Overall Calculator' },
+    seo: { vi: 'Cách tính overall IELTS – làm tròn điểm đúng quy tắc', en: 'IELTS Overall Band Score Calculator' },
+    desc: { vi: 'Overall từ 4 kỹ năng.', en: 'Overall from 4 skills.' },
+    faq: [
+      { q: { vi: 'Overall IELTS làm tròn thế nào?', en: 'How is the IELTS overall rounded?' }, a: { vi: 'Lấy trung bình 4 kỹ năng. Phần lẻ .25 làm tròn lên .5, .75 làm tròn lên số nguyên kế tiếp. Ví dụ trung bình 6,25 → 6,5; 6,75 → 7,0; 6,125 → 6,0.', en: 'Average of four bands; .25 rounds up to .5 and .75 up to the next whole band.' } }
+    ]
+  },
+  {
     id: 'salary', section: 'finance', icon: '💵',
     slug: { vi: 'tinh-luong-gross-net', en: 'gross-net-salary-calculator' },
     title: { vi: 'Lương Gross – Net 2026', en: 'Gross – Net Salary 2026' },

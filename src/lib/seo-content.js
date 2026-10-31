@@ -248,6 +248,8 @@ export function buildRecordContent(record) {
         nghiviec: { name: p.alias || 'đơn xin nghỉ việc', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Ban Giám đốc / Phòng Nhân sự', 'Họ tên, chức vụ, bộ phận', 'Ngày nghỉ việc dự kiến', 'Lý do nghỉ', 'Cam kết bàn giao công việc', 'Ngày tháng, chữ ký'] },
         nghiphep: { name: 'đơn xin nghỉ phép', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Trưởng bộ phận / Ban Giám đốc', 'Họ tên, chức vụ, bộ phận', 'Nghỉ từ ngày … đến ngày …', 'Lý do', 'Người nhận bàn giao', 'Ngày tháng, chữ ký'] },
         nghihoc: { name: 'đơn xin nghỉ học', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Giáo viên chủ nhiệm', 'Họ tên học sinh, lớp, trường', 'Nghỉ từ ngày … đến ngày …', 'Lý do', 'Cam kết chép bài', 'Chữ ký học sinh và phụ huynh'] },
+        uyquyen: { name: 'giấy ủy quyền', parts: ['Quốc hiệu, tiêu ngữ', 'Thông tin người ủy quyền (họ tên, CCCD)', 'Thông tin người được ủy quyền', 'Nội dung, phạm vi ủy quyền', 'Thời hạn ủy quyền', 'Cam kết trách nhiệm', 'Chữ ký người ủy quyền'] },
+        emailcv: { name: 'email gửi CV', parts: ['Tiêu đề: [Ứng tuyển] Vị trí – Họ tên', 'Lời chào đúng người nhận', 'Vị trí ứng tuyển và nguồn tin', 'Kinh nghiệm nổi bật (2–3 câu)', 'Ngày có thể bắt đầu', 'Nhắc file CV đính kèm', 'Chữ ký: họ tên, số điện thoại'] },
         xinviec: { name: 'đơn xin việc', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Phòng Nhân sự công ty', 'Họ tên, ngày sinh', 'Vị trí ứng tuyển, nguồn tin tuyển dụng', 'Kinh nghiệm, kỹ năng nổi bật', 'Ngày có thể bắt đầu', 'Chữ ký, hồ sơ đính kèm'] }
       }[p.kind];
       const notice = p.kind === 'nghiviec'

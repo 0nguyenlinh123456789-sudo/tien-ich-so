@@ -1,0 +1,38 @@
+---
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const SKILLS = vi ? ['Listening', 'Reading', 'Writing', 'Speaking'] : ['Listening', 'Reading', 'Writing', 'Speaking'];
+---
+<div data-tool="ielts" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid grid-cols-2 gap-3" data-f>
+    {SKILLS.map((s, i) => <div><label class="label">{s}</label><input class="input text-lg" type="number" min="0" max="9" step="0.5" name={`s${i}`} value={['6.5', '7', '6', '6.5'][i]} /></div>)}
+    <p class="col-span-2 text-xs text-slate-500">{vi ? 'Overall = trung bình 4 kỹ năng, làm tròn đến 0,5 gần nhất; .25 làm tròn lên .5, .75 làm tròn lên số nguyên kế tiếp (quy tắc của IELTS).' : 'Overall = average of the four bands, rounded to the nearest half band (.25 rounds up to .5, .75 up to the next whole band).'}</p>
+  </form>
+  <div class="card" data-out></div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tool="ielts"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const round = (x: number) => { const f = x - Math.floor(x); return Math.floor(x) + (f >= 0.75 ? 1 : f >= 0.25 ? 0.5 : 0); };
+    const calc = () => {
+      const v = [0, 1, 2, 3].map((i) => Number((form.elements.namedItem(`s${i}`) as HTMLInputElement).value));
+      if (v.some((x) => !(x >= 0 && x <= 9))) { out.innerHTML = `<p class="text-slate-500">${vi ? 'Nhập điểm từ 0 đến 9 cho cả 4 kỹ năng.' : 'Enter 0–9 for all four skills.'}</p>`; return; }
+      const avg = v.reduce((a, b) => a + b, 0) / 4;
+      const o = round(avg);
+      const sum = v.reduce((a, b) => a + b, 0);
+      // Smallest increase of one skill that lifts the overall by 0.5.
+      const need = (target: number) => Math.max(0, (target - 0.25) * 4 - sum);
+      const next = o + 0.5;
+      out.innerHTML = `<div class="text-sm text-slate-500">Overall band</div>
+        <div class="text-6xl font-extrabold text-brand-700">${o.toFixed(1)}</div>
+        <div class="mt-1 text-sm text-slate-600">${vi ? 'Trung bình' : 'Average'}: ${avg.toFixed(3)}</div>
+        ${o < 9 ? `<p class="mt-3 rounded-xl bg-brand-50 p-3 text-sm">${vi ? `Để đạt <b>${next.toFixed(1)}</b>, tổng 4 kỹ năng cần tăng thêm <b>${need(next).toFixed(1)}</b> band (ví dụ nâng một kỹ năng thêm ${Math.ceil(need(next) * 2) / 2}).` : `To reach <b>${next.toFixed(1)}</b>, add <b>${need(next).toFixed(1)}</b> band in total.`}</p>` : ''}`;
+    };
+    form.addEventListener('input', calc);
+    calc();
+  });
+</script>

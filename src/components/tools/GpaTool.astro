@@ -1,0 +1,64 @@
+---
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+---
+<div data-tool="gpa" data-lang={lang} class="grid gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+  <div class="card">
+    <div class="mb-3 flex flex-wrap items-center gap-3 text-sm">
+      <label class="flex items-center gap-1"><input type="checkbox" data-plus checked /> {vi ? 'Thang có điểm cộng (B+, C+, D+)' : 'Use plus grades (B+, C+, D+)'}</label>
+    </div>
+    <div class="grid grid-cols-[1fr_70px_80px_32px] gap-2 text-xs font-semibold text-slate-500"><div>{vi ? 'Môn học' : 'Course'}</div><div>{vi ? 'Tín chỉ' : 'Credits'}</div><div>{vi ? 'Điểm (10)' : 'Score /10'}</div><div></div></div>
+    <div data-rows class="mt-1 grid gap-2"></div>
+    <button type="button" class="btn-ghost mt-3 py-2 text-sm" data-add>+ {vi ? 'Thêm môn' : 'Add course'}</button>
+  </div>
+  <div class="card" data-out></div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tool="gpa"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const rows = root.querySelector<HTMLElement>('[data-rows]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const plus = root.querySelector<HTMLInputElement>('[data-plus]')!;
+    // Base letter bands (A ≥8.5, B ≥7.0, C ≥5.5, D ≥4.0) with optional plus grades used by many universities.
+    const BASE: [number, string, number][] = [[8.5, 'A', 4], [7.0, 'B', 3], [5.5, 'C', 2], [4.0, 'D', 1], [0, 'F', 0]];
+    const PLUS: [number, string, number][] = [[8.5, 'A', 4], [8.0, 'B+', 3.5], [7.0, 'B', 3], [6.5, 'C+', 2.5], [5.5, 'C', 2], [5.0, 'D+', 1.5], [4.0, 'D', 1], [0, 'F', 0]];
+    const RANK: [number, string][] = vi ? [[3.6, 'Xuất sắc'], [3.2, 'Giỏi'], [2.5, 'Khá'], [2.0, 'Trung bình'], [0, 'Yếu']] : [[3.6, 'Excellent'], [3.2, 'Very good'], [2.5, 'Good'], [2.0, 'Average'], [0, 'Weak']];
+    const addRow = (name = '', cr = 3, sc = '') => {
+      const r = document.createElement('div');
+      r.className = 'grid grid-cols-[1fr_70px_80px_32px] gap-2';
+      r.innerHTML = `<input class="input py-1.5" data-n placeholder="${vi ? 'Tên môn' : 'Course'}" /><input class="input py-1.5" data-c type="number" min="0" max="20" /><input class="input py-1.5" data-s type="number" min="0" max="10" step="0.1" /><button type="button" class="text-slate-400 hover:text-rose-600" data-del aria-label="remove">✕</button>`;
+      (r.querySelector('[data-n]') as HTMLInputElement).value = name;
+      (r.querySelector('[data-c]') as HTMLInputElement).value = String(cr);
+      (r.querySelector('[data-s]') as HTMLInputElement).value = sc;
+      r.querySelector('[data-del]')!.addEventListener('click', () => { r.remove(); calc(); });
+      rows.appendChild(r);
+    };
+    const calc = () => {
+      const scale = plus.checked ? PLUS : BASE;
+      let cr = 0, s4 = 0, s10 = 0;
+      const marks: string[] = [];
+      rows.querySelectorAll('div').forEach((r) => {
+        const c = Number((r.querySelector('[data-c]') as HTMLInputElement)?.value), raw = (r.querySelector('[data-s]') as HTMLInputElement)?.value;
+        const s = Number(raw);
+        if (!(c > 0) || raw === '' || !(s >= 0 && s <= 10)) { marks.push(''); return; }
+        const g = scale.find(([min]) => s >= min)!;
+        cr += c; s4 += g[2] * c; s10 += s * c; marks.push(g[1]);
+      });
+      if (!cr) { out.innerHTML = `<p class="text-slate-500">${vi ? 'Nhập tín chỉ và điểm hệ 10 của từng môn.' : 'Enter credits and scores.'}</p>`; return; }
+      const g4 = s4 / cr, g10 = s10 / cr;
+      const rank = RANK.find(([m]) => g4 >= m)![1];
+      out.innerHTML = `<div class="text-sm text-slate-500">GPA ${vi ? 'hệ 4' : '(4.0 scale)'}</div>
+        <div class="text-5xl font-extrabold text-brand-700">${g4.toFixed(2)}</div>
+        <div class="mt-1 text-lg font-semibold">${vi ? 'Xếp loại' : 'Class'}: ${rank}</div>
+        <div class="mt-3 grid grid-cols-2 gap-3 text-sm"><div class="rounded-xl bg-slate-50 p-3"><div class="text-slate-500">${vi ? 'Hệ 10' : '10-point'}</div><div class="text-lg font-bold">${g10.toFixed(2)}</div></div><div class="rounded-xl bg-slate-50 p-3"><div class="text-slate-500">${vi ? 'Tổng tín chỉ' : 'Credits'}</div><div class="text-lg font-bold">${cr}</div></div></div>
+        <p class="mt-3 text-xs text-slate-500">${vi ? `Điểm chữ từng môn: ${marks.filter(Boolean).join(', ')}. Xếp loại theo Điều 10 Thông tư 08/2021/TT-BGDĐT (Xuất sắc từ 3,6; Giỏi từ 3,2; Khá từ 2,5; Trung bình từ 2,0). Bảng quy đổi điểm chữ do từng trường quy định – hãy đối chiếu quy chế trường bạn.` : 'Letter bands vary by university; check your own regulations.'}</p>`;
+    };
+    [['Toán cao cấp', 3, '8.2'], ['Tiếng Anh', 2, '7.5'], ['Kinh tế vi mô', 3, '6.8'], ['', 3, '']].forEach(([n, c, s]) => addRow(n as string, c as number, s as string));
+    root.querySelector('[data-add]')!.addEventListener('click', () => { addRow(); });
+    root.addEventListener('input', calc);
+    plus.addEventListener('change', calc);
+    calc();
+  });
+</script>
