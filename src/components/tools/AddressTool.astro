@@ -22,13 +22,13 @@ const olds = Object.keys(OLD_TO_NEW).sort((a, b) => a.localeCompare(b, 'vi'));
 </div>
 
 <script>
+  import { escapeHtml as esc } from '../../lib/format.js';
   import { OLD_TO_NEW } from '../../lib/provinces-2025.js';
   document.querySelectorAll<HTMLElement>('[data-tool="address"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const sel = root.querySelector<HTMLSelectElement>('[data-old]')!;
     const st = root.querySelector<HTMLInputElement>('[data-street]')!;
     const out = root.querySelector<HTMLElement>('[data-out]')!;
-    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
     const draw = () => {
       const nw = OLD_TO_NEW[sel.value];
       const street = st.value.trim();

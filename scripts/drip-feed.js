@@ -28,6 +28,7 @@ const val = (f, d) => { const i = args.indexOf(f); return i >= 0 ? args[i + 1] :
 const COUNT = Math.max(0, parseInt(val('--count', ''), 10) || site.dripFeedPerDay || 150);
 const DRY = has('--dry-run');
 const NO_GIT = has('--no-git');
+const NO_BUILD = has('--no-build');
 const NO_PING = has('--no-ping');
 const MAX_WAIT = Number(val('--wait', 900));
 
@@ -133,6 +134,17 @@ async function main() {
   const logDir = path.join(ROOT, 'data-backlog', '_logs');
   fs.mkdirSync(logDir, { recursive: true });
   fs.writeFileSync(path.join(logDir, `${publishedAt.slice(0, 10)}.txt`), urls.join('\n') + '\n', { flag: 'a' });
+
+  if (!NO_BUILD) {
+    try {
+      sh('npm run build');
+      sh('node scripts/check-site.mjs');
+    } catch (e) {
+      console.error('✖ Build/check failed – restoring backlog, nothing published.\n' + (e.stdout || '') + (e.stderr || ''));
+      if (!NO_GIT) sh('git checkout -- src/data/published data-backlog && git clean -fdq src/data/published');
+      process.exit(1);
+    }
+  }
 
   if (!NO_GIT) {
     sh('git add -A src/data/published data-backlog');

@@ -10,7 +10,9 @@
     "astro": "astro",
     "backlog:generate": "node scripts/generate-backlog.js",
     "drip": "node scripts/drip-feed.js",
-    "drip:dry": "node scripts/drip-feed.js --dry-run --no-git --no-ping"
+    "drip:dry": "node scripts/drip-feed.js --dry-run --no-git --no-ping",
+    "check": "astro build && node scripts/check-site.mjs",
+    "keywords": "node scripts/keyword-scan.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

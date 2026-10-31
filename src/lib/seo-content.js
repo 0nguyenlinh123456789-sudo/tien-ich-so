@@ -384,7 +384,7 @@ export function buildRecordContent(record) {
 
   return {
     title: record.title || out.h1,
-    description: record.description || out.intro[0].replace(/<[^>]+>/g, '').slice(0, 155),
+    description: record.description || out.intro.join(' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 155),
     ...out
   };
 }

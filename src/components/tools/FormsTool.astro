@@ -36,12 +36,12 @@ const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['n
 </div>
 
 <script>
+  import { escapeHtml as esc } from '../../lib/format.js';
   import { gate } from '../../scripts/download-gate.js';
   document.querySelectorAll<HTMLElement>('[data-tool="forms"]').forEach((root) => {
     const form = root.querySelector<HTMLFormElement>('[data-f]')!;
     const doc = root.querySelector<HTMLElement>('[data-doc]')!;
     const tip = root.querySelector<HTMLElement>('[data-tip]')!;
-    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
     const dot = (s: string, w = 18) => (s ? `<b>${esc(s)}</b>` : '.'.repeat(w));
     const vd = (s: string) => (s ? s.split('-').reverse().join('/') : '');
     const kindIn = form.elements.namedItem('kind') as HTMLInputElement;

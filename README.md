@@ -1,45 +1,60 @@
-# Static Mega-Portal (Astro + Tailwind, 100% static cho Cloudflare Pages)
+# Tiện Ích Số – static tools portal (Astro + Tailwind)
 
-Hai thị trường: tiếng Việt ở `/`, tiếng Anh ở `/en`. Tất cả công cụ chạy hoàn toàn trên trình duyệt, không có SSR và không gọi API.
+Vietnamese at `/`, English at `/en`. Every tool runs entirely in the browser: no server, no API keys, no running cost.
+Live: https://tien-ich-so.0-nguyenlinh123-456-789.workers.dev (Cloudflare Workers static assets, free plan).
 
-## Cài đặt
+## Commands
 
 ```bash
 npm install
 npm run dev              # http://localhost:4321
-npm run backlog:generate # tạo khoảng 30.000 hồ sơ trong data-backlog/
-npm run drip:dry         # xem thử drip-feed (không ghi, không push)
-npm run build            # xuất ra dist/
+npm run check            # build + scripts/check-site.mjs (run before every push)
+npm run backlog:generate # refill data-backlog/ (skips slugs already published/queued)
+npm run drip:dry         # preview the next daily batch (no write, no push)
+npm run keywords -- "tính" "mẫu đơn"   # Google-autocomplete demand scan
 ```
 
-## Cấu hình 1 lần
+Node 22+ is required (Astro 7). `.nvmrc` pins it for Cloudflare and CI.
 
-| File | Nội dung |
+## How it runs by itself
+
+| What | Where | When |
+|---|---|---|
+| Publish N backlog pages, build, **check**, commit, ping IndexNow | `.github/workflows/auto-publish.yml` → `scripts/drip-feed.js` | 01:00 UTC daily |
+| Build + check on every push (red ✗ = something broke) | `.github/workflows/ci.yml` | each push |
+| Cloudflare rebuilds and deploys | Workers & Pages → `tien-ich-so` | each push |
+| Legal/forms watcher | `.github/workflows/legal-watch.yml` | scheduled |
+
+If the build or check fails, drip-feed restores the backlog and publishes nothing, and Cloudflare keeps serving the previous version, so the live site never goes down.
+
+## Where to change things
+
+| Change | File |
 |---|---|
-| `src/config/site.json` | `siteUrl` (domain thật), tên site, `indexNowKey` (chuỗi hex 32 ký tự tự đặt), số trang mỗi ngày |
-| `src/config/monetization.json` | `smartLinkUrl`, `bannerScriptUrl`, `inContentAdHtml`, `accesstradeDeepLinkPrefix` (ví dụ `https://go.isclix.com/deep_link/xxx/yyy?url=`), `topAffiliateOffers` |
-| `src/config/tax-vn.json` | Giảm trừ gia cảnh, biểu thuế 5 bậc, lương cơ sở, lương tối thiểu vùng. Cập nhật tại đây khi luật thay đổi |
+| Site URL, name, pages per day | `src/config/site.json` |
+| Ads, affiliate links, Accesstrade prefix | `src/config/monetization.json` |
+| Tax, base salary, regional minimum wage | `src/config/tax-vn.json` |
+| Electricity tariff | `src/lib/electric.js` |
+| Add/rename a tool, its SEO title and FAQ | `src/data/tools.js` (+ component in `src/components/tools/`, + line in `ToolRenderer.astro`) |
+| Text of programmatic pages | `src/lib/seo-content.js` (one `case` per tool) |
+| Which programmatic pages exist | `scripts/generate-backlog.js` (one numbered block per page type) |
 
-## Cloudflare Pages
-- Build command: `npm run build`. Output: `dist`. Biến môi trường: `NODE_VERSION=20`.
-- Kết nối repo GitHub: mỗi lần drip-feed push, Cloudflare tự build lại.
+## Layout
 
-## Drip-feed tự động
-`.github/workflows/auto-publish.yml` chạy lúc 01:00 UTC mỗi ngày:
-1. Chuyển 150 file từ `data-backlog/` sang `src/data/published/`.
-2. Commit rồi push lên repo.
-3. Chờ trang mới lên (tối đa 15 phút), sau đó gửi danh sách URL tới `api.indexnow.org`.
-
-Có thể chạy tay trong tab **Actions → Auto publish → Run workflow**.
-
-## Cấu trúc
 ```
-src/config/            cấu hình kiếm tiền, site, thuế
-src/lib/               thuật toán: salary, loan, fire, numerology, lunar, tarot, numwords, vietqr, doc-templates, seo-content
-src/components/        MonetizedResult, AffiliateCards, AdSlot, ShareBox, SectionPage, tools/*
-src/pages/             tai-chinh | van-menh | cong-cu | en/finance | en/destiny | en/tools  ([...slug].astro)
-src/data/published/    hồ sơ đã đăng (mỗi file JSON = 1 trang)
-data-backlog/          kho dự trữ
-scripts/               generate-backlog.js, drip-feed.js
+src/config/        site, monetization, tax config (JSON)
+src/data/          tools.js (registry), published/ (one JSON = one live page)
+src/lib/           pure logic: salary, loan, fire, lunar, bhxh, electric, units, numerology, tarot,
+                   cv/doc/portfolio templates, seo-content (page text), format (escapeHtml, numbers)
+src/scripts/       browser helpers: form-state (URL sync), download-gate (ad before download)
+src/components/    Layout pieces, SectionPage (tool/record pages), MonetizedResult, AdSlot, tools/*
+src/pages/         doi-song | tai-chinh | van-menh | cong-cu, mirrored under en/
+data-backlog/      queued pages; filename order = publish order (000000-* first, zz-* last)
+scripts/           drip-feed, generate-backlog, check-site, keyword-scan, legal-watch, forms-check
 ```
 
+## Rules that keep it safe
+
+- Any text a visitor can control (form fields, URL params, file names) goes through `escapeHtml` before `innerHTML`.
+- Legal figures (tax, insurance, tariffs) must cite the document and be verified before changing.
+- Never add a paid service; everything here works on free tiers without a card.
