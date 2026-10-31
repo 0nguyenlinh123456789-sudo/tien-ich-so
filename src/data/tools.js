@@ -336,6 +336,30 @@ export const TOOLS = [
     ]
   },
   {
+    id: 'truocba', section: 'finance', icon: '🛵',
+    slug: { vi: 'tinh-le-phi-truoc-ba', en: 'vietnam-vehicle-registration-fee' },
+    title: { vi: 'Phí trước bạ xe', en: 'Vehicle Registration Fee' },
+    seo: { vi: 'Tính lệ phí trước bạ xe máy, ô tô 2026 – phí biển số', en: 'Vietnam Vehicle Registration Fee 2026' },
+    desc: { vi: 'Trước bạ + biển số xe.', en: 'Registration tax + plates.' },
+    faq: [
+      { q: { vi: 'Xe máy năm 2026 nộp lệ phí trước bạ bao nhiêu %?', en: 'What is the 2026 registration tax rate for motorbikes?' }, a: { vi: 'Đăng ký lần đầu 2%, lần 2 trở đi 1%, áp dụng toàn quốc (NĐ 175/2025/NĐ-CP sửa Điều 8 NĐ 10/2022/NĐ-CP). Ví dụ xe giá tính lệ phí 40 triệu đăng ký ở tỉnh (khu vực II): trước bạ 800.000 đ + phí biển số 400.000 đ (TT 71/2025/TT-BTC) = 1.200.000 đ.', en: '2% for first registration, 1% thereafter, nationwide (Decree 175/2025/ND-CP amending Decree 10/2022). Example: a 40M VND bike registered outside Hanoi/HCMC: 800,000 tax + 400,000 plate fee = 1,200,000 VND.' } },
+      { q: { vi: 'Ô tô dưới 9 chỗ nộp trước bạ bao nhiêu %?', en: 'What is the rate for cars up to 9 seats?' }, a: { vi: 'Lần đầu 10%, HĐND tỉnh được tăng tối đa 50% (tức tối đa 15%); Hải Phòng áp dụng 12% (NQ 14/2026/NQ-HĐND); tỉnh khác: xem nghị quyết HĐND tỉnh. Lần 2 trở đi 2%.', en: '10% for first registration; provinces may raise it by up to 50% (max 15%). Hai Phong applies 12% (Res. 14/2026/NQ-HĐND); other provinces: see the provincial HĐND resolution. Re-registration: 2%.' } },
+      { q: { vi: 'Ô tô điện có được miễn lệ phí trước bạ không?', en: 'Are electric cars exempt?' }, a: { vi: 'Ô tô điện chạy pin đăng ký lần đầu được áp mức 0% đến hết 28/02/2027 (NĐ 51/2025/NĐ-CP). Sau 28/02/2027 cần kiểm tra văn bản mới nhất về ưu đãi ô tô điện. Vẫn phải nộp phí đăng ký, cấp biển số.', en: 'Battery EVs pay 0% on first registration until 28/02/2027 (Decree 51/2025/ND-CP). After that date, check the latest regulation on EV incentives. Plate fees still apply.' } }
+    ]
+  },
+  {
+    id: 'diemtb', section: 'life', icon: '📚',
+    slug: { vi: 'tinh-diem-trung-binh-mon', en: 'vietnam-school-grade-average' },
+    title: { vi: 'Điểm trung bình môn', en: 'School Grade Average' },
+    seo: { vi: 'Tính điểm trung bình môn, cả năm, xếp loại học lực (TT 22)', en: 'Vietnam School Grade Average & Rating (Circular 22)' },
+    desc: { vi: 'Học kỳ, cả năm, học lực.', en: 'Semester, year, overall grade.' },
+    faq: [
+      { q: { vi: 'Công thức tính điểm trung bình môn học kỳ là gì?', en: 'How is the semester subject average calculated?' }, a: { vi: 'ĐTBmhk = (tổng điểm đánh giá thường xuyên + 2 × điểm giữa kỳ + 3 × điểm cuối kỳ) / (số điểm thường xuyên + 5), làm tròn 1 chữ số thập phân (Điều 9, Điều 5 TT 22/2021/TT-BGDĐT). Ví dụ thường xuyên 8, 7, 9; giữa kỳ 7,5; cuối kỳ 8: (24 + 15 + 24) / 8 = 7,875 → 7,9.', en: 'Semester average = (sum of regular scores + 2 × mid-term + 3 × final) / (number of regular scores + 5), rounded to 1 decimal (Art. 9, 5 of Circular 22/2021). Example: regular 8, 7, 9; mid 7.5; final 8: (24 + 15 + 24) / 8 = 7.875 → 7.9.' } },
+      { q: { vi: 'Điểm trung bình môn cả năm tính thế nào?', en: 'How is the full-year average calculated?' }, a: { vi: 'ĐTBmcn = (ĐTB học kỳ I + 2 × ĐTB học kỳ II) / 3, làm tròn 1 chữ số thập phân. Ví dụ HK I 6,5, HK II 7,0: (6,5 + 14,0) / 3 = 6,83 → 6,8.', en: 'Year average = (Semester I + 2 × Semester II) / 3, rounded to 1 decimal. Example: 6.5 and 7.0 give 20.5 / 3 = 6.83 → 6.8.' } },
+      { q: { vi: 'Điều kiện học lực (kết quả học tập) mức Tốt là gì?', en: 'What is required for the Excellent level?' }, a: { vi: 'Theo khoản 2 Điều 9 TT 22/2021/TT-BGDĐT: tất cả môn đánh giá bằng nhận xét đạt mức Đạt; tất cả môn tính điểm có ĐTB từ 6,5 trở lên, trong đó ít nhất 6 môn từ 8,0 trở lên. Không còn điều kiện riêng với Toán hoặc Ngữ văn.', en: 'Per Art. 9(2) of Circular 22/2021: all comment-graded subjects Achieved; every scored subject averages at least 6.5, with at least 6 subjects at 8.0 or above. There is no special Maths/Literature condition.' } }
+    ]
+  },
+  {
     id: 'pitannual', section: 'finance', icon: '🧮',
     slug: { vi: 'quyet-toan-thue-tncn', en: 'vietnam-pit-annual-finalization' },
     title: { vi: 'Quyết toán thuế TNCN', en: 'PIT Annual Finalization' },

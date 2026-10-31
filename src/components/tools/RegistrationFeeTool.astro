@@ -1,0 +1,78 @@
+---
+// Lệ phí trước bạ & phí biển số. Logic: src/lib/registration-fee.js
+import { VEHICLES, CAR_RATES } from '../../lib/registration-fee.js';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-3 text-sm has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50';
+---
+<div data-tool="truocba" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid min-w-0 content-start gap-3" data-f>
+    <div class="min-w-0"><label class="label">{vi ? 'Loại xe' : 'Vehicle type'}</label><select class="input w-full min-w-0" name="vehicle">{VEHICLES.map((v) => <option value={v.id}>{vi ? v.vi : v.en}</option>)}</select>
+      <p class="mt-1 text-xs text-slate-500">{vi ? 'Theo tên loại xe trên giấy đăng kiểm: "xe con pick-up" chọn nhóm ≤ 9 chỗ.' : 'Follow the vehicle type on the inspection certificate: a "passenger pick-up" (xe con pick-up) belongs to the ≤ 9 seats group.'}</p></div>
+    <div class="flex gap-2">
+      <label class={blk}><input type="radio" name="first" value="1" class="mr-2" checked />{vi ? 'Đăng ký lần đầu' : 'First registration'}</label>
+      <label class={blk}><input type="radio" name="first" value="0" class="mr-2" />{vi ? 'Xe cũ (sang tên)' : 'Used (transfer)'}</label>
+    </div>
+    <div class="min-w-0"><label class="label break-words">{vi ? 'Giá tính lệ phí trước bạ (đồng)' : 'Taxable value for registration tax (VND)'}</label><input class="input w-full min-w-0 text-lg" name="price" data-money inputmode="numeric" value="40.000.000" />
+      <p class="mt-1 text-xs text-slate-500">{vi ? 'Theo bảng giá của UBND tỉnh nơi đăng ký (không phải giá hóa đơn); xe cũ theo thông báo của cơ quan thuế.' : 'Per the price table of the provincial People\'s Committee where you register (not the invoice price); used vehicles per the tax office notice.'}</p></div>
+    <div data-rate class="min-w-0"><label class="label">{vi ? 'Mức thu ô tô con tại tỉnh/thành' : 'Provincial car rate'}</label><select class="input w-full min-w-0" name="carRate">{CAR_RATES.map((r) => <option value={r}>{(r * 100).toLocaleString(vi ? 'vi-VN' : 'en-US')}%</option>)}</select>
+      <p class="mt-1 text-xs text-slate-500">{vi ? 'Hải Phòng (NQ 14/2026/NQ-HĐND): 12%. Tỉnh khác: xem nghị quyết HĐND tỉnh.' : 'Hai Phong (Res. 14/2026/NQ-HĐND): 12%. Other provinces: see the provincial HĐND resolution.'}</p></div>
+    <div data-region class="min-w-0"><label class="label">{vi ? 'Nơi đăng ký biển số' : 'Registration area'}</label>
+      <div class="flex gap-2">
+        <label class={blk}><input type="radio" name="region" value="1" class="mr-2" />{vi ? 'Hà Nội, TP.HCM' : 'Hanoi, HCMC'}</label>
+        <label class={blk}><input type="radio" name="region" value="2" class="mr-2" checked />{vi ? 'Tỉnh khác' : 'Other provinces'}</label>
+      </div></div>
+  </form>
+  <div class="card min-w-0" data-out></div>
+</div>
+
+<script>
+  import { registrationFee, EV_FREE_UNTIL } from '../../lib/registration-fee.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="truocba"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const n = (x: number) => (Number.isFinite(x) ? Math.round(x) : 0).toLocaleString('vi-VN');
+    const pct = (x: number) => (x * 100).toLocaleString(vi ? 'vi-VN' : 'en-US', { maximumFractionDigits: 2 }) + '%';
+    const get = (k: string) => String(new FormData(form).get(k) ?? '');
+    const money = (k: string) => Number(get(k).replace(/\D/g, '').slice(0, 15)) || 0;
+    form.querySelectorAll<HTMLInputElement>('[data-money]').forEach((el) => el.addEventListener('input', () => { const d = el.value.replace(/\D/g, '').slice(0, 15); el.value = d ? Number(d).toLocaleString('vi-VN') : ''; }));
+    const note = (s: string) => `<p class="mt-3 text-xs text-slate-500">${s}</p>`;
+    const row = (l: string, v: string, b = false) => `<div class="flex justify-between gap-3 py-1 text-sm ${b ? 'font-semibold' : ''}"><span class="min-w-0 break-words">${l}</span><span class="min-w-0 break-all text-right">${v}</span></div>`;
+    const d = vi ? ' đ' : ' VND';
+
+    const calc = () => {
+      const first = get('first') !== '0';
+      const r = registrationFee({ vehicle: get('vehicle'), price: money('price'), first, carRate: Number(get('carRate')), region: get('region'), now: new Date() });
+      const usesCarRate = first && ['car9', 'pickup', 'ev'].includes(r.vehicle);
+      root.querySelector<HTMLElement>('[data-rate]')!.hidden = !usesCarRate;
+      root.querySelector<HTMLElement>('[data-region]')!.hidden = !first;
+      if (r.missingPrice) {
+        out.innerHTML = `<div class="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-800">${vi ? 'Nhập giá xe (giá tính lệ phí trước bạ) để tính.' : 'Enter the vehicle value to calculate.'}</div>`;
+        return;
+      }
+      let h = `<div class="text-sm text-slate-500">${vi ? 'Tổng thuế/phí nhà nước khi lăn bánh' : 'Total government fees to register'}</div><div class="text-4xl font-extrabold text-brand-700 break-all">${n(r.total)}${d}</div>`;
+      h += `<div class="mt-4 border-t pt-2">${row(`${vi ? 'Lệ phí trước bạ' : 'Registration tax'} (${pct(r.rate)})`, `${n(r.tax)}${d}`)}${row(vi ? 'Phí đăng ký, cấp biển số' : 'Plate & registration fee', first ? `${n(r.plate)}${d}` : (vi ? 'không áp dụng' : 'n/a'))}${row(vi ? 'Tổng' : 'Total', `${n(r.total)}${d}`, true)}</div>`;
+      let f = `${vi ? 'Trước bạ' : 'Tax'} = ${n(r.price)} × ${pct(r.rate)} = ${n(r.tax)}${d}`;
+      if (r.vehicle === 'pickup' && first) f += vi ? ` (60% × ${pct(r.carRate)} mức ô tô con)` : ` (60% × ${pct(r.carRate)} car rate)`;
+      if (first) f += vi ? `. Phí biển số khu vực ${r.region === '1' ? 'I' : 'II'}: ${n(r.plate)}${d}.` : `. Plate fee, area ${r.region === '1' ? 'I' : 'II'}: ${n(r.plate)}${d}.`;
+      else f += vi ? '. Đăng ký lần 2 trở đi không tính phí cấp biển số lần đầu.' : '. No first-time plate fee for re-registration.';
+      h += `<p class="mt-3 break-all text-xs text-slate-500">${f}</p>`;
+      if (r.vehicle === 'ev' && first) {
+        h += r.evExpired
+          ? `<div class="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-800">${vi ? 'Đã qua 28/02/2027 – mức 0% theo NĐ 51/2025 hết hạn; đang tính theo mức ô tô con. Sau 28/02/2027 kiểm tra văn bản mới nhất về ưu đãi ô tô điện.' : 'After 28/02/2027 the 0% rate (Decree 51/2025) has expired; car rate applied. After 28/02/2027, check the latest regulation on EV incentives.'}</div>`
+          : note(vi ? `Ô tô điện chạy pin lần đầu: 0% đến hết ${EV_FREE_UNTIL.toLocaleDateString('vi-VN')} (NĐ 51/2025/NĐ-CP).` : `Battery EV first registration: 0% until ${EV_FREE_UNTIL.toLocaleDateString('en-GB')} (Decree 51/2025/ND-CP).`);
+      }
+      if (!first) h += note(vi ? 'Xe cũ: nhập giá tính lệ phí theo thông báo của cơ quan thuế (công cụ không tự áp tỷ lệ chất lượng còn lại).' : 'Used vehicles: enter the value in the tax office notice (no depreciation is applied automatically).');
+      h += note(vi ? 'Chưa gồm bảo hiểm, phí đăng kiểm, phí sử dụng đường bộ.' : 'Excludes insurance, inspection and road-use fees.');
+      h += `<details class="mt-3 text-xs text-slate-500"><summary class="cursor-pointer">${vi ? 'Căn cứ pháp lý' : 'Legal basis'}</summary><p class="mt-1">${vi ? 'NĐ 10/2022/NĐ-CP (Điều 7, Điều 8) sửa đổi bởi NĐ 175/2025/NĐ-CP: xe máy 2% / 1%; ô tô ≤ 9 chỗ 10% (HĐND tỉnh tăng tối đa 50%); pick-up chở hàng cabin kép, VAN 60% mức ô tô con; ô tô khác và lần 2 trở đi 2%. NĐ 51/2025/NĐ-CP: ô tô điện chạy pin 0% đến 28/02/2027. Phí biển số: TT 60/2023/TT-BTC sửa bởi TT 71/2025/TT-BTC (từ 01/7/2025): ô tô chở người ≤ 9 chỗ (kể cả "xe con pick-up", ô tô điện ≤ 9 chỗ) 20.000.000 / 1.000.000 đ; ô tô khác (kể cả ô tô tải pick-up cabin kép, VAN) 500.000 / 150.000 đ (khu vực I / II). Sau 28/02/2027 kiểm tra văn bản mới nhất về ưu đãi ô tô điện.' : 'Decree 10/2022/ND-CP (Art. 7, 8) as amended by Decree 175/2025/ND-CP: motorbikes 2% / 1%; cars ≤ 9 seats 10% (provinces may raise by up to 50%); double-cab cargo pick-ups, VANs 60% of the car rate; other vehicles and re-registration 2%. Decree 51/2025/ND-CP: battery EVs 0% until 28/02/2027. Plate fees: Circular 60/2023/TT-BTC as amended by Circular 71/2025/TT-BTC (from 01/7/2025): passenger cars ≤ 9 seats (incl. passenger pick-ups, EVs ≤ 9 seats) 20,000,000 / 1,000,000 VND; other vehicles (incl. double-cab pick-up trucks, VANs) 500,000 / 150,000 VND (area I / II). After 28/02/2027, check the latest regulation on EV incentives.'}</p></details>`;
+      h += `<p class="mt-3 text-xs font-semibold text-amber-700">${vi ? 'Tham khảo; mức chính thức theo thông báo của cơ quan thuế. Cập nhật 10/2026.' : 'Reference only; the official amount is in the tax office notice. Updated 10/2026.'}</p>`;
+      out.innerHTML = h;
+    };
+    form.addEventListener('input', calc);
+    form.addEventListener('change', calc);
+    calc();
+  });
+</script>
