@@ -140,7 +140,7 @@ footer{padding:120px 7vw;text-align:center}footer a{display:inline-block;margin:
 <section><h2 class="rv">${L.work}</h2>${d.projects.map((p) => `<div class="proj rv"><div class="im"><img src="${p.img}" alt="${p.title}"></div><div><small>${p.cat} · ${p.year}</small><h3>${p.title}</h3><p>${p.desc}</p>${projLink(p, L)}</div></div>`).join('')}</section>
 <div class="marq"><div>${(d.skills.join(' • ') + ' • ').repeat(6)}</div></div>
 <footer><h2 class="rv">${L.hire}</h2>${contactLinks(d)}</footer>`,
-    script: `${REVEAL_JS}const roles=${JSON.stringify([d.role, ...d.skills.slice(0, 3)]).replace(/</g, '\u003c')};let r=0,c=0,del=false;const el=document.getElementById('ty');(function t(){const w=roles[r]||'';el.innerHTML=w.slice(0,c);if(!del&&c<w.length)c++;else if(del&&c>0)c--;else{del=!del;if(!del)r=(r+1)%roles.length}setTimeout(t,del?40:(c===w.length?1400:80))})();` });
+    script: `${REVEAL_JS}const roles=${JSON.stringify([d.role, ...d.skills.slice(0, 3)]).replace(/</g, '\\u003c')};let r=0,c=0,del=false;const el=document.getElementById('ty');(function t(){const w=roles[r]||'';el.innerHTML=w.slice(0,c);if(!del&&c<w.length)c++;else if(del&&c>0)c--;else{del=!del;if(!del)r=(r+1)%roles.length}setTimeout(t,del?40:(c===w.length?1400:80))})();` });
 }
 
 // ---------------------------------------------------------------- 5. 3D (rotating CSS cube, mouse-tilt cards, parallax depth)

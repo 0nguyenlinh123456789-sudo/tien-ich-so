@@ -47,7 +47,7 @@ const vi = lang === 'vi';
 
 <script>
   import { zipSync } from 'fflate';
-  import { downloadBlob } from '../../lib/format.js';
+  import { downloadBlob, escapeHtml } from '../../lib/format.js';
   import { showResult } from '../../scripts/form-state.js';
 
   const kb = (n: number) => (n / 1024 < 1024 ? (n / 1024).toFixed(1) + ' KB' : (n / 1048576).toFixed(2) + ' MB');
@@ -115,9 +115,9 @@ const vi = lang === 'vi';
           const card = document.createElement('div');
           card.className = 'rounded-2xl border border-slate-200 p-3';
           card.innerHTML = `<img src="${url}" alt="" class="h-40 w-full rounded-lg bg-slate-100 object-contain" loading="lazy" />
-            <div class="mt-2 truncate text-sm font-medium" title="${name}">${name}</div>
+            <div class="mt-2 truncate text-sm font-medium" title="${escapeHtml(name)}">${escapeHtml(name)}</div>
             <div class="text-xs text-slate-500">${r.w}×${r.h} · ${kb(f.size)} → <b class="text-emerald-700">${kb(r.blob.size)}</b> (-${(saved * 100).toFixed(0)}%)</div>
-            <a href="${url}" download="${name}" class="btn-ghost mt-2 w-full py-1.5 text-sm">⬇ ${vi ? 'Tải ảnh' : 'Download'}</a>`;
+            <a href="${url}" download="${escapeHtml(name)}" class="btn-ghost mt-2 w-full py-1.5 text-sm">⬇ ${vi ? 'Tải ảnh' : 'Download'}</a>`;
           out('list').appendChild(card);
         } catch (err: any) {
           const card = document.createElement('div');

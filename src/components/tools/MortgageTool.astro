@@ -28,6 +28,7 @@ const fields = [
       const f = Object.fromEntries([...new FormData(form)].map(([k, v]) => [k, Number(v) || 0]));
       const loan = f.price * (1 - f.down / 100);
       const r = f.rate / 1200, n = f.years * 12;
+      if (!(n > 0) || !(loan > 0)) { out.innerHTML = ''; return; }
       const pi = r ? (loan * r) / (1 - (1 + r) ** -n) : loan / n;
       const pmi = f.down < 20 ? (loan * 0.005) / 12 : 0;
       const total = pi + f.tax / 12 + f.ins / 12 + f.hoa + pmi;

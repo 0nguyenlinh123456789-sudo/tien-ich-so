@@ -25,7 +25,7 @@ const site = JSON.parse(fs.readFileSync(path.join(ROOT, 'src', 'config', 'site.j
 const args = process.argv.slice(2);
 const has = (f) => args.includes(f);
 const val = (f, d) => { const i = args.indexOf(f); return i >= 0 ? args[i + 1] : d; };
-const COUNT = Number(val('--count', site.dripFeedPerDay || 150));
+const COUNT = Math.max(0, parseInt(val('--count', ''), 10) || site.dripFeedPerDay || 150);
 const DRY = has('--dry-run');
 const NO_GIT = has('--no-git');
 const NO_PING = has('--no-ping');
@@ -105,6 +105,7 @@ async function main() {
     let rec;
     try { rec = JSON.parse(fs.readFileSync(item.full, 'utf8')); } catch (e) { console.warn('Skip invalid JSON', item.file); continue; }
     rec.section = rec.section || item.section;
+    if (!rec.slug || !SECTION_SLUG[rec.section]) { console.warn('Skip malformed record', item.file); continue; }
     const dest = path.join(PUBLISHED, rec.section, `${rec.slug}.json`);
     if (fs.existsSync(dest)) {
       if (!DRY) fs.unlinkSync(item.full);
@@ -138,6 +139,7 @@ async function main() {
     const status = sh('git status --porcelain');
     if (status) {
       sh(`git commit -m "chore(drip): publish ${batch.length} pages ${publishedAt.slice(0, 10)}"`);
+      sh('git pull --rebase');
       sh('git push');
     } else {
       console.log('Nothing to commit.');

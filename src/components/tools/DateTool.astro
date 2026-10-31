@@ -17,7 +17,7 @@ const vi = lang === 'vi';
         <div><label class="label">{vi ? 'Đến ngày' : 'End date'}</label><input class="input text-lg" type="date" name="b" /></div>
         <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="incl" /> {vi ? 'Tính cả ngày cuối' : 'Include end date'}</label>
         <hr class="my-2 border-slate-200" />
-        <div class="grid grid-cols-[1fr_auto] items-end gap-2"><div><label class="label">{vi ? 'Cộng/trừ số ngày vào "Từ ngày"' : 'Add/subtract days to start'}</label><input class="input" type="number" name="add" value="90" /></div><label class="mb-3 flex items-center gap-1 text-sm"><input type="checkbox" name="biz" /> {vi ? 'Chỉ ngày làm việc' : 'Business days'}</label></div>
+        <div class="grid grid-cols-[1fr_auto] items-end gap-2"><div><label class="label">{vi ? 'Cộng/trừ số ngày vào "Từ ngày"' : 'Add/subtract days to start'}</label><input class="input" type="number" name="add" value="90" min="-100000" max="100000" /></div><label class="mb-3 flex items-center gap-1 text-sm"><input type="checkbox" name="biz" /> {vi ? 'Chỉ ngày làm việc' : 'Business days'}</label></div>
       </>
     )}
   </form>
@@ -67,9 +67,9 @@ const vi = lang === 'vi';
         let biz = 0;
         for (let d = new Date(Math.min(+a, +b)); d < new Date(Math.max(+a, +b)); d.setDate(d.getDate() + 1)) if (d.getDay() % 6) biz++;
         const [y, m, d] = ymd(new Date(Math.min(+a, +b)), new Date(Math.max(+a, +b)));
-        const add = Number(f.get('add')) || 0;
+        const add = Math.max(-100000, Math.min(100000, Number(f.get('add')) || 0));
         const res = new Date(a);
-        if (f.get('biz')) { let left = Math.abs(add); const s = Math.sign(add); while (left > 0) { res.setDate(res.getDate() + s); if (res.getDay() % 6) left--; } }
+        if (f.get('biz')) { let left = Math.abs(add); const s = Math.sign(add); while (left > 0 && !isNaN(+res)) { res.setDate(res.getDate() + s); if (res.getDay() % 6) left--; } }
         else res.setDate(res.getDate() + add);
         out.innerHTML = big(vi ? 'Khoảng cách' : 'Difference', `${n(Math.abs(days))} ${vi ? 'ngày' : 'days'}`)
           + `<div class="mt-4 grid grid-cols-2 gap-3">${tile(vi ? 'Năm/tháng/ngày' : 'Y/M/D', `${y} / ${m} / ${d}`)}${tile(vi ? 'Số tuần' : 'Weeks', `${n(Math.floor(Math.abs(days) / 7))} + ${Math.abs(days) % 7}d`)}${tile(vi ? 'Ngày làm việc (T2–T6)' : 'Business days', n(biz))}${tile(vi ? 'Giờ' : 'Hours', n(Math.abs(days) * 24))}</div>
