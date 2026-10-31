@@ -312,6 +312,42 @@ export const TOOLS = [
     ]
   },
   {
+    id: 'severance', section: 'finance', icon: '📤',
+    slug: { vi: 'tinh-tro-cap-thoi-viec', en: 'severance-pay-calculator-vietnam' },
+    title: { vi: 'Trợ cấp thôi việc, thất nghiệp', en: 'Severance & Unemployment Benefit' },
+    seo: { vi: 'Tính trợ cấp thôi việc, thất nghiệp 2026', en: 'Vietnam Severance & Unemployment Benefit Calculator 2026' },
+    desc: { vi: 'Thôi việc, mất việc, BHTN.', en: 'Severance, job loss, UI.' },
+    faq: [
+      { q: { vi: 'Làm 5 năm 3 tháng, lương 10 triệu, chưa từng đóng BHTN được trợ cấp thôi việc bao nhiêu?', en: '5 years 3 months, salary 10M, never paid UI: how much severance?' }, a: { vi: '3 tháng lẻ được tính nửa năm nên thời gian tính là 5,5 năm (khoản 3 Điều 8 NĐ 145/2020/NĐ-CP). Mỗi năm được nửa tháng lương (Điều 46 Bộ luật Lao động 2019): 5,5 × 5.000.000 = 27.500.000 đ.', en: 'The 3 odd months count as half a year, so 5.5 years × 5,000,000 = 27,500,000 VND (Labor Code 2019 Art. 46; Decree 145/2020 Art. 8).' } },
+      { q: { vi: 'Lương 10 triệu, đóng BHTN 48 tháng thì trợ cấp thất nghiệp bao nhiêu?', en: 'Salary 10M, 48 months of UI: how much unemployment benefit?' }, a: { vi: 'Mức hằng tháng = 60% × 10.000.000 = 6.000.000 đ (không vượt 5 lần lương tối thiểu vùng). 36 tháng đầu được 3 tháng, 12 tháng tiếp theo thêm 1 tháng: tổng 4 tháng, tức 24.000.000 đ (Điều 39 Luật Việc làm 74/2025/QH15).', en: '60% × 10M = 6M/month for 4 months (3 for the first 36 months + 1 for the next 12) = 24M VND (Employment Law 74/2025/QH15 Art. 39).' } },
+      { q: { vi: 'Đã đóng BHTN cả quá trình có được trợ cấp thôi việc không?', en: 'If I paid UI the whole time, do I get severance?' }, a: { vi: 'Không. Thời gian đã đóng BHTN bị trừ khỏi thời gian tính trợ cấp thôi việc (Điều 46 Bộ luật Lao động 2019); thay vào đó bạn xét hưởng trợ cấp thất nghiệp nếu đủ 12 tháng đóng trong 24 tháng trước khi nghỉ.', en: 'No. UI-insured time is excluded (Labor Code Art. 46); you claim unemployment benefit instead if eligible.' } }
+    ]
+  },
+  {
+    id: 'hkd', section: 'finance', icon: '🏪',
+    slug: { vi: 'tinh-thue-ho-kinh-doanh', en: 'vietnam-household-business-tax' },
+    title: { vi: 'Thuế hộ kinh doanh', en: 'Household Business Tax' },
+    seo: { vi: 'Tính thuế hộ kinh doanh 2026 – bỏ thuế khoán, ngưỡng 1 tỷ', en: 'Vietnam Household Business Tax Calculator 2026' },
+    desc: { vi: 'GTGT, TNCN theo doanh thu.', en: 'VAT & PIT by revenue.' },
+    faq: [
+      { q: { vi: 'Doanh thu dưới 1 tỷ có phải nộp thuế không?', en: 'Revenue under 1 billion: do I pay tax?' }, a: { vi: 'Không. Từ 01/01/2026, hộ kinh doanh có doanh thu năm từ 1 tỷ đồng trở xuống không phải nộp thuế GTGT và thuế TNCN (Điều 7 Luật Thuế TNCN 109/2025/QH15, ngưỡng nâng lên 1 tỷ theo NĐ 141/2026/NĐ-CP).', en: 'No. From 01/01/2026, households with annual revenue up to 1 billion VND pay no VAT and no PIT (PIT Law 109/2025/QH15 Art. 7; threshold raised to 1 bn by Decree 141/2026/ND-CP).' } },
+      { q: { vi: 'Bán hàng hóa doanh thu 2 tỷ/năm thì nộp thuế bao nhiêu?', en: 'Selling goods with 2 billion revenue: how much tax?' }, a: { vi: 'GTGT = 2 tỷ × 1% = 20.000.000 đ. TNCN theo tỷ lệ = (2 tỷ − 1 tỷ) × 0,5% = 5.000.000 đ. Tổng khoảng 25.000.000 đ/năm. Doanh thu 1–3 tỷ có thể chọn tính TNCN theo thu nhập (doanh thu − chi phí) × 15% nếu có lợi hơn.', en: 'VAT = 2 bn × 1% = 20,000,000 VND. PIT = (2 bn − 1 bn) × 0.5% = 5,000,000 VND. Total about 25M/year. With revenue 1–3 bn you may instead choose (revenue − expenses) × 15% for PIT.' } },
+      { q: { vi: 'Hộ kinh doanh còn phải nộp lệ phí môn bài không?', en: 'Do households still pay the business licence fee?' }, a: { vi: 'Không. Điều 10 Nghị quyết 198/2025/QH15 bỏ thuế khoán và bỏ lệ phí môn bài đối với hộ, cá nhân kinh doanh từ 01/01/2026.', en: 'No. Resolution 198/2025/QH15 Art. 10 abolished presumptive tax and the licence fee from 01/01/2026.' } }
+    ]
+  },
+  {
+    id: 'pitannual', section: 'finance', icon: '🧮',
+    slug: { vi: 'quyet-toan-thue-tncn', en: 'vietnam-pit-annual-finalization' },
+    title: { vi: 'Quyết toán thuế TNCN', en: 'PIT Annual Finalization' },
+    seo: { vi: 'Quyết toán thuế TNCN 2026 & thuế thưởng Tết', en: 'Vietnam PIT Finalization 2026 & Tết Bonus Tax' },
+    desc: { vi: 'Hoàn thuế, thuế thưởng Tết.', en: 'Refunds, bonus tax.' },
+    faq: [
+      { q: { vi: 'Thưởng Tết, lương tháng 13 có tính thuế TNCN không?', en: 'Is the Tết bonus / 13th-month pay taxable?' }, a: { vi: 'Có. Thưởng Tết là thu nhập từ tiền lương, tiền công, được cộng vào thu nhập của tháng chi trả để tạm khấu trừ thuế theo biểu lũy tiến; số thuế chính xác được xác định khi quyết toán cuối năm (Luật Thuế TNCN 109/2025/QH15).', en: 'Yes. It is employment income, added to the month paid for provisional withholding; the exact tax is settled at year-end (PIT Law 109/2025/QH15).' } },
+      { q: { vi: 'Năm 2026 giảm trừ gia cảnh bao nhiêu?', en: 'What are the 2026 family deductions?' }, a: { vi: 'Bản thân 15.500.000 đ/tháng (186.000.000 đ/năm), mỗi người phụ thuộc 6.200.000 đ/tháng, theo NQ 110/2025/UBTVQH15, áp dụng từ kỳ tính thuế 2026.', en: '15,500,000 VND/month for yourself (186M/year) and 6,200,000 VND/month per dependent, per Resolution 110/2025/UBTVQH15, from tax period 2026.' } },
+      { q: { vi: 'Thu nhập 240 triệu/năm, bảo hiểm 25,2 triệu, không người phụ thuộc thì thuế bao nhiêu?', en: 'Income 240M/year, insurance 25.2M, no dependents: how much tax?' }, a: { vi: 'Thu nhập tính thuế = 240.000.000 − 25.200.000 − 186.000.000 = 28.800.000 đ, nằm trong bậc 1 (đến 120 triệu/năm) thuế suất 5%: thuế cả năm = 1.440.000 đ. Nếu đã bị khấu trừ 2.000.000 đ thì được hoàn 560.000 đ.', en: 'Assessable income = 240M − 25.2M − 186M = 28.8M VND, in bracket 1 (up to 120M/year) at 5%: annual tax = 1,440,000 VND. If 2,000,000 VND was withheld, you get a 560,000 VND refund.' } }
+    ]
+  },
+  {
     id: 'fire', section: 'finance', icon: '🔥',
     slug: { vi: 'tinh-lai-kep-nghi-huu-som', en: 'compound-interest-fire-calculator' },
     title: { vi: 'Lãi kép & nghỉ hưu sớm', en: 'Compound & FIRE' },

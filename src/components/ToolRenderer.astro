@@ -18,6 +18,9 @@ import GpaTool from './tools/GpaTool.astro';
 import IeltsTool from './tools/IeltsTool.astro';
 import FxTool from './tools/FxTool.astro';
 import VatTool from './tools/VatTool.astro';
+import SeveranceTool from './tools/SeveranceTool.astro';
+import HkdTool from './tools/HkdTool.astro';
+import PitAnnualTool from './tools/PitAnnualTool.astro';
 import HolidaysTool from './tools/HolidaysTool.astro';
 import SalaryTool from './tools/SalaryTool.astro';
 import LoanTool from './tools/LoanTool.astro';
@@ -66,4 +69,7 @@ const { toolId, lang, preset = {}, autorun = false } = Astro.props;
 {toolId === 'ielts' && <IeltsTool lang={lang} />}
 {toolId === 'fx' && <FxTool lang={lang} />}
 {toolId === 'vat' && <VatTool lang={lang} />}
+{toolId === 'severance' && <SeveranceTool lang={lang} />}
+{toolId === 'hkd' && <HkdTool lang={lang} />}
+{toolId === 'pitannual' && <PitAnnualTool lang={lang} />}
 {toolId === 'holidays' && <HolidaysTool lang={lang} />}

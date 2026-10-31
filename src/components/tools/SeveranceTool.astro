@@ -1,0 +1,97 @@
+---
+// Trợ cấp thôi việc / mất việc làm / thất nghiệp. Logic: src/lib/severance.js
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const opt = 'flex-1 cursor-pointer rounded-xl border border-slate-300 p-3 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50';
+---
+<div data-tool="severance" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid content-start gap-3 sm:grid-cols-2" data-f>
+    <div class="sm:col-span-2">
+      <div class="grid grid-cols-3 gap-2 text-sm">
+        <label class={opt}><input type="radio" name="mode" value="sev" class="mr-2" checked />{vi ? 'Thôi việc' : 'Severance'}</label>
+        <label class={opt}><input type="radio" name="mode" value="loss" class="mr-2" />{vi ? 'Mất việc làm' : 'Job loss'}</label>
+        <label class={opt}><input type="radio" name="mode" value="ui" class="mr-2" />{vi ? 'Thất nghiệp' : 'Unemployment'}</label>
+      </div>
+      <p class="mt-1 text-xs text-slate-500">{vi ? 'Thôi việc: hết HĐ, nghỉ đúng luật · Mất việc: bị cắt giảm do tái cơ cấu' : 'Severance: contract ended, lawful resignation · Job loss: laid off due to restructuring'}</p>
+    </div>
+    <div class="sm:col-span-2"><label class="label" data-avglabel>{vi ? 'Lương bình quân 6 tháng liền kề (đồng)' : 'Average salary, last 6 months (VND)'}</label><input class="input text-lg" name="avg" data-money inputmode="numeric" value="10.000.000" /></div>
+    <div data-labor><label class="label">{vi ? 'Thời gian làm việc (tháng)' : 'Time worked (months)'}</label><input class="input" name="total" type="number" inputmode="numeric" min="0" value="63" /><p class="mt-1 text-xs text-slate-500">{vi ? '5 năm 3 tháng = 63' : '5 years 3 months = 63'}</p></div>
+    <div><label class="label">{vi ? 'Số tháng đã đóng BHTN' : 'Months of UI contributions'}</label><input class="input" name="insured" type="number" inputmode="numeric" min="0" value="0" /></div>
+    <div data-labor class="sm:col-span-2"><label class="label">{vi ? 'Đã được chi trả trợ cấp trước đây (tháng)' : 'Months already compensated'}</label><input class="input" name="paid" type="number" inputmode="numeric" min="0" value="0" /></div>
+    <div data-ui hidden><label class="label">{vi ? 'Vùng lương tối thiểu' : 'Wage region'}</label><select class="input" name="region"><option value="1">{vi ? 'Vùng I' : 'Region I'}</option><option value="2">{vi ? 'Vùng II' : 'Region II'}</option><option value="3">{vi ? 'Vùng III' : 'Region III'}</option><option value="4">{vi ? 'Vùng IV' : 'Region IV'}</option></select></div>
+  </form>
+  <div class="card" data-out></div>
+</div>
+
+<script>
+  import { severance, jobLoss, unemployment, countedMonths } from '../../lib/severance.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="severance"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const n = (x: number) => (Number.isFinite(x) ? Math.round(x) : 0).toLocaleString('vi-VN');
+    const yr = (x: number) => x.toLocaleString(vi ? 'vi-VN' : 'en-US');
+    const d = vi ? ' đ' : ' VND';
+    const avgIn = form.elements.namedItem('avg') as HTMLInputElement;
+    avgIn.addEventListener('input', () => { const v = avgIn.value.replace(/\D/g, '').slice(0, 15); avgIn.value = v ? Number(v).toLocaleString('vi-VN') : ''; });
+    const big = (label: string, v: string, sub = '') => `<div class="text-sm text-slate-500">${label}</div><div class="text-4xl font-extrabold text-brand-700">${v}</div>${sub ? `<div class="mt-1 text-sm text-slate-600">${sub}</div>` : ''}`;
+    const note = (s: string) => `<p class="mt-4 text-xs text-slate-500">${s}</p>`;
+    const basis = (s: string) => `<details class="mt-3 text-xs text-slate-500"><summary class="cursor-pointer">${vi ? 'Căn cứ pháp lý' : 'Legal basis'}</summary><p class="mt-1">${s}</p></details>`;
+
+    const calc = () => {
+      const f = new FormData(form);
+      const g = (k: string) => { const v = Number(f.get(k)); return Number.isFinite(v) && v > 0 ? Math.min(v, 1200) : 0; };
+      const avg = Number(String(f.get('avg') ?? '').replace(/\D/g, '')) || 0;
+      const mode = String(f.get('mode'));
+      const ui = mode === 'ui';
+      root.querySelectorAll<HTMLElement>('[data-labor]').forEach((e) => (e.hidden = ui));
+      root.querySelectorAll<HTMLElement>('[data-ui]').forEach((e) => (e.hidden = !ui));
+      root.querySelector<HTMLElement>('[data-avglabel]')!.textContent = ui
+        ? (vi ? 'Lương đóng BHTN bình quân 6 tháng gần nhất (đồng)' : 'Average insured salary, last 6 months (VND)')
+        : (vi ? 'Lương bình quân 6 tháng liền kề (đồng)' : 'Average salary, last 6 months (VND)');
+
+      if (ui) {
+        const r = unemployment(avg, g('insured'), String(f.get('region')));
+        out.innerHTML = !r.eligible
+          ? big(vi ? 'Tổng trợ cấp thất nghiệp' : 'Total unemployment benefit', `0${d}`, vi ? 'Chưa đủ 12 tháng đóng BHTN' : 'Less than 12 months of UI contributions')
+          : big(vi ? 'Tổng trợ cấp thất nghiệp' : 'Total unemployment benefit', `${n(r.total)}${d}`, vi ? `${n(r.monthly)} đ/tháng × ${r.duration} tháng` : `${n(r.monthly)} VND/month × ${r.duration} months`)
+            + note(vi ? `Mức tháng = 60% × ${n(avg)}${r.capped ? `, vượt trần nên lấy 5 × lương tối thiểu vùng = ${n(r.cap)} đ` : ''}; 12–36 tháng đóng được 3 tháng, mỗi 12 tháng thêm +1, tối đa 12.` : `Monthly = 60% of average${r.capped ? `, capped at 5 × regional minimum wage = ${n(r.cap)} VND` : ''}; 12–36 months → 3 months, +1 per extra 12, max 12.`);
+        out.innerHTML += note(vi ? 'Điều kiện: đóng BHTN đủ 12 tháng trong 24 tháng trước khi nghỉ việc.' : 'Requires 12 months of contributions in the 24 months before leaving.')
+          + basis(vi ? 'Điều 38, 39 Luật Việc làm 74/2025/QH15 (từ 01/01/2026); lương tối thiểu vùng theo NĐ 293/2025/NĐ-CP.' : 'Employment Law 74/2025/QH15, Art. 38–39 (from 01/01/2026); regional minimum wage per Decree 293/2025/ND-CP.');
+        return;
+      }
+      const total = g('total');
+      const months = countedMonths(total, g('insured'), g('paid'));
+      const loss = mode === 'loss';
+      const r = loss ? jobLoss(avg, months, total) : severance(avg, months, total);
+      const label = loss ? (vi ? 'Trợ cấp mất việc làm' : 'Job-loss allowance') : (vi ? 'Trợ cấp thôi việc' : 'Severance pay');
+      const lb = basis(loss
+        ? (vi ? 'Điều 47 Bộ luật Lao động 2019 (mỗi năm 1 tháng lương, ít nhất 2 tháng); khoản 3 Điều 8 NĐ 145/2020/NĐ-CP (làm tròn thời gian).' : 'Labor Code 2019, Art. 47 (1 month per year, minimum 2 months); Decree 145/2020/ND-CP, Art. 8(3) (rounding).')
+        : (vi ? 'Điều 46 Bộ luật Lao động 2019 (mỗi năm ½ tháng lương, không tính thời gian đã đóng BHTN); khoản 3 Điều 8 NĐ 145/2020/NĐ-CP (làm tròn thời gian).' : 'Labor Code 2019, Art. 46 (½ month per year, UI-insured time excluded); Decree 145/2020/ND-CP, Art. 8(3) (rounding).'));
+      if (!r.eligible) {
+        out.innerHTML = big(label, `0${d}`, vi ? 'Chưa đủ 12 tháng làm việc' : 'Less than 12 months of work') + lb;
+        return;
+      }
+      if ((r as any).coveredByUI) {
+        out.innerHTML = big(label, `0${d}`, vi ? 'Thời gian đã đóng BHTN được bù bằng trợ cấp thất nghiệp' : 'UI-insured time is covered by unemployment benefit') + lb;
+        return;
+      }
+      const formula = loss
+        ? (vi ? `${yr(r.years)} năm × ${n(avg)}${(r as any).floored ? ' → tối thiểu 2 tháng lương' : ''}` : `${yr(r.years)} years × ${n(avg)}${(r as any).floored ? ' → minimum 2 months' : ''}`)
+        : (vi ? `${yr(r.years)} năm × ½ × ${n(avg)}` : `${yr(r.years)} years × ½ × ${n(avg)}`);
+      out.innerHTML = big(label, `${n(r.amount)}${d}`, formula)
+        + note(vi ? `Thời gian tính: ${months} tháng (tổng − đã đóng BHTN − đã được chi trả); tháng lẻ 1–6 tính ½ năm, trên 6 tính 1 năm.` : `Counted: ${months} months (total − UI-insured − already paid); odd 1–6 months = ½ year, 7+ = 1 year.`)
+        + lb;
+    };
+    form.addEventListener('input', calc);
+    // Switching to unemployment with no UI months entered: assume the whole working time was insured.
+    form.querySelectorAll<HTMLInputElement>('input[name="mode"]').forEach((r) => r.addEventListener('change', () => {
+      const ins = form.elements.namedItem('insured') as HTMLInputElement;
+      if (r.value === 'ui' && !Number(ins.value)) ins.value = (form.elements.namedItem('total') as HTMLInputElement).value;
+    }));
+    form.addEventListener('change', calc);
+    calc();
+  });
+</script>
