@@ -9,7 +9,19 @@ import { electricBill, ELECTRIC_TIERS } from './electric.js';
 import { maternity, paternity, lumpSum, BASE_SALARY } from './bhxh.js';
 import { moneyToWords } from './numwords.js';
 import { fmtMoney, fmtNum, fmtPct } from './format.js';
+import { retirementAge } from './retirement-age.js';
+import { registrationFee } from './registration-fee.js';
+import { waterBill, WATER_REGIONS, WATER_VAT, drainageVat } from './water.js';
+import { hkdTax, SECTORS as HKD_SECTORS, THRESHOLD as HKD_THRESHOLD } from './hkd.js';
 import NUM from '../data/numerology.json';
+
+// "1,2 tỷ", "40 triệu" – short Vietnamese money words for titles.
+const vnd = (n) => {
+  const x = Number(n) || 0;
+  if (x >= 1e9) return `${String(+(x / 1e9).toFixed(2)).replace('.', ',')} tỷ`;
+  if (x >= 1e6) return `${String(+(x / 1e6).toFixed(2)).replace('.', ',')} triệu`;
+  return `${fmtNum(x)} đồng`;
+};
 
 const WD_VI = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 const WD_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -378,6 +390,156 @@ export function buildRecordContent(record) {
         faq = [{ q: `What is ${v}°F in Celsius?`, a: `${n2(c, 1)}°C` }];
       }
       out = { h1, intro, table, faq };
+      break;
+    }
+    case 'retireage': {
+      // Căn cứ: Điều 169 BLLĐ 45/2019/QH14; NĐ 135/2020/NĐ-CP (Điều 3, 4, Phụ lục I).
+      const Y = Math.trunc(Number(p.year));
+      const female = p.sex === 'female';
+      const who = female ? 'Nữ' : 'Nam';
+      const rows = Array.from({ length: 12 }, (_, i) => ({ mo: i + 1, r: retirementAge({ sex: female ? 'female' : 'male', month: i + 1, year: Y }) }));
+      if (rows.some((x) => x.r.invalid)) { out = { h1: record.title || record.slug, intro: [record.title || ''], table: [], faq: [] }; break; }
+      const age = (r) => `${r.ageYears} tuổi${r.ageMonths ? ` ${r.ageMonths} tháng` : ''}`;
+      const when = (r) => `tháng ${r.retireMonth}/${r.retireYear}`;
+      const a = rows[0].r, z = rows[11].r;
+      const sameAge = rows.every((x) => x.r.ageYears === a.ageYears && x.r.ageMonths === a.ageMonths);
+      const years = [...new Set(rows.map((x) => x.r.retireYear))];
+      out = {
+        h1: `${who} sinh năm ${Y} nghỉ hưu năm nào, bao nhiêu tuổi?`,
+        intro: [
+          `${who} sinh năm ${Y}, làm việc trong điều kiện bình thường, nghỉ hưu vào <b>năm ${years.join(' hoặc ')}</b>. Sinh tháng 1/${Y}: đủ tuổi nghỉ hưu <b>${age(a)}</b>, nghỉ hưu ${when(a)}; sinh tháng 12/${Y}: <b>${age(z)}</b>, nghỉ hưu ${when(z)}.`,
+          sameAge
+            ? `Mọi tháng sinh trong năm ${Y} đều có cùng tuổi nghỉ hưu ${age(a)}${(female ? a.ageYears >= 60 : a.ageYears >= 62) ? ' – đây là mức tối đa sau lộ trình tăng tuổi nghỉ hưu' : ''}.`
+            : `Năm ${Y} thuộc giai đoạn chuyển tiếp: tuổi nghỉ hưu ${female ? 'nữ tăng 4 tháng' : 'nam tăng 3 tháng'} mỗi năm, nên người sinh cuối năm có thể phải làm thêm vài tháng so với người sinh đầu năm. Xem bảng 12 tháng sinh bên dưới.`,
+          `Thời điểm nghỉ hưu là hết ngày cuối cùng của tháng đủ tuổi; lương hưu được hưởng từ ngày 01 của tháng liền kề. Người làm nghề nặng nhọc, độc hại hoặc suy giảm khả năng lao động có thể nghỉ sớm tối đa 5 tuổi. Căn cứ: Điều 169 Bộ luật Lao động 45/2019/QH14, Nghị định 135/2020/NĐ-CP.`
+        ],
+        table: rows.map((x) => [`Sinh tháng ${x.mo}/${Y}`, `${age(x.r)} – nghỉ hưu ${when(x.r)}, hưởng lương hưu từ 01/${x.r.pensionMonth}/${x.r.pensionYear}`]),
+        faq: [
+          { q: `${who} sinh năm ${Y} bao nhiêu tuổi được nghỉ hưu?`, a: sameAge ? `${age(a)} (điều kiện lao động bình thường).` : `Từ ${age(a)} (sinh tháng 1) đến ${age(z)} (sinh tháng 12), tùy tháng sinh.` },
+          { q: `${who} sinh năm ${Y} nghỉ hưu sớm được không?`, a: 'Được nghỉ sớm tối đa 5 tuổi nếu có đủ 15 năm làm nghề nặng nhọc, độc hại, vùng đặc biệt khó khăn hoặc suy giảm khả năng lao động từ 61% (Điều 5 NĐ 135/2020/NĐ-CP).' }
+        ]
+      };
+      break;
+    }
+    case 'truocba': {
+      // Căn cứ: Điều 8 NĐ 10/2022/NĐ-CP sửa bởi NĐ 175/2025/NĐ-CP; phí biển số: TT 60/2023/TT-BTC sửa bởi TT 71/2025/TT-BTC.
+      const P = Number(p.price);
+      const pr = vnd(P);
+      if (p.vehicle === 'car9') {
+        const c = (rate, region) => registrationFee({ vehicle: 'car9', price: P, first: true, carRate: rate, region });
+        const a1 = c(0.1, '1'), a2 = c(0.1, '2'), b1 = c(0.12, '1'), b2 = c(0.12, '2');
+        out = {
+          h1: `Phí trước bạ ô tô ${pr} là bao nhiêu? (xe ≤ 9 chỗ)`,
+          intro: [
+            `Ô tô chở người đến 9 chỗ giá tính lệ phí <b>${pr}</b> đăng ký lần đầu: lệ phí trước bạ <b>${m(a1.tax)}</b> ở nơi thu 10%, hoặc <b>${m(b1.tax)}</b> ở nơi thu 12% (như Hải Phòng).`,
+            `Cộng phí đăng ký, cấp biển số: tại Hà Nội, TP.HCM (khu vực I) thêm ${m(a1.plate)}, tổng ${m(a1.total)} (mức 10%); tại tỉnh khác (khu vực II) thêm ${m(a2.plate)}, tổng ${m(a2.total)}.`,
+            `Giá tính lệ phí là giá trong bảng giá của UBND tỉnh/thành, có thể khác giá bán thực tế. Chưa gồm phí đăng kiểm, bảo hiểm, phí đường bộ. Căn cứ: NĐ 10/2022/NĐ-CP (sửa bởi NĐ 175/2025/NĐ-CP), TT 60/2023/TT-BTC (sửa bởi TT 71/2025/TT-BTC).`
+          ],
+          table: [
+            ['Lệ phí trước bạ 10%', m(a1.tax)], ['Lệ phí trước bạ 12%', m(b1.tax)],
+            ['Biển số khu vực I (Hà Nội, TP.HCM)', m(a1.plate)], ['Biển số khu vực II (tỉnh khác)', m(a2.plate)],
+            ['Tổng mức 10% – khu vực I', m(a1.total)], ['Tổng mức 10% – khu vực II', m(a2.total)],
+            ['Tổng mức 12% – khu vực I', m(b1.total)], ['Tổng mức 12% – khu vực II', m(b2.total)]
+          ],
+          faq: [
+            { q: `Mua ô tô ${pr} đóng trước bạ bao nhiêu?`, a: `${m(a1.tax)} nếu tỉnh thu 10%, ${m(b1.tax)} nếu thu 12% (đăng ký lần đầu, xe ≤ 9 chỗ).` },
+            { q: 'Ô tô cũ sang tên đóng trước bạ bao nhiêu?', a: 'Lần thứ 2 trở đi thu 2% trên giá tính lệ phí (đã tính tỷ lệ chất lượng còn lại).' }
+          ]
+        };
+      } else {
+        const r1 = registrationFee({ vehicle: 'moto', price: P, first: true, region: '1' });
+        const r2 = registrationFee({ vehicle: 'moto', price: P, first: true, region: '2' });
+        const used = registrationFee({ vehicle: 'moto', price: P, first: false, region: '2' });
+        out = {
+          h1: `Phí trước bạ xe máy ${pr} là bao nhiêu?`,
+          intro: [
+            `Xe máy giá tính lệ phí <b>${pr}</b> đăng ký lần đầu phải nộp lệ phí trước bạ 2% là <b>${m(r1.tax)}</b>. Cộng phí cấp biển số, tổng cộng <b>${m(r1.total)}</b> tại Hà Nội, TP.HCM hoặc <b>${m(r2.total)}</b> tại tỉnh khác.`,
+            `Phí biển số xe máy phụ thuộc giá xe: ${P <= 15e6 ? 'đến 15 triệu' : P <= 40e6 ? 'trên 15 đến 40 triệu' : 'trên 40 triệu'} thu ${m(r1.plate)} ở khu vực I và ${m(r2.plate)} ở khu vực II. Nếu mua xe cũ sang tên, lệ phí trước bạ chỉ 1%: ${m(used.tax)}.`,
+            `Căn cứ: Điều 8 NĐ 10/2022/NĐ-CP (sửa bởi NĐ 175/2025/NĐ-CP); phí biển số theo TT 60/2023/TT-BTC (sửa bởi TT 71/2025/TT-BTC). Giá tính lệ phí theo bảng giá của UBND tỉnh, có thể khác giá mua.`
+          ],
+          table: [
+            ['Giá tính lệ phí', m(P)], ['Lệ phí trước bạ lần đầu (2%)', m(r1.tax)],
+            ['Biển số khu vực I (Hà Nội, TP.HCM)', m(r1.plate)], ['Biển số khu vực II (tỉnh khác)', m(r2.plate)],
+            ['Tổng khu vực I', m(r1.total)], ['Tổng khu vực II', m(r2.total)], ['Xe cũ sang tên (1%)', m(used.tax)]
+          ],
+          faq: [
+            { q: `Xe máy ${pr} đóng trước bạ bao nhiêu?`, a: `${m(r1.tax)} (2%, đăng ký lần đầu), chưa gồm phí biển số.` },
+            { q: 'Khu vực I gồm những đâu?', a: 'Hà Nội và TP. Hồ Chí Minh; các tỉnh, thành khác thuộc khu vực II theo TT 60/2023/TT-BTC.' }
+          ]
+        };
+      }
+      break;
+    }
+    case 'water': {
+      // Căn cứ: Hà Nội QĐ 3541/QĐ-UBND (07/7/2023); TP.HCM QĐ 25/2019/QĐ-UBND; VAT thoát nước NQ 204/2025/QH15.
+      const X = Number(p.m3);
+      const now = new Date();
+      const yr = now.getFullYear();
+      if (p.region === 'hcm') {
+        const N = Math.max(1, Math.trunc(Number(p.people) || 1));
+        const r = waterBill({ region: 'hcm', m3: X, people: N, now });
+        const t = WATER_REGIONS.hcm.tiers;
+        const used = r.rows.filter((x) => x.m3 > 0);
+        const dv = drainageVat(now);
+        out = {
+          h1: `Tiền nước TP.HCM ${N} người dùng ${X} m³ bao nhiêu?`,
+          intro: [
+            `Hộ ${N} nhân khẩu ở TP.HCM dùng <b>${X} m³</b> nước/tháng trả khoảng <b>${m(r.total)}</b> (năm ${yr}), bình quân ${fmtNum(Math.round(r.total / X))} đ/m³ gồm thuế, phí.`,
+            `Định mức của hộ ${N} người: ${4 * N} m³ đầu giá ${fmtNum(t[0].price)} đ, ${4 * N}–${6 * N} m³ giá ${fmtNum(t[1].price)} đ, trên ${6 * N} m³ giá ${fmtNum(t[2].price)} đ (chưa VAT). Tiền nước chưa thuế ${m(r.subtotal)}, cộng VAT 5%, giá dịch vụ thoát nước 30% và VAT thoát nước ${Math.round(dv * 100)}%.`,
+            `Bảng giá vùng Sawaco theo QĐ 25/2019/QĐ-UBND; VAT thoát nước 8% áp dụng đến 31/12/2026 (NQ 204/2025/QH15), từ 2027 dự kiến 10%. Số nhân khẩu tính theo sổ định mức đăng ký với công ty cấp nước.`
+          ],
+          table: used.map((x) => [`Bậc ${x.tier}: ${fmtNum(x.m3)} m³ × ${fmtNum(x.price)} đ`, m(x.amount)]).concat([
+            ['VAT nước sạch 5%', m(r.vat)], ['Dịch vụ thoát nước 30%', m(r.drainAmt)], [`VAT thoát nước ${Math.round(dv * 100)}%`, m(r.drainVatAmt)], ['Tổng cộng', m(r.total)]
+          ]),
+          faq: [
+            { q: `${N} người dùng ${X} khối nước hết bao nhiêu tiền ở TP.HCM?`, a: `Khoảng ${m(r.total)} gồm VAT và phí thoát nước (năm ${yr}).` },
+            { q: 'Vì sao đăng ký đủ nhân khẩu lại rẻ hơn?', a: `Định mức giá thấp tính theo người (4 m³/người/tháng); mỗi người thêm giúp ${4} m³ được tính giá ${fmtNum(t[0].price)} đ thay vì giá cao hơn.` }
+          ]
+        };
+      } else {
+        const r = waterBill({ region: 'hanoi', m3: X, now });
+        const used = r.rows.filter((x) => x.m3 > 0);
+        out = {
+          h1: `Tiền nước Hà Nội ${X} m³ bao nhiêu tiền?`,
+          intro: [
+            `Dùng <b>${X} m³</b> nước sinh hoạt mỗi tháng ở Hà Nội, hóa đơn khoảng <b>${m(r.total)}</b> (năm ${yr}), gồm tiền nước ${m(r.subtotal)}, VAT 5% ${m(r.vat)} và phí bảo vệ môi trường 10% ${m(r.feeAmt)}.`,
+            `Lượng nước này rơi vào <b>bậc ${used.length}</b>: 10 m³ đầu giá 8.500 đ, 10–20 m³: 9.900 đ, 20–30 m³: 16.000 đ, trên 30 m³: 27.000 đ (chưa VAT, tính theo đồng hồ/tháng). ${X > 30 ? 'Phần vượt 30 m³ có giá gấp hơn 3 lần bậc 1.' : ''}`,
+            `Căn cứ: QĐ 3541/QĐ-UBND ngày 07/7/2023 của UBND Hà Nội (áp dụng từ 01/01/2024); phí BVMT nước thải theo NĐ 346/2025/NĐ-CP. Hộ nghèo, cận nghèo, hộ chính sách được giá ưu đãi bậc 1.`
+          ],
+          table: used.map((x) => [`Bậc ${x.tier}: ${fmtNum(x.m3)} m³ × ${fmtNum(x.price)} đ`, m(x.amount)]).concat([
+            [`VAT ${Math.round(WATER_VAT * 100)}%`, m(r.vat)], ['Phí BVMT nước thải 10%', m(r.feeAmt)], ['Tổng cộng', m(r.total)]
+          ]),
+          faq: [
+            { q: `${X} khối nước Hà Nội bao nhiêu tiền?`, a: `Khoảng ${m(r.total)} gồm VAT 5% và phí bảo vệ môi trường 10%.` },
+            { q: 'Bậc giá nước Hà Nội tính theo người hay theo hộ?', a: 'Theo m³/đồng hồ/tháng; nhà nhiều hộ chung đồng hồ được chia định mức theo số hộ.' }
+          ]
+        };
+      }
+      break;
+    }
+    case 'hkd': {
+      // Căn cứ: Luật Thuế TNCN 109/2025/QH15; NĐ 141/2026/NĐ-CP (ngưỡng 1 tỷ); NQ 198/2025/QH15; Luật Thuế GTGT 48/2024/QH15.
+      const R = Number(p.revenue);
+      const r = hkdTax(R, p.sector, 0);
+      const s = r.sector;
+      const rt = vnd(R);
+      const pct = (x) => `${String(+(x * 100).toFixed(2)).replace('.', ',')}%`;
+      out = {
+        h1: `Thuế hộ kinh doanh doanh thu ${rt}/năm – ${s.vi.toLowerCase()}`,
+        intro: [
+          `Hộ kinh doanh ngành <b>${s.vi.toLowerCase()}</b> có doanh thu <b>${rt}/năm</b> nộp khoảng <b>${m(r.total)}</b> thuế mỗi năm (≈ ${m(r.monthly)}/tháng) theo phương pháp tỷ lệ trên doanh thu: GTGT ${m(r.vat)} và thuế TNCN ${m(r.pit)}.`,
+          `GTGT = ${rt} × ${pct(s.vat)}; TNCN = (doanh thu − ${vnd(HKD_THRESHOLD)} ngưỡng không chịu thuế) × ${pct(s.pit)}. Từ năm 2026 bỏ thuế khoán và lệ phí môn bài. ${r.mode === 'choice' ? `Doanh thu đến 3 tỷ được chọn cách tính theo thu nhập (15% × (doanh thu − chi phí)) nếu có đủ hóa đơn chi phí; cách đó chỉ lợi hơn khi chi phí lớn hơn ${m(Math.max(0, R - r.rateAmt / 0.15))}.` : ''}`,
+          `Căn cứ: Luật Thuế TNCN 109/2025/QH15, NĐ 141/2026/NĐ-CP (ngưỡng 1 tỷ đồng), NQ 198/2025/QH15, Luật Thuế GTGT 48/2024/QH15. Số liệu ước tính, chưa gồm thuế tiêu thụ đặc biệt, tài nguyên (nếu có).`
+        ],
+        table: [
+          ['Doanh thu năm', m(R)], ['Ngành nghề', s.vi], [`Thuế GTGT (${pct(s.vat)})`, m(r.vat)],
+          [`Thuế TNCN (${pct(s.pit)} phần vượt 1 tỷ)`, m(r.pit)], ['Tổng thuế/năm', m(r.total)], ['Bình quân/tháng', m(r.monthly)]
+        ],
+        faq: [
+          { q: `Doanh thu ${rt} nộp thuế bao nhiêu?`, a: `Khoảng ${m(r.total)}/năm với ngành ${s.vi.toLowerCase()} (phương pháp tỷ lệ).` },
+          { q: 'Doanh thu bao nhiêu thì không phải nộp thuế?', a: 'Từ 1 tỷ đồng/năm trở xuống không phải nộp GTGT và TNCN (NĐ 141/2026/NĐ-CP, từ 01/01/2026).' }
+        ]
+      };
       break;
     }
     default:

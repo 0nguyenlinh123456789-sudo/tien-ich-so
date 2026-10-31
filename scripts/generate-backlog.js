@@ -257,6 +257,41 @@ const groups = []; // each group = array of records of one kind (interleaved lat
   groups.push(vi);
 }
 
+// 15) Retirement age by birth year × sex (BLLĐ 45/2019/QH14 Điều 169, NĐ 135/2020/NĐ-CP)
+{
+  const vi = [];
+  for (let y = 1962; y <= 2000; y++) for (const [sex, w] of [['male', 'nam'], ['female', 'nu']]) {
+    vi.push({ section: 'finance', lang: 'vi', tool: 'retireage', early: y >= 1965 && y <= 1985, slug: `${w}-sinh-${y}-nghi-huu-nam-nao`, title: `${sex === 'male' ? 'Nam' : 'Nữ'} sinh năm ${y} nghỉ hưu năm nào, bao nhiêu tuổi?`, params: { sex, year: y } });
+  }
+  groups.push(vi);
+}
+
+// 16) Registration fee (lệ phí trước bạ): motorbike & car ≤ 9 seats
+{
+  const vi = [];
+  for (const tr of [20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100]) vi.push({ section: 'finance', lang: 'vi', tool: 'truocba', early: true, slug: `phi-truoc-ba-xe-may-${tr}-trieu`, title: `Phí trước bạ xe máy ${tr} triệu là bao nhiêu?`, params: { vehicle: 'moto', price: tr * 1e6 } });
+  for (const tr of [400, 500, 600, 700, 800, 1000, 1200, 1500]) vi.push({ section: 'finance', lang: 'vi', tool: 'truocba', early: true, slug: slugify(`phi truoc ba o to ${vnd(tr * 1e6)}`), title: `Phí trước bạ ô tô ${vnd(tr * 1e6)} là bao nhiêu? (xe ≤ 9 chỗ)`, params: { vehicle: 'car9', price: tr * 1e6 } });
+  groups.push(vi);
+}
+
+// 17) Water bill: Hanoi by m³, HCMC by household size × m³
+{
+  const vi = [];
+  for (const x of [5, 8, 10, 12, 15, 18, 20, 25, 30, 35, 40, 50]) vi.push({ section: 'life', lang: 'vi', tool: 'water', early: true, slug: `tien-nuoc-ha-noi-${x}-m3`, title: `Tiền nước Hà Nội ${x} m³ bao nhiêu tiền?`, params: { region: 'hanoi', m3: x } });
+  for (let n = 1; n <= 6; n++) for (const x of [10, 15, 20, 25, 30]) vi.push({ section: 'life', lang: 'vi', tool: 'water', early: true, slug: `tien-nuoc-tphcm-${n}-nguoi-${x}-m3`, title: `Tiền nước TP.HCM ${n} người dùng ${x} m³ bao nhiêu?`, params: { region: 'hcm', people: n, m3: x } });
+  groups.push(vi);
+}
+
+// 18) Household business tax (thuế hộ kinh doanh), rate-on-revenue method
+{
+  const vi = [];
+  const sectors = [['goods', 'hang hoa'], ['service', 'dich vu'], ['production', 'san xuat van tai']];
+  for (const r of [1.2e9, 1.5e9, 2e9, 2.5e9, 3e9]) for (const [id, txt] of sectors) {
+    vi.push({ section: 'finance', lang: 'vi', tool: 'hkd', early: true, slug: slugify(`thue ho kinh doanh doanh thu ${vnd(r)} ${txt}`), title: `Thuế hộ kinh doanh doanh thu ${vnd(r)}/năm ngành ${({ goods: 'hàng hóa', service: 'dịch vụ', production: 'sản xuất, vận tải' })[id]}`, params: { revenue: r, sector: id } });
+  }
+  groups.push(vi);
+}
+
 // ---------- write ----------
 function existingSlugs() {
   const set = new Set();
@@ -265,7 +300,7 @@ function existingSlugs() {
     for (const sec of fs.readdirSync(base)) {
       const dir = path.join(base, sec);
       if (!fs.statSync(dir).isDirectory()) continue;
-      for (const f of fs.readdirSync(dir)) if (f.endsWith('.json')) set.add(`${sec}/${f.replace(/^\d+__/, '').replace(/\.json$/, '')}`);
+      for (const f of fs.readdirSync(dir)) if (f.endsWith('.json')) set.add(`${sec}/${f.replace(/^(zz-)?[\d-]+__/, '').replace(/\.json$/, '')}`);
     }
   }
   return set;
@@ -278,11 +313,16 @@ const queues = groups.map((g) => g.slice());
 let prio = 0;
 let written = 0;
 let startPrio = 0;
+// Early records ('000001-NNNN__') sort after hand-picked '000000-*' files but before every numbered one.
+let earlyPrio = 0;
 if (fs.existsSync(BACKLOG)) {
   for (const sec of fs.readdirSync(BACKLOG)) {
     const dir = path.join(BACKLOG, sec);
     if (!fs.statSync(dir).isDirectory()) continue;
-    for (const f of fs.readdirSync(dir)) { const m = f.match(/^(\d+)__/); if (m) startPrio = Math.max(startPrio, Number(m[1]) + 1); }
+    for (const f of fs.readdirSync(dir)) {
+      const m = f.match(/^(\d+)__/); if (m) startPrio = Math.max(startPrio, Number(m[1]) + 1);
+      const e = f.match(/^000001-(\d+)__/); if (e) earlyPrio = Math.max(earlyPrio, Number(e[1]) + 1);
+    }
   }
 }
 prio = startPrio;
@@ -296,9 +336,9 @@ while (queues.some((q) => q.length)) {
     unique.add(key);
     const dir = path.join(BACKLOG, rec.section);
     fs.mkdirSync(dir, { recursive: true });
-    const file = path.join(dir, `${String(prio).padStart(6, '0')}__${rec.slug}.json`);
-    fs.writeFileSync(file, JSON.stringify(rec, null, 2));
-    prio++;
+    const { early, ...data } = rec;
+    const name = early ? `000001-${String(earlyPrio++).padStart(4, '0')}` : String(prio++).padStart(6, '0');
+    fs.writeFileSync(path.join(dir, `${name}__${rec.slug}.json`), JSON.stringify(data, null, 2));
     written++;
   }
 }

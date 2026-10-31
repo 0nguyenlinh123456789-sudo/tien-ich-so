@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "hkd",
+  "slug": "thue-ho-kinh-doanh-doanh-thu-3-ty-san-xuat-van-tai",
+  "title": "Thuế hộ kinh doanh doanh thu 3 tỷ/năm ngành sản xuất, vận tải",
+  "params": {
+    "revenue": 3000000000,
+    "sector": "production"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "truocba",
+  "slug": "phi-truoc-ba-xe-may-45-trieu",
+  "title": "Phí trước bạ xe máy 45 triệu là bao nhiêu?",
+  "params": {
+    "vehicle": "moto",
+    "price": 45000000
+  }
+}

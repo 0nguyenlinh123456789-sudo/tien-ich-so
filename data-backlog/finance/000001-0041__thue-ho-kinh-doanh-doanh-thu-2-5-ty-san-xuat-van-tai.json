@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "hkd",
+  "slug": "thue-ho-kinh-doanh-doanh-thu-2-5-ty-san-xuat-van-tai",
+  "title": "Thuế hộ kinh doanh doanh thu 2,5 tỷ/năm ngành sản xuất, vận tải",
+  "params": {
+    "revenue": 2500000000,
+    "sector": "production"
+  }
+}

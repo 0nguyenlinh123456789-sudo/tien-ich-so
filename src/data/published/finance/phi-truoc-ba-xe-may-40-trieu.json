@@ -1,0 +1,12 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "truocba",
+  "slug": "phi-truoc-ba-xe-may-40-trieu",
+  "title": "Phí trước bạ xe máy 40 triệu là bao nhiêu?",
+  "params": {
+    "vehicle": "moto",
+    "price": 40000000
+  },
+  "publishedAt": "2026-10-31T15:08:02.517Z"
+}

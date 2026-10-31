@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "hkd",
+  "slug": "thue-ho-kinh-doanh-doanh-thu-1-5-ty-hang-hoa",
+  "title": "Thuế hộ kinh doanh doanh thu 1,5 tỷ/năm ngành hàng hóa",
+  "params": {
+    "revenue": 1500000000,
+    "sector": "goods"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "hkd",
+  "slug": "thue-ho-kinh-doanh-doanh-thu-2-ty-hang-hoa",
+  "title": "Thuế hộ kinh doanh doanh thu 2 tỷ/năm ngành hàng hóa",
+  "params": {
+    "revenue": 2000000000,
+    "sector": "goods"
+  }
+}

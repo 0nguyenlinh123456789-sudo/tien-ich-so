@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "truocba",
+  "slug": "phi-truoc-ba-o-to-1-5-ty",
+  "title": "Phí trước bạ ô tô 1,5 tỷ là bao nhiêu? (xe ≤ 9 chỗ)",
+  "params": {
+    "vehicle": "car9",
+    "price": 1500000000
+  }
+}

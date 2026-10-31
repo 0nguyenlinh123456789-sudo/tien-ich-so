@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "truocba",
+  "slug": "phi-truoc-ba-o-to-700-trieu",
+  "title": "Phí trước bạ ô tô 700 triệu là bao nhiêu? (xe ≤ 9 chỗ)",
+  "params": {
+    "vehicle": "car9",
+    "price": 700000000
+  }
+}

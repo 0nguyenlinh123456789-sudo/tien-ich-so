@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "hkd",
+  "slug": "thue-ho-kinh-doanh-doanh-thu-3-ty-hang-hoa",
+  "title": "Thuế hộ kinh doanh doanh thu 3 tỷ/năm ngành hàng hóa",
+  "params": {
+    "revenue": 3000000000,
+    "sector": "goods"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "retireage",
+  "slug": "nam-sinh-1999-nghi-huu-nam-nao",
+  "title": "Nam sinh năm 1999 nghỉ hưu năm nào, bao nhiêu tuổi?",
+  "params": {
+    "sex": "male",
+    "year": 1999
+  }
+}

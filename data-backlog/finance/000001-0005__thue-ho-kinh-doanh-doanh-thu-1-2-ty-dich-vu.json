@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "hkd",
+  "slug": "thue-ho-kinh-doanh-doanh-thu-1-2-ty-dich-vu",
+  "title": "Thuế hộ kinh doanh doanh thu 1,2 tỷ/năm ngành dịch vụ",
+  "params": {
+    "revenue": 1200000000,
+    "sector": "service"
+  }
+}

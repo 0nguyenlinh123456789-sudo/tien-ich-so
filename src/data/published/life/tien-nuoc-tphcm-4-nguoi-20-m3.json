@@ -1,0 +1,13 @@
+{
+  "section": "life",
+  "lang": "vi",
+  "tool": "water",
+  "slug": "tien-nuoc-tphcm-4-nguoi-20-m3",
+  "title": "Tiền nước TP.HCM 4 người dùng 20 m³ bao nhiêu?",
+  "params": {
+    "region": "hcm",
+    "people": 4,
+    "m3": 20
+  },
+  "publishedAt": "2026-10-31T15:08:02.517Z"
+}

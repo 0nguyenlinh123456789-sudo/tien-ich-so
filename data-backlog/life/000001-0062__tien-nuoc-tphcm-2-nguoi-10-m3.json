@@ -1,0 +1,12 @@
+{
+  "section": "life",
+  "lang": "vi",
+  "tool": "water",
+  "slug": "tien-nuoc-tphcm-2-nguoi-10-m3",
+  "title": "Tiền nước TP.HCM 2 người dùng 10 m³ bao nhiêu?",
+  "params": {
+    "region": "hcm",
+    "people": 2,
+    "m3": 10
+  }
+}

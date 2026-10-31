@@ -1,0 +1,11 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "retireage",
+  "slug": "nu-sinh-2000-nghi-huu-nam-nao",
+  "title": "Nữ sinh năm 2000 nghỉ hưu năm nào, bao nhiêu tuổi?",
+  "params": {
+    "sex": "female",
+    "year": 2000
+  }
+}
