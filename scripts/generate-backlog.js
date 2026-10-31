@@ -246,6 +246,17 @@ const groups = []; // each group = array of records of one kind (interleaved lat
   groups.push(en, vi);
 }
 
+// 14) Lunar calendar by month (high search demand on "lịch âm tháng …", "lịch vạn niên")
+{
+  const vi = [];
+  for (let k = 0; k < 18; k++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + k, 1);
+    const m = d.getMonth() + 1, y = d.getFullYear();
+    vi.push({ section: 'life', lang: 'vi', tool: 'lunar', slug: `lich-am-thang-${m}-nam-${y}`, title: `Lịch âm tháng ${m} năm ${y} – Lịch vạn niên`, params: { m, y } });
+  }
+  groups.push(vi);
+}
+
 // ---------- write ----------
 function existingSlugs() {
   const set = new Set();

@@ -49,7 +49,7 @@ export const TOOLS = [
     id: 'lunar', section: 'life', icon: '🌙',
     slug: { vi: 'lich-am-hom-nay', en: 'vietnamese-lunar-calendar' },
     title: { vi: 'Lịch âm hôm nay', en: 'Lunar Calendar Today' },
-    seo: { vi: 'Lịch âm hôm nay – Lịch vạn niên, đổi ngày âm dương', en: 'Vietnamese Lunar Calendar Today – Solar/Lunar Converter' },
+    seo: { vi: 'Lịch âm hôm nay – Âm lịch, lịch vạn niên 2026, 2027', en: 'Vietnamese Lunar Calendar Today – Solar/Lunar Converter' },
     desc: { vi: 'Âm dương, can chi, giờ tốt.', en: 'Lunar date, Can Chi, lucky hours.' },
     faq: [
       { q: { vi: 'Lịch âm Việt Nam khác lịch Trung Quốc không?', en: 'Is the Vietnamese lunar calendar the same as the Chinese one?' }, a: { vi: 'Gần giống nhưng tính theo múi giờ GMT+7 (Trung Quốc dùng GMT+8), nên đôi khi ngày đầu tháng, thậm chí Tết, lệch nhau một ngày.', en: 'Almost, but Vietnam computes it for GMT+7 (China uses GMT+8), so a month start, even Tết, can differ by one day.' } },

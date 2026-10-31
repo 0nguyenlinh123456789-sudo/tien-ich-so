@@ -34,7 +34,8 @@ const MAX_WAIT = Number(val('--wait', 900));
 const SECTION_SLUG = {
   finance: { vi: 'tai-chinh', en: 'en/finance' },
   destiny: { vi: 'van-menh', en: 'en/destiny' },
-  tools: { vi: 'cong-cu', en: 'en/tools' }
+  tools: { vi: 'cong-cu', en: 'en/tools' },
+  life: { vi: 'doi-song', en: 'en/life' }
 };
 
 function listBacklog() {

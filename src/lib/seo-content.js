@@ -244,6 +244,24 @@ export function buildRecordContent(record) {
       break;
     }
     case 'lunar': {
+      if (!p.d) {
+      const mm = Number(p.m), yy = Number(p.y);
+      const days = monthDays(mm, yy);
+      const first = days[0], last = days[days.length - 1];
+      const good = days.filter((x) => x.star.good).map((x) => x.solar.day);
+      const special = days.filter((x) => x.lunar.day === 1 || x.lunar.day === 15).map((x) => `${x.solar.day}/${mm} (${x.lunar.day === 1 ? 'mùng 1' : 'rằm'} tháng ${x.lunar.month}${x.lunar.leap ? ' nhuận' : ''})`);
+      out = {
+        h1: `Lịch âm tháng ${mm} năm ${yy} – Lịch vạn niên`,
+        intro: [
+          `Tháng ${mm}/${yy} dương lịch bắt đầu ngày <b>${first.lunar.day}/${first.lunar.month}${first.lunar.leap ? ' nhuận' : ''}</b> và kết thúc ngày <b>${last.lunar.day}/${last.lunar.month}${last.lunar.leap ? ' nhuận' : ''}</b> âm lịch, năm ${first.canChi.year}${first.canChi.year !== last.canChi.year ? ` – ${last.canChi.year}` : ''}.`,
+          special.length ? `Ngày mùng 1 và rằm trong tháng: ${special.join('; ')}.` : '',
+          `Ngày hoàng đạo: ${good.join(', ')}. Bảng dưới liệt kê ngày âm, can chi và ngày hoàng đạo/hắc đạo của cả tháng.`
+        ].filter(Boolean),
+        table: days.map((x) => [`${WD_VI[x.weekday]} ${x.solar.day}/${mm}`, `${x.lunar.day}/${x.lunar.month}${x.lunar.leap ? 'N' : ''} · ${x.canChi.day} · ${x.star.good ? 'Hoàng đạo' : 'Hắc đạo'}`]),
+        faq: [{ q: `Ngày 1/${mm}/${yy} là bao nhiêu âm?`, a: `Ngày ${first.lunar.day} tháng ${first.lunar.month}${first.lunar.leap ? ' nhuận' : ''} năm ${first.canChi.year}.` }, ...(special.length ? [{ q: `Rằm, mùng 1 tháng này vào ngày nào?`, a: special.join('; ') + '.' }] : [])]
+      };
+      break;
+    }
       const e = evaluateDay(Number(p.d), Number(p.m), Number(p.y));
       const l = e.lunar;
       const leap = l.leap ? ' (nhuận)' : '';
