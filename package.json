@@ -12,7 +12,8 @@
     "drip": "node scripts/drip-feed.js",
     "drip:dry": "node scripts/drip-feed.js --dry-run --no-git --no-ping",
     "check": "astro build && node scripts/check-site.mjs",
-    "keywords": "node scripts/keyword-scan.mjs"
+    "keywords": "node scripts/keyword-scan.mjs",
+    "gsc": "node scripts/gsc-report.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

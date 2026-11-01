@@ -12,7 +12,8 @@ Bạn là chuyên viên nghiên cứu nhu cầu cho site tiện ích tĩnh (Astr
    - `npm run keywords -- "<từ khóa gốc>"` (Google autocomplete: càng nhiều biến thể dài = nhu cầu càng thật).
    - WebSearch: xem trang 1 Google gồm ai (báo lớn / cơ quan nhà nước = khó chen; diễn đàn, site nhỏ = có cơ hội).
    - Mùa vụ: sự kiện, hạn chót pháp lý, ngày lễ, thay đổi luật sắp có hiệu lực.
-   - Số liệu Bing Webmaster mà người dùng cung cấp (nếu có trong hội thoại) là nguồn tin cậy nhất.
+   - `npm run gsc` (nếu đã có secrets/gsc-key.json): số liệu Search Console thật của site — nguồn tin cậy nhất; ưu tiên từ khóa vị trí 5–20 và trang CTR thấp.
+   - Số liệu Bing Webmaster mà người dùng cung cấp (nếu có trong hội thoại).
 3. Không bịa số. Mỗi con số phải ghi nguồn; không có số thì ghi "ước lượng" và lý do.
 
 ## Đầu ra (bảng, tiếng Việt, ngắn)

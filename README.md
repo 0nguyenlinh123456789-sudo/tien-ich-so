@@ -58,3 +58,9 @@ scripts/           drip-feed, generate-backlog, check-site, keyword-scan, legal-
 - Any text a visitor can control (form fields, URL params, file names) goes through `escapeHtml` before `innerHTML`.
 - Legal figures (tax, insurance, tariffs) must cite the document and be verified before changing.
 - Never add a paid service; everything here works on free tiers without a card.
+
+## Search Console tự động
+
+`npm run gsc` (hoặc `npm run gsc -- 7` cho 7 ngày) kéo số liệu Search Console chỉ-đọc qua service account: top từ khóa, top trang, từ khóa vị trí 5–20 (sắp lên trang 1) và trang CTR thấp. Kết quả lưu `secrets/gsc-report.json`.
+
+Key đặt tại `secrets/gsc-key.json` (thư mục `secrets/` đã git-ignore — không bao giờ commit). Service account chỉ cần quyền **Bị hạn chế** trong Search Console.
