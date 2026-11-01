@@ -8,8 +8,9 @@ const rows = vi
   : [['of', '', '% of', ''], ['ratio', '', 'is what % of', ''], ['change', 'From', 'to', ''], ['discount', 'Price', 'minus', '%'], ['add', '', 'plus', '%']];
 ---
 <div data-tool="percent" data-lang={lang} class="grid gap-3">
+  <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><circle cx="30" cy="28" r="22" fill="none" stroke="#e2e8f0" stroke-width="10"/><circle cx="30" cy="28" r="22" fill="none" stroke="#2f6bff" stroke-width="10" stroke-dasharray="104 139" transform="rotate(-90 30 28)"/><text x="30" y="33" text-anchor="middle" font-size="14" font-weight="800" fill="#1a45b8">%</text><rect x="70" y="10" width="100" height="10" rx="5" fill="#e2e8f0"/><rect x="70" y="10" width="64" height="10" rx="5" fill="#0d9488"/><rect x="70" y="30" width="100" height="10" rx="5" fill="#e2e8f0"/><rect x="70" y="30" width="38" height="10" rx="5" fill="#d97706"/><rect x="186" y="10" width="44" height="34" rx="6" fill="#ffe4e6" stroke="#e11d48" stroke-width="2.5"/><text x="208" y="33" text-anchor="middle" font-size="14" font-weight="800" fill="#be123c">-20</text></svg>
   {rows.map(([id, pre, mid, post]) => (
-    <form class="card flex flex-wrap items-center gap-2" data-row={id}>
+    <form class="card flex min-w-0 flex-wrap items-center gap-2" data-row={id}>
       {pre && <span class="text-slate-600">{pre}</span>}
       <input class="input w-32" name="a" type="number" step="any" />
       <span class="text-slate-600">{mid}</span>
@@ -17,11 +18,13 @@ const rows = vi
       {post && <span class="text-slate-600">{post}</span>}
       <span class="text-slate-400">=</span>
       <output class="min-w-24 text-xl font-bold text-brand-700" data-r></output>
+      <div class="w-full min-w-0 empty:hidden" data-v></div>
     </form>
   ))}
 </div>
 
 <script>
+  import { progress, bars, barStack } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="percent"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const fmt = (x: number) => Number.isFinite(x) ? x.toLocaleString(vi ? 'vi-VN' : 'en-US', { maximumFractionDigits: 2 }) : '—';
@@ -32,11 +35,22 @@ const rows = vi
       discount: (a, b) => fmt(a * (1 - b / 100)),
       add: (a, b) => fmt(a * (1 + b / 100))
     };
+    // Minh họa nhỏ dưới từng dòng (chỉ khi số hợp lệ, dương); dùng đúng các giá trị đã tính ở F.
+    const ok = (...x: number[]) => x.every((v) => Number.isFinite(v) && v > 0);
+    const viz = (row: string, a: number, b: number) => {
+      if (row === 'of' && ok(a, b) && a <= 100) return progress(a / 100, `${fmt(a)}% ${vi ? 'của' : 'of'} ${fmt(b)} = ${fmt((a * b) / 100)}`);
+      if (row === 'ratio' && ok(a, b) && a <= b) return progress(a / b, `${fmt(a)} / ${fmt(b)}`);
+      if (row === 'change' && ok(a, b)) return bars([{ label: vi ? 'Ban đầu' : 'Before', value: a, color: 'var(--viz-6)' }, { label: vi ? 'Sau' : 'After', value: b, color: b >= a ? 'var(--viz-2)' : 'var(--viz-4)' }], { format: fmt });
+      if (row === 'discount' && ok(a, b) && b <= 100) return barStack([{ label: vi ? 'Phải trả' : 'You pay', value: a * (1 - b / 100), color: 'var(--viz-1)' }, { label: vi ? 'Tiết kiệm' : 'You save', value: (a * b) / 100, color: 'var(--viz-3)' }], { format: fmt });
+      if (row === 'add' && ok(a, b)) return barStack([{ label: vi ? 'Giá gốc' : 'Base', value: a, color: 'var(--viz-1)' }, { label: vi ? `Cộng thêm ${fmt(b)}%` : `Plus ${fmt(b)}%`, value: (a * b) / 100, color: 'var(--viz-3)' }], { format: fmt });
+      return '';
+    };
     root.querySelectorAll<HTMLFormElement>('[data-row]').forEach((form) => {
       form.addEventListener('submit', (e) => e.preventDefault());
       form.addEventListener('input', () => {
         const a = (form.elements.namedItem('a') as HTMLInputElement).value, b = (form.elements.namedItem('b') as HTMLInputElement).value;
         form.querySelector('[data-r]')!.textContent = a !== '' && b !== '' ? F[form.dataset.row!](Number(a), Number(b)) : '';
+        form.querySelector('[data-v]')!.innerHTML = a !== '' && b !== '' ? viz(form.dataset.row!, Number(a), Number(b)) : '';
       });
     });
   });

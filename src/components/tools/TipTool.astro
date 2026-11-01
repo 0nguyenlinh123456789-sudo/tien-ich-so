@@ -4,17 +4,20 @@ const { lang = 'en' } = Astro.props;
 const vi = lang === 'vi';
 ---
 <div data-tool="tip" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
-  <form class="card grid content-start gap-3" data-f>
+  <form class="card grid min-w-0 content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><path d="M8 4h40v48l-5-4-5 4-5-4-5 4-5-4-5 4-5-4-5 4z" fill="#fff" stroke="#2f6bff" stroke-width="2.5" stroke-linejoin="round"/><path d="M15 14h26M15 22h20M15 30h26M15 40h14" stroke="#93b8ff" stroke-width="3" stroke-linecap="round"/><circle cx="84" cy="30" r="17" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/><text x="84" y="36" text-anchor="middle" font-size="18" font-weight="800" fill="#b45309">%</text><g fill="#0d9488"><circle cx="138" cy="18" r="7"/><circle cx="170" cy="18" r="7"/><circle cx="202" cy="18" r="7"/></g><g fill="#ccfbf1" stroke="#0d9488" stroke-width="2"><path d="M126 50c0-10 6-16 12-16s12 6 12 16z"/><path d="M158 50c0-10 6-16 12-16s12 6 12 16z"/><path d="M190 50c0-10 6-16 12-16s12 6 12 16z"/></g></svg>
     <div><label class="label">{vi ? 'Hóa đơn' : 'Bill amount'}</label><input class="input text-2xl" type="number" step="0.01" name="bill" value="85" /></div>
     <div><label class="label">{vi ? 'Tip (%)' : 'Tip (%)'}</label>
       <div class="flex flex-wrap gap-2">{[10, 15, 18, 20, 22, 25].map((p) => <label class="cursor-pointer"><input type="radio" name="pct" value={p} checked={p === 18} class="peer sr-only" /><span class="block rounded-xl border border-slate-300 px-3 py-2 font-semibold peer-checked:border-brand-600 peer-checked:bg-brand-600 peer-checked:text-white">{p}%</span></label>)}</div></div>
     <div><label class="label">{vi ? 'Số người chia' : 'Split between'}</label><input class="input" type="number" min="1" name="people" value="2" /></div>
     <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="round" /> {vi ? 'Làm tròn lên mỗi người' : 'Round up per person'}</label>
   </form>
-  <div class="card" data-out></div>
+  <div class="card min-w-0" data-out></div>
 </div>
 
 <script>
+  import { donut } from '../../lib/viz.js';
+  import { escapeHtml as esc } from '../../lib/format.js';
   document.querySelectorAll<HTMLElement>('[data-tool="tip"]').forEach((root) => {
     const vi = root.dataset.lang === 'vi';
     const form = root.querySelector<HTMLFormElement>('[data-f]')!;
@@ -30,7 +33,9 @@ const vi = lang === 'vi';
         <div class="table-wrap mt-4"><table class="data-table"><tbody>
         <tr><td>Tip ${pct}%</td><td class="num">${m(tip)}</td></tr><tr><td>${vi ? 'Tổng' : 'Total'}</td><td class="num font-semibold">${m(bill + tip)}</td></tr>
         ${[15, 18, 20].map((p) => `<tr><td class="text-slate-500">${vi ? 'Nếu' : 'At'} ${p}%</td><td class="num text-slate-500">${m(bill * p / 100)}</td></tr>`).join('')}
-        </tbody></table></div>`;
+        </tbody></table></div>
+        ${donut([{ label: vi ? 'Hóa đơn' : 'Bill', value: bill }, { label: `Tip ${pct}%`, value: tip, color: 'var(--viz-3)' }], `${pct}%`, { format: m, title: vi ? 'Cơ cấu tổng tiền' : 'What the total is made of' })}
+        ${ppl > 1 && Number.isFinite(ppl) && bill > 0 ? `<div class="mt-3 flex flex-wrap gap-1.5" role="img" aria-label="${esc(`${ppl} × ${m(each)}`)}">${Array.from({ length: Math.min(ppl, 12) }, (_, i) => `<span class="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 ring-1 ring-brand-100">👤 ${i + 1}</span>`).join('')}${ppl > 12 ? `<span class="px-1 text-xs text-slate-500">+${ppl - 12}</span>` : ''}</div><p class="mt-1 text-xs text-slate-500">${vi ? `${ppl} người × ${m(each)}` : `${ppl} people × ${m(each)}`}</p>` : ''}`;
     };
     form.addEventListener('input', calc);
     calc();

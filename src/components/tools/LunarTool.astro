@@ -4,37 +4,51 @@ const { lang = 'vi' } = Astro.props;
 const vi = lang === 'vi';
 ---
 <div data-tool="lunar" data-lang={lang} class="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-  <div class="grid gap-4">
-    <div class="card text-center" data-today></div>
-    <form class="card grid gap-3" data-conv>
-      <div class="flex gap-2 text-sm font-semibold">
-        <label class="flex items-center gap-1"><input type="radio" name="dir" value="s2l" checked /> {vi ? 'Dương → Âm' : 'Solar → Lunar'}</label>
-        <label class="ml-4 flex items-center gap-1"><input type="radio" name="dir" value="l2s" /> {vi ? 'Âm → Dương' : 'Lunar → Solar'}</label>
+  <div class="grid min-w-0 content-start gap-4">
+    <div class="lunar-today card min-w-0" data-today></div>
+    <form class="card grid min-w-0 gap-3" data-conv>
+      <div class="flex flex-wrap gap-2 text-sm font-semibold">
+        <label class="cursor-pointer"><input type="radio" name="dir" value="s2l" checked class="peer sr-only" /><span class="block rounded-full border border-slate-300 px-3 py-1.5 peer-checked:border-brand-600 peer-checked:bg-brand-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-300">{vi ? 'Dương → Âm' : 'Solar → Lunar'}</span></label>
+        <label class="cursor-pointer"><input type="radio" name="dir" value="l2s" class="peer sr-only" /><span class="block rounded-full border border-slate-300 px-3 py-1.5 peer-checked:border-brand-600 peer-checked:bg-brand-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-300">{vi ? 'Âm → Dương' : 'Lunar → Solar'}</span></label>
       </div>
       <div class="grid grid-cols-3 gap-2">
-        <input class="input" name="d" type="number" min="1" max="31" placeholder={vi ? 'Ngày' : 'Day'} />
-        <input class="input" name="m" type="number" min="1" max="12" placeholder={vi ? 'Tháng' : 'Month'} />
-        <input class="input" name="y" type="number" min="1900" max="2199" placeholder={vi ? 'Năm' : 'Year'} />
+        <input class="input min-w-0" name="d" type="number" min="1" max="31" placeholder={vi ? 'Ngày' : 'Day'} aria-label={vi ? 'Ngày' : 'Day'} />
+        <input class="input min-w-0" name="m" type="number" min="1" max="12" placeholder={vi ? 'Tháng' : 'Month'} aria-label={vi ? 'Tháng' : 'Month'} />
+        <input class="input min-w-0" name="y" type="number" min="1900" max="2199" placeholder={vi ? 'Năm' : 'Year'} aria-label={vi ? 'Năm' : 'Year'} />
       </div>
       <label class="flex items-center gap-2 text-sm text-slate-600" data-leapwrap hidden><input type="checkbox" name="leap" /> {vi ? 'Tháng nhuận' : 'Leap month'}</label>
       <button class="btn-primary" type="submit">{vi ? 'Đổi ngày' : 'Convert'}</button>
-      <div data-convout class="text-lg font-semibold text-brand-700"></div>
+      <div data-convout class="text-lg font-semibold text-brand-700" aria-live="polite"></div>
     </form>
   </div>
-  <div class="card">
-    <div class="mb-3 flex items-center justify-between">
-      <button type="button" class="btn-ghost px-3 py-1.5" data-nav="-1" aria-label="prev">‹</button>
-      <div class="font-bold" data-mtitle></div>
-      <button type="button" class="btn-ghost px-3 py-1.5" data-nav="1" aria-label="next">›</button>
+  <div class="card min-w-0 p-3 sm:p-5">
+    <div class="mb-3 flex items-center justify-between gap-2">
+      <button type="button" class="btn-ghost px-3 py-1.5" data-nav="-1" aria-label={vi ? 'Tháng trước' : 'Previous month'}>‹</button>
+      <div class="min-w-0 text-center">
+        <div class="text-lg font-bold" data-mtitle></div>
+        <div class="text-xs text-slate-500" data-msub></div>
+      </div>
+      <button type="button" class="btn-ghost px-3 py-1.5" data-nav="1" aria-label={vi ? 'Tháng sau' : 'Next month'}>›</button>
     </div>
     <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-500" data-wd></div>
     <div class="mt-1 grid grid-cols-7 gap-1" data-grid></div>
-    <p class="mt-3 text-xs text-slate-500">{vi ? 'Số nhỏ: ngày âm. Chấm xanh: ngày hoàng đạo.' : 'Small number: lunar day. Green dot: auspicious day.'}</p>
+    <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-slate-600">
+      <span class="flex items-center gap-1"><i class="lunar-key lunar-key-today"></i>{vi ? 'Hôm nay' : 'Today'}</span>
+      <span class="flex items-center gap-1"><i class="lunar-key lunar-key-m1"></i>{vi ? 'Mùng 1' : '1st day'}</span>
+      <span class="flex items-center gap-1"><i class="lunar-key lunar-key-ram"></i>{vi ? 'Rằm (15)' : 'Full moon (15th)'}</span>
+      <span class="flex items-center gap-1"><i class="lunar-dot"></i>{vi ? 'Ngày hoàng đạo' : 'Auspicious day'}</span>
+      <button type="button" class="ml-auto rounded-full border border-slate-300 px-2.5 py-1 font-semibold hover:bg-slate-100" data-home hidden>{vi ? 'Về hôm nay' : 'Back to today'}</button>
+    </div>
+    <p class="mt-2 text-xs text-slate-500">{vi ? 'Số lớn: ngày dương; số nhỏ góc dưới: ngày âm (ghi kèm tháng ở mùng 1).' : 'Large number: solar day; small number: lunar day (with month on the 1st).'}</p>
   </div>
 </div>
 
 <script>
   import { solarToLunar, evaluateDay } from '../../lib/lunar.js';
+  import { escapeHtml as esc } from '../../lib/format.js';
+
+  // Minh họa đầu thẻ: trăng tròn + đèn lồng (aria-hidden, chỉ trang trí).
+  const ART = '<svg class="viz-art lunar-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><circle cx="30" cy="28" r="20" fill="#fde68a"/><circle cx="23" cy="22" r="4" fill="#fcd34d"/><circle cx="36" cy="34" r="3" fill="#fcd34d"/><path d="M80 0v10M140 0v6M200 0v12" stroke="#fca5a5" stroke-width="2"/><g fill="#e11d48"><ellipse cx="80" cy="24" rx="13" ry="14"/><ellipse cx="140" cy="18" rx="11" ry="12"/><ellipse cx="200" cy="28" rx="13" ry="14"/></g><g fill="#f5b83d"><rect x="74" y="8" width="12" height="4" rx="1"/><rect x="74" y="36" width="12" height="4" rx="1"/><rect x="135" y="4" width="10" height="3" rx="1"/><rect x="135" y="28" width="10" height="3" rx="1"/><rect x="194" y="12" width="12" height="4" rx="1"/><rect x="194" y="40" width="12" height="4" rx="1"/></g><path d="M80 40v8M140 31v7M200 44v8" stroke="#f5b83d" stroke-width="2"/><path d="M80 11v26M140 7v21M200 15v26" stroke="#9f1239" stroke-width="1" opacity=".5"/></svg>';
 
   document.querySelectorAll<HTMLElement>('[data-tool="lunar"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
@@ -46,29 +60,55 @@ const vi = lang === 'vi';
 
     const t = evaluateDay(now.getDate(), cm, cy);
     const lm = (l: any) => `${l.month}${l.leap ? (vi ? ' nhuận' : ' leap') : ''}`;
+    const chip = (k: string, v: string) => `<div class="lunar-cc min-w-0"><div class="text-[11px] text-slate-500">${esc(k)}</div><div class="font-bold text-slate-800">${esc(v)}</div></div>`;
+    const special = t.lunar.day === 1 ? (vi ? 'Mùng 1' : '1st day of the month') : t.lunar.day === 15 ? (vi ? 'Ngày rằm' : 'Full moon day') : '';
     $('[data-today]').innerHTML = `
-      <div class="text-sm text-slate-500">${WDL[t.weekday]}, ${now.getDate()}/${cm}/${cy}</div>
-      <div class="my-2 text-6xl font-extrabold text-brand-700">${t.lunar.day}</div>
-      <div class="font-semibold">${vi ? 'Tháng' : 'Month'} ${lm(t.lunar)} · ${vi ? 'Năm' : 'Year'} ${t.canChi.year}</div>
-      <div class="mt-1 text-sm text-slate-600">${vi ? 'Ngày' : 'Day'} ${t.canChi.day} · ${vi ? 'Tháng' : 'Month'} ${t.canChi.month}</div>
-      <div class="mt-2 inline-block rounded-full px-3 py-1 text-sm font-semibold ${t.star.good ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${t.star.good ? (vi ? 'Hoàng đạo' : 'Auspicious') : (vi ? 'Hắc đạo' : 'Inauspicious')}</div>
-      <div class="mt-3 text-sm text-slate-600"><b>${vi ? 'Giờ tốt' : 'Lucky hours'}:</b> ${t.hours.map((h: any) => `${vi ? h.name : h.nameEn} (${h.range})`).join(', ')}</div>`;
+      <div class="lunar-today-top">
+        ${ART}
+        <div class="text-sm font-semibold text-rose-100">${WDL[t.weekday]}</div>
+        <div class="text-lg font-bold text-white">${now.getDate()}/${cm}/${cy}</div>
+        <div class="mt-2 flex items-end justify-center gap-3">
+          <div class="lunar-big">${t.lunar.day}</div>
+          <div class="pb-3 text-left text-sm leading-snug text-rose-50"><div class="text-xs uppercase tracking-wide opacity-80">${vi ? 'Âm lịch' : 'Lunar'}</div><div class="font-bold">${vi ? 'Tháng' : 'Month'} ${lm(t.lunar)}</div><div>${vi ? 'Năm' : 'Year'} ${esc(t.canChi.year)}</div></div>
+        </div>
+        ${special ? `<div class="mt-1 inline-block rounded-full bg-amber-300 px-3 py-0.5 text-xs font-bold text-amber-900">${special}</div>` : ''}
+      </div>
+      <div class="mt-3 grid grid-cols-3 gap-2 text-center text-sm">
+        ${chip(vi ? 'Ngày' : 'Day', t.canChi.day)}${chip(vi ? 'Tháng' : 'Month', t.canChi.month)}${chip(vi ? 'Năm' : 'Year', t.canChi.year)}
+      </div>
+      <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-sm">
+        <span class="rounded-full px-3 py-1 font-semibold ${t.star.good ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200'}">${t.star.good ? (vi ? 'Hoàng đạo' : 'Auspicious') : (vi ? 'Hắc đạo' : 'Inauspicious')} · ${esc(vi ? t.star.vi : t.star.en)}</span>
+      </div>
+      <div class="mt-4 text-left">
+        <div class="mb-1.5 text-sm font-semibold text-slate-700">${vi ? 'Giờ hoàng đạo (giờ tốt)' : 'Lucky hours'}</div>
+        <div class="grid grid-cols-2 gap-1.5 sm:grid-cols-3" role="list">${t.hours.map((h: any, i: number) => `<div role="listitem" class="lunar-hour" style="--c:var(--viz-${(i % 6) + 1})"><b>${esc(vi ? h.name : h.nameEn)}</b><span>${esc(h.range)}</span></div>`).join('')}</div>
+      </div>`;
 
-    $('[data-wd]').innerHTML = WD.map((w) => `<div>${w}</div>`).join('');
+    $('[data-wd]').innerHTML = WD.map((w, i) => `<div class="${i === 0 ? 'text-rose-600' : ''}">${w}</div>`).join('');
     const draw = () => {
       $('[data-mtitle]').textContent = `${vi ? 'Tháng' : 'Month'} ${cm}/${cy}`;
       const first = new Date(cy, cm - 1, 1).getDay();
       const days = new Date(cy, cm, 0).getDate();
-      let h = '<div></div>'.repeat(first);
+      let h = '<div aria-hidden="true"></div>'.repeat(first);
+      let l0: any = null, l1: any = null;
       for (let d = 1; d <= days; d++) {
         const e = evaluateDay(d, cm, cy);
+        if (d === 1) l0 = e; if (d === days) l1 = e;
         const today = d === now.getDate() && cm === now.getMonth() + 1 && cy === now.getFullYear();
-        const ld = e.lunar.day === 1 ? `${e.lunar.day}/${e.lunar.month}` : e.lunar.day;
-        h += `<div class="relative rounded-lg border p-1 text-center ${today ? 'border-brand-500 bg-brand-50' : 'border-slate-100'}">
-          <div class="font-semibold">${d}</div><div class="text-[11px] ${e.lunar.day === 1 || e.lunar.day === 15 ? 'font-bold text-rose-600' : 'text-slate-400'}">${ld}</div>
-          ${e.star.good ? '<span class="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-emerald-500"></span>' : ''}</div>`;
+        const m1 = e.lunar.day === 1, ram = e.lunar.day === 15;
+        // Mùng 1 ghi kèm tháng âm (và chữ "n" nếu tháng nhuận) để thấy chỗ đổi tháng.
+        const ld = m1 ? `1/${e.lunar.month}${e.lunar.leap ? (vi ? 'n' : 'L') : ''}` : String(e.lunar.day);
+        const aria = `${WDL[e.weekday]} ${d}/${cm}/${cy}, ${vi ? 'âm lịch' : 'lunar'} ${e.lunar.day}/${lm(e.lunar)}${m1 ? (vi ? ', mùng 1' : ', 1st day') : ram ? (vi ? ', rằm' : ', full moon') : ''}${e.star.good ? (vi ? ', hoàng đạo' : ', auspicious') : ''}${today ? (vi ? ', hôm nay' : ', today') : ''}`;
+        const cls = ['lunar-cell', today ? 'is-today' : '', m1 ? 'is-m1' : '', ram ? 'is-ram' : '', e.weekday === 0 ? 'is-sun' : ''].filter(Boolean).join(' ');
+        h += `<div class="${cls}" aria-label="${esc(aria)}" title="${esc(aria)}"${today ? ' aria-current="date"' : ''}><span class="lunar-sd">${d}</span><span class="lunar-ld">${ld}</span>${e.star.good ? '<i class="lunar-dot"></i>' : ''}</div>`;
       }
       $('[data-grid]').innerHTML = h;
+      if (l0 && l1) {
+        const span = (l: any) => `${l.day}/${lm(l)}`;
+        const yr = l0.canChi.year === l1.canChi.year ? l0.canChi.year : `${l0.canChi.year} – ${l1.canChi.year}`;
+        $('[data-msub]').textContent = `${vi ? 'Âm lịch' : 'Lunar'}: ${span(l0.lunar)} → ${span(l1.lunar)} · ${yr}`;
+      }
+      $('[data-home]').hidden = cy === now.getFullYear() && cm === now.getMonth() + 1;
     };
     draw();
     root.querySelectorAll<HTMLElement>('[data-nav]').forEach((b) => b.addEventListener('click', () => {
@@ -76,6 +116,7 @@ const vi = lang === 'vi';
       if (cm < 1) { cm = 12; cy--; } else if (cm > 12) { cm = 1; cy++; }
       draw();
     }));
+    $('[data-home]').addEventListener('click', () => { cy = now.getFullYear(); cm = now.getMonth() + 1; draw(); });
 
     const form = root.querySelector<HTMLFormElement>('[data-conv]')!;
     const leapWrap = $('[data-leapwrap]');

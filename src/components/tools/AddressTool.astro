@@ -6,7 +6,8 @@ const vi = lang === 'vi';
 const olds = Object.keys(OLD_TO_NEW).sort((a, b) => a.localeCompare(b, 'vi'));
 ---
 <div data-tool="address" data-lang={lang} class="grid gap-5">
-  <div class="card grid gap-3 sm:grid-cols-2">
+  <div class="card grid min-w-0 gap-3 sm:grid-cols-2">
+    <svg class="viz-art sm:col-span-2" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><path d="M6 12l18-6 16 8 18-6v38l-18 6-16-8-18 6z" fill="#d9eaff" stroke="#2f6bff" stroke-width="2.5" stroke-linejoin="round"/><path d="M24 6v38M40 14v38" stroke="#2f6bff" stroke-width="1.5"/><path d="M70 12l18-6 16 8 18-6v38l-18 6-16-8-18 6z" fill="#ccfbf1" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round"/><path d="M88 6v38M104 14v38" stroke="#0d9488" stroke-width="1.5"/><path d="M132 29h30m-9-8 9 8-9 8" stroke="#d97706" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M172 12l20-6 20 8 22-6v38l-22 6-20-8-20 6z" fill="#fef3c7" stroke="#d97706" stroke-width="2.5" stroke-linejoin="round"/><path d="M203 18c-6 0-10 4-10 9 0 7 10 15 10 15s10-8 10-15c0-5-4-9-10-9z" fill="#e11d48"/><circle cx="203" cy="27" r="3.5" fill="#fff"/></svg>
     <div><label class="label">{vi ? 'Tỉnh/thành cũ' : 'Former province'}</label>
       <select class="input text-lg" data-old>{olds.map((o) => <option value={o} selected={o === 'Bình Dương'}>{o}</option>)}</select></div>
     <div><label class="label">{vi ? 'Số nhà, đường, xã/phường (tùy chọn)' : 'Street, ward (optional)'}</label><input class="input text-lg" data-street placeholder={vi ? '12 Lê Lợi, phường …' : '12 Le Loi, ward …'} /></div>
@@ -23,7 +24,8 @@ const olds = Object.keys(OLD_TO_NEW).sort((a, b) => a.localeCompare(b, 'vi'));
 
 <script>
   import { escapeHtml as esc } from '../../lib/format.js';
-  import { OLD_TO_NEW } from '../../lib/provinces-2025.js';
+  import { OLD_TO_NEW, MERGED } from '../../lib/provinces-2025.js';
+  import { flow } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="address"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const sel = root.querySelector<HTMLSelectElement>('[data-old]')!;
@@ -32,10 +34,15 @@ const olds = Object.keys(OLD_TO_NEW).sort((a, b) => a.localeCompare(b, 'vi'));
     const draw = () => {
       const nw = OLD_TO_NEW[sel.value];
       const street = st.value.trim();
+      const members: string[] = (MERGED as Record<string, string[]>)[nw] || [sel.value];
       const addr = `${street ? street + ', ' : ''}${nw}`;
       out.innerHTML = `
         <div class="text-sm text-slate-500">${vi ? 'Tỉnh/thành mới' : 'New province'}</div>
         <div class="text-3xl font-extrabold text-brand-700">${esc(nw)}</div>
+        ${flow([
+          { title: members.join(' + '), text: members.length > 1 ? (vi ? `${members.length} tỉnh/thành cũ (bạn chọn: ${sel.value})` : `${members.length} former provinces (selected: ${sel.value})`) : (vi ? 'Không sáp nhập' : 'Not merged') },
+          { icon: '✓', title: nw, text: vi ? 'Tên tỉnh/thành từ 1/7/2025' : 'Province name from 1 July 2025' }
+        ], { ariaLabel: `${members.join(' + ')} → ${nw}` })}
         ${street ? `<div class="mt-2"><b>${vi ? 'Địa chỉ mới' : 'New address'}:</b> ${esc(addr)} <button type="button" class="btn-ghost ml-2 py-1 text-sm" data-copy>📋 Copy</button></div>` : ''}
         <p class="mt-3 text-sm text-slate-600">${vi
           ? 'Cấp huyện (quận, huyện, thị xã) đã bỏ: địa chỉ mới chỉ còn <b>xã/phường + tỉnh/thành</b>. Tên xã/phường có thể đã đổi, hãy tra tên mới trên cổng thông tin của tỉnh hoặc <a class="underline" href="https://sapnhap.bando.com.vn" target="_blank" rel="noopener nofollow">sapnhap.bando.com.vn</a>.'

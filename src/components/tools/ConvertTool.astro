@@ -8,17 +8,20 @@ const vi = lang === 'vi';
   <div class="flex flex-wrap gap-2" data-cats>
     {Object.entries(UNITS).map(([k, c], i) => <button type="button" data-cat={k} class={`rounded-full border px-3 py-1.5 text-sm font-semibold ${i === 0 ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300'}`}>{c.icon} {c.name[lang]}</button>)}
   </div>
-  <div class="card grid items-end gap-3 sm:grid-cols-[1fr_auto_1fr]">
-    <div><input class="input text-2xl" type="number" step="any" data-v value="170" /><select class="input mt-2" data-from></select></div>
+  <div class="card grid min-w-0 items-end gap-3 sm:grid-cols-[1fr_auto_1fr]">
+    <svg class="viz-art sm:col-span-3" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="4" y="18" width="100" height="22" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/><path d="M16 18v8M28 18v12M40 18v8M52 18v12M64 18v8M76 18v12M88 18v8" stroke="#d97706" stroke-width="2"/><path d="M114 22h18m-6-6 6 6-6 6M132 36h-18m6-6-6 6 6 6" stroke="#64748b" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 50h40l-6-22h-28z" fill="#d9eaff" stroke="#2f6bff" stroke-width="2.5" stroke-linejoin="round"/><circle cx="170" cy="22" r="6" fill="none" stroke="#2f6bff" stroke-width="2.5"/><rect x="204" y="10" width="14" height="40" rx="7" fill="#fff" stroke="#e11d48" stroke-width="2.5"/><circle cx="211" cy="44" r="6" fill="#e11d48"/><path d="M211 40V22" stroke="#e11d48" stroke-width="4" stroke-linecap="round"/></svg>
+    <div class="min-w-0"><input class="input text-2xl" type="number" step="any" data-v value="170" /><select class="input mt-2" data-from></select></div>
     <button type="button" class="btn-ghost text-xl" data-swap aria-label="swap">⇄</button>
-    <div><div class="input bg-slate-50 text-2xl font-bold text-brand-700" data-res>—</div><select class="input mt-2" data-to></select></div>
+    <div class="min-w-0"><div class="input bg-slate-50 text-2xl font-bold text-brand-700" data-res>—</div><select class="input mt-2" data-to></select></div>
+    <div class="min-w-0 sm:col-span-3" data-sc></div>
   </div>
-  <div class="card"><div class="table-wrap"><table class="data-table"><tbody data-all></tbody></table></div></div>
+  <div class="card min-w-0"><h2 class="mb-2 text-sm font-semibold text-slate-700">{vi ? 'Bảng quy đổi nhanh' : 'Quick conversion table'}</h2><div class="table-wrap"><table class="data-table"><tbody data-all></tbody></table></div></div>
   <p class="text-xs text-slate-500">{vi ? 'Hệ số chuyển đổi theo định nghĩa quốc tế: 1 inch = 2,54 cm; 1 lb = 0,45359237 kg.' : 'Exact international definitions: 1 in = 2.54 cm; 1 lb = 0.45359237 kg.'}</p>
 </div>
 
 <script>
   import { UNITS, convert } from '../../lib/units.js';
+  import { statCards } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="convert"]').forEach((root) => {
     const lang = root.dataset.lang === 'en' ? 'en' : 'vi';
     const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
@@ -37,7 +40,13 @@ const vi = lang === 'vi';
       if (cat === 'length' && from.value === 'cm' && to.value === 'ftin' && v.value !== '') {
         const tot = x / 2.54; $('[data-res]').textContent = `${Math.floor(tot / 12)}′ ${(tot % 12).toFixed(1)}″`;
       }
-      $('[data-all]').innerHTML = Object.entries(UNITS[cat].units).filter(([k]) => k !== 'ftin').map(([k, u]: any) => `<tr><td>${u.name[lang]}</td><td class="num font-semibold">${v.value === '' ? '—' : fmt(convert(cat, x, from.value, k))}</td></tr>`).join('');
+      $('[data-all]').innerHTML = Object.entries(UNITS[cat].units).filter(([k]) => k !== 'ftin').map(([k, u]: any) => `<tr class="${k === to.value ? 'bg-brand-50' : ''}"><td>${u.name[lang]}${k === from.value ? ` <span class="ml-1 rounded bg-slate-100 px-1.5 text-[11px] text-slate-500">${lang === 'vi' ? 'đang nhập' : 'input'}</span>` : ''}</td><td class="num font-semibold">${v.value === '' ? '—' : fmt(convert(cat, x, from.value, k))}</td></tr>`).join('');
+      // Thẻ hệ số: 1 đơn vị nguồn = ? đơn vị đích (và ngược lại); bỏ qua đơn vị ft+in hiển thị dạng chữ.
+      const U = UNITS[cat].units as any;
+      const r1 = convert(cat, 1, from.value, to.value), r2 = convert(cat, 1, to.value, from.value);
+      $('[data-sc]').innerHTML = cat !== 'temp' && from.value !== to.value && to.value !== 'ftin' && from.value !== 'ftin' && Number.isFinite(r1) && Number.isFinite(r2)
+        ? statCards([{ label: `1 ${U[from.value].name[lang]} =`, value: `${fmt(r1)} ${U[to.value].name[lang]}`, tone: 'brand' }, { label: `1 ${U[to.value].name[lang]} =`, value: `${fmt(r2)} ${U[from.value].name[lang]}`, tone: 'green' }])
+        : '';
     };
     root.querySelectorAll<HTMLButtonElement>('[data-cat]').forEach((b) => b.addEventListener('click', () => {
       cat = b.dataset.cat!;

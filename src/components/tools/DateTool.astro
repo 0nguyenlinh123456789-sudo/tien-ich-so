@@ -5,7 +5,10 @@ const { lang = 'vi', mode } = Astro.props;
 const vi = lang === 'vi';
 ---
 <div data-tool="date" data-mode={mode} data-lang={lang} class="grid gap-5 lg:grid-cols-2">
-  <form class="card grid content-start gap-3" data-f>
+  <form class="card grid min-w-0 content-start gap-3" data-f>
+    {mode === 'age'
+      ? <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="10" y="30" width="56" height="22" rx="4" fill="#fbcfe8" stroke="#db2777" stroke-width="2.5"/><path d="M10 40c7 5 14-5 19 0s12 5 19 0 12-5 18 0" stroke="#fff" stroke-width="3" fill="none"/><path d="M24 30v-10M38 30v-12M52 30v-10" stroke="#2f6bff" stroke-width="4" stroke-linecap="round"/><path d="M24 14c-3 3 0 5 0 5s3-2 0-5zM38 10c-3 3 0 5 0 5s3-2 0-5zM52 14c-3 3 0 5 0 5s3-2 0-5z" fill="#f59e0b"/><path d="M84 30h140" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round"/><circle cx="94" cy="30" r="6" fill="#2f6bff"/><circle cx="150" cy="30" r="9" fill="#d97706" stroke="#fde68a" stroke-width="4"/><circle cx="214" cy="30" r="6" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/></svg>
+      : <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="6" y="8" width="50" height="44" rx="6" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/><rect x="6" y="8" width="50" height="12" rx="5" fill="#2f6bff"/><rect x="184" y="8" width="50" height="44" rx="6" fill="#fff" stroke="#0d9488" stroke-width="2.5"/><rect x="184" y="8" width="50" height="12" rx="5" fill="#0d9488"/><path d="M16 30h8M30 30h8M16 40h8M194 30h8M208 30h8M222 40h4" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/><path d="M68 30h104m-10-8 10 8-10 8M78 22l-10 8 10 8" stroke="#d97706" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>}
     {mode === 'age' ? (
       <>
         <div><label class="label">{vi ? 'Ngày sinh' : 'Date of birth'}</label><input class="input text-lg" type="date" name="a" value="1995-08-15" /></div>
@@ -21,10 +24,11 @@ const vi = lang === 'vi';
       </>
     )}
   </form>
-  <div class="card" data-out></div>
+  <div class="card min-w-0" data-out></div>
 </div>
 
 <script>
+  import { statCards, timeline, progress, barStack, bars } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="date"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const mode = root.dataset.mode;
@@ -60,12 +64,20 @@ const vi = lang === 'vi';
         const toNext = Math.round((+next - +b) / 864e5);
         out.innerHTML = big(vi ? 'Tuổi' : 'Age', vi ? `${y} tuổi ${m} tháng ${d} ngày` : `${y} years ${m} months ${d} days`)
           + `<div class="mt-4 grid grid-cols-2 gap-3">${tile(vi ? 'Tổng số tháng' : 'Months', n(y * 12 + m))}${tile(vi ? 'Tổng số tuần' : 'Weeks', n(Math.floor(days / 7)))}${tile(vi ? 'Tổng số ngày' : 'Days', n(days))}${tile(vi ? 'Sinh nhật tiếp theo' : 'Next birthday', toNext === 0 ? (vi ? 'Hôm nay! 🎂' : 'Today! 🎂') : (vi ? `còn ${toNext} ngày` : `in ${toNext} days`))}</div>
-          <p class="mt-3 text-sm text-slate-600">${vi ? 'Sinh vào' : 'Born on a'} ${a.toLocaleDateString(vi ? 'vi-VN' : 'en-US', { weekday: 'long' })}.</p>`;
+          <p class="mt-3 text-sm text-slate-600">${vi ? 'Sinh vào' : 'Born on a'} ${a.toLocaleDateString(vi ? 'vi-VN' : 'en-US', { weekday: 'long' })}.</p>`
+          + `<div class="mt-4">${statCards([{ label: vi ? 'Năm' : 'Years', value: String(y), tone: 'brand' }, { label: vi ? 'Tháng' : 'Months', value: String(m), tone: 'green' }, { label: vi ? 'Ngày' : 'Days', value: String(d), tone: 'amber' }])}</div>`
+          + progress(1 - toNext / Math.max(1, Math.round((+next - +new Date(next.getFullYear() - 1, next.getMonth(), next.getDate())) / 864e5)), toNext === 0 ? (vi ? 'Sinh nhật hôm nay' : 'Birthday today') : (vi ? `Chặng đường từ sinh nhật gần nhất tới tuổi ${y + 1}` : `Way from last birthday to age ${y + 1}`))
+          + timeline([
+            { date: fmt(a), title: vi ? 'Ngày sinh' : 'Born', state: 'done' },
+            { date: fmt(b), title: vi ? `Hôm nay / ngày tính: ${y} tuổi` : `Target date: age ${y}`, state: 'now' },
+            ...(toNext ? [{ date: fmt(next), title: vi ? `Sinh nhật tuổi ${y + 1}` : `Turns ${y + 1}`, note: vi ? `còn ${toNext} ngày` : `in ${toNext} days`, state: 'next' }] : [])
+          ], { title: vi ? 'Dòng thời gian' : 'Timeline' });
       } else {
         let days = Math.round((+b - +a) / 864e5);
         if (f.get('incl')) days += Math.sign(days || 1);
         let biz = 0;
         for (let d = new Date(Math.min(+a, +b)); d < new Date(Math.max(+a, +b)); d.setDate(d.getDate() + 1)) if (d.getDay() % 6) biz++;
+        const raw = Math.abs(Math.round((+b - +a) / 864e5));
         const [y, m, d] = ymd(new Date(Math.min(+a, +b)), new Date(Math.max(+a, +b)));
         const add = Math.max(-100000, Math.min(100000, Number(f.get('add')) || 0));
         const res = new Date(a);
@@ -73,7 +85,9 @@ const vi = lang === 'vi';
         else res.setDate(res.getDate() + add);
         out.innerHTML = big(vi ? 'Khoảng cách' : 'Difference', `${n(Math.abs(days))} ${vi ? 'ngày' : 'days'}`)
           + `<div class="mt-4 grid grid-cols-2 gap-3">${tile(vi ? 'Năm/tháng/ngày' : 'Y/M/D', `${y} / ${m} / ${d}`)}${tile(vi ? 'Số tuần' : 'Weeks', `${n(Math.floor(Math.abs(days) / 7))} + ${Math.abs(days) % 7}d`)}${tile(vi ? 'Ngày làm việc (T2–T6)' : 'Business days', n(biz))}${tile(vi ? 'Giờ' : 'Hours', n(Math.abs(days) * 24))}</div>
-          <div class="mt-4 rounded-xl bg-brand-50 p-3"><div class="text-xs text-slate-500">${fmt(a)} ${add >= 0 ? '+' : '−'} ${Math.abs(add)} ${f.get('biz') ? (vi ? 'ngày làm việc' : 'business days') : (vi ? 'ngày' : 'days')}</div><div class="text-lg font-bold">${fmt(res)}</div></div>`;
+          <div class="mt-4 rounded-xl bg-brand-50 p-3"><div class="text-xs text-slate-500">${fmt(a)} ${add >= 0 ? '+' : '−'} ${Math.abs(add)} ${f.get('biz') ? (vi ? 'ngày làm việc' : 'business days') : (vi ? 'ngày' : 'days')}</div><div class="text-lg font-bold">${fmt(res)}</div></div>`
+          + (biz || raw - biz > 0 ? barStack([{ label: vi ? 'Ngày làm việc (T2–T6)' : 'Weekdays (Mon–Fri)', value: biz }, { label: vi ? 'Thứ Bảy, Chủ nhật' : 'Weekend days', value: raw - biz, color: 'var(--viz-3)' }], { title: vi ? `Trong ${n(raw)} ngày (không tính ngày cuối)` : `Within ${n(raw)} days (end date excluded)`, format: (x: number) => n(x) }) : '')
+          + bars([{ label: vi ? 'Tuần trọn' : 'Full weeks', value: Math.floor(Math.abs(days) / 7), color: 'var(--viz-1)' }, { label: vi ? 'Ngày lẻ' : 'Extra days', value: Math.abs(days) % 7, color: 'var(--viz-2)' }], { max: Math.max(7, Math.floor(Math.abs(days) / 7)), format: (x: number) => n(x), title: vi ? 'Quy ra tuần' : 'In weeks' });
       }
     };
     form.addEventListener('input', calc);

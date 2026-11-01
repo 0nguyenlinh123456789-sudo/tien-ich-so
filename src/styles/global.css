@@ -119,6 +119,48 @@
 .viz-scale-cur { font-weight: 700; color: var(--viz-text) !important; }
 .viz-art { display: block; width: 100%; max-width: 15rem; height: 3.5rem; margin-bottom: .5rem; }
 
+/* ---- Lịch âm (LunarTool) ---- */
+.lunar-today { text-align: center; padding: 0; overflow: hidden; }
+.lunar-today > :not(.lunar-today-top) { margin-left: 1rem; margin-right: 1rem; }
+.lunar-today > :last-child { margin-bottom: 1rem; }
+.lunar-today-top { background: linear-gradient(160deg, #be123c, #e11d48 55%, #f97316); padding: 1rem 1rem 1.1rem; }
+.lunar-art { margin: 0 auto .25rem; }
+.lunar-big { font-size: 5.5rem; line-height: 1; font-weight: 800; color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.12); font-variant-numeric: tabular-nums; }
+.lunar-cc { background: #fff7ed; border: 1px solid #fed7aa; border-radius: .75rem; padding: .4rem .25rem; overflow-wrap: anywhere; }
+.lunar-hour { display: flex; flex-direction: column; min-width: 0; border-radius: .6rem; padding: .3rem .5rem; border-left: 4px solid var(--c); background: color-mix(in srgb, var(--c) 10%, #fff); font-size: .8125rem; }
+.lunar-hour span { color: #475569; font-size: .75rem; font-variant-numeric: tabular-nums; }
+.lunar-cell { position: relative; min-width: 0; min-height: 3rem; border: 1px solid #f1f5f9; border-radius: .6rem; padding: .2rem .3rem; background: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+@media (min-width: 640px) { .lunar-cell { min-height: 3.9rem; padding: .3rem .45rem; } }
+.lunar-sd { font-weight: 700; font-size: .95rem; color: #1e293b; line-height: 1.1; }
+.lunar-ld { align-self: flex-end; font-size: .68rem; color: #94a3b8; line-height: 1.1; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lunar-cell.is-sun .lunar-sd { color: #e11d48; }
+.lunar-cell.is-m1 { background: #fff1f2; border-color: #fecdd3; }
+.lunar-cell.is-m1 .lunar-ld { color: #be123c; font-weight: 800; }
+.lunar-cell.is-ram { background: #fffbeb; border-color: #fde68a; }
+.lunar-cell.is-ram .lunar-ld { color: #b45309; font-weight: 800; }
+.lunar-cell.is-today { background: var(--color-brand-600); border-color: var(--color-brand-600); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--color-brand-300); }
+.lunar-cell.is-today .lunar-sd, .lunar-cell.is-today .lunar-ld { color: #fff; }
+.lunar-dot { display: inline-block; width: .4rem; height: .4rem; border-radius: 999px; background: #10b981; flex: none; }
+.lunar-cell .lunar-dot { position: absolute; top: .3rem; right: .3rem; }
+.lunar-cell.is-today .lunar-dot { background: #a7f3d0; }
+.lunar-key { display: inline-block; width: .8rem; height: .8rem; border-radius: 3px; border: 1px solid; }
+.lunar-key-today { background: var(--color-brand-600); border-color: var(--color-brand-600); }
+.lunar-key-m1 { background: #fff1f2; border-color: #fda4af; }
+.lunar-key-ram { background: #fffbeb; border-color: #fcd34d; }
+
+/* ---- Vòng tròn tiến độ / ô đếm (Countdown, tool đời sống) ---- */
+.cd-unit { min-width: 0; border-radius: 1rem; padding: .6rem .4rem; background: linear-gradient(180deg, #eef6ff, #d9eaff); text-align: center; }
+.cd-unit b { display: block; font-size: clamp(1.6rem, 8vw, 2.25rem); line-height: 1.1; font-weight: 800; color: var(--color-brand-700); font-variant-numeric: tabular-nums; }
+@media (min-width: 768px) { .cd-unit b { font-size: 3.5rem; } }
+.cd-unit small { font-size: .75rem; color: #64748b; }
+.cd-ev { position: relative; overflow: hidden; border-top: 4px solid var(--c, var(--viz-1)); }
+.area-fig { display: block; width: 100%; max-width: 20rem; height: auto; max-height: 13rem; margin: 1rem auto 0; }
+.area-fig text { font-size: 11px; font-weight: 700; fill: #0f172a; }
+.form-kind { display: flex; align-items: center; gap: .4rem; min-width: 0; text-align: left; border: 1px solid #cbd5e1; border-radius: .8rem; padding: .5rem .6rem; font-size: .8125rem; font-weight: 600; background: #fff; transition: background .15s, border-color .15s; cursor: pointer; }
+.form-kind:hover { background: #f8fafc; }
+.form-kind span { font-size: 1.1rem; flex: none; }
+.form-kind.is-on { border-color: var(--color-brand-600); background: var(--color-brand-50); color: var(--color-brand-700); box-shadow: inset 0 0 0 1px var(--color-brand-600); }
+
 .tarot-card { perspective: 1000px; }
 .tarot-inner { transition: transform 0.7s; transform-style: preserve-3d; position: relative; }
 .tarot-card.flipped .tarot-inner { transform: rotateY(180deg); }

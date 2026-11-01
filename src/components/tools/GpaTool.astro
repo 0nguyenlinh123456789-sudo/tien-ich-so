@@ -4,7 +4,8 @@ const { lang = 'vi' } = Astro.props;
 const vi = lang === 'vi';
 ---
 <div data-tool="gpa" data-lang={lang} class="grid gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
-  <div class="card">
+  <div class="card min-w-0">
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><path d="M8 20l30-12 30 12-30 12z" fill="#1a45b8"/><path d="M20 25v12c0 5 36 5 36 0V25l-18 7z" fill="#2f6bff"/><path d="M64 21v14" stroke="#f5b83d" stroke-width="2.5"/><circle cx="64" cy="37" r="3" fill="#f5b83d"/><rect x="92" y="38" width="22" height="14" rx="2" fill="#dc2626"/><rect x="120" y="30" width="22" height="22" rx="2" fill="#f59e0b"/><rect x="148" y="22" width="22" height="30" rx="2" fill="#0d9488"/><rect x="176" y="14" width="22" height="38" rx="2" fill="#2f6bff"/><rect x="204" y="6" width="22" height="46" rx="2" fill="#7c3aed"/></svg>
     <div class="mb-3 flex flex-wrap items-center gap-3 text-sm">
       <label class="flex items-center gap-1"><input type="checkbox" data-plus checked /> {vi ? 'Thang có điểm cộng (B+, C+, D+)' : 'Use plus grades (B+, C+, D+)'}</label>
     </div>
@@ -12,10 +13,11 @@ const vi = lang === 'vi';
     <div data-rows class="mt-1 grid gap-2"></div>
     <button type="button" class="btn-ghost mt-3 py-2 text-sm" data-add>+ {vi ? 'Thêm môn' : 'Add course'}</button>
   </div>
-  <div class="card" data-out></div>
+  <div class="card min-w-0" data-out></div>
 </div>
 
 <script>
+  import { scale as vscale, bars } from '../../lib/viz.js';
   document.querySelectorAll<HTMLElement>('[data-tool="gpa"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const rows = root.querySelector<HTMLElement>('[data-rows]')!;
@@ -39,12 +41,14 @@ const vi = lang === 'vi';
       const scale = plus.checked ? PLUS : BASE;
       let cr = 0, s4 = 0, s10 = 0;
       const marks: string[] = [];
+      const items: { label: string; value: number; note: string; color: string }[] = [];
       rows.querySelectorAll('div').forEach((r) => {
         const c = Number((r.querySelector('[data-c]') as HTMLInputElement)?.value), raw = (r.querySelector('[data-s]') as HTMLInputElement)?.value;
         const s = Number(raw);
         if (!(c > 0) || raw === '' || !(s >= 0 && s <= 10)) { marks.push(''); return; }
         const g = scale.find(([min]) => s >= min)!;
         cr += c; s4 += g[2] * c; s10 += s * c; marks.push(g[1]);
+        items.push({ label: (r.querySelector('[data-n]') as HTMLInputElement)?.value.trim() || `${vi ? 'Môn' : 'Course'} ${items.length + 1}`, value: s, note: `${g[1]} · ${c} ${vi ? 'TC' : 'cr'}`, color: `var(--viz-${g[2] >= 3.5 ? 2 : g[2] >= 2.5 ? 1 : g[2] >= 1.5 ? 3 : 4})` });
       });
       if (!cr) { out.innerHTML = `<p class="text-slate-500">${vi ? 'Nhập tín chỉ và điểm hệ 10 của từng môn.' : 'Enter credits and scores.'}</p>`; return; }
       const g4 = s4 / cr, g10 = s10 / cr;
@@ -53,6 +57,8 @@ const vi = lang === 'vi';
         <div class="text-5xl font-extrabold text-brand-700">${g4.toFixed(2)}</div>
         <div class="mt-1 text-lg font-semibold">${vi ? 'Xếp loại' : 'Class'}: ${rank}</div>
         <div class="mt-3 grid grid-cols-2 gap-3 text-sm"><div class="rounded-xl bg-slate-50 p-3"><div class="text-slate-500">${vi ? 'Hệ 10' : '10-point'}</div><div class="text-lg font-bold">${g10.toFixed(2)}</div></div><div class="rounded-xl bg-slate-50 p-3"><div class="text-slate-500">${vi ? 'Tổng tín chỉ' : 'Credits'}</div><div class="text-lg font-bold">${cr}</div></div></div>
+        ${vscale(RANK.slice().reverse().map(([, l], i, arr) => ({ to: i < arr.length - 1 ? RANK[RANK.length - 2 - i][0] : 4.01, label: l, color: ['#dc2626', '#f59e0b', '#0d9488', '#2f6bff', '#7c3aed'][i] })), g4, { min: 0, max: 4, comma: vi, valueText: vi ? g4.toFixed(2).replace('.', ',') : g4.toFixed(2), ariaLabel: `GPA ${g4.toFixed(2)}: ${rank}`, title: vi ? 'Vị trí trên thang xếp loại hệ 4' : 'Position on the 4.0 class scale' })}
+        ${bars(items, { max: 10, format: (x: number) => x.toFixed(1), title: vi ? 'Điểm hệ 10 từng môn (kèm điểm chữ, tín chỉ)' : 'Score /10 per course (letter, credits)' })}
         <p class="mt-3 text-xs text-slate-500">${vi ? `Điểm chữ từng môn: ${marks.filter(Boolean).join(', ')}. Xếp loại theo Điều 10 Thông tư 08/2021/TT-BGDĐT (Xuất sắc từ 3,6; Giỏi từ 3,2; Khá từ 2,5; Trung bình từ 2,0). Bảng quy đổi điểm chữ do từng trường quy định – hãy đối chiếu quy chế trường bạn.` : 'Letter bands vary by university; check your own regulations.'}</p>`;
     };
     [['Toán cao cấp', 3, '8.2'], ['Tiếng Anh', 2, '7.5'], ['Kinh tế vi mô', 3, '6.8'], ['', 3, '']].forEach(([n, c, s]) => addRow(n as string, c as number, s as string));

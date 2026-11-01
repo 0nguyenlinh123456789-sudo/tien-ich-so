@@ -14,7 +14,8 @@ const SHAPES: [string, string, string[]][] = [
 ];
 ---
 <div data-tool="area" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
-  <form class="card grid content-start gap-3" data-f>
+  <form class="card grid min-w-0 content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="6" y="10" width="54" height="38" rx="2" fill="#d9eaff" stroke="#2f6bff" stroke-width="2.5"/><path d="M6 54h54M6 51v6M60 51v6" stroke="#64748b" stroke-width="1.5"/><path d="M80 48l26-38 26 38z" fill="#ccfbf1" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round"/><path d="M106 10v38" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="3 3"/><circle cx="172" cy="29" r="20" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/><path d="M172 29h20" stroke="#d97706" stroke-width="2"/><circle cx="172" cy="29" r="2.5" fill="#d97706"/><path d="M206 48l8-36h20l-8 36z" fill="#ffe4e6" stroke="#e11d48" stroke-width="2.5" stroke-linejoin="round"/></svg>
     <div class="flex flex-wrap gap-2">
       {SHAPES.map(([id, l], i) => <label class="cursor-pointer"><input type="radio" name="shape" value={id} checked={i === 0} class="peer sr-only" /><span class="block rounded-full border border-slate-300 px-3 py-1.5 text-sm font-semibold peer-checked:border-brand-600 peer-checked:bg-brand-600 peer-checked:text-white">{l}</span></label>)}
     </div>
@@ -25,10 +26,11 @@ const SHAPES: [string, string, string[]][] = [
     ))}
     <div><label class="label">{vi ? 'Đơn vị' : 'Unit'}</label><select class="input" name="u"><option value="m">m</option><option value="cm">cm</option><option value="mm">mm</option><option value="km">km</option></select></div>
   </form>
-  <div class="card" data-out></div>
+  <div class="card min-w-0" data-out></div>
 </div>
 
 <script>
+  import { escapeHtml as esc } from '../../lib/format.js';
   document.querySelectorAll<HTMLElement>('[data-tool="area"]').forEach((root) => {
     const vi = root.dataset.lang !== 'en';
     const form = root.querySelector<HTMLFormElement>('[data-f]')!;
@@ -42,6 +44,64 @@ const SHAPES: [string, string, string[]][] = [
       circle: ([r]) => [Math.PI * r * r, 2 * Math.PI * r, vi ? 'S = π × r²; chu vi = 2πr' : 'A = πr²; C = 2πr'],
       trap: ([a, b, h]) => [((a + b) * h) / 2, NaN, vi ? 'S = (đáy lớn + đáy nhỏ) × cao ÷ 2' : 'A = (a + b) × h ÷ 2'],
       para: ([a, h]) => [a * h, NaN, vi ? 'S = đáy × chiều cao' : 'A = b × h']
+    };
+    // Hình vẽ minh họa đúng tỉ lệ (nếu một chiều quá mỏng thì nới tối thiểu 14px, khi đó ghi "không theo tỉ lệ").
+    const figure = (shape: string, v: number[], u: string) => {
+      const [a, b, c] = v;
+      const L = (x: number) => `${n(x)} ${u}`;
+      let pts: [number, number][] = [], labels: [number, number, string, string][] = [], extra = '';
+      // labels: [x, y, text, side] — tọa độ đơn vị thật; side: 'b' dưới, 't' trên, 'l' trái, 'r' phải, 'c' giữa
+      if (shape === 'rect' || shape === 'square') {
+        const w = a, h = shape === 'square' ? a : b;
+        pts = [[0, 0], [w, 0], [w, h], [0, h]];
+        labels = [[w / 2, h, L(w), 'b'], [w, h / 2, L(h), 'r']];
+      } else if (shape === 'tri' || shape === 'para') {
+        const off = a * 0.3;
+        pts = shape === 'tri' ? [[0, b], [a, b], [off, 0]] : [[off, 0], [a + off, 0], [a, b], [0, b]];
+        labels = [[a / 2, b, L(a), 'b'], [off, b / 2, (vi ? 'cao ' : 'h ') + L(b), 'r']];
+        extra = 'h';
+      } else if (shape === 'tri3') {
+        const cx = (c * c + b * b - a * a) / (2 * c), cy = Math.sqrt(Math.max(0, b * b - cx * cx));
+        pts = [[0, cy], [c, cy], [cx, 0]];
+        labels = [[c / 2, cy, `c = ${L(c)}`, 'b'], [(c + cx) / 2, cy / 2, `a = ${L(a)}`, 'r'], [cx / 2, cy / 2, `b = ${L(b)}`, 'l']];
+      } else if (shape === 'trap') {
+        const ob = (a - b) / 2;
+        pts = [[0, c], [a, c], [ob + b, 0], [ob, 0]];
+        labels = [[a / 2, c, L(a), 'b'], [ob + b / 2, 0, L(b), 't'], [ob + b / 2, c / 2, (vi ? 'cao ' : 'h ') + L(c), 'r']];
+        extra = 'h';
+      } else if (shape === 'circle') {
+        pts = [[-a, -a], [a, a]];
+        labels = [[a / 2, 0, `r = ${L(a)}`, 't']];
+      }
+      const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+      const x0 = Math.min(...xs), y0 = Math.min(...ys), bw = Math.max(...xs) - x0, bh = Math.max(...ys) - y0;
+      if (!(bw > 0) || !(bh > 0) || !pts.every((p) => Number.isFinite(p[0]) && Number.isFinite(p[1]))) return '';
+      const W = 300, H = 170, PX = 70, PT = 22, PB = 26;
+      const k = Math.min((W - 2 * PX) / bw, (H - PT - PB) / bh);
+      let kx = k, ky = k;
+      if (bw * kx < 14) kx = 14 / bw;
+      if (bh * ky < 14) ky = 14 / bh;
+      const distorted = kx !== ky;
+      const ox = (W - bw * kx) / 2, oy = PT + (H - PT - PB - bh * ky) / 2;
+      const X = (x: number) => +(ox + (x - x0) * kx).toFixed(1), Y = (y: number) => +(oy + (y - y0) * ky).toFixed(1);
+      let body = '';
+      if (shape === 'circle') {
+        const cx = X(0), cy = Y(0), r = a * kx;
+        body = `<circle cx="${cx}" cy="${cy}" r="${r.toFixed(1)}" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/><path d="M${cx} ${cy}h${r.toFixed(1)}" stroke="#d97706" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="3" fill="#d97706"/>`;
+      } else {
+        body = `<polygon points="${pts.map((p) => `${X(p[0])},${Y(p[1])}`).join(' ')}" fill="#d9eaff" stroke="#2f6bff" stroke-width="2.5" stroke-linejoin="round"/>`;
+        if (extra === 'h') {
+          const hx = shape === 'trap' ? X((a - b) / 2 + b / 2) : X(a * 0.3), top = shape === 'trap' ? Y(0) : Y(0), bot = Y(shape === 'trap' ? c : b);
+          body += `<path d="M${hx} ${top}V${bot}" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M${hx} ${bot}h7v-7h-7" fill="none" stroke="#e11d48" stroke-width="1.2"/>`;
+        }
+      }
+      const txt = labels.map(([x, y, t, side]) => {
+        const px = X(x), py = Y(y);
+        const [dx, dy, anchor] = side === 'b' ? [0, 16, 'middle'] : side === 't' ? [0, -7, 'middle'] : side === 'l' ? [-6, 4, 'end'] : [6, 4, 'start'];
+        return `<text x="${(px + dx).toFixed(1)}" y="${(py + dy).toFixed(1)}" text-anchor="${anchor}">${esc(t)}</text>`;
+      }).join('');
+      const aria = `${vi ? 'Hình minh họa' : 'Diagram'}: ${labels.map((l) => l[2]).join(', ')}`;
+      return `<figure class="viz"><svg class="area-fig" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}">${body}${txt}</svg>${distorted ? `<figcaption class="mt-1 text-center text-xs text-slate-500">${vi ? 'Hình minh họa không theo tỉ lệ (một chiều quá nhỏ).' : 'Not to scale (one side is very small).'}</figcaption>` : ''}</figure>`;
     };
     const calc = () => {
       const f = new FormData(form);
@@ -57,7 +117,8 @@ const SHAPES: [string, string, string[]][] = [
         ${Number.isFinite(p) ? `<div class="mt-1 text-lg font-semibold">${vi ? 'Chu vi' : 'Perimeter'}: ${n(p)} ${u}</div>` : ''}
         <div class="mt-3 rounded-xl bg-slate-50 p-3 text-sm">${formula}</div>
         ${u !== 'm' ? `<div class="mt-2 text-sm text-slate-600">= ${n(s * toM2)} m²</div>` : ''}
-        ${u === 'm' && s >= 1000 ? `<div class="mt-2 text-sm text-slate-600">= ${n(s / 10000)} ha</div>` : ''}`;
+        ${u === 'm' && s >= 1000 ? `<div class="mt-2 text-sm text-slate-600">= ${n(s / 10000)} ha</div>` : ''}
+        ${figure(shape, vals, u)}`;
     };
     form.addEventListener('input', calc);
     form.addEventListener('change', calc);
