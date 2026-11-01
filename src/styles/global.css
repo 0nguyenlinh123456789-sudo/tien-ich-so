@@ -172,3 +172,48 @@
   .print-area, .print-area * { visibility: visible !important; }
   .print-area { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: 0 !important; }
 }
+
+/* ---- Van menh: than so hoc / tarot / ngay tot (dot 4) ---- */
+.nm-badge { flex: none; align-self: center; display: grid; place-items: center; width: 9.5rem; height: 9.5rem; border-radius: 999px; padding: 5px; background: conic-gradient(from 210deg, #f59e0b, #c026d3, #7c3aed, #f59e0b); box-shadow: 0 10px 25px -10px rgba(109,40,217,.6); }
+.nm-badge-in { display: grid; place-items: center; align-content: center; width: 100%; height: 100%; border-radius: 999px; background: radial-gradient(circle at 30% 25%, #8b5cf6, #5b21b6 70%); color: #fff; text-align: center; }
+.nm-badge-n { font-size: 4rem; line-height: 1; font-weight: 900; background: linear-gradient(180deg, #fff, #fde68a); -webkit-background-clip: text; background-clip: text; color: transparent; font-variant-numeric: tabular-nums; }
+.nm-badge-l { margin-top: .25rem; padding: 0 .75rem; font-size: .65rem; letter-spacing: .05em; text-transform: uppercase; color: #fde68a; }
+.nm-pyr { display: grid; gap: .5rem; justify-items: center; padding: 1rem .5rem; border-radius: 1rem; background: linear-gradient(180deg, #faf5ff, #fffbeb); }
+.nm-pyr-row { display: flex; justify-content: center; gap: .5rem; min-width: 0; max-width: 100%; }
+.nm-pk { min-width: 0; width: 7.5rem; max-width: 46vw; border-radius: .9rem; padding: .45rem .5rem; text-align: center; background: #fff; border: 2px solid var(--c); box-shadow: 0 4px 10px -6px var(--c); }
+.nm-pk b { display: block; font-size: 1.6rem; line-height: 1.1; font-weight: 900; color: var(--c); }
+.nm-pk small { display: block; font-size: .68rem; color: #475569; overflow-wrap: anywhere; }
+.nm-cell { border-radius: 1rem; padding: 1rem; border: 1px solid color-mix(in srgb, var(--c) 30%, #fff); border-top: 4px solid var(--c); background: color-mix(in srgb, var(--c) 7%, #fff); }
+.nm-cell-n { font-size: 1.9rem; line-height: 1.2; font-weight: 900; color: var(--c); }
+.nm-chips { display: flex; flex-wrap: wrap; gap: .5rem .9rem; margin-top: .5rem; min-width: 0; }
+.nm-word { display: inline-flex; flex-wrap: wrap; gap: .2rem; min-width: 0; }
+.nm-chip { display: inline-flex; flex-direction: column; align-items: center; min-width: 1.6rem; border-radius: .5rem; padding: .1rem .2rem; background: #f5f3ff; border: 1px solid #ddd6fe; line-height: 1.1; }
+.nm-chip b { font-size: .85rem; color: #4c1d95; }
+.nm-chip small { font-size: .68rem; font-weight: 700; color: #b45309; }
+.tarot-cover { position: absolute; overflow: hidden; background: linear-gradient(150deg, #1e1b4b, #4c1d95 55%, #86198f); border: 3px solid #fcd34d; }
+.tarot-pat { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tarot-front { background: linear-gradient(180deg, #fffbeb, #fff); border: 3px double #f59e0b; }
+.tarot-card:focus-visible { outline: 3px solid #a78bfa; outline-offset: 3px; border-radius: 1rem; }
+.tarot-card:hover:not(.flipped) .tarot-inner { transform: rotateY(8deg) translateY(-2px); }
+.tarot-dir { display: inline-flex; align-items: center; gap: .25rem; border-radius: 999px; padding: .1rem .55rem; font-size: .75rem; font-weight: 700; border: 1px solid; }
+.tarot-dir.is-up { color: #047857; background: #ecfdf5; border-color: #6ee7b7; }
+.tarot-dir.is-rev { color: #be123c; background: #fff1f2; border-color: #fda4af; }
+@media (prefers-reduced-motion: reduce) {
+  .tarot-inner { transition: none; }
+  .tarot-card:hover:not(.flipped) .tarot-inner { transform: none; }
+}
+.gd-cell { position: relative; min-width: 0; min-height: 3.2rem; border: 1px solid; border-radius: .6rem; padding: .2rem .25rem; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+.gd-sd { font-weight: 700; font-size: .95rem; line-height: 1.1; }
+.gd-ld { font-size: .65rem; opacity: .75; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gd-rt { font-size: .6rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gd-good { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+.gd-normal { background: #fff; color: #334155; border-color: #e2e8f0; }
+.gd-bad { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+.gd-cell.is-today { box-shadow: inset 0 0 0 2px var(--color-brand-600); }
+.gd-cell.is-next { background: #059669; color: #fff; border-color: #059669; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #fbbf24; }
+.gd-key { display: inline-block; width: .8rem; height: .8rem; border-radius: 3px; border: 1px solid; }
+.gd-key-today { background: #fff; border: 2px solid var(--color-brand-600); }
+.gd-key-next { background: #059669; border-color: #fbbf24; box-shadow: 0 0 0 1px #fbbf24; }
+.gd-best { position: relative; border-radius: 1rem; padding: 1rem; border: 1px solid #6ee7b7; border-left: 5px solid #10b981; background: #ecfdf5; }
+.gd-best.is-next { border-color: #fbbf24; border-left-color: #f59e0b; background: linear-gradient(135deg, #ecfdf5, #fffbeb); box-shadow: 0 6px 16px -10px #b45309; }
+.gd-badge { display: inline-block; margin-bottom: .25rem; border-radius: 999px; padding: .05rem .5rem; font-size: .7rem; font-weight: 700; color: #78350f; background: #fde68a; }

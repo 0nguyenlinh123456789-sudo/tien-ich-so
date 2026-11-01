@@ -45,6 +45,10 @@ const purposes = vi
 <script>
   import { monthDays, yearCanChi } from '../../lib/lunar.js';
   import { bindToolForm, showResult } from '../../scripts/form-state.js';
+  import { statCards } from '../../lib/viz.js';
+
+  // Minh họa đầu thẻ: tờ lịch + ngôi sao (aria-hidden).
+  const ART = '<svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="80" y="8" width="56" height="44" rx="6" fill="#fff" stroke="#10b981" stroke-width="2"/><rect x="80" y="8" width="56" height="12" rx="6" fill="#10b981"/><path d="M92 4v9M124 4v9" stroke="#065f46" stroke-width="3" stroke-linecap="round"/><g fill="#d1fae5"><rect x="88" y="26" width="9" height="8" rx="2"/><rect x="104" y="26" width="9" height="8" rx="2"/><rect x="88" y="39" width="9" height="8" rx="2"/></g><rect x="120" y="26" width="9" height="8" rx="2" fill="#fecdd3"/><rect x="104" y="39" width="9" height="8" rx="2" fill="#10b981"/><path d="M168 12l4 9 10 1-7.5 6.5 2.3 9.5-8.8-5-8.8 5 2.3-9.5-7.5-6.5 10-1z" fill="#fbbf24"/><g fill="#a7f3d0"><circle cx="40" cy="20" r="3"/><circle cx="58" cy="40" r="2"/><circle cx="205" cy="40" r="2.5"/></g></svg>';
 
   const WD = { vi: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'], en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] };
   const NOTE = {
@@ -54,9 +58,9 @@ const purposes = vi
       xungTuoi: 'Clashes with your zodiac', lucHop: 'Harmonious with your zodiac', tamHop: 'Trine with your zodiac' }
   };
   const T = {
-    vi: { best: 'Ngày đẹp nhất trong tháng', good: 'Tốt', normal: 'Bình thường', bad: 'Xấu', lunar: 'Âm lịch', hours: 'Giờ hoàng đạo', dayCC: 'Ngày', monthCC: 'Tháng', yearCC: 'Năm', star: 'Sao trực nhật', detail: 'Chi tiết từng ngày', date: 'Ngày', rating: 'Đánh giá', notes: 'Ghi chú', none: 'Không có ngày đạt chuẩn tốt – chọn ngày Bình thường có giờ hoàng đạo.', yourAge: 'Tuổi của bạn',
+    vi: { best: 'Ngày đẹp nhất trong tháng', good: 'Tốt', normal: 'Bình thường', bad: 'Xấu', lunar: 'Âm lịch', hours: 'Giờ hoàng đạo', dayCC: 'Ngày', monthCC: 'Tháng', yearCC: 'Năm', star: 'Sao trực nhật', detail: 'Chi tiết từng ngày', date: 'Ngày', rating: 'Đánh giá', notes: 'Ghi chú', today: 'Hôm nay', nextGood: 'Ngày tốt gần nhất', none: 'Không có ngày đạt chuẩn tốt – chọn ngày Bình thường có giờ hoàng đạo.', yourAge: 'Tuổi của bạn',
       purpose: { general: '', wedding: 'Cưới hỏi nên ưu tiên ngày Hoàng đạo, tránh Tam Nương, Nguyệt Kỵ và ngày xung tuổi cô dâu chú rể.', move: 'Nhập trạch nên chọn giờ hoàng đạo buổi sáng, mang theo bếp, gạo, nước vào nhà trước.', business: 'Khai trương nên chọn ngày Hoàng đạo hợp tuổi chủ, tiến hành trong giờ hoàng đạo đầu ngày.', travel: 'Xuất hành nên khởi hành trong giờ hoàng đạo, tránh ngày Nguyệt Kỵ.', build: 'Động thổ cần tránh ngày xung tuổi gia chủ, ưu tiên ngày có sao Thanh Long, Kim Quỹ.' } },
-    en: { best: 'Best days this month', good: 'Good', normal: 'Neutral', bad: 'Bad', lunar: 'Lunar', hours: 'Lucky hours', dayCC: 'Day', monthCC: 'Month', yearCC: 'Year', star: 'Day star', detail: 'Day-by-day detail', date: 'Date', rating: 'Rating', notes: 'Notes', none: 'No highly auspicious day – choose a neutral day and act during lucky hours.', yourAge: 'Your zodiac',
+    en: { best: 'Best days this month', good: 'Good', normal: 'Neutral', bad: 'Bad', lunar: 'Lunar', hours: 'Lucky hours', dayCC: 'Day', monthCC: 'Month', yearCC: 'Year', star: 'Day star', detail: 'Day-by-day detail', date: 'Date', rating: 'Rating', notes: 'Notes', today: 'Today', nextGood: 'Nearest good day', none: 'No highly auspicious day – choose a neutral day and act during lucky hours.', yourAge: 'Your zodiac',
       purpose: { general: '', wedding: 'For weddings prefer Hoàng Đạo days, avoid Tam Nương, Nguyệt Kỵ and days clashing with the couple.', move: 'Move in during a morning lucky hour.', business: 'Open on a Hoàng Đạo day that suits the owner, in the first lucky hour.', travel: 'Depart during a lucky hour, avoid Nguyệt Kỵ days.', build: 'Avoid days clashing with the owner; prefer Azure Dragon and Golden Coffer days.' } }
   };
   const color = { good: 'bg-emerald-100 text-emerald-800 border-emerald-300', normal: 'bg-white text-slate-700 border-slate-200', bad: 'bg-rose-50 text-rose-700 border-rose-200' };
@@ -73,11 +77,17 @@ const purposes = vi
       const days = monthDays(month, year, birthYear);
       const best = days.filter((x: any) => x.rating === 'good').sort((a: any, b: any) => b.score - a.score).slice(0, 6);
       const purposeNote = (L.purpose as any)[d.purpose] || '';
+      const now = new Date();
+      const tD = now.getDate(), tM = now.getMonth() + 1, tY = now.getFullYear();
+      const tKey = tY * 10000 + tM * 100 + tD;
+      // Ngày tốt gần nhất tính từ hôm nay (chỉ để làm nổi bật, không đổi đánh giá).
+      const nextGood = days.find((x: any) => x.rating === 'good' && x.solar.year * 10000 + x.solar.month * 100 + x.solar.day >= tKey) || null;
 
-      out('best').innerHTML = `<h3 class="mb-2 text-lg font-semibold">⭐ ${L.best} ${month}/${year}${birthYear ? ` · ${L.yourAge}: ${yearCanChi(birthYear).text}` : ''}</h3>
+      out('best').innerHTML = `${ART}<h3 class="mb-2 text-lg font-semibold">⭐ ${L.best} ${month}/${year}${birthYear ? ` · ${L.yourAge}: ${yearCanChi(birthYear).text}` : ''}</h3>
         ${purposeNote ? `<p class="mb-3 text-sm text-slate-600">${purposeNote}</p>` : ''}
         ${best.length ? `<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">${best.map((x: any) => `
-          <div class="rounded-2xl border border-emerald-300 bg-emerald-50 p-4">
+          <div class="gd-best min-w-0${x === nextGood ? ' is-next' : ''}">
+            ${x === nextGood ? `<span class="gd-badge">${L.nextGood}</span>` : ''}
             <div class="text-lg font-bold text-emerald-800">${WD[lang][x.weekday]}, ${x.solar.day}/${x.solar.month}/${x.solar.year}</div>
             <div class="text-sm">${L.lunar}: ${x.lunar.day}/${x.lunar.month}${x.lunar.leap ? ' (nhuận)' : ''} · ${x.canChi.day}</div>
             <div class="mt-1 text-sm">${L.star}: <b>${x.star[lang]}</b></div>
@@ -85,13 +95,24 @@ const purposes = vi
           </div>`).join('')}</div>` : `<p>${L.none}</p>`}`;
 
       const firstWd = days[0].weekday;
-      const cells = Array(firstWd).fill('<div></div>').concat(days.map((x: any) => `
-        <div class="rounded-xl border p-1.5 text-center ${(color as any)[x.rating]}" title="${x.canChi.day}">
-          <div class="text-base font-bold">${x.solar.day}</div>
-          <div class="text-[10px] opacity-75">${x.lunar.day === 1 ? `${x.lunar.day}/${x.lunar.month}` : x.lunar.day}</div>
-          <div class="text-[10px] font-semibold">${(L as any)[x.rating]}</div>
-        </div>`));
-      out('calendar').innerHTML = `<div class="grid grid-cols-7 gap-1 text-sm">${WD[lang].map((w) => `<div class="py-1 text-center text-xs font-semibold text-slate-500">${w}</div>`).join('')}${cells.join('')}</div>`;
+      const cnt = { good: 0, normal: 0, bad: 0 } as Record<string, number>;
+      days.forEach((x: any) => { if (x.rating in cnt) cnt[x.rating]++; });
+      const cells = Array(firstWd).fill('<div aria-hidden="true"></div>').concat(days.map((x: any) => {
+        const isToday = x.solar.day === tD && x.solar.month === tM && x.solar.year === tY;
+        const isNext = nextGood === x;
+        return `
+        <div class="gd-cell gd-${x.rating}${isToday ? ' is-today' : ''}${isNext ? ' is-next' : ''}" title="${x.canChi.day}">
+          <div class="gd-sd">${x.solar.day}</div>
+          <div class="gd-ld">${x.lunar.day === 1 ? `${x.lunar.day}/${x.lunar.month}` : x.lunar.day}</div>
+          <div class="gd-rt">${(L as any)[x.rating]}</div>
+        </div>`;
+      }));
+      const key = (k: string) => `<span class="flex items-center gap-1"><i class="gd-key gd-${k}"></i>${(L as any)[k]} (${cnt[k]})</span>`;
+      out('calendar').innerHTML = `${statCards([{ label: L.good, value: String(cnt.good), tone: 'green' }, { label: L.normal, value: String(cnt.normal), tone: 'sky' }, { label: L.bad, value: String(cnt.bad), tone: 'rose' }])}
+        <div class="mt-4 grid min-w-0 grid-cols-7 gap-1 text-sm" role="img" aria-label="${`${month}/${year}: ${L.good} ${cnt.good}, ${L.normal} ${cnt.normal}, ${L.bad} ${cnt.bad}`}">${WD[lang].map((w) => `<div class="py-1 text-center text-xs font-semibold text-slate-500">${w}</div>`).join('')}${cells.join('')}</div>
+        <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-slate-600">${key('good')}${key('normal')}${key('bad')}
+          <span class="flex items-center gap-1"><i class="gd-key gd-key-today"></i>${L.today}</span>
+          ${nextGood ? `<span class="flex items-center gap-1"><i class="gd-key gd-key-next"></i>${L.nextGood}</span>` : ''}</div>`;
 
       out('detail').innerHTML = `<h3 class="mb-2 text-lg font-semibold">${L.detail}</h3>
         <div class="table-wrap"><table class="data-table"><thead><tr><th>${L.date}</th><th>${L.lunar}</th><th>${L.dayCC}</th><th>${L.rating}</th><th>${L.hours}</th><th>${L.notes}</th></tr></thead><tbody>
