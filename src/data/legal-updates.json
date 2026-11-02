@@ -1,6 +1,6 @@
 {
   "source": "Cổng Thông tin điện tử Chính phủ – vanban.chinhphu.vn",
-  "updatedAt": "2026-10-30T08:27:34.866Z",
+  "updatedAt": "2026-11-02T08:55:12.966Z",
   "topics": [
     {
       "id": "luong",
@@ -36,6 +36,19 @@
     }
   ],
   "items": [
+    {
+      "code": "44/2026/TT-BYT",
+      "type": "Thông tư",
+      "date": "01/11/2026",
+      "title": "Sửa đổi, bổ sung một số điều của Thông tư số 07/2022/TT-BYT của Bộ trưởng Bộ Y tế quy định thuốc phải thử tương đương sinh học và các yêu cầu đối với hồ sơ báo cáo số liệu nghiên cứu tương đương sinh học trong đăng ký lưu hành thuốc tại Việt Nam",
+      "url": "https://vanban.chinhphu.vn/?pageid=27160&docid=220147",
+      "file": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/44-byt.signed.pdf",
+      "topics": [
+        "bieumau"
+      ],
+      "impact": false,
+      "checkedAt": "2026-11-02"
+    },
     {
       "code": "28/2026/TT-BNV",
       "type": "Thông tư",
