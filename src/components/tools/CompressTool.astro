@@ -79,6 +79,7 @@ const vi = lang === 'vi';
     const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
     let files: File[] = [];
     let results: { name: string; blob: Blob }[] = [];
+    let previewUrls: string[] = []; // revoked on each run so repeated batches don't leak memory
 
     const setFiles = (list: FileList | File[]) => {
       files = Array.from(list).filter((f) => f.type.startsWith('image/'));
@@ -99,6 +100,8 @@ const vi = lang === 'vi';
       const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
       btn.disabled = true;
       results = [];
+      previewUrls.forEach((u) => URL.revokeObjectURL(u));
+      previewUrls = [];
       out('list').innerHTML = '';
       showResult(root);
       let before = 0, after = 0;
@@ -111,6 +114,7 @@ const vi = lang === 'vi';
           results.push({ name, blob: r.blob });
           before += f.size; after += r.blob.size;
           const url = URL.createObjectURL(r.blob);
+          previewUrls.push(url);
           const saved = Math.max(0, 1 - r.blob.size / f.size);
           const card = document.createElement('div');
           card.className = 'rounded-2xl border border-slate-200 p-3';

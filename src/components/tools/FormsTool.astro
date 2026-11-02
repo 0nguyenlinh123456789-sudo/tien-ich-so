@@ -100,12 +100,13 @@ const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['n
     form.addEventListener('input', draw);
     root.querySelector('[data-copy]')!.addEventListener('click', () => navigator.clipboard?.writeText(doc.innerText));
     root.querySelector('[data-print]')!.addEventListener('click', () => gate(() => {
-      const w = window.open('', '_blank');
-      if (!w) return;
-      w.document.write(`<!doctype html><meta charset="utf-8"><title>Don</title><style>body{font:16px/1.7 "Times New Roman",serif;max-width:720px;margin:40px auto;padding:0 24px}.text-center{text-align:center}.font-bold,b{font-weight:700}.text-xl{font-size:20px}.underline{text-decoration:underline}.mt-2{margin-top:8px}.mt-4{margin-top:16px}.mt-6{margin-top:24px}.mt-8{margin-top:32px}.ml-auto{margin-left:auto}.w-64{width:280px}.h-16{height:64px}</style>${doc.innerHTML}`);
-      w.document.close();
-      w.focus();
-      w.print();
+      // Print from a hidden iframe without allow-scripts: even if markup slipped through escaping, nothing in it can run.
+      const f = document.createElement('iframe');
+      f.setAttribute('sandbox', 'allow-modals allow-same-origin');
+      f.style.cssText = 'position:fixed;width:0;height:0;border:0;visibility:hidden';
+      f.srcdoc = `<!doctype html><meta charset="utf-8"><title>Don</title><style>body{font:16px/1.7 "Times New Roman",serif;max-width:720px;margin:40px auto;padding:0 24px}.text-center{text-align:center}.font-bold,b{font-weight:700}.text-xl{font-size:20px}.underline{text-decoration:underline}.mt-2{margin-top:8px}.mt-4{margin-top:16px}.mt-6{margin-top:24px}.mt-8{margin-top:32px}.ml-auto{margin-left:auto}.w-64{width:280px}.h-16{height:64px}</style>${doc.innerHTML}`;
+      f.onload = () => { f.contentWindow?.print(); setTimeout(() => f.remove(), 60000); };
+      document.body.appendChild(f);
     }));
     draw();
   });
