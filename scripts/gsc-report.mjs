@@ -68,6 +68,13 @@ try {
   show('Top trang', pages.slice(0, 20));
   show('Sắp lên trang 1 (vị trí 5–20) – tối ưu nội dung trước', queries.filter((r) => r.position >= 5 && r.position <= 20).sort((a, b) => b.impressions - a.impressions).slice(0, 25));
   show('Nhiều hiển thị nhưng CTR thấp (<2%) – sửa title/description', pages.filter((r) => r.impressions >= 50 && r.ctr < 0.02).slice(0, 20));
+  const sm = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(PROPERTY)}/sitemaps`, { headers: { authorization: `Bearer ${tk}` } }).then((r) => r.json());
+  console.log('\n## Sitemap');
+  for (const s of sm.sitemap || []) {
+    const sub = (s.contents || []).map((c) => `${c.submitted} gửi${c.indexed ? `, ${c.indexed} đã index` : ''}`).join('; ');
+    console.log(`  ${s.path}  đọc lần cuối ${s.lastDownloaded || 'chưa'}  lỗi ${s.errors || 0}  cảnh báo ${s.warnings || 0}  ${sub}`);
+  }
+  if (!(sm.sitemap || []).length) console.log('  (chưa có sitemap nào được gửi)');
   const out = path.join(ROOT, 'secrets', 'gsc-report.json');
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, JSON.stringify({ property: PROPERTY, start: day(start), end: day(end), queries, pages }, null, 2));
