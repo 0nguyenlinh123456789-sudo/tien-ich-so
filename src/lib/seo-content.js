@@ -425,13 +425,13 @@ export function buildRecordContent(record) {
       } else if (p.kind === 'kg' || p.kind === 'lb') {
         const kg = p.kind === 'kg' ? v : v * 0.45359237, lb = kg / 0.45359237;
         h1 = p.kind === 'kg' ? `${v} kg to lbs` : `${v} lbs to kg`;
-        intro = [p.kind === 'kg' ? `<b>${v} kg = ${n2(lb, 2)} lbs</b> (${Math.floor(lb)} lb ${n2((lb % 1) * 16, 1)} oz).` : `<b>${v} lbs = ${n2(kg, 2)} kg</b>.`, `1 lb is exactly 0.45359237 kg, so 1 kg ≈ 2.2046 lb.`];
+        intro = [p.kind === 'kg' ? `<b>${v} kg = ${n2(lb, 2)} lbs</b> (${Math.floor(lb)} lb ${n2((lb % 1) * 16, 1)} oz).` : `<b>${v} lbs = ${n2(kg, 2)} kg</b>.`, `1 lb is exactly 0.45359237 kg, so 1 kg ≈ 2.2046 lb. Quick mental check: double the kg and add 10%.`];
         table = [-10, -5, 0, 5, 10].map((d) => v + d).map((x) => p.kind === 'kg' ? [`${x} kg`, `${n2(x / 0.45359237)} lbs`] : [`${x} lbs`, `${n2(x * 0.45359237)} kg`]);
         faq = [{ q: p.kind === 'kg' ? `How many pounds is ${v} kg?` : `How many kg is ${v} lbs?`, a: p.kind === 'kg' ? `${n2(lb)} lbs` : `${n2(kg)} kg` }];
       } else {
         const c = (v - 32) * 5 / 9;
         h1 = `${v}°F to °C`;
-        intro = [`<b>${v}°F = ${n2(c, 1)}°C</b>.`, `Formula: °C = (°F − 32) × 5/9. ${v >= 98 && v <= 104 ? 'Body temperature above 100.4°F (38°C) is generally considered a fever.' : ''}`];
+        intro = [`<b>${v}°F = ${n2(c, 1)}°C</b> (${n2(c + 273.15, 2)} K).`, `Formula: °C = (°F − 32) × 5/9. ${v >= 98 && v <= 104 ? 'Body temperature above 100.4°F (38°C) is generally considered a fever.' : 'Quick estimate: subtract 30, then halve.'}`];
         table = [-10, -5, 0, 5, 10].map((d) => v + d).map((x) => [`${x}°F`, `${n2((x - 32) * 5 / 9, 1)}°C`]);
         faq = [{ q: `What is ${v}°F in Celsius?`, a: `${n2(c, 1)}°C` }];
       }
