@@ -25,6 +25,9 @@ const vnd = (n) => {
   return `${fmtNum(x)} đồng`;
 };
 
+// Meta description ≤ 155 ký tự, cắt ở ranh giới từ thay vì giữa chữ.
+const cutDesc = (t) => (t.length <= 155 ? t : t.slice(0, 154).replace(/[\s,;:–-]+\S*$/, '') + '…');
+
 const WD_VI = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
 const WD_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -266,22 +269,63 @@ export function buildRecordContent(record) {
         emailcv: { name: 'email gửi CV', parts: ['Tiêu đề: [Ứng tuyển] Vị trí – Họ tên', 'Lời chào đúng người nhận', 'Vị trí ứng tuyển và nguồn tin', 'Kinh nghiệm nổi bật (2–3 câu)', 'Ngày có thể bắt đầu', 'Nhắc file CV đính kèm', 'Chữ ký: họ tên, số điện thoại'] },
         xinviec: { name: 'đơn xin việc', parts: ['Quốc hiệu, tiêu ngữ', 'Kính gửi: Phòng Nhân sự công ty', 'Họ tên, ngày sinh', 'Vị trí ứng tuyển, nguồn tin tuyển dụng', 'Kinh nghiệm, kỹ năng nổi bật', 'Ngày có thể bắt đầu', 'Chữ ký, hồ sơ đính kèm'] }
       }[p.kind];
+      // "Thôi việc" và "nghỉ việc" dùng chung mẫu đơn (kind nghiviec) nhưng khác ý định tìm kiếm:
+      // thôi việc = thủ tục chấm dứt HĐLĐ; nghỉ việc = cách viết đơn lịch sự. Nội dung tách hẳn để tránh trùng lặp.
+      // Căn cứ: Bộ luật Lao động 45/2019/QH14 – Điều 35 (báo trước), Điều 40 (nghỉ trái luật), Điều 46 (trợ cấp thôi việc), Điều 48 (thanh toán khi chấm dứt).
+      if (p.kind === 'nghiviec' && /thôi việc/i.test(p.alias || '')) {
+        out = {
+          h1: record.title,
+          description: 'Thủ tục thôi việc theo Điều 35 BLLĐ 2019: báo trước 45 ngày, 30 ngày hoặc 3 ngày làm việc tùy hợp đồng, trường hợp không cần báo trước, trợ cấp sau nghỉ.',
+          intro: [
+            `Đơn xin thôi việc là văn bản người lao động dùng để <b>đơn phương chấm dứt hợp đồng lao động</b> theo Điều 35 Bộ luật Lao động 2019. Điền thông tin ở công cụ bên dưới rồi bấm <b>In / Lưu PDF</b>; dữ liệu không rời máy bạn.`,
+            `<b>Thời hạn báo trước</b> (khoản 1 Điều 35): ít nhất <b>45 ngày</b> với hợp đồng không xác định thời hạn, <b>30 ngày</b> với hợp đồng xác định thời hạn từ 12 đến 36 tháng, <b>3 ngày làm việc</b> với hợp đồng dưới 12 tháng. Một số ngành nghề đặc thù có thời hạn riêng. Ngày nghỉ ghi trong đơn nên tính từ ngày công ty nhận đơn.`,
+            `<b>Không cần báo trước</b> (khoản 2 Điều 35) khi: không được bố trí đúng công việc, địa điểm, điều kiện đã thỏa thuận; không được trả đủ lương hoặc trả không đúng hạn; bị ngược đãi, quấy rối tình dục; lao động nữ mang thai phải nghỉ theo chỉ định; đủ tuổi nghỉ hưu; người sử dụng lao động cung cấp thông tin không trung thực khi giao kết hợp đồng.`,
+            `<b>Nghỉ không đúng luật</b> (không báo trước đủ ngày, không thuộc khoản 2) thì không được trợ cấp thôi việc và phải bồi thường cho người sử dụng lao động (Điều 40).`,
+            `<b>Sau khi chấm dứt hợp đồng</b>: hai bên thanh toán đầy đủ các khoản trong thời hạn luật định; công ty phải hoàn thành thủ tục xác nhận thời gian đóng bảo hiểm xã hội và trả lại bản chính giấy tờ đã giữ (Điều 48). Nếu làm việc thường xuyên từ đủ 12 tháng, bạn được trợ cấp thôi việc nửa tháng lương cho mỗi năm làm việc chưa đóng bảo hiểm thất nghiệp (Điều 46) – xem <a href="/tai-chinh/tinh-tro-cap-thoi-viec">công cụ tính trợ cấp thôi việc</a>.`
+          ],
+          table: [
+            ['Bước 1', 'Xác định loại hợp đồng để biết số ngày phải báo trước'],
+            ['Bước 2', 'Nộp đơn cho người có thẩm quyền, giữ bản có ký nhận hoặc email xác nhận ngày nhận'],
+            ['Bước 3', 'Tiếp tục làm việc hết thời hạn báo trước, bàn giao công việc, tài sản'],
+            ['Bước 4', 'Nhận lương còn lại, phép năm chưa nghỉ, trợ cấp thôi việc (nếu đủ điều kiện)'],
+            ['Bước 5', 'Nhận xác nhận thời gian đóng BHXH và bản chính giấy tờ đã nộp'],
+            ['Bước 6', 'Nếu chưa có việc mới: làm hồ sơ hưởng trợ cấp thất nghiệp tại trung tâm dịch vụ việc làm']
+          ],
+          faq: [
+            { q: 'Xin thôi việc phải báo trước bao nhiêu ngày?', a: '45 ngày (HĐ không xác định thời hạn), 30 ngày (HĐ 12–36 tháng), 3 ngày làm việc (HĐ dưới 12 tháng) – khoản 1 Điều 35 Bộ luật Lao động 2019.' },
+            { q: 'Nghỉ ngang không báo trước đủ ngày thì sao?', a: 'Đó là đơn phương chấm dứt trái luật: không được trợ cấp thôi việc và phải bồi thường cho người sử dụng lao động (Điều 40 Bộ luật Lao động 2019).' },
+            { q: 'Thôi việc xong cần nhận lại những gì?', a: 'Lương và các khoản còn lại, trợ cấp thôi việc nếu đủ điều kiện, xác nhận thời gian đóng bảo hiểm xã hội và bản chính giấy tờ công ty đã giữ (Điều 48 Bộ luật Lao động 2019).' }
+          ]
+        };
+        break;
+      }
       const notice = p.kind === 'nghiviec'
-        ? [`<b>Phải báo trước bao lâu?</b> Theo Điều 35 Bộ luật Lao động 2019: ít nhất <b>45 ngày</b> với hợp đồng không xác định thời hạn, <b>30 ngày</b> với hợp đồng 12–36 tháng, <b>3 ngày làm việc</b> với hợp đồng dưới 12 tháng. Một số ngành nghề đặc thù có thời hạn riêng.`,
-           `Có trường hợp được nghỉ <b>không cần báo trước</b>, ví dụ: không được trả lương đủ, đúng hạn; bị ngược đãi, quấy rối; không được bố trí đúng công việc, địa điểm đã thỏa thuận (khoản 2 Điều 35).`]
+        ? [`Một lá đơn xin nghỉ việc tốt chỉ cần <b>ngắn gọn và lịch sự</b>: ngày nghỉ dự kiến, lý do nêu trung tính, lời cảm ơn công ty và cam kết bàn giao. Đơn được lưu trong hồ sơ nhân sự, nên giữ giọng văn tôn trọng dù bạn rời đi vì lý do gì.`,
+           `<b>Cách ghi lý do:</b> chọn lý do thật nhưng không đổ lỗi, ví dụ "theo định hướng phát triển nghề nghiệp mới", "vì lý do gia đình", "chuyển nơi sinh sống", "để tiếp tục học tập". Tránh chỉ trích quản lý, đồng nghiệp hay so sánh lương trong đơn; những góp ý đó nên để buổi trao đổi trực tiếp.`,
+           `<b>Nên nói chuyện với quản lý trực tiếp trước</b>, rồi mới gửi đơn chính thức qua email hoặc bản in. Ngày nghỉ ghi trong đơn phải tôn trọng thời hạn báo trước theo loại hợp đồng – xem chi tiết thủ tục ở <a href="/cong-cu/mau-don-xin-thoi-viec">mẫu đơn xin thôi việc và thời hạn báo trước</a>.`]
         : p.kind === 'nghiphep'
           ? [`Người lao động làm đủ 12 tháng được nghỉ hằng năm hưởng nguyên lương ít nhất <b>12 ngày làm việc</b> (Điều 113 Bộ luật Lao động 2019); điều kiện nặng nhọc, độc hại được nhiều hơn.`]
           : [];
       out = {
+        description: p.kind === 'nghiviec' ? 'Cách viết đơn xin nghỉ việc lịch sự: ghi lý do trung tính, lời cảm ơn, cam kết bàn giao, kèm câu mẫu từng phần. Điền online, in hoặc lưu PDF miễn phí.' : undefined,
         h1: record.title,
         intro: [
           `Điền thông tin ở công cụ bên dưới, ${K.name} hiện ngay theo đúng bố cục, rồi bấm <b>In / Lưu PDF</b>. Không cần đăng ký, dữ liệu không rời máy bạn.`,
           ...notice,
           `Pháp luật không bắt buộc một mẫu cố định cho ${K.name}; điều quan trọng là nội dung rõ ràng, có ngày và chữ ký. Nếu công ty, nhà trường có mẫu riêng, hãy dùng mẫu đó.`
         ],
-        table: K.parts.map((x, i) => [`Phần ${i + 1}`, x]),
+        table: p.kind === 'nghiviec'
+          ? [
+              ['Mở đầu', 'Em/Tôi tên là …, hiện là … tại bộ phận …'],
+              ['Đề nghị', 'Em xin phép được nghỉ việc kể từ ngày …'],
+              ['Lý do', 'Vì lý do gia đình / theo định hướng nghề nghiệp mới …'],
+              ['Cảm ơn', 'Em chân thành cảm ơn Ban Giám đốc và anh chị đã hướng dẫn, tạo điều kiện trong thời gian qua.'],
+              ['Bàn giao', 'Em sẽ bàn giao đầy đủ công việc, tài liệu cho … trước ngày nghỉ.'],
+              ['Kết', 'Kính mong Ban Giám đốc xem xét, chấp thuận. Trân trọng.']
+            ]
+          : K.parts.map((x, i) => [`Phần ${i + 1}`, x]),
         faq: p.kind === 'nghiviec'
-          ? [{ q: 'Xin nghỉ việc phải báo trước bao nhiêu ngày?', a: '45 ngày (HĐ không xác định thời hạn), 30 ngày (HĐ 12–36 tháng), 3 ngày làm việc (HĐ dưới 12 tháng) – Điều 35 Bộ luật Lao động 2019.' }, { q: 'Đơn xin nghỉ việc có cần viết tay không?', a: 'Không bắt buộc. Đơn đánh máy có chữ ký đều hợp lệ; chỉ cần thể hiện rõ ngày nghỉ và được gửi cho người sử dụng lao động.' }]
+          ? [{ q: 'Nên ghi lý do nghỉ việc thế nào cho khéo?', a: 'Ngắn gọn, trung tính và đúng sự thật: lý do gia đình, sức khỏe, học tập, chuyển nơi ở hoặc định hướng nghề nghiệp mới. Không cần kể chi tiết hay phàn nàn trong đơn.' }, { q: 'Đơn xin nghỉ việc có cần viết tay không?', a: 'Không bắt buộc. Đơn đánh máy có chữ ký đều hợp lệ; chỉ cần thể hiện rõ ngày nghỉ và được gửi cho người sử dụng lao động.' }, { q: 'Có nên báo quản lý trước khi nộp đơn?', a: 'Nên. Trao đổi trực tiếp giúp hai bên thống nhất ngày nghỉ, kế hoạch bàn giao và giữ quan hệ tốt; đơn chính thức gửi sau để làm căn cứ.' }]
           : [{ q: `${K.name[0].toUpperCase() + K.name.slice(1)} gồm những nội dung gì?`, a: K.parts.join('; ') + '.' }]
       };
       break;
@@ -669,9 +713,9 @@ export function buildRecordContent(record) {
   }
 
   return {
+    ...out,
     title: record.title || out.h1,
-    description: record.description || out.intro.join(' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 155),
-    ...out
+    description: record.description || out.description || cutDesc(out.intro.join(' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim())
   };
 }
 

@@ -34,13 +34,14 @@ const content = kind === 'record' ? buildRecordContent(record) : null;
 
 let title: string, description: string, h1: string, alternate: string | null;
 if (kind === 'index') {
-  title = section.name[lang];
-  description = metaDesc(`${section.desc[lang]} ${toolsIn(sectionId).map((x: any) => x.title[lang]).join(', ')}.`);
+  title = section.seo?.[lang] || section.name[lang];
+  description = section.meta?.[lang] ? metaDesc(section.meta[lang]) : metaDesc(`${section.desc[lang]} ${toolsIn(sectionId).map((x: any) => x.title[lang]).join(', ')}.`);
   h1 = `${section.icon} ${section.name[lang]}`;
   alternate = sectionUrl(sectionId, other);
 } else if (kind === 'tool') {
   title = (tool as any).seo?.[lang] || tool!.title[lang];
-  description = metaDesc(`${(tool as any).seo?.[lang] || tool!.title[lang]}. ${tool!.desc[lang]} ${(tool as any).faq?.[0]?.a?.[lang] || ''}`);
+  // Hand-written meta (tools.js) avoids repeating the title; fallback keeps old pages working.
+  description = (tool as any).meta?.[lang] ? metaDesc((tool as any).meta[lang]) : metaDesc(`${(tool as any).seo?.[lang] || tool!.title[lang]}. ${tool!.desc[lang]} ${(tool as any).faq?.[0]?.a?.[lang] || ''}`);
   h1 = tool!.title[lang];
   alternate = toolUrl(tool!, other);
 } else {
