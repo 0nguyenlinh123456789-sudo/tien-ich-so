@@ -1,8 +1,10 @@
 ---
 import { ELECTRIC_TIERS } from '../../lib/electric.js';
+import { currentVat } from '../../lib/vat.js';
 interface Props { lang?: 'vi' | 'en'; }
 const { lang = 'vi' } = Astro.props;
 const vi = lang === 'vi';
+const vat0 = Math.round(currentVat() * 100); // theo ngày build; script client chọn lại theo ngày xem trang
 ---
 <div data-tool="electric" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
   <form class="card grid content-start gap-3" data-f>
@@ -13,7 +15,8 @@ const vi = lang === 'vi';
     </div>
     <div><label class="label" data-vlabel>{vi ? 'Điện dùng trong tháng (kWh)' : 'Monthly use (kWh)'}</label><input class="input text-lg" name="v" type="number" min="0" value="250" /></div>
     <div><label class="label">{vi ? 'Thuế GTGT trên hóa đơn' : 'VAT on your bill'}</label>
-      <select class="input" name="vat"><option value="8">8%</option><option value="10">10%</option></select></div>
+      <select class="input" name="vat"><option value="8" selected={vat0 === 8}>8%</option><option value="10" selected={vat0 === 10}>10%</option></select>
+      <p class="mt-1 text-xs text-slate-500" data-vatnote></p></div>
     <p class="text-xs text-slate-500">{vi ? 'Giá điện sinh hoạt 6 bậc theo Quyết định 1279/QĐ-BCT, hiệu lực 10/5/2025 (chưa gồm thuế). Biểu 5 bậc tại QĐ 14/2025/QĐ-TTg chưa áp dụng.' : 'Residential 6-tier tariff, MoIT Decision 1279/QĐ-BCT effective 10 May 2025 (before VAT).'}</p>
   </form>
   <div class="card" data-out></div>
@@ -28,6 +31,7 @@ const vi = lang === 'vi';
 <script>
   import { ELECTRIC_TIERS, electricBill, kwhFromBill } from '../../lib/electric.js';
   import { barStack, statCards } from '../../lib/viz.js';
+  import { currentVat, vatCutActive } from '../../lib/vat.js';
   // Màu bậc 1→6 tăng dần độ "nóng": xanh dương, xanh ngọc, lam, tím, cam, đỏ
   const TIER_C = [1, 2, 6, 5, 3, 4];
 
@@ -37,6 +41,11 @@ const vi = lang === 'vi';
     const out = root.querySelector<HTMLElement>('[data-out]')!;
     const lab = root.querySelector<HTMLElement>('[data-vlabel]')!;
     const n = (x: number) => Math.round(x).toLocaleString('vi-VN');
+    // HTML tĩnh build sẵn: chọn lại VAT mặc định theo ngày hiện tại của người xem.
+    (form.elements.namedItem('vat') as HTMLSelectElement).value = String(Math.round(currentVat() * 100));
+    root.querySelector<HTMLElement>('[data-vatnote]')!.textContent = vatCutActive()
+      ? (vi ? 'Mặc định 8%: giảm thuế GTGT từ 10% xuống 8% đến hết 31/12/2026 (NQ 204/2025/QH15, NĐ 174/2025/NĐ-CP). Đổi sang 10% nếu hóa đơn của bạn ghi 10%.' : 'Default 8%: VAT cut from 10% to 8% until 31 Dec 2026 (Resolution 204/2025/QH15).')
+      : (vi ? 'Mặc định 10%: mức giảm 8% đã hết hạn 31/12/2026 (trừ khi có nghị quyết gia hạn). Chọn 8% nếu hóa đơn của bạn vẫn ghi 8%.' : 'Default 10%: the 8% VAT cut expired on 31 Dec 2026 (unless extended).');
     const calc = () => {
       const f = new FormData(form);
       const vat = Number(f.get('vat')) / 100;

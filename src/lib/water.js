@@ -5,6 +5,8 @@
 // - Hải Phòng: QĐ 05/2024/QĐ-UBND (hiệu lực 01/3/2024).
 // - VAT nước sạch 5% (Luật Thuế GTGT 48/2024/QH15); phí BVMT nước thải 10% giá nước chưa VAT (NĐ 346/2025/NĐ-CP).
 
+import { currentVat } from './vat.js';
+
 export const WATER_VAT = 0.05;
 
 export const WATER_REGIONS = {
@@ -18,8 +20,9 @@ export const CUSTOM_DEFAULT = [{ to: 10, price: 8000 }, { to: 20, price: 10000 }
 
 const num = (x, d = 0) => (Number.isFinite(Number(x)) ? Number(x) : d);
 
+// VAT dịch vụ thoát nước = thuế suất GTGT chung (8% đến hết 31/12/2026, sau đó 10%) — xem vat.js.
 export function drainageVat(now = new Date()) {
-  return now.getFullYear() <= 2026 ? 0.08 : 0.1;
+  return currentVat(now);
 }
 
 // Chia bậc lũy tiến: tiers [{to, price}] với `to` tăng dần (ngưỡng tích lũy).

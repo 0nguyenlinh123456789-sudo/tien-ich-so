@@ -1,0 +1,46 @@
+name: Daily data (FX + expiry check)
+
+on:
+  schedule:
+    - cron: '30 23 * * *' # 23:30 UTC daily (06:30 Vietnam time)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: daily-data
+  cancel-in-progress: false
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Keeps the existing fx.json if the feed is unreachable, so this never breaks the site.
+      - name: Fetch Vietcombank exchange rates
+        run: node scripts/fetch-fx.mjs
+
+      - name: Commit and push fx.json if changed
+        run: |
+          git config user.name "fx-bot"
+          git config user.email "fx-bot@users.noreply.github.com"
+          git add src/data/fx.json
+          if git diff --cached --quiet; then echo "fx.json unchanged."; exit 0; fi
+          git commit -m "chore: cập nhật tỷ giá $(date -u +%F)"
+          git pull --rebase
+          git push
+
+      - name: Check data that expires or needs review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/expiry-check.mjs
