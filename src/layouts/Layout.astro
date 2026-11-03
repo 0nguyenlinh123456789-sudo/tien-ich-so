@@ -36,6 +36,7 @@ const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 // Never publish an empty or placeholder (example.com) address.
 const email = (site.contactEmail || '').trim();
 const showEmail = !!email && !/example\.com/i.test(email);
+const donateUrl = (MONETIZATION.donateUrl || "").startsWith("https://") ? MONETIZATION.donateUrl : "";
 // Organization markup on the home pages only.
 const isHome = ['/', '/en', '/en/'].includes(clean(Astro.url.pathname));
 if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization', name: site.siteName, url: site.siteUrl, logo: new URL('/favicon.svg', site.siteUrl).href, sameAs: [] });
@@ -140,10 +141,12 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
       <div class="border-t border-slate-100 py-4 text-center text-xs text-slate-500">
         © {new Date().getFullYear()} {siteName} ·
         <a class="underline" href={lang === 'en' ? '/en/privacy' : '/chinh-sach-bao-mat'}>{L.privacy}</a> ·
+        <a class="underline" href={lang === 'en' ? '/en/terms' : '/dieu-khoan'}>{lang === 'en' ? 'Terms' : 'Điều khoản'}</a> ·
         {lang === 'vi' && <><a class="underline" href="/van-ban-moi">Văn bản pháp luật mới</a> · <a class="underline" href="/bieu-mau-nha-nuoc">Biểu mẫu nhà nước</a> ·</>}
         <a class="underline" href={lang === 'en' ? '/en/about' : '/gioi-thieu'}>{lang === 'en' ? 'About' : 'Giới thiệu'}</a> ·
         <a class="underline" href={lang === 'en' ? '/en/contact' : '/lien-he'}>{lang === 'en' ? 'Contact' : 'Liên hệ'}</a>
         {showEmail && <> · <a class="underline" href={`mailto:${email}`}>{email}</a></>}
+        {donateUrl && <> · <a class="font-semibold text-brand-700 underline" href={donateUrl} target="_blank" rel="noopener nofollow">{lang === 'en' ? '☕ Support us' : '☕ Ủng hộ tác giả'}</a></>}
       </div>
     </footer>
   </body>

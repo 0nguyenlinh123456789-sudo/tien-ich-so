@@ -43,6 +43,6 @@ jobs:
 
       - name: Move records, commit, push & ping IndexNow
         env:
-          COUNT: ${{ github.event.inputs.count || '20' }}
+          COUNT: ${{ github.event.inputs.count || '8' }}
         run: node scripts/drip-feed.js --count "$COUNT" --wait 900
 
