@@ -293,6 +293,13 @@ const groups = []; // each group = array of records of one kind (interleaved lat
   groups.push(vi);
 }
 
+// 17c) Ovulation by cycle length (pregnancy tool)
+{
+  const vi = [];
+  for (let c = 21; c <= 40; c++) vi.push({ section: 'life', lang: 'vi', tool: 'pregnancy', early: c >= 24 && c <= 35, slug: 'chu-ky-' + c + '-ngay-rung-trung-ngay-nao', title: 'Chu kỳ ' + c + ' ngày rụng trứng vào ngày nào?', params: { cycle: c } });
+  groups.push(vi);
+}
+
 // 18) Household business tax (thuế hộ kinh doanh), rate-on-revenue method
 {
   const vi = [];

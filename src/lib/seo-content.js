@@ -542,6 +542,31 @@ export function buildRecordContent(record) {
       };
       break;
     }
+    case 'pregnancy': {
+      // Rụng trứng ≈ 14 ngày trước kỳ kinh kế tiếp (pha hoàng thể ~14 ngày); cửa sổ dễ thụ thai = 5 ngày trước rụng trứng + ngày rụng trứng.
+      const C = Math.trunc(Number(p.cycle));
+      const ov = C - 14;
+      const day = (n) => `ngày thứ ${n}`;
+      out = {
+        h1: `Chu kỳ ${C} ngày rụng trứng vào ngày nào?`,
+        intro: [
+          `Với chu kỳ kinh nguyệt <b>${C} ngày</b>, trứng thường rụng vào khoảng <b>${day(ov)}</b> tính từ ngày đầu tiên có kinh (ngày có kinh là ngày thứ 1). Những ngày dễ thụ thai nhất là từ <b>${day(ov - 5)} đến ${day(ov)}</b>, cao nhất ở ${day(ov - 2)} – ${day(ov)}.`,
+          `Cách tính: pha sau rụng trứng (pha hoàng thể) thường kéo dài khoảng 14 ngày và ít thay đổi, nên ngày rụng trứng ≈ độ dài chu kỳ − 14 = ${C} − 14 = ${ov}. Tinh trùng sống được tới 5 ngày trong cơ thể người nữ, còn trứng chỉ sống 12–24 giờ sau khi rụng, vì vậy “cửa sổ thụ thai” gồm 5 ngày trước và ngày rụng trứng.`,
+          `${C < 24 ? 'Chu kỳ dưới 24 ngày là chu kỳ ngắn; nếu kéo dài hoặc kèm triệu chứng bất thường nên đi khám phụ khoa. ' : C > 35 ? 'Chu kỳ trên 35 ngày là chu kỳ dài; nếu thường xuyên như vậy nên đi khám phụ khoa. ' : ''}Đây là ước tính cho chu kỳ đều. Que thử rụng trứng (LH), theo dõi thân nhiệt hoặc siêu âm nang noãn cho kết quả chính xác hơn. Không dùng cách tính này để tránh thai.`
+        ],
+        table: [
+          ['Ngày bắt đầu có kinh', day(1)],
+          ['Bắt đầu cửa sổ dễ thụ thai', day(ov - 5)],
+          ['Ngày rụng trứng (ước tính)', day(ov)],
+          ['Kỳ kinh tiếp theo', day(C + 1)]
+        ],
+        faq: [
+          { q: `Chu kỳ ${C} ngày thì quan hệ ngày nào dễ có thai?`, a: `Từ ${day(ov - 5)} đến ${day(ov)} của chu kỳ (tính ngày đầu có kinh là ngày 1), dễ nhất là 2 ngày trước rụng trứng và ngày rụng trứng.` },
+          { q: 'Làm sao biết chính xác ngày rụng trứng?', a: 'Dùng que thử rụng trứng (đo hormone LH, thường dương tính 24–36 giờ trước rụng trứng), theo dõi thân nhiệt buổi sáng, quan sát dịch nhầy cổ tử cung, hoặc siêu âm nang noãn tại cơ sở y tế.' }
+        ]
+      };
+      break;
+    }
     case 'water': {
       // Căn cứ: Hà Nội QĐ 3541/QĐ-UBND (07/7/2023); TP.HCM QĐ 25/2019/QĐ-UBND; VAT thoát nước NQ 204/2025/QH15.
       const X = Number(p.m3);
