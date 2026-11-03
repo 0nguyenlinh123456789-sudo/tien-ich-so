@@ -1,6 +1,6 @@
 {
   "source": "Cổng Thông tin điện tử Chính phủ – vanban.chinhphu.vn",
-  "updatedAt": "2026-11-02T08:55:12.966Z",
+  "updatedAt": "2026-11-03T09:02:40.482Z",
   "topics": [
     {
       "id": "luong",
@@ -48,6 +48,33 @@
       ],
       "impact": false,
       "checkedAt": "2026-11-02"
+    },
+    {
+      "code": "44/2026/NQ-CP",
+      "type": "Nghị quyết Chính phủ",
+      "date": "30/10/2026",
+      "title": "Về giải pháp tháo gỡ khó khăn trong triển khai hợp đồng lao động điện tử theo quy định tại Nghị định số 337/2025/NĐ-CP ngày 24 tháng 12 năm 2025 của Chính phủ",
+      "url": "https://vanban.chinhphu.vn/?pageid=27160&docid=220140",
+      "file": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/44_2026_nq-cp_30102026_1-signed.signed.pdf",
+      "topics": [
+        "laodong",
+        "dansu"
+      ],
+      "impact": false,
+      "checkedAt": "2026-11-03"
+    },
+    {
+      "code": "398/2026/NĐ-CP",
+      "type": "Nghị định",
+      "date": "29/10/2026",
+      "title": "Quy định chi tiết Nghị quyết số 43/2026/QH16 về giảm thuế thu nhập cá nhân, thuế thu nhập doanh nghiệp đối với cá nhân và doanh nghiệp",
+      "url": "https://vanban.chinhphu.vn/?pageid=27160&docid=220138",
+      "file": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/398_2026_nd-cp_29102026-signed.signed.pdf",
+      "topics": [
+        "thue"
+      ],
+      "impact": true,
+      "checkedAt": "2026-11-03"
     },
     {
       "code": "28/2026/TT-BNV",
