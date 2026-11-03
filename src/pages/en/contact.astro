@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import site from '../../config/site.json';
+// Public repository (verified 2026-11-03: issues page returns HTTP 200 without login).
+const ISSUES = 'https://github.com/0nguyenlinh123456789-sudo/tien-ich-so/issues';
+const email = (site.contactEmail || '').trim();
+const showEmail = !!email && !/example\.com/i.test(email);
+---
+<Layout
+  title="Contact, feedback and data-error reports"
+  description="How to send feedback or report a wrong figure on Smart Tools Hub: open a GitHub issue with the page link, your inputs, the expected result and source."
+  lang="en"
+  alternate="/lien-he"
+>
+  <article class="prose-lite card max-w-3xl">
+    <h1 class="text-3xl font-bold">Contact and bug reports</h1>
+    <p>Feedback, tool requests and data-error reports are handled publicly through the project's GitHub Issues:</p>
+    <p><a class="btn-primary inline-block" href={ISSUES} rel="noopener" target="_blank">Open GitHub Issues</a></p>
+    {showEmail
+      ? <p>Or email: <a class="underline" href={`mailto:${email}`}>{email}</a></p>
+      : <p>A contact email address will be added later.</p>}
+
+    <h2>Reporting a wrong legal figure</h2>
+    <ul class="mb-3 list-disc pl-6">
+      <li>The URL of the page.</li>
+      <li>What you entered and what the page showed.</li>
+      <li>The result you expect and how you got it.</li>
+      <li>The legal document number and article to check against.</li>
+    </ul>
+    <p>We only change a figure after checking the original document.</p>
+
+    <h2>Please note</h2>
+    <p>Do not post personal data (ID numbers, bank accounts, real salary with your name) in Issues, as they are public. We cannot give individual legal or financial advice.</p>
+    <p>See also: <a class="underline" href="/en/about">About</a> · <a class="underline" href="/en/privacy">Privacy Policy</a>.</p>
+  </article>
+</Layout>

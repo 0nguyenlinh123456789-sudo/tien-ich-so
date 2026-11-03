@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import site from '../config/site.json';
+const email = (site.contactEmail || '').trim();
+const showEmail = !!email && !/example\.com/i.test(email);
 ---
 <Layout title="Chính sách bảo mật" description="Chính sách bảo mật, cookie và quảng cáo." lang="vi" alternate="/en/privacy">
   <article class="prose-lite card max-w-3xl">
@@ -13,7 +15,8 @@ import site from '../config/site.json';
     <h2>Miễn trừ trách nhiệm</h2>
     <p>Kết quả tài chính mang tính tham khảo; hãy đối chiếu văn bản pháp luật hiện hành. Nội dung thần số học, tarot, xem ngày mang tính giải trí và văn hóa.</p>
     <h2>Liên hệ</h2>
-    <p>Email: <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+    <p>Góp ý, báo lỗi số liệu: xem trang <a href="/lien-he">Liên hệ</a>.</p>
+    {showEmail && <p>Email: <a href={`mailto:${email}`}>{email}</a></p>}
   </article>
 </Layout>
 

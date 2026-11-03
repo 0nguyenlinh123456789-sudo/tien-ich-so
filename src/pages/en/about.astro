@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import site from '../../config/site.json';
+import { SECTIONS, toolsIn, sectionUrl, toolUrl } from '../../data/tools.js';
+---
+<Layout
+  title={`About ${site.siteNameEn}`}
+  description="Free tools that run in your browser: Vietnam salary, loans, lunar calendar, unit converters, CVs. Our data principles, legal sources and limits."
+  lang="en"
+  alternate="/gioi-thieu"
+>
+  <article class="prose-lite card max-w-3xl">
+    <h1 class="text-3xl font-bold">About {site.siteNameEn}</h1>
+    <p>{site.siteNameEn} ({site.siteName}) is a set of free calculators and document builders for everyday needs in Vietnam: gross/net salary, loans, social insurance, the lunar calendar, unit conversion, CVs and office paperwork, plus some numerology content for entertainment.</p>
+
+    <h2>Principles</h2>
+    <ul class="mb-3 list-disc pl-6">
+      <li><strong>Free:</strong> no sign-up, no fees. Running costs are covered by clearly labelled ads and affiliate links.</li>
+      <li><strong>Computed in your browser:</strong> calculations and documents are processed on your device; we run no server that receives or stores what you type. The exceptions are a few optional features that call public third-party APIs when you click them: GitHub profile/repository search (sends the username or keyword you enter to api.github.com, read-only public data) and DiceBear placeholder avatars (sends a name string as the seed).</li>
+      <li><strong>Legal figures cite the source:</strong> tax brackets, base salary, regional minimum wage and tariffs show the document number so you can verify them.</li>
+      <li><strong>Reviewed on a schedule:</strong> figures with an effective date are reviewed periodically; tools whose rates have a time limit (e.g. electricity tariff, VAT, registration fee) show a warning when a rate is about to expire or has expired.</li>
+      <li><strong>Destiny content is entertainment:</strong> numerology, tarot and lucky days are cultural content, not advice.</li>
+      <li><strong>Results are for reference:</strong> they do not replace advice from a lawyer, accountant, insurer or bank.</li>
+    </ul>
+
+    <h2>Tool groups</h2>
+    {Object.values(SECTIONS).map((s) => (
+      <section>
+        <h3><a class="underline" href={sectionUrl(s.id, 'en')}>{s.icon} {s.name.en}</a></h3>
+        <p>{s.desc.en}</p>
+        <ul class="mb-3 list-disc pl-6">
+          {toolsIn(s.id).map((tool) => <li><a class="underline" href={toolUrl(tool, 'en')}>{tool.title.en}</a></li>)}
+        </ul>
+      </section>
+    ))}
+
+    <h2>Feedback</h2>
+    <p>Found a wrong figure or a bug? See the <a class="underline" href="/en/contact">Contact</a> page. Data handling is described in the <a class="underline" href="/en/privacy">Privacy Policy</a>.</p>
+  </article>
+</Layout>

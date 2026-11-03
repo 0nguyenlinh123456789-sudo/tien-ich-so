@@ -13,6 +13,8 @@ import { slugify } from '../src/lib/format.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BACKLOG = path.join(ROOT, 'data-backlog');
+// data-archive/ holds pages pulled from the queue (thin/scaled content). Never regenerate them.
+const ARCHIVE = path.join(ROOT, 'data-archive');
 const PUBLISHED = path.join(ROOT, 'src', 'data', 'published');
 
 const args = process.argv.slice(2);
@@ -119,7 +121,8 @@ const groups = []; // each group = array of records of one kind (interleaved lat
 // 4) Numerology by birth date
 {
   const vi = [], en = [];
-  for (let y = 1960; y <= 2010; y++) {
+  // Scaled-content guard: full-date pages only for a few peak birth years (see README, data-archive).
+  for (const y of [1990, 1995]) {
     for (let mo = 1; mo <= 12; mo++) {
       const days = new Date(y, mo, 0).getDate();
       for (let d = 1; d <= days; d++) {
@@ -130,7 +133,7 @@ const groups = []; // each group = array of records of one kind (interleaved lat
           title: `Sinh ngày ${d}/${mo}/${y} mệnh gì? Thần số học & vận hạn ${TARGET_YEAR}`,
           params: { dob, targetYear: TARGET_YEAR }
         });
-        if (y >= 1980 && y <= 2005) en.push({
+        if (y === 1995) en.push({
           section: 'destiny', lang: 'en', tool: 'numerology',
           slug: `born-${d}-${mo}-${y}-numerology-${TARGET_YEAR}`,
           title: `Born ${d}/${mo}/${y}: numerology & ${TARGET_YEAR} forecast`,
@@ -199,10 +202,10 @@ const groups = []; // each group = array of records of one kind (interleaved lat
   groups.push(vi, en);
 }
 
-// 9) Lunar date for each day of the next 15 months
+// 9) Lunar date for each day of the next 60 days (older/further days are thin content)
 {
   const vi = [];
-  for (let k = 0; k < 460; k++) {
+  for (let k = 0; k < 60; k++) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + k);
     const dd = d.getDate(), mm = d.getMonth() + 1, yy = d.getFullYear();
     vi.push({ section: 'life', lang: 'vi', tool: 'lunar', slug: `lich-am-ngay-${dd}-thang-${mm}-nam-${yy}`, title: `Lịch âm ngày ${dd}/${mm}/${yy}`, params: { d: dd, m: mm, y: yy } });
@@ -236,13 +239,14 @@ const groups = []; // each group = array of records of one kind (interleaved lat
 // 13) Unit conversions
 {
   const en = [], vi = [];
-  for (let c = 140; c <= 210; c++) {
+  // Only the most common values; the rest were archived as thin pages.
+  for (const c of [150, 155, 160, 165, 170, 175, 180, 185, 190]) {
     en.push({ section: 'life', lang: 'en', tool: 'convert', slug: `${c}-cm-in-feet-and-inches`, title: `${c} cm in feet and inches`, params: { kind: 'cm', v: c } });
-    if (c % 2 === 0) vi.push({ section: 'life', lang: 'vi', tool: 'convert', slug: `${c}-cm-la-bao-nhieu-feet`, title: `${c} cm là bao nhiêu feet, inch?`, params: { kind: 'cm', v: c } });
+    if (c % 10 === 0) vi.push({ section: 'life', lang: 'vi', tool: 'convert', slug: `${c}-cm-la-bao-nhieu-feet`, title: `${c} cm là bao nhiêu feet, inch?`, params: { kind: 'cm', v: c } });
   }
-  for (let k = 40; k <= 150; k++) en.push({ section: 'life', lang: 'en', tool: 'convert', slug: `${k}-kg-to-lbs`, title: `${k} kg to lbs`, params: { kind: 'kg', v: k } });
-  for (let l = 90; l <= 330; l += 5) en.push({ section: 'life', lang: 'en', tool: 'convert', slug: `${l}-lbs-to-kg`, title: `${l} lbs to kg`, params: { kind: 'lb', v: l } });
-  for (let f = 0; f <= 110; f++) en.push({ section: 'life', lang: 'en', tool: 'convert', slug: `${f}-f-to-c`, title: `${f}°F to °C`, params: { kind: 'f', v: f } });
+  for (const k of [45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]) en.push({ section: 'life', lang: 'en', tool: 'convert', slug: `${k}-kg-to-lbs`, title: `${k} kg to lbs`, params: { kind: 'kg', v: k } });
+  for (let l = 100; l <= 200; l += 10) en.push({ section: 'life', lang: 'en', tool: 'convert', slug: `${l}-lbs-to-kg`, title: `${l} lbs to kg`, params: { kind: 'lb', v: l } });
+  for (const f of [0, 32, 50, 60, 68, 72, 75, 80, 90, 98, 100, 104]) en.push({ section: 'life', lang: 'en', tool: 'convert', slug: `${f}-f-to-c`, title: `${f}°F to °C`, params: { kind: 'f', v: f } });
   groups.push(en, vi);
 }
 
@@ -312,7 +316,7 @@ const groups = []; // each group = array of records of one kind (interleaved lat
 // ---------- write ----------
 function existingSlugs() {
   const set = new Set();
-  for (const base of [PUBLISHED, BACKLOG]) {
+  for (const base of [PUBLISHED, BACKLOG, ARCHIVE]) {
     if (!fs.existsSync(base)) continue;
     for (const sec of fs.readdirSync(base)) {
       const dir = path.join(base, sec);

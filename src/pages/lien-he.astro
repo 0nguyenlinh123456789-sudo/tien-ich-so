@@ -1,0 +1,37 @@
+---
+import Layout from '../layouts/Layout.astro';
+import site from '../config/site.json';
+// Public repository (verified 2026-11-03: issues page returns HTTP 200 without login).
+const ISSUES = 'https://github.com/0nguyenlinh123456789-sudo/tien-ich-so/issues';
+const email = (site.contactEmail || '').trim();
+const showEmail = !!email && !/example\.com/i.test(email);
+---
+<Layout
+  title="Liên hệ, góp ý và báo lỗi số liệu"
+  description="Cách góp ý và báo lỗi số liệu cho Tiện Ích Số: gửi qua GitHub Issues kèm đường dẫn trang, dữ liệu đã nhập, kết quả mong đợi và văn bản đối chiếu."
+  lang="vi"
+  alternate="/en/contact"
+>
+  <article class="prose-lite card max-w-3xl">
+    <h1 class="text-3xl font-bold">Liên hệ và báo lỗi</h1>
+    <p>Mọi góp ý, đề xuất công cụ mới hay báo lỗi số liệu đều được tiếp nhận công khai qua GitHub Issues của dự án:</p>
+    <p><a class="btn-primary inline-block" href={ISSUES} rel="noopener" target="_blank">Mở GitHub Issues</a></p>
+    {showEmail
+      ? <p>Hoặc gửi email: <a class="underline" href={`mailto:${email}`}>{email}</a></p>
+      : <p>Địa chỉ email liên hệ sẽ được cập nhật sau.</p>}
+
+    <h2>Báo lỗi số liệu pháp lý</h2>
+    <p>Để sửa nhanh và đúng, vui lòng ghi:</p>
+    <ul class="mb-3 list-disc pl-6">
+      <li>Đường dẫn trang bị lỗi.</li>
+      <li>Dữ liệu bạn đã nhập và kết quả trang hiển thị.</li>
+      <li>Kết quả bạn cho là đúng và cách tính.</li>
+      <li>Số hiệu văn bản pháp luật để đối chiếu (ví dụ nghị định, thông tư, luật) và điều khoản liên quan.</li>
+    </ul>
+    <p>Chúng tôi chỉ thay đổi con số sau khi đã kiểm tra văn bản gốc.</p>
+
+    <h2>Lưu ý</h2>
+    <p>Đừng đăng thông tin cá nhân (số CCCD, số tài khoản, lương thật kèm họ tên…) lên Issues vì nội dung ở đó công khai. Chúng tôi không tư vấn pháp lý hay tài chính cho từng trường hợp.</p>
+    <p>Xem thêm: <a class="underline" href="/gioi-thieu">Giới thiệu</a> · <a class="underline" href="/chinh-sach-bao-mat">Chính sách bảo mật</a>.</p>
+  </article>
+</Layout>

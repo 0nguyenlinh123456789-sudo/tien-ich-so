@@ -50,6 +50,9 @@ src/scripts/       browser helpers: form-state (URL sync), download-gate (ad bef
 src/components/    Layout pieces, SectionPage (tool/record pages), MonetizedResult, AdSlot, tools/*
 src/pages/         doi-song | tai-chinh | van-menh | cong-cu, mirrored under en/
 data-backlog/      queued pages; filename order = publish order (000000-* first, zz-* last)
+data-archive/      pages pulled out of the queue as thin/scaled content (full-date numerology, past/far lunar days,
+                   rare unit values). drip-feed never reads it; generate-backlog treats its slugs as existing so they
+                   are not recreated. To restore one: git mv it back into data-backlog/<section>/
 scripts/           drip-feed, generate-backlog, check-site, keyword-scan, legal-watch, forms-check
 ```
 

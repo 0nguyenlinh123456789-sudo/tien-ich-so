@@ -1,6 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import site from '../../config/site.json';
+const email = (site.contactEmail || '').trim();
+const showEmail = !!email && !/example\.com/i.test(email);
 ---
 <Layout title="Privacy Policy" description="Privacy, cookies and advertising policy." lang="en" alternate="/chinh-sach-bao-mat">
   <article class="prose-lite card max-w-3xl">
@@ -13,7 +15,8 @@ import site from '../../config/site.json';
     <h2>Disclaimer</h2>
     <p>Financial results are estimates; verify with current regulations. Numerology, tarot and lucky-day content is for entertainment and cultural interest.</p>
     <h2>Contact</h2>
-    <p>Email: <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+    <p>Feedback or data-error reports: see the <a href="/en/contact">Contact</a> page.</p>
+    {showEmail && <p>Email: <a href={`mailto:${email}`}>{email}</a></p>}
   </article>
 </Layout>
 

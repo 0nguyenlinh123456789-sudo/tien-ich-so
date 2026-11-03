@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+import site from '../config/site.json';
+import { SECTIONS, toolsIn, sectionUrl, toolUrl } from '../data/tools.js';
+---
+<Layout
+  title="Giới thiệu Tiện Ích Số"
+  description="Tiện Ích Số là bộ công cụ miễn phí chạy ngay trên trình duyệt: lương, vay, thuế, lịch âm, hồ sơ. Nguyên tắc dữ liệu, nguồn pháp lý và giới hạn."
+  lang="vi"
+  alternate="/en/about"
+>
+  <article class="prose-lite card max-w-3xl">
+    <h1 class="text-3xl font-bold">Giới thiệu {site.siteName}</h1>
+    <p>{site.siteName} là tập hợp các công cụ tính toán và soạn thảo miễn phí cho nhu cầu hằng ngày ở Việt Nam: lương gross/net, khoản vay, bảo hiểm xã hội, lịch âm, đổi đơn vị, CV, hồ sơ văn phòng và một số nội dung vận mệnh mang tính giải trí.</p>
+
+    <h2>Nguyên tắc hoạt động</h2>
+    <ul class="mb-3 list-disc pl-6">
+      <li><strong>Miễn phí:</strong> không cần đăng ký, không thu phí sử dụng. Chi phí vận hành được bù bằng quảng cáo và liên kết tiếp thị, luôn được gắn nhãn.</li>
+      <li><strong>Tính ngay trên trình duyệt:</strong> phép tính và tài liệu được xử lý trên thiết bị của bạn; chúng tôi không có máy chủ nhận hay lưu dữ liệu bạn nhập. Ngoại lệ là vài tính năng tùy chọn gọi API công khai của bên thứ ba khi bạn chủ động bấm: tìm hồ sơ/kho mã trên GitHub (gửi tên đăng nhập hoặc từ khóa bạn nhập tới api.github.com, chỉ đọc dữ liệu công khai) và ảnh đại diện minh họa DiceBear (gửi chuỗi tên làm "seed").</li>
+      <li><strong>Số liệu pháp lý dẫn văn bản gốc:</strong> mức thuế, lương cơ sở, lương tối thiểu vùng, biểu giá… đều ghi số hiệu văn bản trên trang để bạn đối chiếu.</li>
+      <li><strong>Cập nhật định kỳ:</strong> số liệu có ngày hiệu lực được rà soát theo lịch; ở các công cụ có mức áp dụng theo thời hạn (ví dụ biểu giá điện, thuế GTGT, lệ phí trước bạ), trang hiển thị cảnh báo khi mức đó sắp hoặc đã hết hiệu lực.</li>
+      <li><strong>Vận mệnh là giải trí:</strong> thần số học, tarot, xem ngày tốt mang tính văn hóa và giải trí, không phải lời khuyên.</li>
+      <li><strong>Kết quả để tham khảo:</strong> không thay thế tư vấn của luật sư, kế toán, cơ quan bảo hiểm hay ngân hàng.</li>
+    </ul>
+
+    <h2>Các nhóm công cụ</h2>
+    {Object.values(SECTIONS).map((s) => (
+      <section>
+        <h3><a class="underline" href={sectionUrl(s.id, 'vi')}>{s.icon} {s.name.vi}</a></h3>
+        <p>{s.desc.vi}</p>
+        <ul class="mb-3 list-disc pl-6">
+          {toolsIn(s.id).map((tool) => <li><a class="underline" href={toolUrl(tool, 'vi')}>{tool.title.vi}</a></li>)}
+        </ul>
+      </section>
+    ))}
+
+    <h2>Góp ý</h2>
+    <p>Phát hiện số liệu sai hoặc lỗi hiển thị? Xem trang <a class="underline" href="/lien-he">Liên hệ</a>. Chính sách dữ liệu chi tiết ở trang <a class="underline" href="/chinh-sach-bao-mat">Chính sách bảo mật</a>.</p>
+  </article>
+</Layout>

@@ -64,7 +64,7 @@ const jsonLd: any[] = [
   }
 ];
 if (tool && kind === 'tool') {
-  jsonLd.push({ '@context': 'https://schema.org', '@type': 'WebApplication', name: tool.title[lang], description: tool.desc[lang], applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'VND' } });
+  jsonLd.push({ '@context': 'https://schema.org', '@type': 'WebApplication', name: tool.title[lang], url: new URL(toolUrl(tool, lang), site.siteUrl).href, inLanguage: lang, description: tool.desc[lang], applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'VND' } });
 }
 // Editorial content (reviewed articles) stored in the record itself: record.article = [{heading, paragraphs[]}], record.faq = [{q, a}]
 const article: { heading: string; paragraphs: string[] }[] = Array.isArray(record?.article) ? record.article : [];
