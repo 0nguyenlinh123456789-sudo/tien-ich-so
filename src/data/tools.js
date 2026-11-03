@@ -539,6 +539,20 @@ export const TOOLS = [
     ]
   },
   {
+    id: 'qr', section: 'tools', icon: '🔳',
+    slug: { vi: 'tao-ma-qr-chuyen-khoan', en: 'qr-code-generator' },
+    title: { vi: 'Tạo mã QR chuyển khoản', en: 'QR Code Generator' },
+    seo: { vi: 'Tạo mã QR chuyển khoản ngân hàng VietQR, QR link, WiFi miễn phí', en: 'Free QR Code Generator – Link, Text, WiFi, VietQR' },
+    desc: { vi: 'VietQR mọi ngân hàng, QR link, WiFi.', en: 'VietQR bank, link, text and WiFi QR.' },
+    // Meta description (120–155 ký tự).
+    meta: { vi: 'Tạo mã QR chuyển khoản VietQR cho Vietcombank, MB, Techcombank, BIDV… kèm số tiền, nội dung; QR link, WiFi. Tải PNG miễn phí, không gửi dữ liệu đi.', en: 'Make free QR codes for links, text and WiFi, plus VietQR bank-transfer codes for Vietnamese banks with amount and note. Download PNG; nothing is uploaded.' },
+    faq: [
+      { q: { vi: 'Mã QR chuyển khoản này quét bằng app nào?', en: 'Which apps can scan the bank QR?' }, a: { vi: 'Mã theo chuẩn VietQR của NAPAS 247 nên quét được bằng app của hầu hết ngân hàng và ví tại Việt Nam. App sẽ tự điền ngân hàng, số tài khoản, số tiền và nội dung; người chuyển vẫn thấy tên chủ tài khoản để kiểm tra trước khi xác nhận.', en: 'It follows the NAPAS 247 VietQR standard, so most Vietnamese banking and wallet apps can scan it and prefill the bank, account, amount and note.' } },
+      { q: { vi: 'Có cần nhập số tiền không?', en: 'Do I need to enter an amount?' }, a: { vi: 'Không bắt buộc. Để trống số tiền sẽ tạo mã tĩnh dùng nhiều lần (in dán quầy bán hàng); nhập số tiền sẽ tạo mã cho đúng một khoản thanh toán.', en: 'No. Leave it blank for a reusable static code; enter an amount for a one-off payment code.' } },
+      { q: { vi: 'Tạo mã QR ở đây có an toàn không?', en: 'Is it safe?' }, a: { vi: 'Mã được tạo ngay trên trình duyệt của bạn; số tài khoản, mật khẩu WiFi không được gửi lên máy chủ. Mã QR chuyển khoản chỉ cho phép người khác chuyển tiền vào tài khoản, không thể rút tiền.', en: 'Codes are generated in your browser and nothing is uploaded. A transfer QR only lets people send money to your account.' } }
+    ]
+  },
+  {
     id: 'moneywords', section: 'tools', icon: '🔤',
     slug: { vi: 'doc-so-tien-thanh-chu', en: 'amount-in-words' },
     title: { vi: 'Số tiền bằng chữ', en: 'Amount in Words' },

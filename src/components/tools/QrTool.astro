@@ -1,0 +1,125 @@
+---
+// Tạo mã QR: chuyển khoản VietQR (src/lib/vietqr.js), link, văn bản, WiFi. Thư viện qrcode-generator (MIT).
+import { BANKS } from '../../lib/vietqr.js';
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-2 text-center text-sm has-[:checked]:border-brand-500 has-[:checked]:bg-brand-50';
+---
+<div data-tool="qr" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid min-w-0 content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="4" y="4" width="48" height="48" rx="4" fill="#fff" stroke="#1a45b8" stroke-width="2.5"/><rect x="10" y="10" width="14" height="14" fill="#1a45b8"/><rect x="32" y="10" width="14" height="14" fill="#1a45b8"/><rect x="10" y="32" width="14" height="14" fill="#1a45b8"/><rect x="32" y="32" width="6" height="6" fill="#2f6bff"/><rect x="40" y="40" width="6" height="6" fill="#2f6bff"/><path d="M66 28h30" stroke="#94a3b8" stroke-width="3" stroke-dasharray="4 4"/><rect x="106" y="12" width="56" height="34" rx="6" fill="#ecfdf5" stroke="#0d9488" stroke-width="2.5"/><text x="134" y="34" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">VietQR</text><rect x="176" y="8" width="26" height="42" rx="5" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/><path d="M212 20a14 14 0 0 1 20 0M216 26a8 8 0 0 1 12 0" stroke="#d97706" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="222" cy="32" r="2.5" fill="#d97706"/></svg>
+    <div class="flex gap-2" role="radiogroup" aria-label={vi ? 'Loại mã QR' : 'QR type'}>
+      <label class={blk}><input type="radio" name="mode" value="bank" class="sr-only" checked />{vi ? 'Chuyển khoản' : 'Bank transfer'}</label>
+      <label class={blk}><input type="radio" name="mode" value="text" class="sr-only" />{vi ? 'Link / chữ' : 'Link / text'}</label>
+      <label class={blk}><input type="radio" name="mode" value="wifi" class="sr-only" />WiFi</label>
+    </div>
+    <div class="grid gap-3" data-bank>
+      <div class="min-w-0"><label class="label" for="qr-bank">{vi ? 'Ngân hàng nhận' : 'Bank'}</label>
+        <select id="qr-bank" class="input w-full min-w-0" name="bin">{BANKS.map(([b, n]) => <option value={b}>{n}</option>)}</select></div>
+      <div class="min-w-0"><label class="label" for="qr-acc">{vi ? 'Số tài khoản' : 'Account number'}</label><input id="qr-acc" class="input w-full min-w-0" name="acc" inputmode="numeric" autocomplete="off" placeholder="0123456789" /></div>
+      <div class="min-w-0"><label class="label" for="qr-name">{vi ? 'Tên chủ tài khoản (hiện dưới mã, không bắt buộc)' : 'Account holder (shown under the code, optional)'}</label><input id="qr-name" class="input w-full min-w-0" name="holder" autocomplete="off" /></div>
+      <div class="min-w-0"><label class="label" for="qr-amt">{vi ? 'Số tiền (để trống = người chuyển tự nhập)' : 'Amount (blank = payer enters it)'}</label><input id="qr-amt" class="input w-full min-w-0" name="amount" inputmode="numeric" /></div>
+      <div class="min-w-0"><label class="label" for="qr-memo">{vi ? 'Nội dung chuyển khoản' : 'Transfer note'}</label><input id="qr-memo" class="input w-full min-w-0" name="memo" maxlength="60" /></div>
+    </div>
+    <div class="hidden min-w-0" data-text><label class="label" for="qr-text">{vi ? 'Link hoặc nội dung' : 'Link or text'}</label><textarea id="qr-text" class="input min-h-28 w-full min-w-0" name="text" maxlength="1200">https://</textarea></div>
+    <div class="hidden grid gap-3" data-wifi>
+      <div class="min-w-0"><label class="label" for="qr-ssid">{vi ? 'Tên WiFi (SSID)' : 'Network name (SSID)'}</label><input id="qr-ssid" class="input w-full min-w-0" name="ssid" autocomplete="off" /></div>
+      <div class="min-w-0"><label class="label" for="qr-pass">{vi ? 'Mật khẩu' : 'Password'}</label><input id="qr-pass" class="input w-full min-w-0" name="pass" autocomplete="off" /></div>
+      <div class="min-w-0"><label class="label" for="qr-sec">{vi ? 'Bảo mật' : 'Security'}</label><select id="qr-sec" class="input w-full min-w-0" name="sec"><option value="WPA">WPA/WPA2/WPA3</option><option value="WEP">WEP</option><option value="nopass">{vi ? 'Không mật khẩu' : 'None'}</option></select></div>
+    </div>
+    <p class="text-xs text-slate-500">{vi ? 'Mã được tạo ngay trên máy bạn, không gửi số tài khoản hay mật khẩu đi đâu. Mã chuyển khoản theo chuẩn VietQR (NAPAS 247), quét được bằng app của mọi ngân hàng.' : 'Codes are generated on your device; nothing is uploaded. Bank codes follow the VietQR (NAPAS 247) standard.'}</p>
+  </form>
+  <div class="card grid min-w-0 content-start justify-items-center gap-3" data-out></div>
+</div>
+
+<script>
+  import qrcode from 'qrcode-generator';
+  import { vietQr, cleanMemo, BANKS } from '../../lib/vietqr.js';
+  import { escapeHtml } from '../../lib/format.js';
+
+  // Mã hóa UTF-8 để chữ có dấu đọc đúng.
+  (qrcode as any).stringToBytes = (s: string) => Array.from(new TextEncoder().encode(s));
+
+  document.querySelectorAll<HTMLElement>('[data-tool="qr"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const get = (k: string) => String(new FormData(form).get(k) ?? '');
+    const show = (sel: string, on: boolean) => root.querySelector(sel)!.classList.toggle('hidden', !on);
+    const hint = (s: string) => `<div class="rounded-lg border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-600">${s}</div>`;
+    const wifiEsc = (s: string) => s.replace(/([\\;,:"])/g, '\\$1');
+    let payload = '', fileName = 'ma-qr';
+
+    const draw = (data: string) => {
+      const q = qrcode(0, 'M');
+      q.addData(data);
+      q.make();
+      return q;
+    };
+
+    const calc = () => {
+      const mode = get('mode');
+      show('[data-bank]', mode === 'bank'); show('[data-text]', mode === 'text'); show('[data-wifi]', mode === 'wifi');
+      let caption = '';
+      try {
+        if (mode === 'bank') {
+          const acc = get('acc').replace(/\s/g, '');
+          if (!acc) { out.innerHTML = hint(vi ? 'Nhập số tài khoản để tạo mã chuyển khoản.' : 'Enter an account number.'); payload = ''; return; }
+          if (!/^[A-Za-z0-9]{1,19}$/.test(acc)) { out.innerHTML = hint(vi ? 'Số tài khoản chỉ gồm chữ số (tối đa 19 ký tự).' : 'Account: digits only, max 19.'); payload = ''; return; }
+          const amtRaw = get('amount').replace(/[.,\s]/g, '');
+          const amount = amtRaw ? Number(amtRaw) : 0;
+          if (!Number.isFinite(amount) || amount < 0 || amount > 1e12) { out.innerHTML = hint(vi ? 'Số tiền không hợp lệ.' : 'Invalid amount.'); payload = ''; return; }
+          payload = vietQr({ bin: get('bin'), account: acc, amount, memo: get('memo') });
+          const bank = BANKS.find(([b]) => b === get('bin'))?.[1] || '';
+          const holder = get('holder').trim();
+          caption = `<div class="font-bold">${escapeHtml(bank)} · ${escapeHtml(acc)}</div>`
+            + (holder ? `<div>${escapeHtml(holder.toUpperCase())}</div>` : '')
+            + (amount > 0 ? `<div class="text-lg font-extrabold text-brand-700">${amount.toLocaleString('vi-VN')} đ</div>` : '')
+            + (cleanMemo(get('memo')) ? `<div class="text-sm text-slate-500">${vi ? 'Nội dung' : 'Note'}: ${escapeHtml(cleanMemo(get('memo')))}</div>` : '');
+          fileName = `vietqr-${acc}`;
+        } else if (mode === 'text') {
+          const t = get('text').trim();
+          if (!t || t === 'https://') { out.innerHTML = hint(vi ? 'Nhập link hoặc nội dung.' : 'Enter a link or text.'); payload = ''; return; }
+          payload = t; fileName = 'ma-qr';
+        } else {
+          const ssid = get('ssid');
+          if (!ssid) { out.innerHTML = hint(vi ? 'Nhập tên WiFi.' : 'Enter the network name.'); payload = ''; return; }
+          const sec = get('sec');
+          payload = `WIFI:T:${sec};S:${wifiEsc(ssid)};${sec === 'nopass' ? '' : `P:${wifiEsc(get('pass'))};`};`;
+          caption = `<div class="font-bold">WiFi: ${escapeHtml(ssid)}</div>`;
+          fileName = 'wifi-qr';
+        }
+        const q = draw(payload);
+        out.innerHTML = `<div class="w-full max-w-72 rounded-xl bg-white p-2">${q.createSvgTag({ cellSize: 6, margin: 4, scalable: true })}</div>`
+          + `<div class="grid gap-1 text-center">${caption}</div>`
+          + `<div class="flex flex-wrap justify-center gap-2"><button type="button" class="btn-primary px-3 py-2 text-sm" data-png>${vi ? 'Tải ảnh PNG' : 'Download PNG'}</button></div>`
+          + (mode === 'bank' ? `<p class="text-xs text-slate-500">${vi ? 'Hãy quét thử bằng app ngân hàng của bạn và kiểm tra đúng tên người nhận trước khi in hoặc gửi đi.' : 'Scan it with your banking app and check the recipient name before printing or sharing.'}</p>` : '');
+      } catch {
+        out.innerHTML = hint(vi ? 'Nội dung quá dài để tạo mã QR.' : 'Content is too long for a QR code.'); payload = '';
+      }
+    };
+
+    out.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (!payload) return;
+      if (t.closest('[data-png]')) {
+        const q = draw(payload);
+        const cell = 12, margin = 4, n = q.getModuleCount();
+        const c = document.createElement('canvas');
+        c.width = c.height = (n + margin * 2) * cell;
+        const ctx = c.getContext('2d')!;
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+        ctx.fillStyle = '#000';
+        for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) ctx.fillRect((k + margin) * cell, (r + margin) * cell, cell, cell);
+        const a = document.createElement('a');
+        a.href = c.toDataURL('image/png');
+        a.download = `${fileName}.png`;
+        a.click();
+      }
+    });
+    form.addEventListener('input', calc);
+    form.addEventListener('change', calc);
+    calc();
+  });
+</script>
