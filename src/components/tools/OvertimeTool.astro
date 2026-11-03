@@ -1,0 +1,92 @@
+---
+// Tính lương làm thêm giờ. Logic: src/lib/overtime.js
+// Điều 98, 106, 107 BLLĐ 45/2019/QH14; Điều 55–57 NĐ 145/2020/NĐ-CP
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const fields = [
+  ['weekday', vi ? 'Ngày thường (150%)' : 'Weekday (150%)'],
+  ['weekdayNight', vi ? 'Ngày thường, ban đêm 22h–6h' : 'Weekday night 22:00–06:00'],
+  ['weekend', vi ? 'Ngày nghỉ hằng tuần (200%)' : 'Weekly rest day (200%)'],
+  ['weekendNight', vi ? 'Ngày nghỉ hằng tuần, ban đêm (270%)' : 'Rest day night (270%)'],
+  ['holiday', vi ? 'Ngày lễ, Tết (300%)' : 'Public holiday (300%)'],
+  ['holidayNight', vi ? 'Ngày lễ, Tết, ban đêm (390%)' : 'Holiday night (390%)'],
+  ['night', vi ? 'Làm ca đêm trong giờ chuẩn (+30%)' : 'Regular night shift (+30%)']
+];
+---
+<div data-tool="overtime" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <form class="card grid min-w-0 content-start gap-3" data-f>
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><circle cx="30" cy="28" r="22" fill="#fff" stroke="#2f6bff" stroke-width="4"/><path d="M30 14v14l9 6" stroke="#1a45b8" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="70" y="34" width="30" height="18" rx="3" fill="#93b8ff"/><rect x="108" y="26" width="30" height="26" rx="3" fill="#2f6bff"/><rect x="146" y="16" width="30" height="36" rx="3" fill="#0d9488"/><rect x="184" y="4" width="30" height="48" rx="3" fill="#d97706"/><path d="M66 53h152" stroke="#cbd5e1" stroke-width="2"/></svg>
+    <div class="min-w-0"><label class="label" for="ot-salary">{vi ? 'Lương tháng tính làm thêm (đồng)' : 'Monthly wage (VND)'}</label><input id="ot-salary" class="input w-full min-w-0" name="salary" inputmode="numeric" value="10.000.000" /></div>
+    <div class="flex gap-2">
+      <div class="min-w-0 flex-1"><label class="label" for="ot-days">{vi ? 'Ngày công chuẩn/tháng' : 'Workdays/month'}</label><input id="ot-days" class="input w-full min-w-0" name="days" inputmode="numeric" value="26" /></div>
+      <div class="min-w-0 flex-1"><label class="label" for="ot-hpd">{vi ? 'Giờ/ngày' : 'Hours/day'}</label><input id="ot-hpd" class="input w-full min-w-0" name="hpd" inputmode="decimal" value="8" /></div>
+    </div>
+    <div class="label">{vi ? 'Số giờ làm thêm trong tháng' : 'Overtime hours this month'}</div>
+    {fields.map(([k, l], i) => (
+      <div class="flex min-w-0 items-center gap-2 text-sm"><label class="min-w-0 flex-1 break-words" for={`ot-${k}`}>{l}</label><input id={`ot-${k}`} class="input w-24 shrink-0" name={k} inputmode="decimal" value={i === 0 ? '10' : '0'} /></div>
+    ))}
+    <label class="flex min-w-0 cursor-pointer items-start gap-2 text-sm"><input type="checkbox" name="dayot" class="mt-1" /><span class="min-w-0 break-words">{vi ? 'Ngày thường: đã làm thêm ban ngày trước khi làm thêm ban đêm (210% thay vì 200%)' : 'Weekday: worked daytime overtime before the night overtime (210% instead of 200%)'}</span></label>
+    <p class="text-xs text-slate-500">{vi ? 'Lương tính làm thêm là lương theo hợp đồng (gồm phụ cấp cố định nếu công ty tính vào), không gồm thưởng, tiền ăn ca. Ngày công chuẩn theo nội quy công ty, thường 22–26 ngày.' : 'Use the contract wage (incl. fixed allowances if your company counts them), excluding bonuses and meal allowances. Standard workdays follow company rules, usually 22–26.'}</p>
+  </form>
+  <div class="card min-w-0" data-out></div>
+</div>
+
+<script>
+  import { overtimePay, OT_LIMIT_MONTH } from '../../lib/overtime.js';
+  import { barStack, statCards } from '../../lib/viz.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="overtime"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const form = root.querySelector<HTMLFormElement>('[data-f]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const get = (k: string) => String(new FormData(form).get(k) ?? '');
+    const parse = (s: string) => { const t = s.replace(/\s/g, ''); return t === '' ? NaN : Number(vi ? t.replace(/\./g, '').replace(',', '.') : t.replace(/,/g, '')); };
+    const parseH = (s: string) => { const t = s.trim(); return t === '' ? 0 : Number(t.replace(',', '.')); };
+    const money = (x: number) => Math.round(x).toLocaleString(vi ? 'vi-VN' : 'en-US') + (vi ? ' đ' : ' VND');
+    const n2 = (x: number) => (Math.round(x * 100) / 100).toLocaleString(vi ? 'vi-VN' : 'en-US');
+    const warn = (s: string) => `<div class="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-800">${s}</div>`;
+    const keys = ['weekday', 'weekdayNight', 'weekend', 'weekendNight', 'holiday', 'holidayNight', 'night'];
+    const names: Record<string, string> = vi
+      ? { weekday: 'Ngày thường', weekdayNight: 'Ngày thường – đêm', weekend: 'Nghỉ hằng tuần', weekendNight: 'Nghỉ hằng tuần – đêm', holiday: 'Lễ, Tết', holidayNight: 'Lễ, Tết – đêm', night: 'Phụ cấp ca đêm' }
+      : { weekday: 'Weekday', weekdayNight: 'Weekday night', weekend: 'Rest day', weekendNight: 'Rest day night', holiday: 'Holiday', holidayNight: 'Holiday night', night: 'Night shift bonus' };
+
+    const calc = () => {
+      const salary = parse(get('salary')), days = parse(get('days')), hpd = parseH(get('hpd'));
+      if (!Number.isFinite(salary) || salary <= 0 || salary > 1e10) { out.innerHTML = warn(vi ? 'Nhập lương tháng lớn hơn 0.' : 'Enter a monthly wage above 0.'); return; }
+      if (!Number.isFinite(days) || days < 1 || days > 31) { out.innerHTML = warn(vi ? 'Ngày công chuẩn từ 1 đến 31.' : 'Workdays must be 1 to 31.'); return; }
+      if (!Number.isFinite(hpd) || hpd <= 0 || hpd > 12) { out.innerHTML = warn(vi ? 'Giờ làm mỗi ngày từ 1 đến 12.' : 'Hours per day must be 1 to 12.'); return; }
+      const hours: Record<string, number> = {};
+      for (const k of keys) {
+        const v = parseH(get(k));
+        if (!Number.isFinite(v) || v < 0 || v > 400) { out.innerHTML = warn(vi ? 'Số giờ phải từ 0 đến 400.' : 'Hours must be 0 to 400.'); return; }
+        hours[k] = v;
+      }
+      const r = overtimePay({ salary, days, hoursPerDay: hpd, hours, dayOtBeforeNight: get('dayot') === 'on' });
+      const used = r.rows.filter((x) => x.hours > 0);
+      let h = `<div class="text-sm text-slate-500">${vi ? 'Tiền làm thêm giờ' : 'Overtime pay'}</div><div class="text-4xl font-extrabold text-brand-700 break-words">${money(r.total)}</div>`;
+      h += `<div class="mt-3">${statCards([
+        { label: vi ? 'Lương 1 giờ' : 'Hourly wage', value: money(r.hourly), tone: 'sky' },
+        { label: vi ? 'Giờ làm thêm' : 'OT hours', value: n2(r.otHours) + ' h', tone: r.overLimit ? 'amber' : 'green' },
+        { label: vi ? 'Lương + làm thêm' : 'Wage + OT', value: money(salary + r.total), tone: 'brand' }
+      ])}</div>`;
+      if (r.overLimit) h += `<div class="mt-3">${warn(vi ? `Vượt ${OT_LIMIT_MONTH} giờ/tháng – mức tối đa theo Điều 107 BLLĐ 2019.` : `Exceeds ${OT_LIMIT_MONTH} hours/month – the legal cap (Labour Code Art. 107).`)}</div>`;
+      if (used.length) {
+        h += barStack(used.map((x) => ({ label: names[x.key], value: x.amount })), { title: vi ? 'Tiền theo loại giờ' : 'Pay by hour type', format: money });
+        h += `<div class="mt-4 overflow-x-auto"><table class="w-full text-left text-sm"><thead class="text-slate-500"><tr><th>${vi ? 'Loại' : 'Type'}</th><th>${vi ? 'Giờ' : 'Hours'}</th><th class="text-right">${vi ? 'Hệ số' : 'Rate'}</th><th class="text-right">${vi ? 'Thành tiền' : 'Amount'}</th></tr></thead><tbody>`;
+        h += used.map((x) => `<tr><td>${names[x.key]}</td><td>${n2(x.hours)}</td><td class="text-right">${Math.round(x.rate * 100)}%</td><td class="text-right">${money(x.amount)}</td></tr>`).join('');
+        h += `</tbody></table></div>`;
+      }
+      h += `<p class="mt-3 text-xs text-slate-500">${vi ? `Công thức: lương giờ = ${money(salary)} ÷ ${n2(days)} ngày ÷ ${n2(hpd)} giờ = ${money(r.hourly)}; tiền làm thêm = lương giờ × hệ số × số giờ. Đây là mức tối thiểu – công ty có thể trả cao hơn. Người hưởng lương ngày được trả thêm lương ngày lễ.` : `Hourly wage = ${money(salary)} ÷ ${n2(days)} days ÷ ${n2(hpd)} h = ${money(r.hourly)}; OT pay = hourly × rate × hours. These are legal minimums – employers may pay more.`}</p>`;
+      h += `<details class="mt-3 text-xs text-slate-500"><summary class="cursor-pointer">${vi ? 'Căn cứ' : 'Sources'}</summary><ul class="mt-1 list-disc pl-4">`
+        + (vi
+          ? '<li>Điều 98 BLLĐ 2019: làm thêm ngày thường ít nhất 150%, ngày nghỉ hằng tuần 200%, ngày lễ, tết 300%; làm việc ban đêm thêm ít nhất 30%; làm thêm ban đêm thêm 20% lương giờ ban ngày.</li><li>Điều 57 NĐ 145/2020/NĐ-CP: làm thêm ban đêm ngày thường 200% (210% nếu đã làm thêm ban ngày), ngày nghỉ hằng tuần 270%, ngày lễ, tết 390%.</li><li>Điều 106: ban đêm từ 22 giờ đến 6 giờ. Điều 107: làm thêm không quá 40 giờ/tháng, 200 giờ/năm (300 giờ/năm với một số ngành, nghề).</li>'
+          : '<li>Labour Code 2019 Art. 98: overtime at least 150% (weekday), 200% (weekly rest day), 300% (holiday); night work +30%; night overtime +20% of the daytime rate.</li><li>Decree 145/2020 Art. 57: night overtime 200% (210% after daytime OT), 270% rest day, 390% holiday.</li><li>Art. 106: night = 22:00–06:00. Art. 107: max 40 OT hours/month, 200/year (300 in some sectors).</li>')
+        + `</ul></details>`;
+      out.innerHTML = h;
+    };
+    form.addEventListener('input', calc);
+    form.addEventListener('change', calc);
+    calc();
+  });
+</script>

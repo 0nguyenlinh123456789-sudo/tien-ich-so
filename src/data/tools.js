@@ -424,6 +424,20 @@ export const TOOLS = [
     ]
   },
   {
+    id: 'overtime', section: 'finance', icon: '⏱️',
+    slug: { vi: 'tinh-luong-lam-them-gio', en: 'vietnam-overtime-pay-calculator' },
+    title: { vi: 'Tính lương tăng ca', en: 'Overtime Pay' },
+    seo: { vi: 'Tính lương làm thêm giờ, tăng ca 2026 – 150%, 200%, 300%', en: 'Vietnam Overtime Pay Calculator 2026' },
+    desc: { vi: 'Tăng ca ngày thường, cuối tuần, lễ, ban đêm.', en: 'Weekday, rest day, holiday, night OT.' },
+    // Meta description (120–155 ký tự); số liệu khớp src/lib/overtime.js.
+    meta: { vi: 'Tính tiền tăng ca theo Điều 98 BLLĐ 2019: ngày thường 150%, ngày nghỉ 200%, lễ Tết 300%, ban đêm 200–390%; cảnh báo vượt giới hạn 40 giờ/tháng.', en: 'Calculate overtime pay under Vietnam Labour Code Art. 98: 150% weekdays, 200% rest days, 300% holidays, 200–390% at night, with the 40-hour monthly cap.' },
+    faq: [
+      { q: { vi: 'Lương 10 triệu tăng ca 10 giờ ngày thường được bao nhiêu?', en: 'Wage 10M VND, 10 weekday OT hours: how much?' }, a: { vi: 'Với 26 ngày công, 8 giờ/ngày: lương giờ = 10.000.000 ÷ 26 ÷ 8 ≈ 48.077 đ. Tiền tăng ca = 48.077 × 150% × 10 ≈ 721.154 đ (mức tối thiểu theo Điều 98 BLLĐ 2019).', en: 'With 26 workdays of 8 hours: hourly = 10,000,000 ÷ 26 ÷ 8 ≈ 48,077 VND. OT = 48,077 × 150% × 10 ≈ 721,154 VND (legal minimum, Labour Code Art. 98).' } },
+      { q: { vi: 'Tăng ca ban đêm được tính bao nhiêu phần trăm?', en: 'What is the night overtime rate?' }, a: { vi: 'Theo Điều 57 NĐ 145/2020/NĐ-CP: ngày thường 200% (210% nếu trong ngày đã làm thêm ban ngày), ngày nghỉ hằng tuần 270%, ngày lễ, Tết 390%. Ban đêm tính từ 22 giờ đến 6 giờ sáng.', en: 'Per Decree 145/2020 Art. 57: 200% on weekdays (210% after daytime OT), 270% on weekly rest days, 390% on holidays. Night is 22:00–06:00.' } },
+      { q: { vi: 'Một tháng được làm thêm tối đa bao nhiêu giờ?', en: 'What is the monthly overtime limit?' }, a: { vi: 'Không quá 40 giờ/tháng và 200 giờ/năm; một số ngành, nghề được tới 300 giờ/năm (Điều 107 BLLĐ 2019). Mức 60 giờ/tháng của Nghị quyết 17/2022/UBTVQH15 chỉ áp dụng đến hết năm 2022.', en: 'Up to 40 hours/month and 200 hours/year; some sectors up to 300/year (Art. 107). The 60-hour monthly cap of Resolution 17/2022 applied only through 2022.' } }
+    ]
+  },
+  {
     id: 'water', section: 'life', icon: '💧',
     slug: { vi: 'tinh-tien-nuoc', en: 'vietnam-water-bill-calculator' },
     title: { vi: 'Tính tiền nước', en: 'Water Bill' },

@@ -23,6 +23,7 @@ import HkdTool from './tools/HkdTool.astro';
 import RegistrationFeeTool from './tools/RegistrationFeeTool.astro';
 import RetirementAgeTool from './tools/RetirementAgeTool.astro';
 import WaterTool from './tools/WaterTool.astro';
+import OvertimeTool from './tools/OvertimeTool.astro';
 import GradeAvgTool from './tools/GradeAvgTool.astro';
 import PitAnnualTool from './tools/PitAnnualTool.astro';
 import HolidaysTool from './tools/HolidaysTool.astro';
@@ -78,6 +79,7 @@ const { toolId, lang, preset = {}, autorun = false } = Astro.props;
 {toolId === 'truocba' && <RegistrationFeeTool lang={lang} />}
 {toolId === 'retireage' && <RetirementAgeTool lang={lang} />}
 {toolId === 'water' && <WaterTool lang={lang} />}
+{toolId === 'overtime' && <OvertimeTool lang={lang} />}
 {toolId === 'diemtb' && <GradeAvgTool lang={lang} />}
 {toolId === 'pitannual' && <PitAnnualTool lang={lang} />}
 {toolId === 'holidays' && <HolidaysTool lang={lang} />}
