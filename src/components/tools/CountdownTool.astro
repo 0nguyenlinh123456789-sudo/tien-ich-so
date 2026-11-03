@@ -11,8 +11,8 @@ const vi = lang === 'vi';
   <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-list></div>
   <div class="card min-w-0" data-tl></div>
   <form class="card grid gap-3 sm:grid-cols-[1fr_auto_auto]" data-f>
-    <input class="input" name="name" placeholder={vi ? 'Sự kiện của bạn (cưới, thi, sinh nhật…)' : 'Your event'} />
-    <input class="input" name="date" type="date" required />
+    <input class="input" name="name" aria-label={vi ? "Tên sự kiện" : "Event name"} placeholder={vi ? 'Sự kiện của bạn (cưới, thi, sinh nhật…)' : 'Your event'} />
+    <input class="input" name="date" aria-label={vi ? "Ngày diễn ra" : "Event date"} type="date" required />
     <button class="btn-primary" type="submit">{vi ? 'Đếm ngược & lấy link' : 'Count down & get link'}</button>
   </form>
 </div>

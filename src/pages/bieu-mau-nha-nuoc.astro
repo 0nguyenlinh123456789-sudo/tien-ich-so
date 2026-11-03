@@ -11,7 +11,7 @@ const checked = new Date(catalog.verifiedAt + 'T00:00:00').toLocaleDateString('v
 const formNews = (legal.items || []).filter((i: any) => i.topics.includes('bieumau')).slice(0, 5);
 const host = (u: string) => { try { return new URL(u).hostname; } catch { return u; } };
 ---
-<Layout title="Biểu mẫu nhà nước mới nhất – đã đối chiếu nguồn chính thống" description="Mẫu đơn, tờ khai hành chính đang áp dụng: trợ cấp thất nghiệp, đăng ký hộ kinh doanh, cư trú, quyết toán thuế TNCN, kết hôn – kèm căn cứ pháp lý và link cổng .gov.vn." lang="vi">
+<Layout title="Biểu mẫu nhà nước mới nhất – đã đối chiếu nguồn chính thống" description="Mẫu đơn, tờ khai đang áp dụng: trợ cấp thất nghiệp, hộ kinh doanh, cư trú, quyết toán thuế TNCN, kết hôn – kèm căn cứ pháp lý và link .gov.vn." lang="vi">
   <nav class="mb-3 text-sm text-slate-500"><a href="/" class="hover:text-brand-700">Trang chủ</a> / Biểu mẫu nhà nước</nav>
   <h1 class="text-3xl font-black md:text-4xl">Biểu mẫu nhà nước đang áp dụng</h1>
   <p class="mt-2 max-w-3xl text-slate-600">Mỗi mẫu được đối chiếu trên cổng thông tin chính thức (.gov.vn). Mẫu nào các nguồn còn mâu thuẫn sẽ <b>không ghi số hiệu</b> mà dẫn thẳng tới trang thủ tục chính thức – nơi luôn cung cấp đúng mẫu đang dùng.</p>

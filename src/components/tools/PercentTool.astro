@@ -12,9 +12,9 @@ const rows = vi
   {rows.map(([id, pre, mid, post]) => (
     <form class="card flex min-w-0 flex-wrap items-center gap-2" data-row={id}>
       {pre && <span class="text-slate-600">{pre}</span>}
-      <input class="input w-32" name="a" type="number" step="any" />
+      <input class="input w-32" name="a" type="number" step="any" aria-label={vi ? "Số thứ nhất" : "First number"} />
       <span class="text-slate-600">{mid}</span>
-      <input class="input w-32" name="b" type="number" step="any" />
+      <input class="input w-32" name="b" type="number" step="any" aria-label={vi ? "Số thứ hai" : "Second number"} />
       {post && <span class="text-slate-600">{post}</span>}
       <span class="text-slate-400">=</span>
       <output class="min-w-24 text-xl font-bold text-brand-700" data-r></output>

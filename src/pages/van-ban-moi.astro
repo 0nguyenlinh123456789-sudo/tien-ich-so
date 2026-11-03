@@ -11,7 +11,7 @@ const jsonLd = {
   itemListElement: items.slice(0, 30).map((i: any, n: number) => ({ '@type': 'ListItem', position: n + 1, name: `${i.code} – ${i.title}`, url: i.url }))
 };
 ---
-<Layout title="Văn bản pháp luật mới nhất về lương, thuế, bảo hiểm, hợp đồng" description="Danh sách Luật, Nghị định, Thông tư mới nhất về tiền lương, thuế TNCN, bảo hiểm, lao động, hợp đồng, nhà đất – tự động cập nhật hằng ngày từ Cổng TTĐT Chính phủ." lang="vi" jsonLd={jsonLd}>
+<Layout title="Văn bản pháp luật mới: lương, thuế, bảo hiểm" description="Luật, Nghị định, Thông tư mới về tiền lương, thuế TNCN, bảo hiểm, lao động, hợp đồng, nhà đất – cập nhật hằng ngày từ Cổng TTĐT Chính phủ." lang="vi" jsonLd={jsonLd}>
   <nav class="mb-3 text-sm text-slate-500"><a href="/" class="hover:text-brand-700">Trang chủ</a> / Văn bản mới</nav>
   <h1 class="text-3xl font-black md:text-4xl">Văn bản pháp luật mới</h1>
   <p class="mt-2 max-w-3xl text-slate-600">

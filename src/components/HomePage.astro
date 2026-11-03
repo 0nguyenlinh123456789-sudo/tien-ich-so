@@ -10,7 +10,7 @@ interface Props { lang: 'vi' | 'en'; }
 const { lang } = Astro.props;
 const vi = lang === 'vi';
 const latest = getAllRecords().filter((r) => r.lang === lang).slice(-8).reverse();
-const title = vi ? `Lịch âm, tính lương, BHXH, tiền điện – ${site.siteName}` : `Lunar calendar, salary, BMI & life calculators – ${site.siteNameEn}`;
+const title = vi ? `Lịch âm, tính lương, BHXH, tiền điện – ${site.siteName}` : `Salary, BMI & lunar calendar tools – ${site.siteNameEn}`;
 const description = vi
   ? 'Lịch âm hôm nay, tính lương Gross Net 2026, tiền thai sản, BHXH 1 lần, lương hưu, tiền điện, BMI, lãi tiết kiệm, CV và mẫu đơn. Miễn phí, không cần đăng ký.'
   : 'Lunar calendar, BMI & calories, percentages, countdowns, loan and savings calculators, CV and portfolio builder. Free, no sign-up.';
