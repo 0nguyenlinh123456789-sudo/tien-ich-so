@@ -6,7 +6,7 @@ const lines = (s) => String(s || '').split('\n').map((x) => x.trim()).filter(Boo
 const list = (s) => String(s || '').split(',').map((x) => x.trim()).filter(Boolean);
 const rows = (s) => lines(s).map((l) => l.split('|').map((x) => x.trim()));
 const color = (v, d) => (/^#[0-9a-f]{6}$/i.test(v) ? v : d);
-const photoSrc = (v) => (/^data:image\/(png|jpe?g|webp);base64,[a-z0-9+/=]+$/i.test(v || '') ? v : '');
+const photoSrc = (v) => (/^data:image\/(png|jpe?g|webp);base64,[a-z0-9+/=]+$/i.test(v || '') || /^data:image\/svg\+xml;charset=utf-8,[a-z0-9%~._-]*$/i.test(v || '') || /^https:\/\/(avatars\.githubusercontent\.com|api\.dicebear\.com)\/[^\s"'<>]+$/i.test(v || '') ? v : '');
 const initials = (name) => String(name || '').trim().split(/\s+/).slice(-2).map((w) => w[0] || '').join('').toUpperCase();
 // "skill:4" -> { name, level 1-5 }
 const skill = (s) => { const [n, l] = s.split(':'); return { name: n.trim(), level: Math.min(5, Math.max(1, Number(l) || 4)) }; };
@@ -22,10 +22,14 @@ const SERIF = `Lora,'Times New Roman',serif`;
 
 function avatar(v, size, c, ring = '#fff') {
   const src = photoSrc(v.photo);
-  const base = `width:${size}px;height:${size}px;border-radius:50%;border:4px solid ${ring};flex-shrink:0`;
+  const isId = v.photoShape === '3x4';
+  const w = size;
+  const h = isId ? Math.round(size * 1.28) : size;
+  const radius = isId ? '10px' : '50%';
+  const base = `width:${w}px;height:${h}px;border-radius:${radius};border:3px solid ${ring};flex-shrink:0`;
   return src
     ? `<img src="${src}" alt="" style="${base};object-fit:cover;display:block" />`
-    : `<div style="${base};background:${c};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${size * 0.34}px">${e(initials(v.fullName))}</div>`;
+    : `<div style="${base};background:${c};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${Math.round(size * 0.34)}px">${e(initials(v.fullName))}</div>`;
 }
 
 // Vector icons (paths from Lucide, ISC licence © Lucide Contributors). Stroke uses currentColor so each design tints them.
@@ -794,41 +798,330 @@ function badges(v, T) {
     </div>`);
 }
 
+// 31. Warm Editorial Serif
+function claudeCv(v, T) {
+  const c = color(v.color, '#d97757');
+  const h = (t) => `<div style="font-family:${SERIF};font-size:15px;font-weight:700;color:#191918;margin:20px 0 10px;padding-bottom:5px;border-bottom:1px solid #e2ddd3;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:${c};display:inline-block"></span>${t}</div>`;
+  return page('background:#f4f0e8;color:#191918;padding:42px 46px', `
+    <div style="background:#faf8f3;border:1px solid #e2ddd3;border-radius:18px;padding:26px 30px;display:flex;gap:24px;align-items:center">
+      ${avatar(v, 96, c, '#e2ddd3')}
+      <div style="flex:1">
+        <div style="display:inline-block;padding:3px 10px;border-radius:99px;background:${c}22;color:${c};font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">✦ ${e(v.title)}</div>
+        <div style="font-family:${SERIF};font-size:32px;font-weight:700;line-height:1.05;color:#191918">${e(v.fullName)}</div>
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:#66645e">${contacts(v).map(([ic, x]) => `<span>${ic} ${e(x)}</span>`).join('')}</div>
+      </div>
+    </div>
+    ${v.summary ? `<div style="margin-top:16px;padding:14px 20px;background:#faf8f3;border-left:3px solid ${c};border-radius:0 12px 12px 0;font-family:${SERIF};font-style:italic;font-size:13px;color:#3d3b37">“${e(v.summary)}”</div>` : ''}
+    <div style="display:flex;gap:28px;margin-top:6px">
+      <div style="flex:1.65">
+        ${h(T.exp)}
+        ${exps(v).map((x) => `<div style="background:#faf8f3;border:1px solid #e2ddd3;border-radius:14px;padding:14px 16px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-family:${SERIF};font-size:14px">${x.role}</b><span style="font-size:11px;color:${c};font-weight:700;white-space:nowrap">${x.p}</span></div><div style="font-size:12px;color:#66645e;font-weight:600;margin-bottom:4px">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+      </div>
+      <div style="flex:1">
+        ${h(T.skills)}
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${skills(v).map((s) => `<span style="background:#faf8f3;border:1px solid #dcd6ca;padding:4px 10px;border-radius:8px;font-size:11.5px;font-weight:600">${s.name} <b style="color:${c}">·${s.level}</b></span>`).join('')}</div>
+        ${h(T.edu)}
+        ${edus(v).map((x) => `<div style="margin-bottom:10px"><b style="font-family:${SERIF}">${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:#66645e">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join('')}
+        ${langs(v).length ? h(T.lang) + langs(v).map((x) => `<div style="margin:3px 0">• ${x}</div>`).join('') : ''}
+        ${certs(v).length ? h(T.cert) + certs(v).map((x) => `<div style="margin:4px 0;font-size:11.5px">✦ ${x}</div>`).join('') : ''}
+      </div>
+    </div>`);
+}
+
+// 32. Art Director (Case-Study Resume)
+function behanceCv(v, T) {
+  const c = color(v.color, '#0057ff');
+  const h = (t, n) => `<div style="display:flex;align-items:baseline;gap:8px;margin:20px 0 10px;border-bottom:2px solid #0f172a;padding-bottom:4px"><span style="font-size:11px;font-weight:900;color:${c}">0${n}</span><span style="font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px">${t}</span></div>`;
+  return page('background:#fff', `
+    <div style="background:#0b0d12;color:#fff;padding:34px 44px;display:flex;gap:24px;align-items:center;border-bottom:5px solid ${c}">
+      ${avatar(v, 104, c, c)}
+      <div style="flex:1">
+        <div style="display:inline-block;background:${c};color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:4px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">★ CREATIVE PROFILE</div>
+        <div style="font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1">${e(v.fullName)}</div>
+        <div style="color:#9ca3af;font-size:14px;font-weight:600;margin-top:4px">${e(v.title)}</div>
+        <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:#d1d5db">${contacts(v).map(([ic, x]) => `<span>${ic} ${e(x)}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div style="padding:24px 44px 36px;display:flex;gap:30px">
+      <div style="flex:1.6">
+        ${v.summary ? h(T.summary, 1) + `<p style="margin:0;font-size:13px;color:#334155">${e(v.summary)}</p>` : ''}
+        ${h(T.exp, 2)}
+        ${exps(v).map((x, i) => `<div style="margin-bottom:14px;padding:12px 14px;background:#f8fafc;border-left:4px solid ${c};border-radius:0 10px 10px 0"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px;color:#0f172a">0${i + 1} // ${x.role}</b><span style="font-size:11px;font-weight:700;color:${c};white-space:nowrap">${x.p}</span></div><div style="font-weight:700;color:#475569;font-size:12px">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+      </div>
+      <div style="flex:1">
+        ${h(T.skills, 3)}
+        ${skills(v).map((s) => `<div style="margin:7px 0"><div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:700"><span>${s.name}</span><span style="color:${c}">${s.level * 20}%</span></div><div style="height:6px;background:#e2e8f0;border-radius:99px;margin-top:3px"><div style="height:6px;width:${s.level * 20}%;background:${c};border-radius:99px"></div></div></div>`).join('')}
+        ${h(T.edu, 4)}
+        ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:#64748b">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join('')}
+        ${langs(v).length ? h(T.lang, 5) + langs(v).map((x) => `<div style="margin:3px 0">${x}</div>`).join('') : ''}
+        ${certs(v).length ? h(T.cert, 6) + certs(v).map((x) => `<div style="margin:4px 0;font-size:11.5px">★ ${x}</div>`).join('') : ''}
+      </div>
+    </div>`);
+}
+
+// 33. Bento Grid CV (Modular Rounded Cards)
+function bentoCv(v, T) {
+  const c = color(v.color, '#1f55e6');
+  const card = (title, body, bg = '#fff') => `<div style="background:${bg};border:1px solid #e2e8f0;border-radius:18px;padding:16px 18px;margin-bottom:12px">${title ? `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:${c};margin-bottom:8px">${title}</div>` : ''}${body}</div>`;
+  return page('background:#f1f5f9;padding:28px', `
+    <div style="display:grid;grid-template-columns:1.7fr 1fr;gap:12px;margin-bottom:12px">
+      <div style="background:#0f172a;color:#fff;border-radius:20px;padding:24px;display:flex;gap:18px;align-items:center">
+        ${avatar(v, 88, c, c)}
+        <div><div style="font-size:28px;font-weight:900;line-height:1.05">${e(v.fullName)}</div><div style="color:${c};font-weight:700;font-size:14px;margin-top:4px">${e(v.title)}</div><div style="font-size:11.5px;color:#cbd5e1;margin-top:8px">${e(v.summary || '')}</div></div>
+      </div>
+      <div style="background:${c};color:#fff;border-radius:20px;padding:20px;display:flex;flex-direction:column;justify-content:center;gap:6px;font-size:11.5px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:.8">${T.contact}</div>
+        ${contacts(v).map(([ic, x]) => `<div style="display:flex;gap:8px;align-items:center;word-break:break-word">${ic}<span>${e(x)}</span></div>`).join('')}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:12px">
+      <div>
+        ${card(T.exp, exps(v).map((x) => `<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed #e2e8f0"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${x.role}</b><span style="background:${c}15;color:${c};padding:1px 8px;border-radius:99px;font-size:10.5px;font-weight:700;white-space:nowrap">${x.p}</span></div><div style="color:#64748b;font-weight:600;font-size:12px">${x.co}</div>${bullets(x.d)}</div>`).join(''))}
+      </div>
+      <div>
+        ${card(T.skills, `<div style="display:flex;flex-wrap:wrap;gap:6px">${skills(v).map((s) => `<span style="background:#f8fafc;border:1px solid #cbd5e1;padding:4px 10px;border-radius:10px;font-size:11px;font-weight:700">${s.name}</span>`).join('')}</div>`)}
+        ${card(T.edu, edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:#64748b">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join(''))}
+        ${langs(v).length ? card(T.lang, langs(v).join(' · ')) : ''}
+        ${certs(v).length ? card(T.cert, certs(v).map((x) => `<div style="margin:3px 0;font-size:11.5px">• ${x}</div>`).join('')) : ''}
+      </div>
+    </div>`);
+}
+
+// 34. Neo-Brutalist Studio CV (Hard Offset Shadows & Bold Borders)
+function brutalistCv(v, T) {
+  const c = color(v.color, '#db2777');
+  const box = (title, body, bg = '#fff') => `<div style="background:${bg};border:2.5px solid #111;box-shadow:5px 5px 0 #111;border-radius:12px;padding:16px 18px;margin-bottom:14px">${title ? `<div style="display:inline-block;background:#fde047;border:2px solid #111;padding:2px 10px;font-size:11px;font-weight:900;text-transform:uppercase;margin-bottom:10px">${title}</div>` : ''}${body}</div>`;
+  return page('background:#fffdf7;padding:30px', `
+    <div style="background:${c};color:#fff;border:3px solid #111;box-shadow:6px 6px 0 #111;border-radius:14px;padding:24px 28px;margin-bottom:16px;display:flex;gap:20px;align-items:center">
+      ${avatar(v, 92, '#111', '#111')}
+      <div style="flex:1">
+        <span style="background:#fde047;color:#111;border:2px solid #111;padding:2px 10px;font-size:11px;font-weight:900;text-transform:uppercase">${e(v.title)}</span>
+        <div style="font-size:34px;font-weight:900;line-height:1.05;margin-top:6px;text-shadow:3px 3px 0 #111">${e(v.fullName)}</div>
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;font-size:11px;background:#111;padding:6px 12px;border-radius:8px">${contacts(v).map(([, x]) => `<span>${e(x)}</span>`).join(' ★ ')}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:16px">
+      <div style="flex:1.6">
+        ${v.summary ? box(T.summary, `<div style="font-weight:600">${e(v.summary)}</div>`, '#fef9c3') : ''}
+        ${box(T.exp, exps(v).map((x) => `<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid #111"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${x.role}</b><span style="background:#a7f3d0;border:1.5px solid #111;padding:1px 8px;font-size:10.5px;font-weight:800;white-space:nowrap">${x.p}</span></div><div style="font-weight:800;color:${c}">${x.co}</div>${bullets(x.d)}</div>`).join(''))}
+      </div>
+      <div style="flex:1">
+        ${box(T.skills, `<div style="display:flex;flex-wrap:wrap;gap:6px">${skills(v).map((s) => `<span style="background:#fff;border:2px solid #111;box-shadow:2px 2px 0 #111;padding:3px 9px;font-size:11px;font-weight:800">#${s.name}</span>`).join('')}</div>`, '#e0e7ff')}
+        ${box(T.edu, edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join(''))}
+        ${langs(v).length || certs(v).length ? box(`${T.lang} & ${T.cert}`, [...langs(v), ...certs(v)].map((x) => `<div style="margin:3px 0;font-weight:600">→ ${x}</div>`).join('')) : ''}
+      </div>
+    </div>`);
+}
+
+// 35. Swiss International Typographic / Bauhaus Grid
+function swissCv(v, T) {
+  const c = color(v.color, '#dc2626');
+  return page('background:#fff;padding:0', `
+    <div style="display:grid;grid-template-columns:210px 1fr;border-bottom:2px solid #0f172a">
+      <div style="background:${c};color:#fff;padding:32px 24px;border-right:2px solid #0f172a;display:flex;flex-direction:column;justify-content:space-between">
+        <div style="font-size:11px;font-weight:900;letter-spacing:2px">SWISS // GRID 01</div>
+        <div style="font-size:44px;font-weight:900;line-height:.9">+</div>
+      </div>
+      <div style="padding:32px 36px">
+        <div style="font-size:42px;font-weight:900;letter-spacing:-1.5px;line-height:.95;text-transform:uppercase">${e(v.fullName)}</div>
+        <div style="font-size:15px;font-weight:800;color:${c};margin-top:8px;text-transform:uppercase;letter-spacing:1.5px">${e(v.title)}</div>
+        <div style="margin-top:12px;font-size:11.5px;color:#475569;display:flex;flex-wrap:wrap;gap:14px">${contacts(v).map(([, x]) => `<span>${e(x)}</span>`).join(' / ')}</div>
+      </div>
+    </div>
+    ${v.summary ? `<div style="display:grid;grid-template-columns:210px 1fr;border-bottom:1px solid #0f172a"><div style="padding:20px 24px;border-right:1px solid #0f172a;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:${c}">01 / ${T.summary}</div><div style="padding:20px 36px;font-size:13px">${e(v.summary)}</div></div>` : ''}
+    <div style="display:grid;grid-template-columns:210px 1fr;border-bottom:1px solid #0f172a">
+      <div style="padding:24px;border-right:1px solid #0f172a;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:${c}">02 / ${T.exp}</div>
+      <div style="padding:24px 36px">${exps(v).map((x) => `<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between"><b>${x.role} — ${x.co}</b><span style="font-weight:800;color:${c};font-size:11px">${x.p}</span></div>${bullets(x.d)}</div>`).join('')}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:210px 1fr 1fr">
+      <div style="padding:24px;border-right:1px solid #0f172a;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:${c}">03 / ${T.edu} & ${T.skills}</div>
+      <div style="padding:24px;border-right:1px solid #0f172a">${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:#64748b">${x.p}</div></div>`).join('')}${certs(v).length ? `<div style="margin-top:12px;font-weight:800;font-size:11px;color:${c}">${T.cert}</div>` + certs(v).map((x) => `<div style="font-size:11.5px">• ${x}</div>`).join('') : ''}</div>
+      <div style="padding:24px"><div style="display:flex;flex-wrap:wrap;gap:6px">${skills(v).map((s) => `<span style="border:1px solid #0f172a;padding:3px 8px;font-size:11px;font-weight:700">${s.name}</span>`).join('')}</div>${langs(v).length ? `<div style="margin-top:12px;font-size:11.5px"><b>${T.lang}:</b> ${langs(v).join(' · ')}</div>` : ''}</div>
+    </div>`);
+}
+
+// 36. Haute Couture / Luxury Editorial (Obsidian & Champagne Gold)
+function luxuryCv(v, T) {
+  const c = color(v.color, '#b45309');
+  const h = (r, t) => `<div style="text-align:center;margin:20px 0 12px"><span style="font-family:${SERIF};font-style:italic;color:${c};font-size:12px">${r}</span><div style="font-family:${SERIF};font-size:15px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border-bottom:1px solid ${c}55;padding-bottom:4px;margin-top:2px">${t}</div></div>`;
+  return page('background:#faf8f5;padding:24px', `
+    <div style="border:1px solid ${c};padding:6px;min-height:1070px;box-sizing:border-box">
+      <div style="border:1px solid #1c1917;padding:34px 40px;min-height:1056px;box-sizing:border-box">
+        <header style="text-align:center;border-bottom:2px double ${c};padding-bottom:20px">
+          <div style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:${c};font-weight:700">CURRICULUM VITAE</div>
+          <div style="font-family:${SERIF};font-size:38px;font-weight:700;letter-spacing:1px;margin:6px 0">${e(v.fullName)}</div>
+          <div style="font-family:${SERIF};font-style:italic;font-size:15px;color:#57534e">${e(v.title)}</div>
+          <div style="margin-top:10px;font-size:11px;color:#57534e">${contacts(v).map(([, x]) => e(x)).join('   ✦   ')}</div>
+        </header>
+        ${v.summary ? `<p style="text-align:center;font-family:${SERIF};font-style:italic;font-size:13px;max-width:580px;margin:16px auto;color:#44403c">${e(v.summary)}</p>` : ''}
+        ${h('I.', T.exp)}
+        ${exps(v).map((x) => `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-family:${SERIF};font-size:14px">${x.role} — <span style="color:${c}">${x.co}</span></b><span style="font-size:11px;font-style:italic;color:#78716c">${x.p}</span></div>${bullets(x.d)}</div>`).join('')}
+        <div style="display:flex;gap:32px">
+          <div style="flex:1">${h('II.', T.edu)}${edus(v).map((x) => `<div style="margin-bottom:8px;text-align:center"><b>${x.s}</b><div>${x.m} (${x.p})</div></div>`).join('')}</div>
+          <div style="flex:1">${h('III.', T.skills)}<div style="text-align:center;line-height:1.9">${skills(v).map((s) => s.name).join('  ·  ')}</div></div>
+        </div>
+        ${langs(v).length || certs(v).length ? h('IV.', `${T.lang} & ${T.cert}`) + `<div style="text-align:center;font-size:11.5px">${[...langs(v), ...certs(v)].join('   ✦   ')}</div>` : ''}
+      </div>
+    </div>`);
+}
+
+// 37. GitHub / Open-Source Maintainer CV
+function opensourceCv(v, T) {
+  const c = color(v.color, '#15803d');
+  const MONO = `'JetBrains Mono',Consolas,monospace`;
+  const cells = Array.from({ length: 52 }, (_, i) => [0.15, 0.35, 0.6, 0.85, 1][(i * 5 + 2) % 5]);
+  const h = (t) => `<div style="font-family:${MONO};font-size:12px;font-weight:700;color:#0f172a;margin:18px 0 8px;display:flex;align-items:center;gap:6px"><span style="color:${c}">●</span> ${t}</div>`;
+  return page('background:#ffffff;padding:34px 40px', `
+    <div style="display:flex;gap:20px;align-items:center;padding-bottom:18px;border-bottom:1px solid #d0d7de">
+      ${avatar(v, 88, c, '#d0d7de')}
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-size:28px;font-weight:800;color:#1f2328">${e(v.fullName)}</span><span style="font-family:${MONO};font-size:11px;padding:2px 8px;border-radius:99px;background:${c}18;color:${c};border:1px solid ${c}55;font-weight:700">PRO / OPEN-SOURCE</span></div>
+        <div style="font-family:${MONO};font-size:13px;color:#656d76;margin-top:2px">${e(v.title)}</div>
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:#1f2328">${contacts(v).map(([ic, x]) => `<span>${ic} ${e(x)}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div style="margin:12px 0;padding:10px 14px;border:1px solid #d0d7de;border-radius:8px;background:#f6f8fa">
+      <div style="font-family:${MONO};font-size:10px;color:#656d76;margin-bottom:5px">CONTRIBUTION ACTIVITY GRAPH</div>
+      <div style="display:grid;grid-template-columns:repeat(52,1fr);gap:3px">${cells.map((op) => `<span style="height:9px;border-radius:2px;background:${c};opacity:${op}"></span>`).join('')}</div>
+    </div>
+    ${v.summary ? `<div style="padding:12px 16px;border:1px solid #d0d7de;border-radius:8px;font-size:12.5px;margin-bottom:6px"><div style="font-family:${MONO};font-size:10.5px;color:#656d76;margin-bottom:4px">README.md</div>${e(v.summary)}</div>` : ''}
+    ${h(T.exp)}
+    <div style="display:grid;gap:10px">${exps(v).map((x) => `<div style="border:1px solid #d0d7de;border-radius:8px;padding:12px 14px"><div style="display:flex;justify-content:space-between;align-items:center"><b style="color:${c};font-size:13.5px">📦 ${x.role} @ ${x.co}</b><span style="font-family:${MONO};font-size:10.5px;padding:1px 8px;border:1px solid #d0d7de;border-radius:99px;color:#656d76">${x.p}</span></div>${bullets(x.d)}</div>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>${h(T.skills)}<div style="display:flex;flex-wrap:wrap;gap:5px">${skills(v).map((s) => `<span style="font-family:${MONO};font-size:11px;padding:3px 9px;border-radius:99px;background:#f6f8fa;border:1px solid #d0d7de">${s.name}</span>`).join('')}</div></div>
+      <div>${h(T.edu)}${edus(v).map((x) => `<div style="margin-bottom:6px"><b>${x.s}</b> – ${x.m} <span style="color:#656d76;font-size:11px">(${x.p})</span></div>`).join('')}
+      ${certs(v).length ? h(T.cert) + certs(v).map((x) => `<div style="font-size:11.5px">★ ${x}</div>`).join('') : ''}</div>
+    </div>`);
+}
+
+// 38. Architect CAD Blueprint CV
+function architectCv(v, T) {
+  const c = color(v.color, '#1e3a5f');
+  const MONO = `'JetBrains Mono',Consolas,monospace`;
+  return page(`background:#f8fafc;background-image:linear-gradient(${c}14 1px,transparent 1px),linear-gradient(90deg,${c}14 1px,transparent 1px);background-size:24px 24px;padding:28px`, `
+    <div style="border:2px solid ${c};background:rgba(255,255,255,.92);min-height:1064px;padding:28px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between">
+      <div>
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;border:1.5px solid ${c};margin-bottom:20px">
+          <div style="padding:18px 22px;border-right:1.5px solid ${c}">
+            <div style="font-family:${MONO};font-size:10px;color:${c}">PROJECT // CURRICULUM VITAE</div>
+            <div style="font-size:32px;font-weight:900;color:#0f172a;letter-spacing:-1px">${e(v.fullName)}</div>
+            <div style="font-family:${MONO};font-size:13px;color:${c};font-weight:700">${e(v.title)}</div>
+          </div>
+          <div style="padding:14px 18px;font-family:${MONO};font-size:10.5px;display:flex;flex-direction:column;justify-content:center;gap:4px">
+            <div><b>SCALE:</b> 1:1 A4</div>
+            ${contacts(v).map(([, x]) => `<div style="word-break:break-word">${e(x)}</div>`).join('')}
+          </div>
+        </div>
+        ${v.summary ? `<div style="margin-bottom:18px;padding:12px 16px;border:1px dashed ${c};font-size:12.5px">${e(v.summary)}</div>` : ''}
+        <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:24px">
+          <div>
+            <div style="font-family:${MONO};font-size:12px;font-weight:800;color:#fff;background:${c};padding:4px 12px;margin-bottom:10px">SEC.01 // ${T.exp}</div>
+            ${exps(v).map((x, i) => `<div style="margin-bottom:12px;padding-left:12px;border-left:2px solid ${c}"><div style="display:flex;justify-content:space-between"><b style="font-size:13px">[0${i + 1}] ${x.role}</b><span style="font-family:${MONO};font-size:10.5px;color:${c}">${x.p}</span></div><div style="font-weight:700;color:#475569">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+          </div>
+          <div>
+            <div style="font-family:${MONO};font-size:12px;font-weight:800;color:#fff;background:${c};padding:4px 12px;margin-bottom:10px">SEC.02 // ${T.skills}</div>
+            ${skills(v).map((s) => `<div style="display:flex;justify-content:space-between;font-family:${MONO};font-size:11px;padding:4px 0;border-bottom:1px dotted ${c}55"><span>${s.name}</span><b>${s.level}/5</b></div>`).join('')}
+            <div style="font-family:${MONO};font-size:12px;font-weight:800;color:#fff;background:${c};padding:4px 12px;margin:16px 0 10px">SEC.03 // ${T.edu}</div>
+            ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-family:${MONO};font-size:10.5px;color:#64748b">${x.p}</div></div>`).join('')}
+            ${certs(v).length ? `<div style="font-family:${MONO};font-size:12px;font-weight:800;color:#fff;background:${c};padding:4px 12px;margin:16px 0 10px">SEC.04 // ${T.cert}</div>` + certs(v).map((x) => `<div style="font-size:11px;margin:3px 0">▪ ${x}</div>`).join('') : ''}
+          </div>
+        </div>
+      </div>
+      <div style="border-top:1.5px solid ${c};padding-top:8px;display:flex;justify-content:space-between;font-family:${MONO};font-size:10px;color:${c}"><span>DWG NO: CV-2026-A4</span><span>APPROVED: ${e(v.fullName)}</span></div>
+    </div>`);
+}
+
+// 39. Nordic Minimalist Arch (Soft Stone & Arched Portrait)
+function nordicCv(v, T) {
+  const c = color(v.color, '#0d9488');
+  const h = (t) => `<div style="font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:${c};margin:20px 0 10px">${t}</div>`;
+  return page('background:#f7f6f2;display:flex', `
+    <aside style="width:255px;background:#ebe8e0;padding:40px 26px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;text-align:center">
+      <div style="width:130px;height:160px;border-radius:65px 65px 16px 16px;overflow:hidden;background:${c};color:#fff;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:800;margin-bottom:16px;border:3px solid #fff">${photoSrc(v.photo) ? `<img src="${photoSrc(v.photo)}" alt="" style="width:100%;height:100%;object-fit:cover" />` : e(initials(v.fullName))}</div>
+      ${h(T.contact)}
+      <div style="font-size:11.5px;color:#44403c;line-height:1.8">${contacts(v).map(([, x]) => `<div style="word-break:break-word">${e(x)}</div>`).join('')}</div>
+      ${h(T.skills)}
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px">${skills(v).map((s) => `<span style="background:#f7f6f2;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600">${s.name}</span>`).join('')}</div>
+      ${langs(v).length ? h(T.lang) + langs(v).map((x) => `<div>${x}</div>`).join('') : ''}
+    </aside>
+    <main style="flex:1;padding:44px 38px">
+      <div style="font-family:${SERIF};font-size:36px;font-weight:700;color:#1c1917;line-height:1.05">${e(v.fullName)}</div>
+      <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:${c};font-weight:700;margin-top:6px">${e(v.title)}</div>
+      ${v.summary ? `<p style="margin:14px 0 0;color:#57534e;line-height:1.65">${e(v.summary)}</p>` : ''}
+      ${h(T.exp)}
+      ${exps(v).map((x) => `<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between"><b style="font-size:13.5px">${x.role}</b><span style="font-size:11px;color:#78716c">${x.p}</span></div><div style="color:${c};font-weight:600;font-size:12px">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+      ${h(T.edu)}
+      ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b> — ${x.m} <span style="color:#78716c;font-size:11px">(${x.p})</span></div>`).join('')}
+      ${certs(v).length ? h(T.cert) + certs(v).map((x) => `<div style="margin:3px 0">${x}</div>`).join('') : ''}
+    </main>`);
+}
+
+// 40. Retro Press / Risograph Editorial Chronicle
+function retroCv(v, T) {
+  const c = color(v.color, '#9f1239');
+  const h = (t) => `<div style="font-family:${SERIF};font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${c};border-top:2px solid #1c1917;border-bottom:1px solid #1c1917;padding:4px 0;margin:16px 0 10px">${t}</div>`;
+  return page('background:#f5efe4;color:#1c1917;padding:36px 44px', `
+    <div style="border-top:4px solid #1c1917;border-bottom:2px solid #1c1917;padding:12px 0;text-align:center">
+      <div style="display:flex;justify-content:space-between;font-size:10px;text-transform:uppercase;letter-spacing:2px;border-bottom:1px solid #1c1917;padding-bottom:6px;margin-bottom:10px"><span>VOL. 2026 // DOSSIER</span><span>${e(v.title)}</span><span>SPECIAL EDITION</span></div>
+      <div style="font-family:${SERIF};font-size:42px;font-weight:900;line-height:.95;letter-spacing:-1px">${e(v.fullName)}</div>
+      <div style="margin-top:10px;font-size:11px">${contacts(v).map(([, x]) => e(x)).join('  •  ')}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:26px;margin-top:16px">
+      <div style="border-right:1px solid #1c1917;padding-right:26px">
+        ${v.summary ? `<p style="font-family:${SERIF};font-size:13.5px;line-height:1.65;margin:0 0 14px"><b>${T.summary} — </b>${e(v.summary)}</p>` : ''}
+        ${h(T.exp)}
+        ${exps(v).map((x) => `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between"><b style="font-family:${SERIF};font-size:14px">${x.role}</b><span style="font-size:11px;font-weight:700;color:${c}">${x.p}</span></div><div style="font-style:italic;font-family:${SERIF}">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+      </div>
+      <div>
+        ${h(T.skills)}
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${skills(v).map((s) => `<span style="border:1.5px solid #1c1917;padding:2px 8px;font-size:11px;font-weight:700">${s.name}</span>`).join('')}</div>
+        ${h(T.edu)}
+        ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join('')}
+        ${langs(v).length ? h(T.lang) + langs(v).join('<br>') : ''}
+        ${certs(v).length ? h(T.cert) + certs(v).map((x) => `<div style="margin:3px 0;font-size:11.5px">★ ${x}</div>`).join('') : ''}
+      </div>
+    </div>`);
+}
+
 const LAYOUTS = [
-  { key: 'modern', fn: modern, cols: 2, photo: true, vi: 'Hiện đại', en: 'Modern', tags: ['office', 'sales'] },
-  { key: 'creative', fn: creative, cols: 2, photo: true, vi: 'Sáng tạo', en: 'Creative', tags: ['creative', 'it'] },
-  { key: 'executive', fn: executive, cols: 2, photo: false, vi: 'Quản lý', en: 'Executive', tags: ['manager', 'finance'] },
-  { key: 'minimal', fn: minimal, cols: 1, photo: false, vi: 'Tối giản ATS', en: 'Minimal ATS', tags: ['ats', 'it'] },
-  { key: 'rightside', fn: rightSide, cols: 2, photo: true, vi: 'Cột phải', en: 'Right column', tags: ['office', 'sales'] },
-  { key: 'boxed', fn: boxed, cols: 2, photo: true, vi: 'Thẻ khối', en: 'Cards', tags: ['creative', 'service'] },
-  { key: 'tech', fn: tech, cols: 1, photo: false, vi: 'Lập trình viên', en: 'Developer', tags: ['it'] },
-  { key: 'fresher', fn: fresher, cols: 1, photo: true, vi: 'Sinh viên mới ra trường', en: 'Graduate', tags: ['student'] },
-  { key: 'bold', fn: bold, cols: 1, photo: false, vi: 'Nổi bật', en: 'Bold', tags: ['creative', 'sales'] },
-  { key: 'timeline', fn: timeline, cols: 1, photo: true, vi: 'Dòng thời gian', en: 'Centre timeline', tags: ['creative', 'office'] },
-  { key: 'infographic', fn: infographic, cols: 2, photo: true, vi: 'Infographic', en: 'Infographic', tags: ['creative', 'sales', 'it'] },
-  { key: 'magazine', fn: magazine, cols: 1, photo: false, vi: 'Tạp chí', en: 'Magazine', tags: ['creative'] },
-  { key: 'diagonal', fn: diagonal, cols: 2, photo: true, vi: 'Cắt chéo', en: 'Diagonal', tags: ['creative', 'sales'] },
-  { key: 'polaroid', fn: polaroid, cols: 1, photo: true, vi: 'Polaroid', en: 'Polaroid', tags: ['creative', 'student', 'service'] },
-  { key: 'dark', fn: dark, cols: 2, photo: true, vi: 'Nền tối Neon', en: 'Dark neon', tags: ['it', 'creative'] },
-  { key: 'vertical', fn: vertical, cols: 2, photo: true, vi: 'Tên dọc', en: 'Vertical name', tags: ['creative'] },
-  { key: 'ribbon', fn: ribbon, cols: 1, photo: true, vi: 'Ruy băng', en: 'Ribbon', tags: ['service', 'office'] },
-  { key: 'zen', fn: zen, cols: 1, photo: false, vi: 'Zen tối giản', en: 'Zen', tags: ['ats', 'traditional'] },
-  { key: 'twotone', fn: twotone, cols: 2, photo: true, vi: 'Hai tông màu', en: 'Two-tone', tags: ['office', 'manager'] },
-  { key: 'gauges', fn: gauges, cols: 2, photo: true, vi: 'Biểu đồ kỹ năng', en: 'Skill gauges', tags: ['it', 'sales'] },
-  { key: 'frame', fn: frame, cols: 1, photo: false, vi: 'Khung cổ điển', en: 'Framed', tags: ['traditional', 'finance'] },
-  { key: 'glass', fn: glass, cols: 2, photo: true, vi: 'Kính mờ Gradient', en: 'Glass gradient', tags: ['creative'] },
-  { key: 'dense', fn: dense, cols: 1, photo: false, vi: 'Bảng gọn – nhiều kinh nghiệm', en: 'Dense grid', tags: ['manager', 'ats', 'finance'] },
-  { key: 'organic', fn: organic, cols: 2, photo: true, vi: 'Mềm mại', en: 'Organic', tags: ['service', 'creative', 'student'] },
-  { key: 'monogram', fn: monogram, cols: 1, photo: false, vi: 'Monogram', en: 'Monogram', tags: ['manager', 'finance', 'office'] },
-  { key: 'split', fn: split, cols: 2, photo: true, vi: 'Chia đôi', en: 'Split', tags: ['office', 'it'] },
-  { key: 'waves', fn: waves, cols: 2, photo: true, vi: 'Sóng vector', en: 'Waves', tags: ['creative', 'service', 'office'] },
-  { key: 'geometric', fn: geometric, cols: 1, photo: true, vi: 'Hình khối', en: 'Geometric', tags: ['creative', 'it'] },
-  { key: 'sketch', fn: sketch, cols: 1, photo: true, vi: 'Vẽ tay', en: 'Hand-drawn', tags: ['creative', 'student'] },
-  { key: 'badges', fn: badges, cols: 1, photo: true, vi: 'Huy hiệu icon', en: 'Icon badges', tags: ['office', 'service', 'sales'] }
+  { key: 'claude', fn: claudeCv, cols: 2, photo: true, vi: 'Biên tập Ấm áp', en: 'Warm Editorial', tags: ['creative', 'it', 'manager', 'office'] },
+  { key: 'behance', fn: behanceCv, cols: 2, photo: true, vi: 'Giám đốc Nghệ thuật', en: 'Art Director', tags: ['creative', 'it', 'sales'] },
+  { key: 'bento', fn: bentoCv, cols: 2, photo: true, vi: 'Bento Grid', en: 'Bento Grid', tags: ['it', 'creative', 'office', 'sales'] },
+  { key: 'brutalist', fn: brutalistCv, cols: 2, photo: true, vi: 'Neo-Brutalist Studio', en: 'Neo-Brutalist', tags: ['creative', 'student', 'it'] },
+  { key: 'swiss', fn: swissCv, cols: 2, photo: false, vi: 'Lưới Thụy Sĩ Bauhaus', en: 'Swiss Bauhaus Grid', tags: ['creative', 'manager', 'ats'] },
+  { key: 'luxury', fn: luxuryCv, cols: 1, photo: false, vi: 'Luxury Couture', en: 'Luxury Couture', tags: ['manager', 'finance', 'traditional'] },
+  { key: 'opensource', fn: opensourceCv, cols: 1, photo: true, vi: 'GitHub Open-Source', en: 'GitHub Open-Source', tags: ['it', 'ats'] },
+  { key: 'architect', fn: architectCv, cols: 2, photo: false, vi: 'Bản vẽ Kiến trúc CAD', en: 'Architect CAD', tags: ['creative', 'it', 'traditional'] },
+  { key: 'nordic', fn: nordicCv, cols: 2, photo: true, vi: 'Bắc Âu Vòm Nghệ Thuật', en: 'Nordic Arch', tags: ['creative', 'service', 'office'] },
+  { key: 'retro', fn: retroCv, cols: 2, photo: false, vi: 'Báo chí Cổ điển', en: 'Retro Press', tags: ['creative', 'office', 'traditional'] },
+  { key: 'modern', fn: modern, cols: 2, photo: true, vi: 'Hiện đại (Cột trái)', en: 'Modern Sidebar', tags: ['office', 'sales'] },
+  { key: 'creative', fn: creative, cols: 2, photo: true, vi: 'Sáng tạo Timeline', en: 'Creative Timeline', tags: ['creative', 'it'] },
+  { key: 'executive', fn: executive, cols: 2, photo: false, vi: 'Quản lý Điều hành', en: 'Executive', tags: ['manager', 'finance'] },
+  { key: 'minimal', fn: minimal, cols: 1, photo: false, vi: 'Chuẩn ATS Quốc tế', en: 'Minimal ATS', tags: ['ats', 'it'] },
+  { key: 'rightside', fn: rightSide, cols: 2, photo: true, vi: 'Cột phải Thanh lịch', en: 'Right Column', tags: ['office', 'sales'] },
+  { key: 'tech', fn: tech, cols: 1, photo: false, vi: 'Kỹ sư Phần mềm', en: 'Developer Terminal', tags: ['it'] },
+  { key: 'fresher', fn: fresher, cols: 1, photo: true, vi: 'Sinh viên Mới ra trường', en: 'Graduate', tags: ['student'] },
+  { key: 'bold', fn: bold, cols: 1, photo: false, vi: 'Typography Đương đại', en: 'Bold Typography', tags: ['creative', 'sales'] },
+  { key: 'timeline', fn: timeline, cols: 1, photo: true, vi: 'Trục Thời gian Đối xứng', en: 'Centre Timeline', tags: ['creative', 'office'] },
+  { key: 'infographic', fn: infographic, cols: 2, photo: true, vi: 'Infographic Biểu đồ', en: 'Infographic', tags: ['creative', 'sales', 'it'] },
+  { key: 'magazine', fn: magazine, cols: 1, photo: false, vi: 'Tạp chí 3 Cột', en: 'Magazine 3-Col', tags: ['creative'] },
+  { key: 'polaroid', fn: polaroid, cols: 1, photo: true, vi: 'Polaroid Dán Giấy', en: 'Polaroid Craft', tags: ['creative', 'student', 'service'] },
+  { key: 'dark', fn: dark, cols: 2, photo: true, vi: 'Nền tối Cyberpunk', en: 'Dark Neon', tags: ['it', 'creative'] },
+  { key: 'vertical', fn: vertical, cols: 2, photo: true, vi: 'Trục Tên Dọc', en: 'Vertical Spine', tags: ['creative'] },
+  { key: 'glass', fn: glass, cols: 2, photo: true, vi: 'Kính mờ Gradient', en: 'Glass Gradient', tags: ['creative'] },
+  { key: 'dense', fn: dense, cols: 1, photo: false, vi: 'Bảng Gọn Chuyên Gia', en: 'Dense Senior Grid', tags: ['manager', 'ats', 'finance'] },
+  { key: 'organic', fn: organic, cols: 2, photo: true, vi: 'Pastel Mềm mại', en: 'Organic Pastel', tags: ['service', 'creative', 'student'] },
+  { key: 'monogram', fn: monogram, cols: 1, photo: false, vi: 'Monogram Doanh nhân', en: 'Corporate Monogram', tags: ['manager', 'finance', 'office'] },
+  { key: 'split', fn: split, cols: 2, photo: true, vi: 'Chia Đôi Tương phản', en: 'Split Contrast', tags: ['office', 'it'] },
+  { key: 'geometric', fn: geometric, cols: 1, photo: true, vi: 'Hình khối Đa giác', en: 'Geometric Prism', tags: ['creative', 'it'] },
+  { key: 'sketch', fn: sketch, cols: 1, photo: true, vi: 'Sổ tay Vẽ tay', en: 'Hand-Drawn Sketch', tags: ['creative', 'student'] },
+  { key: 'badges', fn: badges, cols: 1, photo: true, vi: 'Huy hiệu Vector', en: 'Icon Badges', tags: ['office', 'service', 'sales'] }
 ];
 
 const PALETTES = [
   { key: 'navy', c: '#1e3a5f', vi: 'Xanh navy', en: 'Navy' },
+  { key: 'terracotta', c: '#d97757', vi: 'Cam đất nung', en: 'Terracotta' },
+  { key: 'cobalt', c: '#0057ff', vi: 'Xanh cobalt', en: 'Cobalt' },
   { key: 'blue', c: '#1f55e6', vi: 'Xanh dương', en: 'Blue' },
   { key: 'teal', c: '#0d9488', vi: 'Xanh ngọc', en: 'Teal' },
   { key: 'green', c: '#15803d', vi: 'Xanh lá', en: 'Green' },
@@ -840,8 +1133,21 @@ const PALETTES = [
 ];
 
 // Ids of removed near-duplicate designs keep working by pointing at their closest replacement.
-export const RETIRED_CV_IDS = { 'cv-classic': 'cv-frame-wine' };
-const RETIRED_LAYOUTS = { classic: 'frame', centered: 'timeline', academic: 'minimal', elegant: 'dense' };
+export const RETIRED_CV_IDS = { 'cv-classic': 'cv-luxury-wine' };
+const RETIRED_LAYOUTS = {
+  classic: 'luxury',
+  centered: 'timeline',
+  academic: 'minimal',
+  elegant: 'dense',
+  gauges: 'infographic',
+  waves: 'creative',
+  twotone: 'executive',
+  ribbon: 'fresher',
+  frame: 'luxury',
+  boxed: 'bento',
+  zen: 'minimal',
+  diagonal: 'creative'
+};
 export const resolveCvId = (id) => {
   if (RETIRED_CV_IDS[id]) return RETIRED_CV_IDS[id];
   const m = /^cv-([a-z]+)-([a-z]+)$/.exec(id || '');

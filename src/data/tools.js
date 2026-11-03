@@ -426,9 +426,9 @@ export const TOOLS = [
   {
     id: 'compress', section: 'tools', icon: '🗜️',
     slug: { vi: 'nen-anh-hang-loat', en: 'bulk-image-compressor' },
-    title: { vi: 'Nén ảnh', en: 'Compress Images' },
-    seo: { vi: 'Nén ảnh online hàng loạt – giảm dung lượng JPG, PNG', en: 'Bulk Image Compressor online' },
-    desc: { vi: 'Nhẹ để nộp hồ sơ.', en: 'Small enough to upload.' }
+    title: { vi: 'Ảnh thẻ & Nén ảnh', en: 'ID Photo & Compress' },
+    seo: { vi: 'Sửa ảnh thẻ đổi nền trắng/xanh & nén ảnh theo KB', en: 'ID Photo Background Changer & KB Image Compressor' },
+    desc: { vi: 'Đổi nền, cắt 3×4, 4×6, nén theo KB.', en: 'ID backdrop, 3×4 crop, target KB.' }
   },
   {
     id: 'moneywords', section: 'tools', icon: '🔤',
@@ -441,14 +441,14 @@ export const TOOLS = [
     id: 'documents', section: 'tools', icon: '📄',
     slug: { vi: 'tao-cv-hop-dong-mau', en: 'cv-contract-templates' },
     title: { vi: 'CV & Hợp đồng', en: 'CV & Contracts' },
-    seo: { vi: 'Tạo CV xin việc online & hợp đồng mẫu miễn phí – xuất PDF, Word', en: 'Free CV Builder & Contract Templates' },
-    desc: { vi: 'Xuất PDF, Word.', en: 'PDF, Word export.' }
+    seo: { vi: 'Tạo CV xin việc & hợp đồng mẫu miễn phí – 32 mẫu CV', en: 'Free CV Builder & Contract Templates – 32 Layouts' },
+    desc: { vi: '32 mẫu CV, xuất PDF, Word.', en: '32 CV layouts, PDF, Word.' }
   },
   {
     id: 'forms', section: 'tools', icon: '📝',
     slug: { vi: 'mau-don', en: 'letter-templates' },
     title: { vi: 'Mẫu đơn', en: 'Letter Templates' },
-    seo: { vi: 'Mẫu đơn xin nghỉ việc, xin việc, nghỉ phép, nghỉ học – điền online, in ngay', en: 'Vietnamese Letter Templates – resignation, leave, job application' },
+    seo: { vi: 'Mẫu đơn xin nghỉ việc, xin việc, nghỉ phép – điền online', en: 'Vietnamese Letter Templates – Resignation, Leave' },
     desc: { vi: 'Nghỉ việc, xin việc, nghỉ phép.', en: 'Resignation, leave, application.' },
     faq: [
       { q: { vi: 'Xin nghỉ việc phải báo trước bao lâu?', en: 'Notice period?' }, a: { vi: 'Theo Điều 35 Bộ luật Lao động 2019: 45 ngày với HĐ không xác định thời hạn, 30 ngày với HĐ 12–36 tháng, 3 ngày làm việc với HĐ dưới 12 tháng.', en: 'Labour Code 2019 Art. 35: 45 days, 30 days, or 3 working days depending on contract.' } },
@@ -460,8 +460,8 @@ export const TOOLS = [
     id: 'portfolio', section: 'tools', icon: '🎨',
     slug: { vi: 'tao-portfolio-online', en: 'portfolio-website-builder' },
     title: { vi: 'Portfolio', en: 'Portfolio' },
-    seo: { vi: 'Tạo portfolio online miễn phí – 20 mẫu, tải sản phẩm & chỉnh ảnh', en: 'Free Portfolio Website Builder' },
-    desc: { vi: 'Tải sản phẩm, chỉnh ảnh.', en: 'Upload and edit your work.' }
+    seo: { vi: 'Tạo portfolio online miễn phí – 38 mẫu, xuất HTML', en: 'Free Portfolio Website Builder – 38 Templates' },
+    desc: { vi: '38 mẫu, có vẽ tay, xuất HTML.', en: '38 styles, 1-file HTML export.' }
   }
 ];
 
