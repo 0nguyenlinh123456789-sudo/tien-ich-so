@@ -17,9 +17,12 @@ interface Props {
 const { title, description, lang = 'vi', alternate = null, jsonLd = null, noindex = false } = Astro.props;
 const L = t(lang);
 const siteName = lang === 'en' ? site.siteNameEn : site.siteName;
-const canonical = new URL(Astro.url.pathname, site.siteUrl).href;
+// build.format 'file' gives pathnames ending in .html, but the host 307-redirects those to clean URLs —
+// canonical/hreflang/og:url must point at the clean URL the sitemap lists, or Google won't index.
+const clean = (p: string) => p.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+const canonical = new URL(clean(Astro.url.pathname), site.siteUrl).href;
 const altLang = lang === 'en' ? 'vi' : 'en';
-const altHref = alternate ? new URL(alternate, site.siteUrl).href : null;
+const altHref = alternate ? new URL(clean(alternate), site.siteUrl).href : null;
 // Skip the brand suffix when it would push the title past ~60 chars (Google truncates).
 const fullTitle = title.includes(siteName) || title.length + siteName.length + 3 > 62 ? title : `${title} | ${siteName}`;
 const dlAd = (MONETIZATION.downloadAdHtml || '').trim();

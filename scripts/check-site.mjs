@@ -53,6 +53,8 @@ for (const p of pages) {
   const html = fs.readFileSync(p, 'utf8');
   if (!/<title>[^<]{5,}<\/title>/.test(html)) fail(rel, 'missing title');
   if (!/<meta name="description" content="[^"]{20,}"/.test(html)) fail(rel, 'missing/short description');
+  // Canonical/hreflang must be the clean URL: .html URLs 307-redirect and block indexing.
+  if (/<link rel="(canonical|alternate)"[^>]*href="[^"]*\.html"/.test(html)) fail(rel, 'canonical/hreflang points at a .html URL');
   if ((html.match(/<h1[\s>]/g) || []).length !== 1) fail(rel, 'expected exactly one <h1>');
   // Visible text only: drop scripts, styles and tags.
   const text = html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ').replace(/<[^>]+>/g, ' ');
