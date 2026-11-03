@@ -1,0 +1,84 @@
+---
+// Đếm từ, ký tự và biến đổi văn bản. Logic: src/lib/text-tools.js
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
+const vi = lang === 'vi';
+const actions = [
+  ['upper', vi ? 'CHỮ HOA' : 'UPPERCASE'],
+  ['lower', vi ? 'chữ thường' : 'lowercase'],
+  ['title', vi ? 'Viết Hoa Đầu Từ' : 'Title Case'],
+  ['sentence', vi ? 'Viết hoa đầu câu' : 'Sentence case'],
+  ['strip', vi ? 'Bỏ dấu tiếng Việt' : 'Remove accents'],
+  ['slug', vi ? 'Tạo slug URL' : 'URL slug'],
+  ['spaces', vi ? 'Xóa khoảng trắng thừa' : 'Trim extra spaces']
+];
+---
+<div data-tool="textcount" data-lang={lang} class="grid gap-5 lg:grid-cols-2">
+  <div class="card grid min-w-0 content-start gap-3">
+    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="4" y="6" width="56" height="44" rx="6" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/><path d="M14 18h36M14 28h28M14 38h32" stroke="#93b8ff" stroke-width="4" stroke-linecap="round"/><text x="96" y="38" font-size="26" font-weight="800" fill="#1a45b8">Aa</text><text x="146" y="38" font-size="22" font-weight="800" fill="#0d9488">123</text><rect x="196" y="14" width="38" height="28" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/><text x="215" y="33" text-anchor="middle" font-size="13" font-weight="800" fill="#b45309">ă→a</text></svg>
+    <label class="label" for="tc-text">{vi ? 'Dán hoặc gõ văn bản' : 'Paste or type your text'}</label>
+    <textarea id="tc-text" class="input min-h-56 w-full min-w-0" data-t placeholder={vi ? 'Ví dụ: đoạn văn, bài luận, mô tả sản phẩm, caption…' : 'E.g. an essay, product description, caption…'}></textarea>
+    <div class="flex flex-wrap gap-2">
+      {actions.map(([k, l]) => <button type="button" class="btn-ghost px-3 py-2 text-sm" data-act={k}>{l}</button>)}
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="btn-primary px-3 py-2 text-sm" data-copy>{vi ? 'Sao chép' : 'Copy'}</button>
+      <button type="button" class="btn-ghost px-3 py-2 text-sm" data-undo disabled>{vi ? 'Hoàn tác' : 'Undo'}</button>
+      <button type="button" class="btn-ghost px-3 py-2 text-sm" data-clear>{vi ? 'Xóa hết' : 'Clear'}</button>
+      <span class="self-center text-sm text-emerald-700" data-msg aria-live="polite"></span>
+    </div>
+    <p class="text-xs text-slate-500">{vi ? 'Văn bản được xử lý ngay trên máy bạn, không gửi lên máy chủ.' : 'Your text is processed in your browser and never uploaded.'}</p>
+  </div>
+  <div class="card min-w-0" data-out aria-live="polite"></div>
+</div>
+
+<script>
+  import { textStats, topWords, TRANSFORMS } from '../../lib/text-tools.js';
+  import { statCards, bars } from '../../lib/viz.js';
+
+  document.querySelectorAll<HTMLElement>('[data-tool="textcount"]').forEach((root) => {
+    const vi = root.dataset.lang !== 'en';
+    const ta = root.querySelector<HTMLTextAreaElement>('[data-t]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const msg = root.querySelector<HTMLElement>('[data-msg]')!;
+    const undoBtn = root.querySelector<HTMLButtonElement>('[data-undo]')!;
+    const nf = (x: number) => x.toLocaleString(vi ? 'vi-VN' : 'en-US');
+    const mins = (m: number) => {
+      const s = Math.round(m * 60);
+      return s < 60 ? `${s} ${vi ? 'giây' : 's'}` : `${Math.floor(s / 60)} ${vi ? 'phút' : 'min'}${s % 60 ? ` ${s % 60} ${vi ? 'giây' : 's'}` : ''}`;
+    };
+    let prev: string | null = null;
+
+    const render = () => {
+      const r = textStats(ta.value);
+      let h = `<div class="text-sm text-slate-500">${vi ? 'Số từ' : 'Words'}</div><div class="text-4xl font-extrabold text-brand-700">${nf(r.words)}</div>`;
+      h += `<div class="mt-3">${statCards([
+        { label: vi ? 'Ký tự' : 'Characters', value: nf(r.chars), tone: 'brand' },
+        { label: vi ? 'Không tính khoảng trắng' : 'No spaces', value: nf(r.noSpace), tone: 'sky' },
+        { label: vi ? 'Câu' : 'Sentences', value: nf(r.sentences), tone: 'green' },
+        { label: vi ? 'Đoạn' : 'Paragraphs', value: nf(r.paragraphs), tone: 'amber' }
+      ])}</div>`;
+      h += `<div class="mt-3 grid gap-1 text-sm"><div class="flex justify-between gap-3"><span>${vi ? 'Thời gian đọc (~200 từ/phút)' : 'Reading time (~200 wpm)'}</span><b>${mins(r.readMin)}</b></div><div class="flex justify-between gap-3"><span>${vi ? 'Thời gian nói, thuyết trình (~130 từ/phút)' : 'Speaking time (~130 wpm)'}</span><b>${mins(r.speakMin)}</b></div><div class="flex justify-between gap-3"><span>${vi ? 'Số dòng' : 'Lines'}</span><b>${nf(r.lines)}</b></div></div>`;
+      const limits: [string, number][] = [[vi ? 'Tiêu đề SEO' : 'SEO title', 60], [vi ? 'Mô tả SEO' : 'Meta description', 155], ['SMS', 160], ['X / Twitter', 280]];
+      h += `<div class="mt-4 text-sm font-semibold">${vi ? 'Giới hạn ký tự phổ biến' : 'Common character limits'}</div><div class="mt-1 grid gap-1 text-sm">` + limits.map(([l, n]) => `<div class="flex justify-between gap-3"><span>${l} (${n})</span><b class="${r.chars > n ? 'text-rose-600' : 'text-emerald-700'}">${r.chars > n ? (vi ? 'vượt ' : 'over by ') + nf(r.chars - n) : (vi ? 'còn ' : 'left: ') + nf(n - r.chars)}</b></div>`).join('') + `</div>`;
+      const tw = topWords(ta.value);
+      if (tw.length) h += bars(tw.map(([w, c]) => ({ label: w, value: c })), { title: vi ? 'Từ xuất hiện nhiều nhất' : 'Most frequent words', format: (x: number) => nf(x) });
+      out.innerHTML = h;
+    };
+
+    root.querySelectorAll<HTMLButtonElement>('[data-act]').forEach((b) => b.addEventListener('click', () => {
+      const f = (TRANSFORMS as Record<string, (s: string) => string>)[b.dataset.act!];
+      prev = ta.value; undoBtn.disabled = false;
+      ta.value = f(ta.value); render();
+    }));
+    undoBtn.addEventListener('click', () => { if (prev !== null) { ta.value = prev; prev = null; undoBtn.disabled = true; render(); } });
+    root.querySelector('[data-clear]')!.addEventListener('click', () => { prev = ta.value; undoBtn.disabled = false; ta.value = ''; render(); ta.focus(); });
+    root.querySelector('[data-copy]')!.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(ta.value); msg.textContent = vi ? 'Đã sao chép' : 'Copied'; }
+      catch { ta.select(); msg.textContent = vi ? 'Nhấn Ctrl+C để sao chép' : 'Press Ctrl+C to copy'; }
+      setTimeout(() => (msg.textContent = ''), 2000);
+    });
+    ta.addEventListener('input', render);
+    render();
+  });
+</script>

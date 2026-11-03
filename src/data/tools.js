@@ -525,6 +525,20 @@ export const TOOLS = [
     meta: { vi: 'Đổi nền ảnh thẻ sang trắng hoặc xanh, cắt đúng cỡ 3×4, 4×6 và nén ảnh xuống dung lượng KB mà cổng nộp hồ sơ yêu cầu. Xử lý trên máy, ảnh không tải lên.', en: 'Swap an ID photo background to white or blue, crop to 3×4 or 4×6 and compress to the KB limit a portal asks for. Runs on your device; nothing is uploaded.' }
   },
   {
+    id: 'textcount', section: 'tools', icon: '📝',
+    slug: { vi: 'dem-so-tu-ky-tu', en: 'word-character-counter' },
+    title: { vi: 'Đếm từ, ký tự, bỏ dấu', en: 'Word & Character Counter' },
+    seo: { vi: 'Đếm số từ, ký tự online – bỏ dấu tiếng Việt, đổi chữ hoa', en: 'Word & Character Counter – Free, Private' },
+    desc: { vi: 'Đếm từ, ký tự, câu; bỏ dấu, đổi hoa/thường.', en: 'Count words, characters; change case.' },
+    // Meta description (120–155 ký tự).
+    meta: { vi: 'Đếm số từ, ký tự (có và không khoảng trắng), câu, đoạn và thời gian đọc; bỏ dấu tiếng Việt, đổi chữ hoa/thường, tạo slug. Xử lý ngay trên máy bạn.', en: 'Count words, characters with and without spaces, sentences and reading time; change case, remove accents and make URL slugs. Runs in your browser.' },
+    faq: [
+      { q: { vi: 'Đếm ký tự có tính khoảng trắng không?', en: 'Do spaces count as characters?' }, a: { vi: 'Công cụ hiện cả hai: tổng ký tự (gồm khoảng trắng, xuống dòng) và ký tự không tính khoảng trắng. Chữ có dấu như "ệ" được tính là 1 ký tự.', en: 'Both are shown: total characters (including spaces and line breaks) and characters without spaces. Accented letters count as one character.' } },
+      { q: { vi: 'Làm sao bỏ dấu tiếng Việt nhanh?', en: 'How do I remove Vietnamese accents?' }, a: { vi: 'Dán văn bản rồi bấm "Bỏ dấu tiếng Việt": "Đường phố Hà Nội" thành "Duong pho Ha Noi". Bấm "Hoàn tác" nếu muốn lấy lại bản gốc.', en: 'Paste the text and press "Remove accents": "Đường phố Hà Nội" becomes "Duong pho Ha Noi". Press Undo to restore it.' } },
+      { q: { vi: 'Bài thuyết trình 1.000 từ nói trong bao lâu?', en: 'How long is a 1,000-word speech?' }, a: { vi: 'Khoảng 7–8 phút với tốc độ nói trung bình 130 từ/phút; đọc thầm mất khoảng 5 phút (200 từ/phút).', en: 'About 7–8 minutes at an average 130 words per minute; silent reading takes about 5 minutes (200 wpm).' } }
+    ]
+  },
+  {
     id: 'moneywords', section: 'tools', icon: '🔤',
     slug: { vi: 'doc-so-tien-thanh-chu', en: 'amount-in-words' },
     title: { vi: 'Số tiền bằng chữ', en: 'Amount in Words' },
