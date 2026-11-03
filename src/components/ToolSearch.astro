@@ -1,0 +1,67 @@
+---
+// Client-side tool finder. Tool list comes from tools.js at build time; matching strips Vietnamese
+// diacritics (NFD + remove U+0300–U+036F, đ→d) so "tien dien" finds "Tính tiền điện".
+import { TOOLS, toolUrl, getTool } from '../data/tools.js';
+
+interface Props { lang?: 'vi' | 'en'; popular?: string[]; id?: string; }
+const { lang = 'vi', popular = ['lunar', 'salary', 'electric', 'lumpsum', 'truocba', 'retireage', 'bmi', 'forms'], id = 'tool-search' } = Astro.props;
+const vi = lang === 'vi';
+const fold = (s: string) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+const pop = popular.filter((p) => getTool(p));
+const items = TOOLS.map((tl: any) => ({
+  id: tl.id,
+  href: toolUrl(tl, lang),
+  icon: tl.icon,
+  title: tl.title[lang],
+  desc: tl.desc?.[lang] || '',
+  key: fold([tl.title.vi, tl.title.en, tl.seo?.vi, tl.seo?.en, tl.desc?.vi, tl.desc?.en, tl.slug?.vi, tl.slug?.en].join(' ').replace(/-/g, ' ')),
+  rank: pop.indexOf(tl.id)
+})).sort((a, b) => (a.rank < 0 ? 999 : a.rank) - (b.rank < 0 ? 999 : b.rank));
+---
+<div class="tool-search" data-tool-search>
+  <label for={id} class="label">{vi ? 'Tìm công cụ' : 'Find a tool'}</label>
+  <input id={id} type="search" class="input" autocomplete="off" enterkeyhint="search"
+    placeholder={vi ? 'Ví dụ: lương, tiền điện, lịch âm…' : 'e.g. salary, electricity, lunar…'} aria-controls={`${id}-list`} />
+  <p class="mt-2 text-xs text-slate-500" data-ts-status aria-live="polite">{vi ? 'Công cụ phổ biến' : 'Popular tools'}</p>
+  <ul id={`${id}-list`} class="mt-2 grid gap-2 sm:grid-cols-2">
+    {items.map((it) => (
+      <li data-k={it.key} data-pop={it.rank >= 0 ? '1' : undefined} hidden={it.rank < 0}>
+        <a href={it.href} class="flex min-h-11 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 transition hover:border-brand-300">
+          <span class="text-xl" aria-hidden="true">{it.icon}</span>
+          <span class="min-w-0">
+            <span class="block truncate font-semibold text-slate-900">{it.title}</span>
+            <span class="block truncate text-xs text-slate-500">{it.desc}</span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="mt-2 text-sm text-slate-500" data-ts-empty hidden>{vi ? 'Không tìm thấy công cụ phù hợp.' : 'No matching tool.'}</p>
+</div>
+
+<script>
+  const fold = (s: string) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+  document.querySelectorAll<HTMLElement>('[data-tool-search]').forEach((root) => {
+    const input = root.querySelector('input')!;
+    const items = Array.from(root.querySelectorAll<HTMLLIElement>('li[data-k]'));
+    const empty = root.querySelector<HTMLElement>('[data-ts-empty]')!;
+    const status = root.querySelector<HTMLElement>('[data-ts-status]')!;
+    const popLabel = status.textContent || '';
+    const vi = document.documentElement.lang !== 'en';
+    const MAX = 12;
+    const run = () => {
+      const words = fold(input.value).trim().slice(0, 80).split(/\s+/).filter(Boolean);
+      let shown = 0;
+      for (const li of items) {
+        const ok = words.length ? words.every((w) => (li.dataset.k || '').includes(w)) : li.dataset.pop === '1';
+        const show = ok && shown < MAX;
+        li.hidden = !show;
+        if (show) shown++;
+      }
+      empty.hidden = shown > 0;
+      status.textContent = words.length ? (vi ? `${shown} kết quả` : `${shown} result${shown === 1 ? '' : 's'}`) : popLabel;
+    };
+    input.addEventListener('input', run);
+    if (input.value) run();
+  });
+</script>

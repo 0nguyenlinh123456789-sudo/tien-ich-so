@@ -1,5 +1,6 @@
 ---
 // In-content display ad slot. Paste the network's banner HTML into monetization.json -> inContentAdHtml.
+// Renders nothing (no reserved space) when no ad is configured; reserves 250px (real banner height) when it is, to avoid layout shift.
 import { MONETIZATION } from '../lib/monetize.js';
 import { t } from '../i18n/ui.js';
 interface Props { lang?: 'vi' | 'en'; }
@@ -8,8 +9,7 @@ const html = (MONETIZATION.inContentAdHtml || '').trim();
 ---
 {html && (
   <div class="my-6 text-center">
-    <div class="mb-1 text-[10px] tracking-widest text-slate-400 uppercase">{t(lang).ad}</div>
-    <div class="flex min-h-[100px] items-center justify-center overflow-hidden rounded-xl bg-slate-100" set:html={html} />
+    <div class="mb-1 text-[10px] tracking-widest text-slate-600 uppercase">{t(lang).ad}</div>
+    <div class="flex min-h-[250px] items-center justify-center overflow-hidden rounded-xl bg-slate-100" set:html={html} />
   </div>
 )}
-

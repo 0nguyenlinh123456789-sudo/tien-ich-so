@@ -1,12 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ToolSearch from '../components/ToolSearch.astro';
 ---
 <Layout title="404 – Không tìm thấy trang" description="Trang không tồn tại." noindex>
   <div class="card mx-auto max-w-xl text-center">
-    <div class="text-6xl">🧭</div>
+    <div class="text-6xl" aria-hidden="true">🧭</div>
     <h1 class="mt-3 text-2xl font-bold">Không tìm thấy trang / Page not found</h1>
-    <p class="mt-2 text-slate-600">Trang có thể đã được đổi địa chỉ.</p>
+    <p class="mt-2 text-slate-600">Trang có thể đã được đổi địa chỉ. Hãy tìm công cụ bạn cần bên dưới.</p>
     <div class="mt-5 flex justify-center gap-3"><a href="/" class="btn-primary">Trang chủ</a><a href="/en" class="btn-ghost">English</a></div>
   </div>
+  <div class="card mx-auto mt-6 max-w-xl">
+    <ToolSearch lang="vi" id="nf-tool-search" popular={['lunar', 'salary', 'electric', 'lumpsum', 'retireage', 'bmi']} />
+  </div>
 </Layout>
-

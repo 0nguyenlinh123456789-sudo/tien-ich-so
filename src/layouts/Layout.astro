@@ -1,5 +1,9 @@
 ---
+import '../styles/fonts.css';
 import '../styles/global.css';
+// Self-hosted fonts: preload the regular weight (latin + vietnamese subsets). Same asset Vite emits for fonts.css.
+import fontLatin400 from '@fontsource/be-vietnam-pro/files/be-vietnam-pro-latin-400-normal.woff2?url';
+import fontVi400 from '@fontsource/be-vietnam-pro/files/be-vietnam-pro-vietnamese-400-normal.woff2?url';
 import site from '../config/site.json';
 import { MONETIZATION } from '../lib/monetize.js';
 import { t } from '../i18n/ui.js';
@@ -61,9 +65,8 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#1f55e6" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" />
+    <link rel="preload" href={fontLatin400} as="font" type="font/woff2" crossorigin />
+    {lang === 'vi' && <link rel="preload" href={fontVi400} as="font" type="font/woff2" crossorigin />}
     <link rel="sitemap" href="/sitemap-index.xml" />
     {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj).replace(/</g, '\\u003c')} />)}
     {MONETIZATION.bannerScriptUrl && (
@@ -72,7 +75,8 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
     <!-- Cloudflare Web Analytics (free, cookieless) -->
     <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "4343af725375427a853c13ed23b30011"}'></script>
   </head>
-  <body class="min-h-screen">
+  <body class={stickyAd ? 'min-h-screen pb-[72px] md:pb-0' : 'min-h-screen'}>
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[70] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:text-brand-700 focus:shadow-lg">{lang === 'en' ? 'Skip to content' : 'Bỏ qua tới nội dung'}</a>
     <header class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-lg">
       <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
         <a href={homeUrl(lang)} class="flex items-center gap-2 text-lg font-extrabold text-brand-700">
@@ -94,7 +98,7 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
       </div>
       <nav class="flex gap-1 overflow-x-auto border-t border-slate-100 px-2 py-1 md:hidden">
         {Object.values(SECTIONS).map((s) => (
-          <a href={sectionUrl(s.id, lang)} class="rounded-lg px-3 py-1.5 text-sm whitespace-nowrap text-slate-600">{s.icon} {s.name[lang]}</a>
+          <a href={sectionUrl(s.id, lang)} class="inline-flex min-h-11 items-center rounded-lg px-3 text-sm whitespace-nowrap text-slate-600">{s.icon} {s.name[lang]}</a>
         ))}
       </nav>
     </header>
@@ -102,9 +106,9 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
     {dlAd && (
       <div id="dl-gate" hidden data-seconds={MONETIZATION.downloadAdSeconds || 5} class="fixed inset-0 z-[60] grid place-items-center bg-slate-900/60 p-4">
         <div class="card relative w-full max-w-md text-center">
-          <button type="button" data-dl-close class="absolute top-2 right-3 text-xl text-slate-400" aria-label="close">×</button>
+          <button type="button" data-dl-close class="absolute top-1 right-1 grid h-11 w-11 place-items-center rounded-full text-xl text-slate-500 hover:bg-slate-100" aria-label={lang === 'en' ? 'Close' : 'Đóng'}>×</button>
           <div class="text-sm font-semibold">{lang === 'vi' ? 'File của bạn đang được chuẩn bị…' : 'Preparing your file…'}</div>
-          <div class="mt-1 text-[10px] tracking-widest text-slate-400 uppercase">{L.ad}</div>
+          <div class="mt-1 text-[10px] tracking-widest text-slate-600 uppercase">{L.ad}</div>
           <div class="mt-1 flex min-h-[250px] items-center justify-center overflow-hidden rounded-xl bg-slate-100" set:html={dlAd} />
           <button type="button" data-dl-go data-label={lang === 'vi' ? '⬇ Tải ngay' : '⬇ Download'} class="btn-primary mt-4 w-full" disabled></button>
         </div>
@@ -112,11 +116,11 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
     )}
     {stickyAd && (
       <div id="sticky-ad" class="fixed inset-x-0 bottom-0 z-50 flex justify-center border-t border-slate-200 bg-white/95 md:hidden">
-        <button type="button" class="absolute -top-6 right-2 rounded-t bg-white px-2 text-sm text-slate-500" onclick="this.parentElement.remove()" aria-label="close">×</button>
+        <button type="button" class="absolute -top-11 right-1 grid h-11 w-11 place-items-center rounded-t-lg border border-b-0 border-slate-200 bg-white text-lg text-slate-600" onclick="document.body.classList.remove('pb-[72px]');this.parentElement.remove()" aria-label={lang === 'en' ? 'Close' : 'Đóng'}>×</button>
         <div class="max-h-[60px] overflow-hidden" set:html={stickyAd} />
       </div>
     )}
-    <main class="mx-auto max-w-6xl px-4 py-6 md:py-10">
+    <main id="main" tabindex="-1" class="outline-none mx-auto max-w-6xl px-4 py-6 md:py-10">
       <slot />
     </main>
 
