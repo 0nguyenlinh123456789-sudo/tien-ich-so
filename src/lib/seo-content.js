@@ -11,6 +11,7 @@ import { moneyToWords } from './numwords.js';
 import { fmtMoney, fmtNum, fmtPct } from './format.js';
 import { retirementAge } from './retirement-age.js';
 import { registrationFee } from './registration-fee.js';
+import { hourlyWage, nightRate, OT_RATES } from './overtime.js';
 import { waterBill, WATER_REGIONS, WATER_VAT, drainageVat } from './water.js';
 import { hkdTax, SECTORS as HKD_SECTORS, THRESHOLD as HKD_THRESHOLD } from './hkd.js';
 import { severance, jobLoss, unemployment } from './severance.js';
@@ -514,6 +515,31 @@ export function buildRecordContent(record) {
           ]
         };
       }
+      break;
+    }
+    case 'overtime': {
+      // Căn cứ: Điều 98, 106, 107 BLLĐ 45/2019/QH14; Điều 57 NĐ 145/2020/NĐ-CP.
+      const S = Number(p.salary);
+      const w = hourlyWage(S, 26, 8), w22 = hourlyWage(S, 22, 8);
+      const kinds = [
+        ['Ngày thường', OT_RATES.weekday], ['Ngày nghỉ hằng tuần', OT_RATES.weekend], ['Ngày lễ, Tết', OT_RATES.holiday],
+        ['Ban đêm ngày thường', nightRate('weekday')], ['Ban đêm ngày thường (đã làm thêm ban ngày)', nightRate('weekday', true)],
+        ['Ban đêm ngày nghỉ hằng tuần', nightRate('weekend')], ['Ban đêm ngày lễ, Tết', nightRate('holiday')]
+      ];
+      const pct = (r) => Math.round(r * 100) + '%';
+      out = {
+        h1: `Lương ${fmtNum(S / 1e6)} triệu tăng ca 1 giờ được bao nhiêu?`,
+        intro: [
+          `Lương <b>${m(S)}</b>/tháng, 26 ngày công, 8 giờ/ngày thì lương 1 giờ là ${m(w)}. Tăng ca ngày thường được ít nhất <b>${m(w * 1.5)}/giờ</b> (150%), ngày nghỉ hằng tuần ${m(w * 2)}/giờ (200%), ngày lễ, Tết ${m(w * 3)}/giờ (300%).`,
+          `Nếu công ty tính 22 ngày công (nghỉ thứ Bảy, Chủ nhật), lương giờ là ${m(w22)} và tăng ca ngày thường được ${m(w22 * 1.5)}/giờ. Làm đủ 40 giờ tăng ca ngày thường – mức tối đa 1 tháng theo Điều 107 BLLĐ 2019 – được khoảng ${m(w * 1.5 * 40)} (26 ngày công).`,
+          'Căn cứ: Điều 98 BLLĐ 2019 (150% – 200% – 300%; làm việc ban đêm thêm ít nhất 30%; làm thêm ban đêm thêm 20%) và Điều 57 NĐ 145/2020/NĐ-CP. Đây là mức tối thiểu; lương tính làm thêm là lương theo hợp đồng của công việc đang làm.'
+        ],
+        table: kinds.map(([l, r]) => [`${l} (${pct(r)})`, `${m(w * r)}/giờ`]),
+        faq: [
+          { q: `Lương ${fmtNum(S / 1e6)} triệu tăng ca 10 giờ được bao nhiêu?`, a: `Khoảng ${m(w * 1.5 * 10)} nếu tăng ca ngày thường (26 ngày công, 8 giờ/ngày); ${m(w * 2 * 10)} nếu làm vào ngày nghỉ hằng tuần.` },
+          { q: 'Tăng ca ngày lễ được trả bao nhiêu?', a: `Ít nhất 300% lương giờ, tức ${m(w * 3)}/giờ với mức lương này; người hưởng lương ngày còn được trả thêm lương ngày lễ.` }
+        ]
+      };
       break;
     }
     case 'water': {

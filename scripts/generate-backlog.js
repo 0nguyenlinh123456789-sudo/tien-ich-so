@@ -286,6 +286,13 @@ const groups = []; // each group = array of records of one kind (interleaved lat
   groups.push(vi);
 }
 
+// 17b) Overtime pay by monthly wage
+{
+  const vi = [];
+  for (const tr of [5, 6, 7, 8, 9, 10, 12, 15, 18, 20, 25, 30]) vi.push({ section: 'finance', lang: 'vi', tool: 'overtime', early: true, slug: `luong-${tr}-trieu-tang-ca-1-gio-duoc-bao-nhieu`, title: `Lương ${tr} triệu tăng ca 1 giờ được bao nhiêu tiền?`, params: { salary: tr * 1e6 } });
+  groups.push(vi);
+}
+
 // 18) Household business tax (thuế hộ kinh doanh), rate-on-revenue method
 {
   const vi = [];

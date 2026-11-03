@@ -1,0 +1,10 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "overtime",
+  "slug": "luong-30-trieu-tang-ca-1-gio-duoc-bao-nhieu",
+  "title": "Lương 30 triệu tăng ca 1 giờ được bao nhiêu tiền?",
+  "params": {
+    "salary": 30000000
+  }
+}

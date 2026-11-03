@@ -1,0 +1,10 @@
+{
+  "section": "finance",
+  "lang": "vi",
+  "tool": "overtime",
+  "slug": "luong-5-trieu-tang-ca-1-gio-duoc-bao-nhieu",
+  "title": "Lương 5 triệu tăng ca 1 giờ được bao nhiêu tiền?",
+  "params": {
+    "salary": 5000000
+  }
+}
