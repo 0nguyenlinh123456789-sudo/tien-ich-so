@@ -1,6 +1,6 @@
 {
   "source": "Cổng Thông tin điện tử Chính phủ – vanban.chinhphu.vn",
-  "updatedAt": "2026-11-03T09:02:40.482Z",
+  "updatedAt": "2026-11-04T08:39:39.540Z",
   "topics": [
     {
       "id": "luong",
@@ -36,6 +36,34 @@
     }
   ],
   "items": [
+    {
+      "code": "2085/QĐ-TTg",
+      "type": "Quyết định Thủ tướng",
+      "date": "02/11/2026",
+      "title": "Phê duyệt Đề án thí điểm đánh giá, chấm điểm công tác cải cách thủ tục hành chính của bộ, cơ quan ngang bộ, địa phương",
+      "url": "https://vanban.chinhphu.vn/?pageid=27160&docid=220167",
+      "file": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/2085_qd-ttg_02112026_1-signed.signed.pdf",
+      "topics": [
+        "bieumau"
+      ],
+      "impact": false,
+      "checkedAt": "2026-11-04"
+    },
+    {
+      "code": "399/2026/NĐ-CP",
+      "type": "Nghị định",
+      "date": "02/11/2026",
+      "title": "Quy định mức lương tối thiểu đối với người lao động làm việc theo hợp đồng lao động",
+      "url": "https://vanban.chinhphu.vn/?pageid=27160&docid=220166",
+      "file": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/399_2026_nd-cp_02112026_6-signed.signed.pdf",
+      "topics": [
+        "luong",
+        "laodong",
+        "dansu"
+      ],
+      "impact": true,
+      "checkedAt": "2026-11-04"
+    },
     {
       "code": "44/2026/TT-BYT",
       "type": "Thông tư",
