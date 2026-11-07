@@ -115,6 +115,24 @@
   },
   "topAffiliateOffers": [
     {
+      "id": "vpbank-loan-vi",
+      "tools": [
+        "loan",
+        "mortgage",
+        "truocba",
+        "hkd"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Vay tín chấp VPBank online, duyệt nhanh, không cần thế chấp",
+      "description": "Đăng ký bằng CCCD, biết kết quả sơ bộ ngay. Tài trợ: trang nhận hoa hồng khi bạn đăng ký qua link. Cân nhắc kỹ khả năng trả nợ.",
+      "cta": "Xem điều kiện vay",
+      "url": "https://go.isclix.com/deep_link/v6/7102804567469033199/6822308958202075636?sub4=oneatweb&url_enc=aHR0cHM6Ly92YXlvbmxpbmUudnBiYW5rLmNvbS52bi8%3D",
+      "wrapWithAccesstrade": false,
+      "icon": "💳"
+    },
+    {
       "id": "tpbank-open-account-vi",
       "tools": [
         "salary",
