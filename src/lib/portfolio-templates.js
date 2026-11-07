@@ -239,10 +239,10 @@ function prepare(v, images = [], st = null, opts = {}) {
   const seedOffset = st && typeof st.seed === 'number' ? st.seed : 0;
   const projects = lines(v.projects).map((l, i) => {
     const [title, cat, year, desc, link] = l.split('|').map((x) => x.trim());
-    const fallback = isHandStyle ? handDrawnPlaceholder(title, i + seedOffset, c) : placeholder(title, i + seedOffset, c);
+    const galItem = Array.isArray(v.productGallery) && v.productGallery[i] ? imgSrc(v.productGallery[i].src || v.productGallery[i]) : ''; const fallback = galItem || (isHandStyle ? handDrawnPlaceholder(title, i + seedOffset, c) : placeholder(title, i + seedOffset, c));
     return {
       title: e(title || ''), cat: e(cat || ''), year: e(year || ''), desc: e(desc || ''), link: safeUrl(link),
-      img: imgSrc(images[i]) || fallback,
+      img: (images[i] && (!galItem || !String(images[i]).startsWith('data:image/svg+xml'))) ? (imgSrc(images[i]) || fallback) : fallback,
       sketchImg: detailFrameSvg(title, cat, i, c, 'sketch'),
       specImg: detailFrameSvg(title, cat, i, c, 'spec')
     };
@@ -1891,7 +1891,7 @@ function extraSections(v, d, lang) {
   const rows = (s) => lines(s).map((l) => l.split('|').map((x) => e(x.trim())));
   const order = String(v.sections || SECTION_KEYS.join(',')).split(',').filter((k) => SECTION_KEYS.includes(k));
   const det = Array.isArray(v.projectDetails) ? v.projectDetails : [];
-  const h = (k, sub = '') => `<div class="pfx-hd"><div class="pfx-meta"><span>┼ PORTFOLIO SPREAD // CHAPTER ${String(order.indexOf(k) + 1).padStart(2, '0')}</span><span>1400PX EDITORIAL BOARD ┼</span></div><div class="pfx-hd-main"><span class="pfx-k">${String(order.indexOf(k) + 1).padStart(2, '0')}</span><div><h2>${N[k]}</h2>${sub ? `<p>${sub}</p>` : ''}</div></div></div>`;
+  const h = (k, sub = '') => `<div class="pfx-hd"><div class="pfx-hd-main"><span class="pfx-k">${String(order.indexOf(k) + 1).padStart(2, '0')}</span><div><h2>${N[k]}</h2>${sub ? `<p>${sub}</p>` : ''}</div></div></div>`;
 
   const sigBlock = () => {
     if (!d.manifesto && !d.avail && !v.signature && !d.projects.length) return '';
@@ -1978,7 +1978,7 @@ function extraSections(v, d, lang) {
       return `<section class="pfx-s">${h('clients')}<div class="pfx-cl"><div class="pfx-cl-t">${[...cl, ...cl].map((x) => `<span>${x}</span>`).join('')}</div></div></section>`;
     }
   };
-  const html = sigBlock() + order.map((k) => (build[k] ? build[k]() : '')).join('');
+  const html = (order.includes('deepdive') ? sigBlock() : '') + order.map((k) => (build[k] ? build[k]() : '')).join('');
   if (!html) return '';
   const line = 'color-mix(in srgb,currentColor 16%,transparent)';
   return `<style>.pfx{max-width:1220px;margin:0 auto;padding:40px 24px 30px}.pfx-s{padding:64px 0;border-top:1px solid ${line}}.pfx-s:first-child{border-top:0}
@@ -2403,7 +2403,7 @@ export function portfolioFields(lang = 'vi') {
     { name: 'pricing', label: vi ? 'Bảng báo giá / Gói Commission – mỗi dòng: Tên gói | Giá | Quyền lợi (ngăn dấu ;)' : 'Pricing / Commission Packages – per line: Tier | Price | Deliverables (separate with ;)', type: 'textarea', rows: 3, default: vi ? 'Gói Minh họa Lẻ (Commission) | Từ 3.500.000đ | 1 tác phẩm vẽ tay độ phân giải in ấn; 2 lần chỉnh sửa; Bàn giao file PSD/AI tách lớp\nGói Nhận diện Thương hiệu Trọn gói | Từ 18.000.000đ | Logo + Bảng màu + Typography; Bộ 6 ấn phẩm ứng dụng & Mascot vẽ tay; Cẩm nang Brand Guideline PDF\nGói Đồng hành Sáng tạo (Retainer) | 25.000.000đ/tháng | Thiết kế & minh họa ưu tiên hàng tuần; Không giới hạn yêu cầu nhỏ; Họp định hướng 1-1' : 'Single Commission / Illustration | $250+ | 1 high-res custom artwork; 2 revision rounds; Layered source file\nFull Brand Identity & Art World | $1,400+ | Logo system, palette & typography; Custom brand illustrations; Brand guidelines book\nCreative Retainer | $2,200/mo | Dedicated weekly art & design sprints; Priority turnaround; Direct Slack access' },
     { name: 'process', label: vi ? 'Quy trình – mỗi dòng: Bước | Mô tả' : 'Process – per line: Step | Description', type: 'textarea', rows: 3, default: vi ? 'Thấu hiểu | Trò chuyện, tìm hiểu câu chuyện và cảm xúc bạn muốn truyền tải\nNghiên cứu & Moodboard | Phác thảo chất liệu, bảng màu và 3 hướng tiếp cận\nPhác thảo chì (Sketch) | Dựng bố cục nét tay để duyệt thần thái trước khi lên màu\nHoàn thiện & Bàn giao | Đi nét chi tiết, tô màu hoàn chỉnh và xuất file chuẩn in ấn/web' : 'Listen | Understand your story and mood\nMoodboard | Textures, palette and 3 directions\nRough Sketch | Pencil compositions for approval\nFinal Polish | Detailed rendering and print/web files' },
     { name: 'testimonials', label: vi ? 'Khách hàng nói gì – mỗi dòng: Lời nhận xét | Tên | Chức vụ, công ty' : 'Testimonials – per line: Quote | Name | Role, company', type: 'textarea', rows: 2, default: vi ? 'Nét vẽ cực kỳ có hồn, khách hàng của chúng tôi giữ lại vỏ hộp trà chỉ vì hình minh họa quá đẹp! | Nguyễn Lan Anh | Founder, Leaf Tea' : 'The illustrations had so much soul that customers kept the boxes as collectibles! | Maya Lin | Founder, Leaf Tea' },
-    { name: 'sections', type: 'hidden', default: SECTION_KEYS.join(',') },
+    { name: 'sections', type: 'hidden', default: 'stats,services,pricing' },
     { name: 'experience', label: vi ? 'Kinh nghiệm – mỗi dòng: Năm | Vị trí | Công ty | Ghi chú' : 'Experience – per line: Years | Role | Company | Note', type: 'textarea', rows: 3, default: vi ? '2023 – nay | Founder & Lead Illustrator | Hà My Atelier | Sáng tác độc lập & hợp tác cùng 25 thương hiệu\n2020 – 2023 | Senior Art & Brand Designer | Studio Sáng Tạo' : '2023 – Present | Founder & Lead Illustrator | Maya Atelier\n2020 – 2023 | Senior Brand Designer | Creative Studio' },
     { name: 'awards', label: vi ? 'Giải thưởng & Triển lãm – mỗi dòng: Năm | Giải | Tổ chức' : 'Awards & Exhibitions – per line: Year | Award | Organiser', type: 'textarea', rows: 2, default: vi ? '2025 | A\' Design Award | Bao bì Minh họa Xuất sắc\n2024 | Triển lãm Minh họa Trẻ Việt Nam | Top 20 Tác phẩm' : '2025 | A\' Design Award | Illustrated Packaging\n2024 | Young Illustrators Exhibition | Top 20 Selection' },
     { name: 'clients', label: vi ? 'Khách hàng đã hợp tác (phân tách dấu phẩy)' : 'Clients (comma separated)', default: 'Bloom Coffee, Leaf Tea, Nhã Nam, Vietcetera, Pizza 4P\'s' },

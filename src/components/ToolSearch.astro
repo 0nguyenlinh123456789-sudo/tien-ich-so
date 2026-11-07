@@ -1,6 +1,5 @@
 ---
-// Client-side tool finder. Tool list comes from tools.js at build time; matching strips Vietnamese
-// diacritics (NFD + remove U+0300–U+036F, đ→d) so "tien dien" finds "Tính tiền điện".
+// Instant client-side tool finder — shows clean search bar by default, reveals results only when typing.
 import { TOOLS, toolUrl, getTool, marketBadge } from '../data/tools.js';
 
 interface Props { lang?: 'vi' | 'en'; popular?: string[]; id?: string; }
@@ -10,7 +9,7 @@ const defaultPop = vi
   ? ['portfolio', 'documents', 'compress', 'salary', 'pitannual', 'lunar', 'electric', 'qr']
   : ['portfolio', 'documents', 'compress', 'fire', 'mortgage', 'loan', 'bmi', 'gpa'];
 const popList = (popular && popular.length ? popular : defaultPop).filter((p) => getTool(p));
-const fold = (s: string) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+const fold = (s: string) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
 
 const items = TOOLS.map((tl: any) => {
   const b = marketBadge(tl, lang);
@@ -30,49 +29,71 @@ const items = TOOLS.map((tl: any) => {
   };
 }).sort((a, b) => a.sortScore - b.sortScore);
 ---
-<div class="tool-search" data-tool-search>
-  <label for={id} class="label">{vi ? '🔍 Tìm kiếm nhanh trong 40+ công cụ (Việt Nam & Quốc tế)' : '🔍 Search 40+ Global & Regional Tools'}</label>
-  <input id={id} type="search" class="input" autocomplete="off" enterkeyhint="search"
-    placeholder={vi ? 'Gõ từ khóa: portfolio, cv, ảnh thẻ, lương, thuế, lịch âm, vay…' : 'Type a keyword: portfolio, resume, id photo, fire, mortgage, bmi, gpa…'} aria-controls={`${id}-list`} />
-  <p class="mt-2 text-xs text-slate-500" data-ts-status aria-live="polite">{vi ? '🔥 Công cụ nổi bật được dùng nhiều nhất' : '🔥 Most popular global studios & calculators'}</p>
-  <ul id={`${id}-list`} class="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+<div class="tool-search relative" data-tool-search>
+  <label for={id} class="sr-only">{vi ? 'Tìm công cụ' : 'Search tools'}</label>
+  <div class="relative flex items-center">
+    <span class="pointer-events-none absolute left-3.5 text-base opacity-60">🔍</span>
+    <input
+      id={id}
+      type="search"
+      class="w-full rounded-2xl border border-slate-200 bg-white py-3 pr-20 pl-10 text-sm font-medium text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none"
+      autocomplete="off"
+      enterkeyhint="search"
+      placeholder={vi ? 'Tìm nhanh: portfolio, cv, ảnh thẻ, lương, thuế, lịch âm…' : 'Quick search: portfolio, resume, id photo, fire, mortgage, bmi…'}
+      aria-controls={`${id}-list`}
+    />
+    <span class="pointer-events-none absolute right-3.5 rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500" data-ts-status>
+      {vi ? `${items.length} công cụ` : `${items.length} tools`}
+    </span>
+  </div>
+
+  <ul id={`${id}-list`} hidden class="mt-2 grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 text-slate-900 shadow-xl sm:grid-cols-2 lg:grid-cols-3">
     {items.map((it) => (
-      <li data-k={it.key} data-pop={it.rank >= 0 ? '1' : undefined} hidden={it.rank < 0}>
-        <a href={it.href} class="flex min-h-11 items-start gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 transition hover:border-brand-400 hover:shadow-xs">
-          <span class="mt-0.5 text-xl" aria-hidden="true">{it.icon}</span>
+      <li data-k={it.key} hidden>
+        <a href={it.href} class="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2.5 transition hover:border-brand-400 hover:bg-white hover:shadow-xs">
+          <span class="text-2xl" aria-hidden="true">{it.icon}</span>
           <span class="min-w-0 flex-1">
-            <span class={`mb-0.5 inline-block rounded-full px-1.5 py-0.2 text-[9px] font-bold ${it.badgeCls}`}>{it.badgeLabel}</span>
-            <span class="block truncate font-semibold text-slate-900">{it.title}</span>
+            <span class="block truncate text-sm font-bold text-slate-900">{it.title}</span>
             <span class="block truncate text-xs text-slate-500">{it.desc}</span>
           </span>
         </a>
       </li>
     ))}
   </ul>
-  <p class="mt-2 text-sm text-slate-500" data-ts-empty hidden>{vi ? 'Không tìm thấy công cụ phù hợp.' : 'No matching tool.'}</p>
+  <p class="mt-2 rounded-xl bg-white px-3 py-2 text-xs font-medium text-slate-500 shadow-xs" data-ts-empty hidden>
+    {vi ? 'Không tìm thấy công cụ phù hợp.' : 'No matching tool found.'}
+  </p>
 </div>
 
 <script>
-  const fold = (s: string) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+  const fold = (s: string) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
   document.querySelectorAll<HTMLElement>('[data-tool-search]').forEach((root) => {
     const input = root.querySelector('input')!;
+    const list = root.querySelector<HTMLUListElement>('ul')!;
     const items = Array.from(root.querySelectorAll<HTMLLIElement>('li[data-k]'));
     const empty = root.querySelector<HTMLElement>('[data-ts-empty]')!;
     const status = root.querySelector<HTMLElement>('[data-ts-status]')!;
-    const popLabel = status.textContent || '';
+    const defaultLabel = status.textContent || '';
     const vi = document.documentElement.lang !== 'en';
-    const MAX = 12;
+    const MAX = 9;
     const run = () => {
       const words = fold(input.value).trim().slice(0, 80).split(/\s+/).filter(Boolean);
+      if (!words.length) {
+        list.hidden = true;
+        empty.hidden = true;
+        status.textContent = defaultLabel;
+        return;
+      }
       let shown = 0;
       for (const li of items) {
-        const ok = words.length ? words.every((w) => (li.dataset.k || '').includes(w)) : li.dataset.pop === '1';
+        const ok = words.every((w) => (li.dataset.k || '').includes(w));
         const show = ok && shown < MAX;
         li.hidden = !show;
         if (show) shown++;
       }
+      list.hidden = shown === 0;
       empty.hidden = shown > 0;
-      status.textContent = words.length ? (vi ? `${shown} kết quả` : `${shown} result${shown === 1 ? '' : 's'}`) : popLabel;
+      status.textContent = vi ? `${shown} kết quả` : `${shown} found`;
     };
     input.addEventListener('input', run);
     if (input.value) run();

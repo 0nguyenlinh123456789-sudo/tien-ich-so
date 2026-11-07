@@ -24,8 +24,8 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
       {styles.map((s, i) => (
         <button type="button" data-style={s.id} data-fields={s.fields} hidden={i >= 12} class={`group rounded-xl border-2 bg-white p-2 text-left transition hover:border-brand-400 ${i === 0 ? 'border-brand-600' : 'border-slate-200'}`}>
           <div class="relative overflow-hidden rounded-lg bg-slate-100" style="aspect-ratio:16/11" data-thumb={s.id}></div>
-          <div class="mt-2 px-1 font-semibold text-slate-900">{s.name}</div>
-          <div class="px-1 pb-1 text-xs text-slate-500">{s.desc}</div>
+          <div class="mt-1.5 px-1 pb-0.5 text-xs font-bold text-slate-900 truncate">{s.name}</div>
+
         </button>
       ))}
     </div>
@@ -268,7 +268,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
   </div>
 
   <MonetizedResult context="tools" lang={lang} visible share={false} title={vi ? 'Gợi ý trình bày Portfolio chuyên nghiệp' : 'Tips for a professional portfolio presentation'}>
-    <p class="text-sm text-slate-600">{vi ? 'Khác với website thông thường, một Portfolio tốt thường được trình bày như một cuốn Sách Triển Lãm (Editorial Artbook 1400px): mở đầu bằng Poster Bìa có dấu cắt khung (Crop Marks), tiếp nối bằng Mục Lục Tác Phẩm (Index 01–06), đi sâu vào từng Case Study đa khung và khép lại bằng tấm thẻ Tri Ân.' : 'Unlike a generic website, a strong portfolio is art-directed as a 1400px Editorial Exhibition Book: opening with a Cover Poster Artboard with crop marks, followed by an Indexed Table of Works (01–06), multi-board Case Studies, and closing with an Appreciation Colophon.'}</p>
+    <p class="hidden"></p>
     <div class="mt-4 grid gap-3 sm:grid-cols-3">
       <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
         <div class="text-xs font-extrabold text-emerald-900">1. 🔍 {vi ? 'Chuẩn SEO Google Tự Động' : 'Built-in Google SEO Schema'}</div>
@@ -477,9 +477,9 @@ ${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escape
     };
 
     const GROUPS = [
-      { t: L('① Thông tin cá nhân, Trạng thái & Chữ ký Vẽ tay', '① Personal Info, Availability & Handwritten Signature'), keys: ['name', 'role', 'availability', 'manifesto', 'signature', 'bio', 'email', 'location', 'links', 'skills'], open: true },
-      { t: L('② Các mục trên trang, Bảng báo giá & Bố cục (Sửa từng dòng dễ dàng)', '② Page Sections, Pricing Tiers & Layout (Visual Row Editor)'), keys: ['sections', 'stats', 'services', 'pricing', 'process', 'testimonials', 'experience', 'awards', 'clients'], layout: true, open: true },
-      { t: L('③ Giao diện, Chất liệu Giấy Vẽ Tay & Sticker Độc bản', '③ Look, Hand-Crafted Paper Textures & Floating Stickers'), keys: ['paperTexture', 'handSticker', 'font', 'color', 'coverMode'], open: true }
+      { t: L('① Hồ sơ chính & Liên hệ', '① Main Profile & Contact'), keys: ['name', 'role', 'availability', 'manifesto', 'signature', 'bio', 'email', 'location', 'links', 'skills'], open: true },
+      { t: L('② Bảng giá, Dịch vụ & Mục mở rộng', '② Pricing, Services & Extra Sections'), keys: ['sections', 'stats', 'services', 'pricing', 'process', 'testimonials', 'experience', 'awards', 'clients'], layout: true, open: false },
+      { t: L('③ Chất liệu Giấy, Font & Màu sắc', '③ Paper Texture, Font & Color'), keys: ['paperTexture', 'handSticker', 'font', 'color', 'coverMode'], open: false }
     ];
     const byName = Object.fromEntries(fields.map((f: any) => [f.name, f]));
     q('[data-pf-fields]').innerHTML = GROUPS.map((g) => `<details class="group rounded-xl border border-slate-200 bg-slate-50/60"${g.open ? ' open' : ''}>
@@ -670,10 +670,10 @@ ${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escape
 <button type="button" data-pa="down" class="rounded px-1.5 text-slate-400 hover:bg-slate-100 disabled:opacity-30" ${i < projects.length - 1 ? '' : 'disabled'} title="${L('Xuống', 'Down')}">↓</button>
 <button type="button" data-pa="del" class="rounded px-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600" title="${L('Xóa', 'Delete')}">✕</button></div>
 <div class="grid grid-cols-[minmax(0,1fr)_70px] gap-1.5"><input class="${inp}" data-pk="cat" value="${escapeHtml(p.cat)}" placeholder="${L('Lĩnh vực (Branding, Vẽ tay, 3D…)', 'Category')}" /><input class="${inp}" data-pk="year" value="${escapeHtml(p.year)}" placeholder="${L('Năm', 'Year')}" /></div>
-<textarea class="${inp}" rows="2" data-pk="desc" placeholder="${L('Mô tả: vấn đề – cách làm – kết quả', 'Problem – process – result')}">${escapeHtml(p.desc)}</textarea>
-<input class="${inp}" data-pk="link" value="${escapeHtml(p.link)}" placeholder="https://… (${L('không bắt buộc', 'optional')})" /></div>
-<details class="col-span-2 rounded-lg bg-slate-50 px-2.5 py-1.5" data-pcs${p.open ? ' open' : ''}><summary class="cursor-pointer text-sm font-semibold text-brand-700">${L('Case study – kể quá trình tư duy', 'Case study – tell the story')} ${p.challenge || p.solution || p.result || p.gallery.length ? '✓' : ''}</summary>
-<div class="mt-2 grid gap-1.5">
+<input class="${inp}" data-pk="desc" value="${escapeHtml(p.desc)}" placeholder="${L('Mô tả ngắn dự án', 'Short description')}" /></div>
+
+<details class="col-span-2 rounded-lg bg-slate-50 px-2.5 py-1.5" data-pcs${p.open ? ' open' : ''}><summary class="cursor-pointer text-xs font-semibold text-brand-700">＋ ${L('Link & Case study chi tiết', 'Link & Case study details')} ${p.challenge || p.solution || p.result || p.gallery.length ? '✓' : ''}</summary>
+<div class="mt-2 grid gap-1.5"><input class="${inp}" data-pk="link" value="${escapeHtml(p.link)}" placeholder="https://… (${L('không bắt buộc', 'optional')})" />
 <textarea class="${inp}" rows="2" data-pk="challenge" placeholder="${L('Thử thách: khách hàng gặp vấn đề gì? Mục tiêu là gì?', 'Challenge: what problem, what goal?')}">${escapeHtml(p.challenge)}</textarea>
 <textarea class="${inp}" rows="2" data-pk="solution" placeholder="${L('Giải pháp: bạn nghiên cứu, phác thảo và thiết kế thế nào?', 'Solution: how did you research, sketch, design?')}">${escapeHtml(p.solution)}</textarea>
 <textarea class="${inp}" rows="2" data-pk="result" placeholder="${L('Kết quả: con số, phản hồi, giải thưởng (VD: doanh số +30%)', 'Result: numbers, feedback, awards')}">${escapeHtml(p.result)}</textarea>
@@ -738,7 +738,7 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
 
       // Also sync into main projects list if user hasn't uploaded custom images to default sample projects
       if (productGallery.length > 0) {
-        const hasCustomProjectImgs = projects.some((p) => Boolean(p.img || p.orig));
+        const hasCustomProjectImgs = projects.some((p) => Boolean(p.img || (p.orig && !String(p.orig).startsWith('data:image/svg+xml'))));
         if (!hasCustomProjectImgs) {
           projects = productGallery.slice(0, 12).map((pg) => blank({
             title: pg.title,
@@ -1076,7 +1076,7 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
       const t = ev.target as HTMLElement;
       const s = t.closest<HTMLElement>('[data-style]');
       if (s) {
-        style = s.dataset.style!;
+        style = s.dataset.style!; if (colorInput) colorInput.value = '#e11d48';
         history.replaceState(null, '', location.pathname + '?style=' + style);
         markStyle(); render();
         if (innerWidth < 1024) q('[data-pf-form]').scrollIntoView({ behavior: 'smooth' });
@@ -1288,7 +1288,7 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
       const pr = PORTFOLIO_PRESETS.find((x) => x.id === btn.dataset.preset);
       if (!pr) return;
       const pLabel = pr.label?.[lang] || (pr as any)[lang]?.label || pr.id;
-      if (!confirm(L(`Điền bộ hồ sơ mẫu chuyên sâu "${pLabel}"? Nghề, tuyên ngôn, chữ ký tay, bảng giá, dự án, Case Study, kinh nghiệm và chất liệu giấy sẽ được cập nhật.`, `Fill "${pLabel}" complete preset? Role, manifesto, signature, pricing, projects, case studies and paper texture will be updated.`))) return;
+      void pLabel;
       const c = (pr as any)[lang] || {};
       for (const k of ['role', 'availability', 'manifesto', 'signature', 'bio', 'skills', 'services', 'pricing', 'process', 'stats', 'experience', 'awards', 'testimonials', 'clients']) {
         const el = root.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[data-pf-fields] [name="${k}"]`);
