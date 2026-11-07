@@ -5,7 +5,7 @@ import '../styles/global.css';
 import fontLatin400 from '@fontsource/be-vietnam-pro/files/be-vietnam-pro-latin-400-normal.woff2?url';
 import fontVi400 from '@fontsource/be-vietnam-pro/files/be-vietnam-pro-vietnamese-400-normal.woff2?url';
 import site from '../config/site.json';
-import { MONETIZATION } from '../lib/monetize.js';
+import { donateInfo, MONETIZATION } from '../lib/monetize.js';
 import { t } from '../i18n/ui.js';
 import { SECTIONS, sectionUrl, homeUrl } from '../data/tools.js';
 
@@ -37,6 +37,8 @@ const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 const email = (site.contactEmail || '').trim();
 const showEmail = !!email && !/example\.com/i.test(email);
 const donateUrl = (MONETIZATION.donateUrl || "").startsWith("https://") ? MONETIZATION.donateUrl : "";
+const hasDonate = Boolean(donateUrl || donateInfo());
+const zaloUrl = String((MONETIZATION as any).zaloUrl || '').startsWith('https://zalo.me/') ? (MONETIZATION as any).zaloUrl : '';
 // Organization markup on the home pages only.
 const isHome = ['/', '/en', '/en/'].includes(clean(Astro.url.pathname));
 if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization', name: site.siteName, url: site.siteUrl, logo: new URL('/favicon.svg', site.siteUrl).href, sameAs: [] });
@@ -84,7 +86,13 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
           <span class="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white">⚡</span>
           <span>{siteName}</span>
         </a>
-        <nav class="ml-auto hidden gap-1 md:flex">
+        <nav class="ml-auto hidden items-center gap-1 md:flex">
+          <a href={lang === 'en' ? '/en/tools/portfolio-website-builder' : '/cong-cu/tao-portfolio-ca-nhan'} class="mr-1 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 px-3 py-1 text-xs font-extrabold text-white shadow-xs transition hover:brightness-110">
+            🎨 {lang === 'en' ? '108 Portfolios' : '108 Mẫu Portfolio'}
+          </a>
+          <a href={lang === 'en' ? '/en/tools/cv-contract-invoice' : '/cong-cu/tao-cv-hop-dong-hoa-don'} class="mr-1 inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-xs font-extrabold text-white shadow-xs transition hover:bg-slate-800">
+            📄 {lang === 'en' ? '108 CVs & Contracts' : '108 Mẫu CV & HĐ'}
+          </a>
           {Object.values(SECTIONS).map((s) => (
             <a href={sectionUrl(s.id, lang)} class="rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">
               {s.icon} {s.name[lang]}
@@ -146,7 +154,8 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
         <a class="underline" href={lang === 'en' ? '/en/about' : '/gioi-thieu'}>{lang === 'en' ? 'About' : 'Giới thiệu'}</a> ·
         <a class="underline" href={lang === 'en' ? '/en/contact' : '/lien-he'}>{lang === 'en' ? 'Contact' : 'Liên hệ'}</a>
         {showEmail && <> · <a class="underline" href={`mailto:${email}`}>{email}</a></>}
-        {donateUrl && <> · <a class="font-semibold text-brand-700 underline" href={donateUrl} target="_blank" rel="noopener nofollow">{lang === 'en' ? '☕ Support us' : '☕ Ủng hộ tác giả'}</a></>}
+        {zaloUrl && <> · <a class="underline" href={zaloUrl} target="_blank" rel="noopener nofollow">Zalo</a></>}
+        {hasDonate && <> · <a class="font-semibold text-brand-700 underline" href={lang === 'en' ? '/en/support' : '/ung-ho'}>{lang === 'en' ? '☕ Support us' : '☕ Ủng hộ tác giả'}</a></>}
       </div>
     </footer>
   </body>

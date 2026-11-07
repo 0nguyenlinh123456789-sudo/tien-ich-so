@@ -1,12 +1,13 @@
 ---
 /**
  * MonetizedResult – the result frame used by every tool.
- * Layout: [top result] → [contextual affiliate offers] → [display ad] → [bottom result] → [clearly-labelled sponsor link] → [share box]
+ * Layout: [top result] → [contextual affiliate offers] → [display ad] → [bottom result] → [self-serve inbound funnel] → [share box]
  * Hidden until the tool has produced a result (tool script removes the `hidden` attribute).
  */
 import AffiliateCards from './AffiliateCards.astro';
 import AdSlot from './AdSlot.astro';
 import ShareBox from './ShareBox.astro';
+import DonateBox from './DonateBox.astro';
 import { MONETIZATION, hasSmartLink } from '../lib/monetize.js';
 import { t } from '../i18n/ui.js';
 
@@ -16,18 +17,50 @@ interface Props {
   title?: string;
   visible?: boolean;
   share?: boolean;
+  tool?: string;
 }
-const { context, lang = 'vi', title, visible = false, share = true } = Astro.props;
+const { context, lang = 'vi', title, visible = false, share = true, tool } = Astro.props;
 const L = t(lang);
 const smart = hasSmartLink();
+const inbound = (MONETIZATION as any).inboundServices;
 ---
 <section data-monetized hidden={!visible} class="mt-6 scroll-mt-24">
   <div class="card">
     <h2 class="mb-4 text-xl font-bold">{title || L.result}</h2>
     <slot />
-    <AffiliateCards context={context} lang={lang} />
+    <AffiliateCards context={context} lang={lang} tool={tool} limit={2} />
     <AdSlot lang={lang} />
     <slot name="bottom" />
+
+    {inbound?.enabled && Array.isArray(inbound.tiers) && (
+      <div class="mt-6 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 p-4 text-white shadow-md">
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="inline-block rounded-full bg-amber-400/20 px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider text-amber-300 uppercase">
+              {inbound.badge?.[lang] || '💎 STUDIO'}
+            </span>
+            <h3 class="mt-0.5 text-sm font-extrabold text-white">{lang === 'vi' ? '⚡ Gợi ý làm tiếp 1 chạm' : '⚡ 1-Click Next Steps'}</h3>
+
+          </div>
+        </div>
+        <div class="grid gap-2.5 sm:grid-cols-3">
+          {inbound.tiers.map((tier: any) => (
+            <a href={tier.href?.[lang] || tier.href?.vi} class="group flex flex-col justify-between rounded-xl border border-white/15 bg-white/5 p-3 transition hover:border-amber-300/60 hover:bg-white/10">
+              <div>
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-xl">{tier.icon}</span>
+                  <span class="rounded-full bg-emerald-400/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">{tier.price?.[lang]}</span>
+                </div>
+                <div class="mt-1.5 text-xs font-extrabold text-white group-hover:text-amber-200">{tier.title?.[lang]}</div>
+
+              </div>
+              <div class="mt-2.5 text-[11px] font-bold text-amber-300">{tier.cta?.[lang]} →</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
     {smart && (
       <div class="mt-6 flex justify-center">
         <a href={MONETIZATION.smartLinkUrl} target="_blank" rel="sponsored noopener nofollow"
@@ -39,5 +72,5 @@ const smart = hasSmartLink();
     )}
   </div>
   {share && <ShareBox lang={lang} />}
+  {share && <DonateBox lang={lang} compact={false} />}
 </section>
-

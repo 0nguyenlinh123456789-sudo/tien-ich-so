@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DonateBox from '../components/DonateBox.astro';
+import { donateInfo, donateUrl } from '../lib/monetize.js';
+const d = donateInfo();
+const ext = donateUrl();
+---
+<Layout
+  title="Ủng hộ Tiện Ích Số"
+  description="Ủng hộ tự nguyện để Tiện Ích Số duy trì miễn phí: quét mã VietQR chuyển khoản hoặc mời một ly cà phê. Không bắt buộc, không mở khóa tính năng."
+  lang="vi"
+  alternate="/en/support"
+  noindex={!d && !ext}
+>
+  <article class="prose-lite card max-w-3xl">
+    <h1 class="text-3xl font-bold">☕ Ủng hộ tác giả</h1>
+    <p>Toàn bộ công cụ trên trang chạy ngay trên máy bạn, miễn phí, không thu thập dữ liệu. Chi phí duy trì được bù bằng quảng cáo nhẹ, link tiếp thị liên kết và sự ủng hộ tự nguyện của bạn.</p>
+    <p>Ủng hộ không mở khóa tính năng nào: mọi thứ đã và sẽ luôn miễn phí.</p>
+    <DonateBox lang="vi" compact={true} />
+    {!d && !ext && <p class="mt-4 text-sm text-slate-500">Thông tin ủng hộ sẽ được cập nhật sau.</p>}
+    <h2>Cách khác để giúp trang</h2>
+    <ul class="mb-3 list-disc pl-6">
+      <li>Chia sẻ link công cụ bạn thấy hữu ích lên Zalo, Facebook.</li>
+      <li>Báo lỗi số liệu qua trang <a class="underline" href="/lien-he">Liên hệ</a>.</li>
+      <li>Khi mua sắm, đi qua link gợi ý trên trang: bạn không mất thêm tiền, trang nhận hoa hồng nhỏ từ sàn.</li>
+    </ul>
+  </article>
+</Layout>

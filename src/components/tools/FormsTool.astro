@@ -1,38 +1,63 @@
 ---
-// Self-authored letters with no mandated legal form. Court forms (divorce) are only linked, never reproduced.
+// Self-authored letters & forms with dual-market support:
+// - Vietnam Standard ('vn' format with Quốc hiệu & Tiêu ngữ)
+// - International Business Standard ('intl' format for global/FDI companies)
 interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; }
 const { lang = 'vi', preset = {} } = Astro.props;
+const vi = lang === 'vi';
 const start = preset.kind || 'nghiviec';
+const defaultMarket = vi ? 'vn' : 'intl';
 const KIND_ICON: Record<string, string> = { nghiviec: '🚪', xinviec: '💼', nghiphep: '🏖️', nghihoc: '🎒', uyquyen: '🤝', emailcv: '✉️' };
-const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['nghiphep', 'Xin nghỉ phép'], ['nghihoc', 'Xin nghỉ học'], ['uyquyen', 'Giấy ủy quyền'], ['emailcv', 'Email gửi CV']];
+const KINDS_VI = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Đơn xin việc'], ['nghiphep', 'Xin nghỉ phép'], ['nghihoc', 'Xin nghỉ học'], ['uyquyen', 'Giấy ủy quyền'], ['emailcv', 'Email gửi CV']];
+const KINDS_EN = [['nghiviec', 'Resignation Letter'], ['xinviec', 'Cover Letter'], ['nghiphep', 'Leave Request'], ['nghihoc', 'Absence Note'], ['uyquyen', 'Authorization Letter'], ['emailcv', 'Job Application Email']];
+const KINDS = vi ? KINDS_VI : KINDS_EN;
 ---
 <div data-tool="forms" data-lang={lang} class="grid gap-5 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
   <form class="card grid min-w-0 content-start gap-3" data-f>
-    <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="8" y="4" width="40" height="50" rx="4" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/><path d="M16 14h24M16 22h24M16 30h24M16 38h14" stroke="#93b8ff" stroke-width="3" stroke-linecap="round"/><path d="M30 46c4-4 6 2 10-2" stroke="#1a45b8" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="62" y="10" width="40" height="44" rx="4" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/><path d="M70 20h24M70 28h24M70 36h16" stroke="#5eead4" stroke-width="3" stroke-linecap="round"/><path d="M118 44l40-34 8 8-40 34-11 3z" fill="#fde68a" stroke="#d97706" stroke-width="2.5" stroke-linejoin="round"/><path d="M150 18l8 8" stroke="#d97706" stroke-width="2.5"/><circle cx="206" cy="30" r="20" fill="none" stroke="#e11d48" stroke-width="3"/><circle cx="206" cy="30" r="13" fill="none" stroke="#e11d48" stroke-width="1.5"/><path d="M199 30l5 5 9-10" stroke="#e11d48" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3" data-kinds role="group" aria-label="Chọn mẫu đơn">
-      {KINDS.map(([k, l]) => <button type="button" data-kind={k} aria-pressed={k === start ? 'true' : 'false'} class={`form-kind ${k === start ? 'is-on' : ''}`}><span aria-hidden="true">{KIND_ICON[k]}</span>{l}</button>)}
+    <!-- Market Format Switcher: Vietnam Standard vs International / FDI Standard -->
+    <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2">
+      <span class="text-xs font-bold text-slate-700">{vi ? 'Chuẩn văn bản:' : 'Document standard:'}</span>
+      <div class="inline-flex rounded-lg bg-white p-0.5 shadow-2xs ring-1 ring-slate-200">
+        <button type="button" data-market-fmt="vn" class={`rounded-md px-2.5 py-1 text-xs font-bold transition ${defaultMarket === 'vn' ? 'bg-brand-600 text-white' : 'text-slate-600 hover:text-slate-900'}`}>
+          🇻🇳 {vi ? 'Chuẩn Hành chính VN' : 'Vietnam Standard'}
+        </button>
+        <button type="button" data-market-fmt="intl" class={`rounded-md px-2.5 py-1 text-xs font-bold transition ${defaultMarket === 'intl' ? 'bg-brand-600 text-white' : 'text-slate-600 hover:text-slate-900'}`}>
+          🌐 {vi ? 'Chuẩn Quốc tế / Công ty FDI (EN)' : 'International Business (EN)'}
+        </button>
+      </div>
+      <input type="hidden" name="marketFmt" value={defaultMarket} />
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3" data-kinds role="group" aria-label={vi ? 'Chọn mẫu đơn' : 'Choose letter template'}>
+      {KINDS.map(([k, l]) => <button type="button" data-kind={k} aria-pressed={k === start ? 'true' : 'false'} class={`form-kind ${k === start ? 'is-on' : ''}`}><span aria-hidden="true">{KIND_ICON[k]}</span><span data-kind-label={k}>{l}</span></button>)}
     </div>
     <input type="hidden" name="kind" value={start} />
-    <div><label class="label">Kính gửi</label><input class="input" name="to" value="Ban Giám đốc Công ty …" /></div>
+    <div><label class="label" data-l="to">{vi ? 'Kính gửi' : 'Recipient / Hiring Manager'}</label><input class="input" name="to" value={vi ? 'Ban Giám đốc & Phòng Nhân sự Công ty …' : 'Human Resources & Management Team'} /></div>
     <div class="grid grid-cols-2 gap-2">
-      <div><label class="label">Họ và tên</label><input class="input" name="name" placeholder="Nguyễn Văn A" /></div>
-      <div><label class="label">Ngày sinh</label><input class="input" name="dob" placeholder="01/01/1995" /></div>
+      <div><label class="label" data-l="name">{vi ? 'Họ và tên' : 'Full Name'}</label><input class="input" name="name" placeholder={vi ? 'Nguyễn Văn A' : 'Alex Johnson'} /></div>
+      <div><label class="label" data-l="dob">{vi ? 'Ngày sinh / Mã NV' : 'Date of Birth / ID'}</label><input class="input" name="dob" placeholder={vi ? '01/01/1995' : 'Optional'} /></div>
     </div>
     <div class="grid grid-cols-2 gap-2">
-      <div><label class="label" data-l="role">Chức vụ / Lớp</label><input class="input" name="role" /></div>
-      <div><label class="label" data-l="dept">Bộ phận / Trường</label><input class="input" name="dept" /></div>
+      <div><label class="label" data-l="role">{vi ? 'Chức vụ / Lớp' : 'Role / Position'}</label><input class="input" name="role" placeholder={vi ? 'Chuyên viên Kinh doanh' : 'Senior Product Designer'} /></div>
+      <div><label class="label" data-l="dept">{vi ? 'Bộ phận / Công ty' : 'Department / Company'}</label><input class="input" name="dept" placeholder={vi ? 'Phòng Kinh doanh' : 'Product & Engineering'} /></div>
     </div>
     <div class="grid grid-cols-2 gap-2" data-dates>
-      <div><label class="label" data-l="from">Từ ngày</label><input class="input" name="from" type="date" /></div>
-      <div><label class="label">Đến ngày</label><input class="input" name="until" type="date" /></div>
+      <div><label class="label" data-l="from">{vi ? 'Từ ngày' : 'Effective / Start Date'}</label><input class="input" name="from" type="date" /></div>
+      <div><label class="label" data-l="until">{vi ? 'Đến ngày' : 'End Date'}</label><input class="input" name="until" type="date" /></div>
     </div>
-    <div><label class="label">Lý do</label><textarea class="input" name="reason" rows="3"></textarea></div>
-    <div><label class="label">Người bàn giao / ghi chú</label><input class="input" name="handover" /></div>
-    <div><label class="label">Nơi viết</label><input class="input" name="place" value="TP. Hồ Chí Minh" /></div>
+    <div><label class="label" data-l="reason">{vi ? 'Lý do / Nội dung chính' : 'Reason / Key Details'}</label><textarea class="input" name="reason" rows="3" placeholder={vi ? 'Nêu ngắn gọn lý do hoặc điểm mạnh...' : 'Briefly state your reason or key achievements...'}></textarea></div>
+    <div><label class="label" data-l="handover">{vi ? 'Người nhận bàn giao / Ghi chú' : 'Handover Contact / Phone & Email'}</label><input class="input" name="handover" placeholder={vi ? 'Trần Thị B – 0901234567' : 'team@company.com · +1 (555) 234-5678'} /></div>
+    <div><label class="label" data-l="place">{vi ? 'Nơi viết' : 'City / Location'}</label><input class="input" name="place" value={vi ? 'TP. Hồ Chí Minh' : 'New York, NY'} /></div>
     <p class="text-xs text-slate-500" data-tip></p>
   </form>
   <div class="grid content-start gap-3">
-    <div class="flex gap-2"><button type="button" class="btn-primary" data-print>🖨 In / Lưu PDF</button><button type="button" class="btn-ghost" data-copy>📋 Copy</button></div>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="flex gap-2">
+        <button type="button" class="btn-primary" data-print>🖨 {vi ? 'In / Lưu PDF' : 'Print / Save PDF'}</button>
+        <button type="button" class="btn-ghost" data-copy>📋 {vi ? 'Sao chép nội dung' : 'Copy Text'}</button>
+      </div>
+      <span class="text-xs font-semibold text-emerald-700 hidden" data-copy-ok>✓ {vi ? 'Đã sao chép!' : 'Copied!'}</span>
+    </div>
     <article class="card font-serif text-[15px] leading-relaxed" data-doc style="min-height:560px"></article>
   </div>
 </div>
@@ -47,28 +72,116 @@ const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['n
     const dot = (s: string, w = 18) => (s ? `<b>${esc(s)}</b>` : '.'.repeat(w));
     const vd = (s: string) => (s ? s.split('-').reverse().join('/') : '');
     const kindIn = form.elements.namedItem('kind') as HTMLInputElement;
-    const TIPS: Record<string, string> = {
-      nghiviec: 'Báo trước theo Điều 35 Bộ luật Lao động 2019: ít nhất 45 ngày (HĐ không xác định thời hạn), 30 ngày (HĐ 12–36 tháng), 3 ngày làm việc (HĐ dưới 12 tháng). Một số ngành nghề đặc thù có thời hạn khác.',
-      xinviec: 'Đơn xin việc nên ngắn gọn, nêu vị trí, kinh nghiệm chính và đính kèm CV.',
-      nghiphep: 'Người làm đủ 12 tháng được nghỉ hằng năm ít nhất 12 ngày làm việc (Điều 113 Bộ luật Lao động 2019).',
-      nghihoc: 'Nộp cho giáo viên chủ nhiệm; học sinh dưới 18 tuổi cần phụ huynh ký.',
-      uyquyen: 'Giấy ủy quyền phù hợp việc đơn giản (nhận hồ sơ, nhận lương, nộp giấy tờ). Việc liên quan nhà đất, xe, tài sản lớn thường phải lập hợp đồng ủy quyền có công chứng – hỏi trước nơi tiếp nhận.',
-      emailcv: 'Tiêu đề email nên ghi rõ: [Ứng tuyển] Vị trí – Họ tên. Đính kèm CV dạng PDF, đặt tên file không dấu.'
+    const fmtIn = form.elements.namedItem('marketFmt') as HTMLInputElement;
+
+    const TIPS_VN: Record<string, string> = {
+      nghiviec: '🇻🇳 Theo Điều 35 Bộ luật Lao động 2019: Báo trước ít nhất 45 ngày (HĐ không xác định thời hạn), 30 ngày (HĐ 12–36 tháng), hoặc 3 ngày làm việc (HĐ dưới 12 tháng).',
+      xinviec: '🇻🇳 Đơn xin việc nên ngắn gọn 1 trang A4, nêu rõ vị trí ứng tuyển, thành tích nổi bật và đính kèm CV.',
+      nghiphep: '🇻🇳 Người lao động làm đủ 12 tháng được nghỉ phép năm hưởng nguyên lương ít nhất 12 ngày làm việc (Điều 113 BLLĐ 2019).',
+      nghihoc: '🇻🇳 Nộp cho giáo viên chủ nhiệm hoặc phòng công tác sinh viên; học sinh phổ thông cần chữ ký phụ huynh.',
+      uyquyen: '🇻🇳 Giấy ủy quyền cá nhân phù hợp thủ tục hành chính thông thường. Giao dịch bất động sản hoặc tài sản lớn cần công chứng tại văn phòng công chứng.',
+      emailcv: '🇻🇳 Tiêu đề email chuẩn: [Ứng tuyển] Vị trí – Họ và tên. Luôn đính kèm CV định dạng PDF và link Portfolio.'
     };
-    const LABELS: Record<string, [string, string, string]> = {
-      nghiviec: ['Chức vụ', 'Bộ phận', 'Nghỉ từ ngày'], xinviec: ['Vị trí ứng tuyển', 'Kinh nghiệm', 'Có thể bắt đầu'],
-      nghiphep: ['Chức vụ', 'Bộ phận', 'Từ ngày'], nghihoc: ['Lớp', 'Trường', 'Từ ngày'],
-      uyquyen: ['Người được ủy quyền', 'CCCD người được ủy quyền', 'Hiệu lực từ ngày'], emailcv: ['Vị trí ứng tuyển', 'Tên công ty', 'Có thể bắt đầu']
+    const TIPS_INTL: Record<string, string> = {
+      nghiviec: '🌐 International Standard: Two weeks’ notice (14 days) is standard in the US; 1–3 months is common in the UK, EU, Singapore & senior FDI roles.',
+      xinviec: '🌐 Keep your cover letter concise (3–4 paragraphs), highlighting measurable impact and linking to your Portfolio.',
+      nghiphep: '🌐 Submit your PTO / leave request in advance and name the colleague covering your responsibilities.',
+      nghihoc: '🌐 Formal excuse note for school or university faculty; attach a medical note if applicable.',
+      uyquyen: '🌐 Standard Letter of Authorization for delegating document pickup or representation. High-value asset transfers require notarization.',
+      emailcv: '🌐 Use a clear subject line: Application for [Role] – [Your Name], and attach both your PDF Resume and Portfolio link.'
     };
+
+    const LABELS_VN: Record<string, [string, string, string]> = {
+      nghiviec: ['Chức vụ', 'Bộ phận / Công ty', 'Nghỉ từ ngày'],
+      xinviec: ['Vị trí ứng tuyển', 'Kinh nghiệm nổi bật', 'Có thể bắt đầu'],
+      nghiphep: ['Chức vụ', 'Bộ phận / Công ty', 'Từ ngày'],
+      nghihoc: ['Lớp / Khóa', 'Trường / Khoa', 'Từ ngày'],
+      uyquyen: ['Người nhận ủy quyền', 'Số CCCD người nhận', 'Hiệu lực từ ngày'],
+      emailcv: ['Vị trí ứng tuyển', 'Tên công ty', 'Có thể bắt đầu']
+    };
+    const LABELS_INTL: Record<string, [string, string, string]> = {
+      nghiviec: ['Your Job Title', 'Department / Company', 'Last Working Day'],
+      xinviec: ['Target Position', 'Years of Experience & Skills', 'Available Start Date'],
+      nghiphep: ['Your Job Title', 'Department / Team', 'Leave Start Date'],
+      nghihoc: ['Class / Program', 'School / University', 'Absence Start Date'],
+      uyquyen: ['Authorized Representative', 'Representative ID / Passport', 'Valid From Date'],
+      emailcv: ['Target Position', 'Company Name', 'Available Start Date']
+    };
+
+    const KIND_NAMES_VN: Record<string, string> = {
+      nghiviec: 'Xin nghỉ việc', xinviec: 'Đơn xin việc', nghiphep: 'Xin nghỉ phép',
+      nghihoc: 'Xin nghỉ học', uyquyen: 'Giấy ủy quyền', emailcv: 'Email gửi CV'
+    };
+    const KIND_NAMES_INTL: Record<string, string> = {
+      nghiviec: 'Resignation Letter', xinviec: 'Cover Letter', nghiphep: 'Leave Request',
+      nghihoc: 'Absence Note', uyquyen: 'Authorization Letter', emailcv: 'Application Email'
+    };
+
     const draw = () => {
       const v = Object.fromEntries(new FormData(form)) as Record<string, string>;
-      const k = v.kind;
-      const [lr, ld, lf] = LABELS[k];
+      const k = v.kind || 'nghiviec';
+      const isIntl = v.marketFmt === 'intl';
+      const [lr, ld, lf] = (isIntl ? LABELS_INTL : LABELS_VN)[k] || LABELS_VN.nghiviec;
       root.querySelector('[data-l="role"]')!.textContent = lr;
       root.querySelector('[data-l="dept"]')!.textContent = ld;
       root.querySelector('[data-l="from"]')!.textContent = lf;
-      tip.textContent = TIPS[k];
+      root.querySelector('[data-l="to"]')!.textContent = isIntl ? 'To (Recipient / Manager)' : 'Kính gửi';
+      root.querySelector('[data-l="name"]')!.textContent = isIntl ? 'Full Name' : 'Họ và tên';
+      root.querySelector('[data-l="dob"]')!.textContent = isIntl ? 'Date of Birth / Employee ID' : 'Ngày sinh / Mã NV';
+      root.querySelector('[data-l="until"]')!.textContent = isIntl ? 'End Date' : 'Đến ngày';
+      root.querySelector('[data-l="reason"]')!.textContent = isIntl ? 'Reason / Key Details' : 'Lý do / Nội dung chính';
+      root.querySelector('[data-l="handover"]')!.textContent = isIntl ? 'Handover Contact / Phone & Email' : 'Người nhận bàn giao / Liên hệ';
+      root.querySelector('[data-l="place"]')!.textContent = isIntl ? 'City / Location' : 'Nơi viết';
+
+      root.querySelectorAll<HTMLElement>('[data-kind-label]').forEach((el) => {
+        const key = el.dataset.kindLabel!;
+        el.textContent = isIntl ? KIND_NAMES_INTL[key] : KIND_NAMES_VN[key];
+      });
+
+      tip.textContent = (isIntl ? TIPS_INTL : TIPS_VN)[k] || '';
       const now = new Date();
+
+      if (isIntl) {
+        const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const fromStr = v.from || 'the effective date';
+        const untilStr = v.until || 'the return date';
+        if (k === 'emailcv') {
+          doc.innerHTML = `<p><b>Subject:</b> Application for ${dot(v.role, 16)} – ${dot(v.name, 16)}</p><hr class="my-3"><p>Dear ${dot(v.to, 22)},</p><p class="mt-3">I am writing to apply for the ${dot(v.role, 16)} position at ${dot(v.dept, 18)}. ${v.reason ? esc(v.reason) : 'With a proven track record of delivering high-impact work, I am excited to contribute to your team.'}</p><p class="mt-3">I have attached my Resume/CV and portfolio for your review, and I am available to start from ${dot(fromStr, 12)}. Thank you for your time and consideration.</p><p class="mt-5">Sincerely,<br><b>${dot(v.name, 18)}</b>${v.handover ? `<br>${esc(v.handover)}` : ''}</p>`;
+          return;
+        }
+        const titlesIntl: Record<string, string> = {
+          nghiviec: 'FORMAL LETTER OF RESIGNATION',
+          xinviec: 'JOB APPLICATION & COVER LETTER',
+          nghiphep: 'FORMAL LEAVE OF ABSENCE REQUEST',
+          nghihoc: 'STUDENT ABSENCE EXCUSE LETTER',
+          uyquyen: 'LETTER OF AUTHORIZATION'
+        };
+        const bodiesIntl: Record<string, string> = {
+          nghiviec: `<p>Please accept this letter as formal notification that I am resigning from my position as ${dot(v.role, 16)} in ${dot(v.dept, 18)}. My last day of employment will be ${dot(fromStr, 14)}.</p><p class="mt-3">${v.reason ? `Reason / Note: ${esc(v.reason)}. ` : ''}I am deeply grateful for the opportunities and collaboration during my tenure.</p><p class="mt-3">Prior to my departure, I will ensure a seamless handover of all duties, files and responsibilities to ${dot(v.handover, 20)}.</p>`,
+          xinviec: `<p>I am writing to express my strong interest in the ${dot(v.role, 16)} role. I bring ${dot(v.dept, 20)} of relevant experience and domain expertise.</p><p class="mt-3">${dot(v.reason, 36)}</p><p class="mt-3">I am available to begin on ${dot(fromStr, 14)} and have enclosed my Resume/CV for your review. I would welcome the opportunity to discuss how my skills align with your goals.</p>`,
+          nghiphep: `<p>I am writing to formally request a leave of absence from my role as ${dot(v.role, 16)} (${dot(v.dept, 16)}) starting on ${dot(fromStr, 12)} through ${dot(untilStr, 12)}.</p><p class="mt-3">Reason for leave: ${dot(v.reason, 32)}.</p><p class="mt-3">During my absence, my ongoing tasks will be covered by ${dot(v.handover, 20)}, and I will remain reachable for urgent matters.</p>`,
+          nghihoc: `<p>I am a student in ${dot(v.role, 14)} at ${dot(v.dept, 20)}. I respectfully request an excused absence from classes from ${dot(fromStr, 12)} to ${dot(untilStr, 12)}.</p><p class="mt-3">Reason: ${dot(v.reason, 32)}.</p><p class="mt-3">I will review all lecture materials and complete every assigned coursework on time.</p>`,
+          uyquyen: `<p>I, ${dot(v.name, 18)}${v.dob ? ` (ID/DOB: ${esc(v.dob)})` : ''}, hereby authorize <b>${dot(v.role, 18)}</b> (ID/Passport No.: ${dot(v.dept, 14)}) to act on my behalf regarding the following matter:</p><p class="mt-3">${dot(v.reason, 36)}</p><p class="mt-3">This authorization is valid from ${dot(fromStr, 12)} until ${dot(untilStr, 12)}. ${v.handover ? esc(v.handover) : ''}</p>`
+        };
+        doc.innerHTML = `
+          <div class="flex flex-wrap justify-between border-b border-slate-200 pb-3 text-sm text-slate-600">
+            <div><b>From:</b> ${dot(v.name, 18)}${v.dob ? ` (${esc(v.dob)})` : ''}</div>
+            <div>${esc(v.place || '')}${v.place ? ', ' : ''}${dateStr}</div>
+          </div>
+          <p class="mt-5 text-center text-lg font-bold tracking-wide">${titlesIntl[k] || 'BUSINESS LETTER'}</p>
+          <p class="mt-4"><b>To:</b> ${dot(v.to, 26)}</p>
+          <p class="mt-4">Dear ${dot(v.to, 20)},</p>
+          <div class="mt-3">${bodiesIntl[k] || ''}</div>
+          <p class="mt-4">Thank you very much for your understanding and support.</p>
+          <div class="mt-8 w-64">
+            <p>Sincerely,</p>
+            <div class="h-14"></div>
+            <p class="font-bold">${esc(v.name || '______________________')}</p>
+            ${v.handover ? `<p class="text-xs text-slate-500">${esc(v.handover)}</p>` : ''}
+          </div>`;
+        return;
+      }
+
       const title = { nghiviec: 'ĐƠN XIN NGHỈ VIỆC', xinviec: 'ĐƠN XIN VIỆC', nghiphep: 'ĐƠN XIN NGHỈ PHÉP', nghihoc: 'ĐƠN XIN NGHỈ HỌC', uyquyen: 'GIẤY ỦY QUYỀN', emailcv: '' }[k];
       const me = k === 'nghihoc' ? 'Em' : 'Tôi';
       const body: Record<string, string> = {
@@ -92,19 +205,32 @@ const KINDS = [['nghiviec', 'Xin nghỉ việc'], ['xinviec', 'Xin việc'], ['n
         <p class="mt-2">${me} xin chân thành cảm ơn!</p>
         <div class="mt-8 ml-auto w-64 text-center"><i>${esc(v.place || '')}, ngày ${now.getDate()} tháng ${now.getMonth() + 1} năm ${now.getFullYear()}</i><br><b>${k === 'uyquyen' ? 'Người ủy quyền' : 'Người làm đơn'}</b><br><i>(Ký, ghi rõ họ tên)</i><div class="h-16"></div><b>${esc(v.name || '')}</b></div>`;
     };
+
+    root.querySelectorAll<HTMLButtonElement>('[data-market-fmt]').forEach((b) => b.addEventListener('click', () => {
+      fmtIn.value = b.dataset.marketFmt!;
+      root.querySelectorAll<HTMLButtonElement>('[data-market-fmt]').forEach((x) => {
+        const on = x === b;
+        x.className = `rounded-md px-2.5 py-1 text-xs font-bold transition ${on ? 'bg-brand-600 text-white' : 'text-slate-600 hover:text-slate-900'}`;
+      });
+      draw();
+    }));
+
     root.querySelectorAll<HTMLButtonElement>('[data-kind]').forEach((b) => b.addEventListener('click', () => {
       kindIn.value = b.dataset.kind!;
       root.querySelectorAll('[data-kind]').forEach((x) => { x.classList.toggle('is-on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
       draw();
     }));
     form.addEventListener('input', draw);
-    root.querySelector('[data-copy]')!.addEventListener('click', () => navigator.clipboard?.writeText(doc.innerText));
+    root.querySelector('[data-copy]')!.addEventListener('click', () => {
+      navigator.clipboard?.writeText(doc.innerText);
+      const ok = root.querySelector('[data-copy-ok]');
+      if (ok) { ok.classList.remove('hidden'); setTimeout(() => ok.classList.add('hidden'), 2000); }
+    });
     root.querySelector('[data-print]')!.addEventListener('click', () => gate(() => {
-      // Print from a hidden iframe without allow-scripts: even if markup slipped through escaping, nothing in it can run.
       const f = document.createElement('iframe');
       f.setAttribute('sandbox', 'allow-modals allow-same-origin');
       f.style.cssText = 'position:fixed;width:0;height:0;border:0;visibility:hidden';
-      f.srcdoc = `<!doctype html><meta charset="utf-8"><title>Don</title><style>body{font:16px/1.7 "Times New Roman",serif;max-width:720px;margin:40px auto;padding:0 24px}.text-center{text-align:center}.font-bold,b{font-weight:700}.text-xl{font-size:20px}.underline{text-decoration:underline}.mt-2{margin-top:8px}.mt-4{margin-top:16px}.mt-6{margin-top:24px}.mt-8{margin-top:32px}.ml-auto{margin-left:auto}.w-64{width:280px}.h-16{height:64px}</style>${doc.innerHTML}`;
+      f.srcdoc = `<!doctype html><meta charset="utf-8"><title>Document</title><style>body{font:16px/1.7 "Times New Roman",serif;max-width:720px;margin:40px auto;padding:0 24px}.text-center{text-align:center}.font-bold,b{font-weight:700}.text-xl{font-size:20px}.text-lg{font-size:18px}.underline{text-decoration:underline}.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}.mt-5{margin-top:20px}.mt-6{margin-top:24px}.mt-8{margin-top:32px}.ml-auto{margin-left:auto}.w-64{width:280px}.h-16{height:64px}.h-14{height:56px}.flex{display:flex;justify-content:space-between}.border-b{border-bottom:1px solid #cbd5e1;padding-bottom:8px}</style>${doc.innerHTML}`;
       f.onload = () => { f.contentWindow?.print(); setTimeout(() => f.remove(), 60000); };
       document.body.appendChild(f);
     }));

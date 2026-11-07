@@ -155,12 +155,91 @@ export function detailFrameSvg(title, cat, i, c, kind = 'sketch') {
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
-function prepare(v, images = []) {
-  const c = color(v.color, '#2563eb');
-  const useHandCover = v.coverMode === 'hand';
+export function sampleLogoSvg(name = 'STUDIO', a = 0, b = '#2563eb') { const i = typeof a === 'number' ? a : (typeof b === 'number' ? b : 0); const c = typeof a === 'string' && a.startsWith('#') ? a : (typeof b === 'string' && b.startsWith('#') ? b : '#2563eb');
+  const acc = color(c, '#2563eb');
+  const label = e(String(name || 'BRAND').slice(0, 14).toUpperCase());
+  const mark = [
+    `<circle cx="32" cy="32" r="20" fill="${acc}"/><circle cx="42" cy="24" r="9" fill="#fff"/>`,
+    `<rect x="12" y="12" width="40" height="40" rx="10" fill="${acc}"/><path d="M22,40 L32,20 L42,40 Z" fill="#fff"/>`,
+    `<polygon points="32,8 54,48 10,48" fill="${acc}"/><circle cx="32" cy="36" r="7" fill="#fff"/>`,
+    `<rect x="12" y="16" width="24" height="32" rx="6" fill="${acc}"/><rect x="28" y="16" width="24" height="32" rx="6" fill="#0f172a" opacity=".85"/>`
+  ][i % 4];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="64" viewBox="0 0 240 64"><rect width="240" height="64" rx="12" fill="#ffffff"/>${mark}<text x="66" y="38" font-family="system-ui,sans-serif" font-size="18" font-weight="900" fill="#0f172a" letter-spacing="1.5">${label}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+export function sampleBannerSvg(title = 'KEY VISUAL CAMPAIGN 2026', sub = 'BRAND IDENTITY & PRODUCT SHOWCASE', a = 0, b = '#2563eb') { const i = typeof a === 'number' ? a : (typeof b === 'number' ? b : 0); const c = typeof a === 'string' && a.startsWith('#') ? a : (typeof b === 'string' && b.startsWith('#') ? b : '#2563eb');
+  const acc = color(c, '#2563eb');
+  const bgs = [
+    ['#090d16', acc, '#38bdf8'],
+    ['#181311', '#d97757', '#fbbf24'],
+    ['#071c15', '#10b981', '#a7f3d0']
+  ];
+  const [bg, p1, p2] = bgs[i % bgs.length];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="560" viewBox="0 0 1400 560"><defs><linearGradient id="bn${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${bg}"/><stop offset="1" stop-color="#05070b"/></linearGradient></defs><rect width="1400" height="560" fill="url(#bn${i})"/><circle cx="1080" cy="280" r="240" fill="${p1}" opacity=".85"/><circle cx="1190" cy="190" r="130" fill="${p2}" opacity=".75"/><rect x="860" y="95" width="410" height="370" rx="22" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="2"/><text x="90" y="135" font-family="monospace" font-size="14" font-weight="700" fill="${p2}" letter-spacing="4">HERO CAMPAIGN BANNER // 0${i + 1}</text><text x="90" y="265" font-family="system-ui,sans-serif" font-size="64" font-weight="900" fill="#ffffff" letter-spacing="-2">${e(String(title).slice(0, 32))}</text><text x="90" y="325" font-family="system-ui,sans-serif" font-size="22" font-weight="600" fill="#cbd5e1">${e(String(sub).slice(0, 56))}</text><rect x="90" y="375" width="180" height="48" rx="99" fill="${p1}"/><text x="128" y="405" font-family="system-ui,sans-serif" font-size="14" font-weight="800" fill="#fff" letter-spacing="1.5">FEATURED WORK</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+export function sampleProductSvg(title = 'Product Shot', cat = 'Packaging', a = 'square', b = 0, d = '#2563eb') { const orient = ['banner', 'portrait', 'square', 'landscape'].includes(String(a)) ? a : (['banner', 'portrait', 'square', 'landscape'].includes(String(d)) ? d : 'square'); const i = typeof b === 'number' ? b : (typeof a === 'number' ? a : 0); const c = [a, b, d].find((x) => typeof x === 'string' && x.startsWith('#')) || '#2563eb';
+  const acc = color(c, '#2563eb');
+  const dims = orient === 'banner' ? [1200, 540] : orient === 'portrait' ? [680, 920] : orient === 'square' ? [800, 800] : [960, 640];
+  const [w, h] = dims;
+  const tones = [
+    ['#f8fafc', '#0f172a', acc],
+    ['#faf6f0', '#1c1917', '#d97757'],
+    ['#f0fdf4', '#064e3b', '#10b981'],
+    ['#fdf2f8', '#4c0519', '#e11d48'],
+    ['#eff6ff', '#1e1b4b', '#4f46e5']
+  ];
+  const [bg, fg, p1] = tones[i % tones.length];
+  const cx = Math.round(w / 2), cy = Math.round(h / 2) - 20;
+  const r = Math.round(Math.min(w, h) * 0.25);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${bg}"/><rect x="28" y="28" width="${w - 56}" height="${h - 56}" rx="20" fill="none" stroke="${fg}" stroke-opacity=".12" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="${p1}" opacity=".88"/><rect x="${cx - Math.round(r * 0.65)}" y="${cy - Math.round(r * 0.75)}" width="${Math.round(r * 1.3)}" height="${Math.round(r * 1.5)}" rx="18" fill="${fg}" opacity=".9"/><circle cx="${cx}" cy="${cy}" r="${Math.round(r * 0.35)}" fill="#ffffff" opacity=".92"/><text x="56" y="74" font-family="monospace" font-size="13" font-weight="700" fill="${p1}" letter-spacing="2.5">${e(String(cat).toUpperCase())} // ${orient.toUpperCase()}</text><text x="56" y="${h - 86}" font-family="system-ui,sans-serif" font-size="32" font-weight="900" fill="${fg}" letter-spacing="-0.8">${e(String(title).slice(0, 30))}</text><text x="56" y="${h - 52}" font-family="monospace" font-size="13" fill="${fg}" opacity=".6">PRODUCT SHOWCASE · NO. 0${i + 1}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+export function classifyRatio(r, h = 0) {
+  const n = h ? (Number(r) / (Number(h) || 1)) : (Number(r) || 1.33);
+  if (n >= 1.65) return 'banner';
+  if (n <= 0.86) return 'portrait';
+  if (n >= 0.87 && n <= 1.16) return 'square';
+  return 'landscape';
+}
+
+function prepareAssets(v) {
+  const logo = imgSrc(v.logo || '');
+  const brandLogos = (Array.isArray(v.brandLogos) ? v.brandLogos : []).map((b, i) => ({
+    name: e((b && b.name) || `Brand ${i + 1}`),
+    src: imgSrc((b && b.src) || b)
+  })).filter((b) => b.src);
+  const banners = (Array.isArray(v.banners) ? v.banners : []).map((b, i) => ({
+    title: e((b && b.title) || v.name || `Campaign 0${i + 1}`),
+    sub: e((b && (b.sub || b.subtitle)) || v.role || ''),
+    src: imgSrc((b && b.src) || b),
+    ratio: Number(b && b.ratio) || 2.2
+  })).filter((b) => b.src);
+  const productGallery = (Array.isArray(v.productGallery) ? v.productGallery : []).map((p, i) => {
+    const ratio = Number(p && p.ratio) || 1.33;
+    return {
+      title: e((p && p.title) || `Product 0${i + 1}`),
+      cat: e((p && p.cat) || 'Product'),
+      src: imgSrc((p && p.src) || p),
+      ratio,
+      orient: (p && p.orient) || classifyRatio(ratio),
+      span: (p && ['sp-12', 'sp-8', 'sp-6', 'sp-4', 'sp-3'].includes(p.span)) ? p.span : ''
+    };
+  }).filter((p) => p.src);
+  return { logo, brandLogos, banners, productGallery, autoLayoutMode: String(v.autoLayoutMode || 'smart') };
+}
+
+function prepare(v, images = [], st = null, opts = {}) {
+  const sigC = st && st.accent ? st.accent : '#2563eb';
+  const c = (opts && opts.thumb) ? sigC : color((v.color && v.color !== '#e11d48') ? v.color : sigC, sigC);
+  const isHandStyle = st && Array.isArray(st.fields) ? (st.fields[0] === 'handcraft' || ['inkwash', 'watercolor', 'botanical', 'comic', 'scrapbook', 'risograph', 'tarot_alchemy', 'clay_play', 'sketch', 'illustrator', 'collage'].includes(st.id)) : (v.coverMode === 'hand');
+  const seedOffset = st && typeof st.seed === 'number' ? st.seed : 0;
   const projects = lines(v.projects).map((l, i) => {
     const [title, cat, year, desc, link] = l.split('|').map((x) => x.trim());
-    const fallback = useHandCover ? handDrawnPlaceholder(title, i, c) : placeholder(title, i, c);
+    const fallback = isHandStyle ? handDrawnPlaceholder(title, i + seedOffset, c) : placeholder(title, i + seedOffset, c);
     return {
       title: e(title || ''), cat: e(cat || ''), year: e(year || ''), desc: e(desc || ''), link: safeUrl(link),
       img: imgSrc(images[i]) || fallback,
@@ -170,7 +249,7 @@ function prepare(v, images = []) {
   });
   const links = lines(v.links).map((l) => { const [label, url] = l.split('|').map((x) => x.trim()); return { label: e(label || url || ''), url: safeUrl(url) }; }).filter((x) => x.url);
   return {
-    c, projects, links,
+    c, projects, links, ...prepareAssets(v),
     name: e(v.name), role: e(v.role), bio: e(v.bio), email: e(v.email), loc: e(v.location),
     avail: e(v.availability || ''), manifesto: e(v.manifesto || ''), sig: e(v.signature || v.name || ''),
     mail: safeUrl('mailto:' + String(v.email || '').trim()),
@@ -1207,10 +1286,525 @@ function clayPlay(d, L, lang) {
 <footer id="contact" class="clay" style="margin-top:36px;text-align:center"><h2>${L.hire}</h2>${contactLinks(d)}</footer></div>` });
 }
 
+// ---------------------------------------------------------------- 39–108. Specialized Portfolio Architecture Engine (70 Distinct Non-Duplicate Styles)
+const PF_ACCENT_POOL = ['#2563eb', '#d97706', '#059669', '#7c3aed', '#db2777', '#dc2626', '#0891b2', '#4f46e5', '#b45309', '#0d9488'];
+const PF_LIGHT_TINTS = [
+  ['#f8fafc', '#ffffff', '#e2e8f0'],
+  ['#fcfbf7', '#ffffff', '#e5dec9'],
+  ['#f5f9ff', '#ffffff', '#d8e4f5'],
+  ['#f6fbf8', '#ffffff', '#d5e8dc'],
+  ['#faf8ff', '#ffffff', '#e2d9f3'],
+  ['#fffaf5', '#ffffff', '#eddcc9']
+];
+
+function makeSpecializedPortfolio(cfg) {
+  const seed = Array.from(String(cfg.id || '')).reduce((acc, ch, idx) => acc + ch.charCodeAt(0) * (idx + 5), 0);
+  const alt = seed % 2 === 1;
+  const tint = PF_LIGHT_TINTS[seed % PF_LIGHT_TINTS.length];
+  const defaultAccent = cfg.c || PF_ACCENT_POOL[seed % PF_ACCENT_POOL.length];
+  return function (d, L, lang) {
+    const c = (d.c && d.c !== '#e11d48' && d.c !== '#2563eb') ? d.c : defaultAccent;
+    const dark = !!cfg.dark;
+    const bg = cfg.bg || (dark ? '#090d16' : tint[0]);
+    const fg = dark ? '#f8fafc' : (cfg.fg || '#0f172a');
+    const cardBg = cfg.cardBg || (dark ? '#111827' : tint[1]);
+    const bdr = cfg.bdr || (dark ? '#1e293b' : tint[2]);
+    const sub = dark ? '#94a3b8' : '#64748b';
+    const fonts = cfg.serif
+      ? 'family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;600;700'
+      : cfg.mono
+      ? 'family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@500;700'
+      : cfg.hand
+      ? 'family=Caveat:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;800'
+      : 'family=Plus+Jakarta+Sans:wght@400;600;800&family=Syne:wght@700;800';
+    const hFont = cfg.serif ? `'Playfair Display',Georgia,serif` : cfg.mono ? `'JetBrains Mono',monospace` : cfg.hand ? `'Caveat',cursive` : `'Syne','Plus Jakarta Sans',sans-serif`;
+    const bFont = cfg.mono ? `'Space Grotesk',sans-serif` : `'Plus Jakarta Sans','Be Vietnam Pro',sans-serif`;
+    const badge = cfg.badge || 'CURATED PORTFOLIO // 1400PX';
+    const arch = cfg.arch || 'bento_studio';
+
+    const logoBadge = d.logo
+      ? `<img src="${d.logo}" alt="${d.name}" style="height:38px;width:auto;max-width:150px;object-fit:contain;border-radius:6px">`
+      : `<span style="display:inline-flex;align-items:center;gap:8px;font-family:${hFont};font-weight:800;font-size:18px"><i style="width:10px;height:10px;border-radius:50%;background:${c};display:inline-block"></i>${d.name}</span>`;
+
+    if (arch === 'editorial_spread' && alt) {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg}}
+.w{max-width:1340px;margin:0 auto;padding:30px 26px}
+.ed-shell{display:grid;grid-template-columns:320px 1fr;gap:34px;align-items:start}
+.ed-side{position:sticky;top:24px;background:${cardBg};border:1.5px solid ${bdr};border-top:5px solid ${c};padding:26px;border-radius:14px}
+.ed-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.ed-card{background:${cardBg};border:1px solid ${bdr};border-radius:12px;overflow:hidden;transition:transform .25s,border-color .25s}
+.ed-card:first-child{grid-column:span 2}
+.ed-card:hover{transform:translateY(-4px);border-color:${c}}
+.ed-card img{width:100%;aspect-ratio:16/10;object-fit:cover;border-bottom:1px solid ${bdr}}
+@media(max-width:860px){.ed-shell,.ed-cards{grid-template-columns:1fr}.ed-side{position:static}.ed-card:first-child{grid-column:span 1}}`,
+        body: `<div class="w"><div class="ed-shell">
+<aside class="ed-side"><div style="margin-bottom:14px">${logoBadge}</div><div style="font-family:monospace;font-size:10.5px;letter-spacing:.16em;color:${c};font-weight:800;margin-bottom:6px">${badge}</div><h1 style="font-family:${hFont};font-size:38px;line-height:1.02;margin:0 0 8px">${d.name}</h1><div style="font-size:14px;font-weight:700;color:${c};margin-bottom:12px">${d.role} · ${d.loc}</div><p style="font-size:14.5px;line-height:1.68;color:${sub};margin:0 0 16px">${d.bio}</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px">${d.skills.map((s) => `<span style="padding:3px 10px;border:1px solid ${bdr};border-radius:6px;font-size:11.5px;font-weight:600">${s}</span>`).join('')}</div><div style="padding-top:14px;border-top:1px solid ${bdr};font-size:13px;font-weight:700;color:${c};display:flex;flex-direction:column;gap:6px">${contactLinks(d)}</div></aside>
+<main id="work" class="ed-cards">${d.projects.map((p, i) => `<article class="ed-card"><img src="${p.img}" alt="${p.title}"><div style="padding:20px"><div style="font-family:monospace;font-size:11px;color:${c};font-weight:700">FOLIO 0${i + 1} · ${p.cat} · ${p.year}</div><h3 style="font-family:${hFont};font-size:24px;margin:6px 0 8px">${p.title}</h3><p style="font-size:14.5px;line-height:1.65;color:${sub};margin:0 0 12px">${p.desc}</p>${projLink(p, L)}</div></article>`).join('')}</main></div>
+<footer id="contact" style="margin-top:40px;padding:30px;background:${cardBg};border:1px solid ${bdr};border-radius:14px;text-align:center"><h2 style="font-family:${hFont};font-size:34px;margin:0 0 10px">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:700;color:${c}">${contactLinks(d)}</div></footer></div>` });
+    }
+
+    if (arch === 'editorial_spread') {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg}}
+.w{max-width:1320px;margin:0 auto;padding:28px}
+.mast{border-top:4px solid ${fg};border-bottom:2px solid ${fg};padding:18px 0;margin-bottom:32px}
+.mast-top{display:flex;justify-content:space-between;align-items:center;font-family:monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:${sub};border-bottom:1px solid ${bdr};padding-bottom:10px;margin-bottom:16px}
+.mast h1{font-family:${hFont};font-size:clamp(44px,7vw,92px);line-height:.94;margin:0;letter-spacing:-.02em}
+.spread-row{display:grid;grid-template-columns:1.25fr 1fr;gap:32px;padding:28px 0;border-bottom:1px solid ${bdr};align-items:center}
+.spread-row:nth-child(even) .sp-img{order:2}
+.sp-img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:${cfg.radius || '8px'};border:1px solid ${bdr}}
+@media(max-width:780px){.spread-row{grid-template-columns:1fr}.spread-row:nth-child(even) .sp-img{order:0}}`,
+        body: `<div class="w">
+<header class="mast"><div class="mast-top">${logoBadge}<span>${badge}</span><span>${d.loc}</span></div>
+<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:28px;align-items:end"><div><div style="color:${c};font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px">${d.role}</div><h1>${d.name}</h1></div><div><p style="font-size:16.5px;line-height:1.7;color:${sub};margin:0">${d.bio}</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">${d.skills.slice(0, 7).map((s) => `<span style="padding:4px 11px;border:1px solid ${bdr};border-radius:99px;font-size:11.5px;font-weight:600">${s}</span>`).join('')}</div></div></div></header>
+<section id="work">${d.projects.map((p, i) => `<article class="spread-row"><img class="sp-img" src="${p.img}" alt="${p.title}"><div><div style="font-family:monospace;font-size:12px;color:${c};font-weight:700">CHAPTER 0${i + 1} // ${p.cat} (${p.year})</div><h3 style="font-family:${hFont};font-size:clamp(26px,3.2vw,40px);margin:8px 0 10px;line-height:1.08">${p.title}</h3><p style="font-size:15.5px;line-height:1.7;color:${sub};margin:0 0 14px">${p.desc}</p>${projLink(p, L)}</div></article>`).join('')}</section>
+<footer id="contact" style="margin-top:44px;padding:36px;background:${cardBg};border:1px solid ${bdr};border-radius:16px;text-align:center"><h2 style="font-family:${hFont};font-size:38px;margin:0 0 10px">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:700;color:${c}">${contactLinks(d)}</div></footer></div>` });
+    }
+
+    if (arch === 'cyber_hud' && alt) {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg};background-image:radial-gradient(${c}28 1px,transparent 1px);background-size:24px 24px}
+.w{max-width:1340px;margin:0 auto;padding:24px}
+.cy-top{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-bottom:22px}
+.cy-pane{background:${cardBg};border:1.5px solid ${c}88;border-left:5px solid ${c};border-radius:12px;padding:28px}
+.cy-list{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.cy-item{background:${cardBg};border:1px solid ${bdr};border-top:3px solid ${c};border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.cy-item img{width:100%;aspect-ratio:16/10;object-fit:cover}
+@media(max-width:860px){.cy-top,.cy-list{grid-template-columns:1fr}}`,
+        body: `<div class="w">
+<section class="cy-top"><div class="cy-pane"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">${logoBadge}<span style="font-family:monospace;font-size:11px;padding:3px 9px;background:${c}22;color:${c};border:1px solid ${c};border-radius:4px">${badge}</span></div><h1 style="font-family:${hFont};font-size:clamp(36px,5.2vw,66px);margin:0 0 8px;line-height:1">${d.name}</h1><div style="font-family:monospace;color:${c};font-size:13px;font-weight:700;margin-bottom:12px">// ${d.role} @ ${d.loc}</div><p style="color:${sub};font-size:15.5px;line-height:1.68;margin:0">${d.bio}</p></div><div class="cy-pane" style="display:flex;flex-direction:column;justify-content:space-between"><div style="font-family:monospace;font-size:11px;color:${c};font-weight:800">[TELEMETRY // SKILL MATRIX]</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">${d.skills.map((s) => `<span style="font-family:monospace;font-size:11.5px;padding:4px 9px;background:${bg};border:1px solid ${bdr};border-radius:4px">${s}</span>`).join('')}</div><div style="font-family:monospace;font-size:12px;color:${c}">${contactLinks(d)}</div></div></section>
+<section id="work" class="cy-list">${d.projects.map((p, i) => `<article class="cy-item"><img src="${p.img}" alt="${p.title}"><div style="padding:18px;flex:1;display:flex;flex-direction:column;justify-content:space-between"><div><div style="font-family:monospace;font-size:11px;color:${c};font-weight:700">[0${i + 1}] ${p.cat} // ${p.year}</div><h3 style="font-family:${hFont};font-size:21px;margin:6px 0">${p.title}</h3><p style="font-size:14px;color:${sub};margin:0 0 12px">${p.desc}</p></div>${projLink(p, L)}</div></article>`).join('')}</section>
+<footer id="contact" class="cy-pane" style="margin-top:22px;text-align:center"><h2 style="font-family:${hFont};font-size:32px;margin:0 0 10px;color:${c}">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-family:monospace">${contactLinks(d)}</div></footer></div>` });
+    }
+
+    if (arch === 'cyber_hud') {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg};background-image:linear-gradient(${c}12 1px,transparent 1px),linear-gradient(90deg,${c}12 1px,transparent 1px);background-size:32px 32px}
+.w{max-width:1320px;margin:0 auto;padding:24px}
+.hud-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:${cardBg};border:1px solid ${c}66;border-radius:10px;font-family:monospace;font-size:12px;margin-bottom:24px}
+.hud-hero{background:${cardBg};border:1.5px solid ${c};border-radius:16px;padding:36px;position:relative;box-shadow:0 0 40px ${c}22;margin-bottom:28px}
+.hud-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.hud-card{grid-column:span 6;background:${cardBg};border:1px solid ${bdr};border-radius:14px;overflow:hidden;transition:border-color .25s,transform .25s}
+.hud-card:first-child{grid-column:span 12}
+.hud-card:hover{border-color:${c};transform:translateY(-4px)}
+.hud-card img{width:100%;aspect-ratio:16/9;object-fit:cover;border-bottom:1px solid ${bdr}}
+@media(max-width:780px){.hud-card{grid-column:span 12}}`,
+        body: `<div class="w">
+<div class="hud-bar">${logoBadge}<span style="color:${c}">● ${badge}</span><span>LOC: ${d.loc}</span></div>
+<section class="hud-hero"><div style="font-family:monospace;color:${c};font-size:12px;letter-spacing:.15em;margin-bottom:8px">&gt; SYSTEM.ROLE // ${d.role}</div><h1 style="font-family:${hFont};font-size:clamp(38px,6vw,76px);margin:0 0 12px;line-height:1">${d.name}</h1><p style="font-size:16.5px;color:${sub};max-width:720px;line-height:1.68">${d.bio}</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">${d.skills.map((s) => `<span style="font-family:monospace;font-size:12px;padding:5px 12px;border-radius:6px;background:${c}18;color:${c};border:1px solid ${c}55">${s}</span>`).join('')}</div></section>
+<section id="work" class="hud-grid">${d.projects.map((p, i) => `<article class="hud-card"><div style="padding:8px 16px;font-family:monospace;font-size:11px;color:${c};display:flex;justify-content:space-between;border-bottom:1px solid ${bdr}"><span>NODE_0${i + 1} // ${p.cat}</span><span>${p.year}</span></div><img src="${p.img}" alt="${p.title}"><div style="padding:20px"><h3 style="font-family:${hFont};font-size:24px;margin:0 0 6px">${p.title}</h3><p style="color:${sub};font-size:14.5px;margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</div></article>`).join('')}</section>
+<footer id="contact" class="hud-hero" style="margin-top:28px;text-align:center"><h2 style="font-family:${hFont};font-size:34px;margin:0 0 10px;color:${c}">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-family:monospace">${contactLinks(d)}</div></footer></div>` });
+    }
+
+    if (arch === 'lookbook_arch' && alt) {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg}}
+.w{max-width:1280px;margin:0 auto;padding:32px 24px}
+.lk-center{text-align:center;max-width:780px;margin:0 auto 38px;padding:34px;background:${cardBg};border:1.5px solid ${bdr};border-radius:40px}
+.lk-stagger{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
+.lk-card{background:${cardBg};border:1px solid ${bdr};border-radius:28px;padding:20px;display:grid;grid-template-columns:1fr 1.1fr;gap:18px;align-items:center}
+.lk-card img{width:100%;aspect-ratio:1/1.15;object-fit:cover;border-radius:20px}
+@media(max-width:820px){.lk-stagger,.lk-card{grid-template-columns:1fr}}`,
+        body: `<div class="w">
+<header class="lk-center"><div style="margin-bottom:10px">${logoBadge}</div><div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:${c};font-weight:800;margin-bottom:8px">✦ ${badge} ✦</div><h1 style="font-family:${hFont};font-size:clamp(38px,5.8vw,70px);margin:0 0 10px;line-height:1">${d.name}</h1><div style="font-size:15px;font-weight:700;color:${c};margin-bottom:10px">${d.role} — ${d.loc}</div><p style="font-size:16px;color:${sub};line-height:1.7;margin:0 0 16px">${d.bio}</p><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:7px">${d.skills.map((s) => `<span style="padding:4px 12px;border-radius:99px;background:${c}15;color:${c};font-size:12px;font-weight:700">${s}</span>`).join('')}</div></header>
+<section id="work" class="lk-stagger">${d.projects.map((p, i) => `<article class="lk-card"><img src="${p.img}" alt="${p.title}"><div><div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:${c};font-weight:800">NO. 0${i + 1} · ${p.cat}</div><h3 style="font-family:${hFont};font-size:24px;margin:6px 0 8px">${p.title}</h3><p style="font-size:14px;color:${sub};line-height:1.62;margin:0 0 12px">${p.desc}</p>${projLink(p, L)}</div></article>`).join('')}</section>
+<footer id="contact" class="lk-center" style="margin:38px auto 0"><h2 style="font-family:${hFont};font-size:34px;margin:0 0 10px">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:700;color:${c}">${contactLinks(d)}</div></footer></div>` });
+    }
+
+    if (arch === 'lookbook_arch') {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg}}
+.w{max-width:1260px;margin:0 auto;padding:32px 24px}
+.arch-hero{background:${cardBg};border:1px solid ${bdr};border-radius:32px;padding:40px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;margin-bottom:36px}
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:26px}
+.arch-item{background:${cardBg};border:1px solid ${bdr};border-radius:160px 160px 22px 22px;padding:18px 18px 24px;text-align:center;transition:transform .3s}
+.arch-item:hover{transform:translateY(-6px)}
+.arch-item img{width:100%;aspect-ratio:4/4.3;object-fit:cover;border-radius:140px 140px 14px 14px;margin-bottom:14px}
+@media(max-width:780px){.arch-hero{grid-template-columns:1fr}}`,
+        body: `<div class="w">
+<nav style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">${logoBadge}<span style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:${c};font-weight:700">${badge}</span></nav>
+<section class="arch-hero"><div><span style="display:inline-block;padding:5px 14px;border-radius:99px;background:${c}18;color:${c};font-size:12px;font-weight:700;margin-bottom:10px">✦ ${d.role} · ${d.loc}</span><h1 style="font-family:${hFont};font-size:clamp(40px,6vw,76px);margin:0 0 12px;line-height:1">${d.name}</h1><p style="font-size:17px;color:${sub};line-height:1.7;max-width:640px">${d.bio}</p><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">${d.skills.map((s) => `<span style="padding:5px 13px;border-radius:99px;border:1px solid ${bdr};font-size:12px;font-weight:600">${s}</span>`).join('')}</div></div>${d.avatar ? `<img src="${d.avatar}" alt="" style="width:165px;height:210px;object-fit:cover;border-radius:85px 85px 18px 18px;border:3px solid ${c}">` : ''}</section>
+<section id="work" class="arch-grid">${d.projects.map((p, i) => `<article class="arch-item"><img src="${p.img}" alt="${p.title}"><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:${c};font-weight:700">0${i + 1} · ${p.cat}</div><h3 style="font-family:${hFont};font-size:24px;margin:6px 0">${p.title}</h3><p style="font-size:14px;color:${sub};margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</article>`).join('')}</section>
+<footer id="contact" class="arch-hero" style="margin-top:40px;text-align:center;display:block"><h2 style="font-family:${hFont};font-size:38px;margin:0 0 10px">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:700;color:${c}">${contactLinks(d)}</div></footer></div>` });
+    }
+
+    if (arch === 'swiss_construct' && alt) {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg}}
+.w{max-width:1340px;margin:0 auto;padding:26px}
+.sc-top{border:2.5px solid ${fg};background:${cardBg};padding:28px;margin-bottom:24px;display:grid;grid-template-columns:1.5fr 1fr;gap:24px;box-shadow:6px 6px 0 ${c}}
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.sc-card{border:2.5px solid ${fg};background:${cardBg};padding:18px;box-shadow:5px 5px 0 ${fg};transition:transform .2s}
+.sc-card:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 ${c}}
+.sc-card img{width:100%;aspect-ratio:4/3;object-fit:cover;border:2px solid ${fg};margin-bottom:12px}
+@media(max-width:860px){.sc-top,.sc-grid{grid-template-columns:1fr}}`,
+        body: `<div class="w">
+<header class="sc-top"><div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">${logoBadge}<span style="padding:3px 10px;background:${fg};color:${bg};font-family:monospace;font-size:11px;font-weight:800">${badge}</span></div><h1 style="font-family:${hFont};font-size:clamp(38px,6vw,74px);line-height:.95;margin:0 0 8px">${d.name}</h1><div style="font-size:15px;font-weight:800;color:${c}">${d.role} // ${d.loc}</div><p style="font-size:15.5px;line-height:1.65;color:${sub};margin:10px 0 0">${d.bio}</p></div><div style="border-left:2.5px solid ${fg};padding-left:20px;display:flex;flex-direction:column;justify-content:space-between"><div style="font-family:monospace;font-size:11.5px;font-weight:800;color:${c}">INDEX // DISCIPLINES</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0">${d.skills.map((s) => `<span style="padding:4px 10px;border:1.5px solid ${fg};font-size:11.5px;font-weight:800">${s}</span>`).join('')}</div><div style="font-size:13px;font-weight:800">${contactLinks(d)}</div></div></header>
+<section id="work" class="sc-grid">${d.projects.map((p, i) => `<article class="sc-card"><img src="${p.img}" alt="${p.title}"><div style="font-family:monospace;font-size:11px;font-weight:800;color:${c}">#0${i + 1} · ${p.cat} (${p.year})</div><h3 style="font-family:${hFont};font-size:22px;margin:6px 0">${p.title}</h3><p style="font-size:14px;color:${sub};margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</article>`).join('')}</section>
+<footer id="contact" class="sc-top" style="margin-top:26px;display:block;text-align:center"><h2 style="font-family:${hFont};font-size:34px;margin:0 0 10px">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:800;color:${c}">${contactLinks(d)}</div></footer></div>` });
+    }
+
+    if (arch === 'swiss_construct') {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg}}
+.w{max-width:1320px;margin:0 auto;padding:24px}
+.sw-box{border:3px solid ${fg};background:${cardBg};box-shadow:8px 8px 0 ${c}}
+.sw-hd{display:grid;grid-template-columns:2fr 1fr;border-bottom:3px solid ${fg}}
+.sw-cell{padding:28px;border-right:3px solid ${fg}}
+.sw-grid{display:grid;grid-template-columns:repeat(12,1fr)}
+.sw-p{grid-column:span 6;padding:24px;border-right:2px solid ${fg};border-bottom:2px solid ${fg}}
+.sw-p:nth-child(3n+1){grid-column:span 12}
+.sw-p img{width:100%;aspect-ratio:16/9;object-fit:cover;border:2.5px solid ${fg};margin:12px 0}
+@media(max-width:780px){.sw-hd,.sw-p{grid-template-columns:1fr;grid-column:span 12}}`,
+        body: `<div class="w"><div class="sw-box">
+<header class="sw-hd"><div class="sw-cell"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">${logoBadge}<span style="background:${c};color:#fff;padding:4px 10px;font-size:11px;font-weight:800">${badge}</span></div><h1 style="font-family:${hFont};font-size:clamp(42px,6.8vw,84px);line-height:.92;margin:0;text-transform:uppercase">${d.name}</h1><div style="font-size:16px;font-weight:800;color:${c};margin-top:8px">${d.role} — ${d.loc}</div><p style="font-size:16px;line-height:1.65;margin-top:12px">${d.bio}</p></div><div style="padding:28px;background:${c};color:#fff;display:flex;flex-direction:column;justify-content:space-between"><div style="font-family:monospace;font-size:12px;font-weight:700">CORE CAPABILITIES //</div><div style="display:flex;flex-wrap:wrap;gap:6px">${d.skills.map((s) => `<span style="background:#fff;color:#111;border:2px solid #111;padding:4px 10px;font-size:12px;font-weight:800">${s}</span>`).join('')}</div></div></header>
+<section id="work" class="sw-grid">${d.projects.map((p, i) => `<article class="sw-p"><div style="display:flex;justify-content:space-between;font-family:monospace;font-weight:800;font-size:12px"><span>PLATE 0${i + 1} // ${p.cat}</span><span>${p.year}</span></div><img src="${p.img}" alt="${p.title}"><h3 style="font-family:${hFont};font-size:28px;margin:6px 0">${p.title}</h3><p style="color:${sub};margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</article>`).join('')}</section>
+<footer id="contact" style="padding:36px;text-align:center;background:${fg};color:${bg}"><h2 style="font-family:${hFont};font-size:38px;margin:0 0 10px;color:${c}">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:700">${contactLinks(d)}</div></footer></div></div>` });
+    }
+
+    if (alt) {
+      return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+        css: `body{font-family:${bFont};background:${bg};color:${fg}}
+.w{max-width:1340px;margin:0 auto;padding:24px}
+.ms-hero{background:linear-gradient(135deg,${c},color-mix(in srgb,${c} 45%,#0f172a));color:#fff;border-radius:26px;padding:38px;margin-bottom:24px;display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:center}
+.ms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.ms-card{background:${cardBg};border:1px solid ${bdr};border-radius:20px;overflow:hidden;transition:transform .25s,border-color .25s}
+.ms-card:hover{transform:translateY(-5px);border-color:${c}}
+.ms-card img{width:100%;aspect-ratio:4/3;object-fit:cover}
+@media(max-width:860px){.ms-hero,.ms-grid{grid-template-columns:1fr}}`,
+        body: `<div class="w">
+<header class="ms-hero"><div><div style="display:inline-block;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.18);font-size:11px;font-weight:800;letter-spacing:.14em;margin-bottom:10px">${badge}</div><h1 style="font-family:${hFont};font-size:clamp(38px,5.6vw,68px);line-height:.98;margin:0 0 10px">${d.name}</h1><div style="font-size:15px;font-weight:700;opacity:.92;margin-bottom:10px">${d.role} · ${d.loc}</div><p style="font-size:15.5px;line-height:1.68;opacity:.9;margin:0">${d.bio}</p></div><div style="background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border-radius:18px;padding:22px"><div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">${L.skills}</div><div style="display:flex;flex-wrap:wrap;gap:6px">${d.skills.map((s) => `<span style="padding:4px 11px;border-radius:99px;background:rgba(255,255,255,.2);font-size:12px;font-weight:700">${s}</span>`).join('')}</div></div></header>
+<section id="work" class="ms-grid">${d.projects.map((p, i) => `<article class="ms-card"><img src="${p.img}" alt="${p.title}"><div style="padding:20px"><div style="font-size:11px;font-weight:800;color:${c};text-transform:uppercase;letter-spacing:.1em">0${i + 1} · ${p.cat} · ${p.year}</div><h3 style="font-family:${hFont};font-size:22px;margin:6px 0">${p.title}</h3><p style="font-size:14px;color:${sub};margin:0 0 12px">${p.desc}</p>${projLink(p, L)}</div></article>`).join('')}</section>
+<footer id="contact" style="margin-top:24px;padding:34px;background:${cardBg};border:1px solid ${bdr};border-radius:22px;text-align:center"><h2 style="font-family:${hFont};font-size:34px;margin:0 0 10px">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:700;color:${c}">${contactLinks(d)}</div></footer></div>` });
+    }
+
+    // Default versatile Bento / Showcase Studio Architecture
+    return doc({ lang, title: `${d.name} – ${cfg.en}`, fonts,
+      css: `body{font-family:${bFont};background:${bg};color:${fg}}
+.w{max-width:1320px;margin:0 auto;padding:24px}
+.b-nav{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:${cardBg};border:1px solid ${bdr};border-radius:99px;margin-bottom:22px}
+.b-top{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;margin-bottom:22px}
+.b-box{background:${cardBg};border:1px solid ${bdr};border-radius:24px;padding:32px;position:relative;overflow:hidden}
+.b-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.b-item{grid-column:span 6;background:${cardBg};border:1px solid ${bdr};border-radius:22px;overflow:hidden;transition:transform .28s,border-color .28s}
+.b-item:nth-child(3n+1){grid-column:span 7}
+.b-item:nth-child(3n+2){grid-column:span 5}
+.b-item:hover{transform:translateY(-5px);border-color:${c}}
+.b-item img{width:100%;aspect-ratio:16/10;object-fit:cover}
+@media(max-width:780px){.b-top,.b-item,.b-item:nth-child(3n+1),.b-item:nth-child(3n+2){grid-template-columns:1fr;grid-column:span 12}}`,
+      body: `<div class="w">
+<nav class="b-nav">${logoBadge}<span style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:${c}">${badge}</span><a href="#contact" style="background:${c};color:#fff;padding:8px 18px;border-radius:99px;text-decoration:none;font-size:13px;font-weight:700">${L.contact}</a></nav>
+<section class="b-top"><div class="b-box"><span style="display:inline-block;padding:4px 12px;border-radius:99px;background:${c}18;color:${c};font-size:12px;font-weight:700;margin-bottom:10px">${d.role} · ${d.loc}</span><h1 style="font-family:${hFont};font-size:clamp(36px,5.5vw,68px);line-height:.98;margin:0 0 12px">${d.name}</h1><p style="font-size:16.5px;color:${sub};line-height:1.68;margin:0">${d.bio}</p></div><div class="b-box" style="background:linear-gradient(135deg,${c},color-mix(in srgb,${c} 65%,#000));color:#fff;display:flex;flex-direction:column;justify-content:space-between">${d.avatar ? `<img src="${d.avatar}" alt="" style="width:84px;height:84px;border-radius:20px;object-fit:cover;border:2px solid #fff">` : `<div style="font-family:${hFont};font-size:42px;font-weight:800">${d.first}</div>`}<div><div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;opacity:.8;margin-bottom:8px">${L.skills}</div><div style="display:flex;flex-wrap:wrap;gap:6px">${d.skills.slice(0, 8).map((s) => `<span style="padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.18);font-size:12px;font-weight:600">${s}</span>`).join('')}</div></div></div></section>
+<section id="work" class="b-grid">${d.projects.map((p, i) => `<article class="b-item"><img src="${p.img}" alt="${p.title}"><div style="padding:20px"><div style="font-size:11.5px;font-weight:800;color:${c};text-transform:uppercase;letter-spacing:.08em">0${i + 1} · ${p.cat} · ${p.year}</div><h3 style="font-family:${hFont};font-size:24px;margin:6px 0">${p.title}</h3><p style="font-size:14.5px;color:${sub};margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</div></article>`).join('')}</section>
+<footer id="contact" class="b-box" style="margin-top:22px;text-align:center"><h2 style="font-family:${hFont};font-size:36px;margin:0 0 10px">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:700;color:${c}">${contactLinks(d)}</div></footer></div>` });
+  };
+}
+
+const SPECIALIZED_PORTFOLIO_SPECS = [
+  // Hand-drawn, Fine Art, Illustration & Craft (12)
+  { id: 'woodblock', arch: 'editorial_spread', serif: true, bg: '#f6f0e4', cardBg: '#fffdf9', vi: 'Khắc Gỗ Nhật Bản Ukiyo-e (Vẽ tay)', en: 'Ukiyo-e Woodblock Print', fields: ['handcraft', 'art', 'design'], badge: 'UKIYO-E // WOODBLOCK EDITION', desc: { vi: 'Tranh khắc gỗ truyền thống, giấy Washi ấm và bố cục triển lãm', en: 'Traditional woodblock print aesthetics on warm Washi paper' } },
+  { id: 'gouache', arch: 'lookbook_arch', hand: true, bg: '#fdf8f2', cardBg: '#ffffff', vi: 'Màu Bột Gouache & Cọ Dẹt (Vẽ tay)', en: 'Gouache & Flat Brush Studio', fields: ['handcraft', 'art', 'fashion'], badge: 'GOUACHE // MATTE PIGMENT', desc: { vi: 'Mảng màu bột Gouache lì rực rỡ, khung vòm họa실', en: 'Vibrant matte gouache pigment blocks & arched easel frames' } },
+  { id: 'charcoal', arch: 'editorial_spread', serif: true, bg: '#f4f4f2', cardBg: '#ffffff', vi: 'Than Củi & Phác Thảo Học Thuật', en: 'Charcoal & Atelier Figure Study', fields: ['handcraft', 'art', 'arch'], badge: 'ATELIER // CHARCOAL STUDY', desc: { vi: 'Phác thảo than củi tương phản cao trên giấy sần Fine-Art', en: 'High-contrast charcoal figure & architectural studies' } },
+  { id: 'pastel_chalk', arch: 'lookbook_arch', hand: true, bg: '#fef6f9', cardBg: '#ffffff', vi: 'Phấn Tiên Pastel & Mộng Mơ (Vẽ tay)', en: 'Soft Pastel Chalk Dreamscape', fields: ['handcraft', 'art', 'photo'], badge: 'SOFT PASTEL // DREAMSCAPE', desc: { vi: 'Sắc phấn tiên mềm mại, bo tròn nghệ thuật cho họa sĩ minh họa', en: 'Velvety soft pastel chalk tones & rounded gallery plates' } },
+  { id: 'papercut', arch: 'swiss_construct', bg: '#fff9ed', cardBg: '#ffffff', vi: 'Nghệ Thuật Cắt Giấy Đa Lớp (Kirigami)', en: 'Layered Paper-Cut Diorama', fields: ['handcraft', 'art', '3d'], badge: 'KIRIGAMI // PAPER DIORAMA', desc: { vi: 'Hiệu ứng đổ bóng lớp giấy cắt thủ công nổi khối', en: 'Tactile multi-layered paper cut-out shadows' } },
+  { id: 'calligraphy_zen', arch: 'editorial_spread', serif: true, bg: '#f9f6f0', cardBg: '#ffffff', vi: 'Thư Pháp Thiền & Trà Đạo', en: 'Zen Calligraphy & Tea Scroll', fields: ['handcraft', 'art', 'arch'], badge: 'SHODO // ZEN CALLIGRAPHY', desc: { vi: 'Không gian tĩnh lặng Wabi-Sabi, nét bút thư pháp và khoảng thở rộng', en: 'Wabi-Sabi serenity with expressive calligraphy strokes' } },
+  { id: 'linocut', arch: 'swiss_construct', bg: '#f5f2eb', cardBg: '#ffffff', vi: 'Tranh Khắc Cao Su Linocut Độc Bản', en: 'Linocut Relief Printmaking', fields: ['handcraft', 'art', 'design'], badge: 'LINOCUT // RELIEF PRINT', desc: { vi: 'Đường khắc nổi mạnh mẽ, tương phản mực in thủ công', en: 'Bold relief-carved borders and hand-pulled ink contrast' } },
+  { id: 'embroidery', arch: 'lookbook_arch', hand: true, bg: '#faf6f0', cardBg: '#ffffff', vi: 'Thêu Tay & Nghệ Thuật Dệt (Textile)', en: 'Hand Embroidery & Textile Art', fields: ['handcraft', 'fashion', 'art'], badge: 'TEXTILE // EMBROIDERY LOOM', desc: { vi: 'Họa tiết thêu tay, chất liệu vải linen và bảng màu sợi chỉ', en: 'Artisanal linen weave, stitched borders & yarn swatches' } },
+  { id: 'ceramics', arch: 'lookbook_arch', serif: true, bg: '#f4efe6', cardBg: '#faf7f2', vi: 'Gốm Sứ Nghệ Thuật & Men Hỏa Biến', en: 'Artisanal Ceramics & Pottery', fields: ['handcraft', '3d', 'arch'], badge: 'KILN // CERAMIC ATELIER', desc: { vi: 'Sắc đất nung Terracotta, đường cong bình gốm và men mộc', en: 'Earthy stoneware tones, organic curves & glaze specs' } },
+  { id: 'stained_glass', arch: 'cyber_hud', dark: true, bg: '#0c0a1d', cardBg: '#161233', vi: 'Kính Màu Nghệ Thuật (Stained Glass)', en: 'Luminous Stained Glass Mosaic', fields: ['handcraft', 'art', 'arch'], badge: 'VITRAIL // LUMINOUS MOSAIC', desc: { vi: 'Mảng kính màu phát sáng rực rỡ trong khung viền chì cổ điển', en: 'Glowing jewel-toned glass panels with dark leadwork frames' } },
+  { id: 'children_book', arch: 'lookbook_arch', hand: true, bg: '#fffbeb', cardBg: '#ffffff', vi: 'Minh Họa Sách Thiếu Nhi Cổ Tích', en: 'Storybook & Children Illustration', fields: ['handcraft', 'art'], badge: 'STORYBOOK // WHIMSICAL TALES', desc: { vi: 'Bố cục kể chuyện ấm áp, nét vẽ tay hồn nhiên và màu sắc tươi sáng', en: 'Warm whimsical narrative spreads for picture-book illustrators' } },
+  { id: 'tattoo_flash', arch: 'swiss_construct', bg: '#121214', fg: '#f4f4f5', cardBg: '#1c1c21', dark: true, vi: 'Tattoo Flash & Old-School Ink', en: 'Tattoo Flash Sheet & Ink Parlor', fields: ['handcraft', 'art'], badge: 'INK PARLOR // FLASH SHEET', desc: { vi: 'Bảng mẫu hình xăm Flash Sheet, nét kim sắc sảo trên nền tối', en: 'Bold traditional & fine-line tattoo flash presentation' } },
+
+  // Graphic Design, Branding, Packaging & Typography (12)
+  { id: 'packaging_lux', arch: 'bento_studio', serif: true, bg: '#f9f8f6', cardBg: '#ffffff', vi: 'Bao Bì Cao Cấp & Hộp Quà (Packaging)', en: 'Luxury Packaging & Structural Box', fields: ['design', '3d', 'business'], badge: 'DIELINE // LUXURY PACKAGING', desc: { vi: 'Trưng bày hộp sản phẩm, nhãn chai, ép kim và bản vẽ khuôn bế', en: 'Showcases structural packaging, foil stamping & dielines' } },
+  { id: 'brand_guideline', arch: 'swiss_construct', bg: '#ffffff', cardBg: '#f8fafc', vi: 'Cẩm Nang Nhận Diện Thương Hiệu (Brand Book)', en: 'Brand Identity Guideline Book', fields: ['design', 'business', 'uiux'], badge: 'BRAND BOOK // IDENTITY SYSTEM', desc: { vi: 'Trình bày Logo Clearspace, hệ màu Pantone, Typography và Mockup đồng bộ', en: 'Structured brand manual with logo grid, Pantone & mockups' } },
+  { id: 'swiss_poster', arch: 'swiss_construct', bg: '#f4f1ea', cardBg: '#ffffff', vi: 'Poster Quốc Tế Thụy Sĩ (Josef Müller)', en: 'Swiss International Poster Grid', fields: ['design', 'art'], badge: 'ZÜRICH // SWISS TYPOGRAPHY', desc: { vi: 'Lưới toán học chặt chẽ, chữ Akzidenz/Grotesque cỡ đại và mảng màu mạnh', en: 'Mathematical grid precision with monumental grotesque type' } },
+  { id: 'type_foundry', arch: 'editorial_spread', serif: true, bg: '#0e0e11', fg: '#f4f4f5', cardBg: '#18181b', dark: true, vi: 'Thiết Kế Phông Chữ (Type Foundry Specimen)', en: 'Typeface Foundry & Glyph Specimen', fields: ['design', 'art'], badge: 'TYPE FOUNDRY // GLYPH SPECIMEN', desc: { vi: 'Bảng mẫu chữ cái A–Z, Ligatures, độ dày nét chữ và ứng dụng thực tế', en: 'Variable font specimen, glyph metrics & editorial pairings' } },
+  { id: 'book_cover', arch: 'editorial_spread', serif: true, bg: '#faf7f2', cardBg: '#ffffff', vi: 'Thiết Kế Bìa Sách & Ấn Phẩm Xuất Bản', en: 'Book Cover & Publishing Design', fields: ['design', 'art', 'handcraft'], badge: 'PUBLISHING // EDITION ARCHIVE', desc: { vi: 'Trưng bày bìa sách, dàn trang ruột sách và ấn phẩm văn hóa', en: 'Curated book jacket gallery, spine mockups & print spreads' } },
+  { id: 'vinyl_cover', arch: 'cyber_hud', dark: true, bg: '#0b0b0e', cardBg: '#16161d', vi: 'Bìa Đĩa Than Vinyl & Album Art', en: 'Vinyl Record Sleeve & Album Art', fields: ['design', 'motion', 'art'], badge: '33 RPM // VINYL SLEEVE ART', desc: { vi: 'Khung vuông bìa đĩa nhạc 1:1, nhãn đĩa tròn và danh sách bài hát', en: 'Iconic 12-inch record sleeve artwork & tracklist sleeves' } },
+  { id: 'festival_id', arch: 'bento_studio', bg: '#0f172a', fg: '#f8fafc', cardBg: '#1e293b', dark: true, vi: 'Nhận Diện Lễ Hội & Sự Kiện Âm Nhạc', en: 'Festival & Live Event Identity', fields: ['design', 'motion', 'business'], badge: 'LIVE STAGE // FESTIVAL KEY VISUAL', desc: { vi: 'Key Visual sân khấu, vé sự kiện, dây đeo thẻ, Banner & Merchandise', en: 'High-energy stage visuals, wristbands, posters & merch' } },
+  { id: 'fnb_menu', arch: 'lookbook_arch', serif: true, bg: '#fffaf3', cardBg: '#ffffff', vi: 'Thiết Kế Thương Hiệu F&B, Cafe & Nhà Hàng', en: 'F&B, Roastery & Bistro Branding', fields: ['design', 'business', 'photo'], badge: 'ROASTERY & BISTRO // F&B WORLD', desc: { vi: 'Bao bì cà phê/trà, thực đơn Menu, ly giấy và không gian quán', en: 'Warm hospitality branding for coffee roasteries & restaurants' } },
+  { id: 'cosmetics_id', arch: 'lookbook_arch', serif: true, bg: '#fdf6f6', cardBg: '#ffffff', vi: 'Thương Hiệu Mỹ Phẩm & Skincare Cao Cấp', en: 'Beauty, Skincare & Fragrance Brand', fields: ['design', 'fashion', '3d'], badge: 'BOTANICAL BEAUTY // APOTHECARY', desc: { vi: 'Chai lọ mỹ phẩm, hộp kem, bảng màu nude hồng thanh lịch', en: 'Refined apothecary & skincare packaging showcase' } },
+  { id: 'signage_way', arch: 'swiss_construct', bg: '#f1f5f9', cardBg: '#ffffff', vi: 'Hệ Thống Biển Bảng & Wayfinding Kiến Trúc', en: 'Environmental Graphic & Wayfinding', fields: ['design', 'arch'], badge: 'WAYFINDING // SPATIAL SIGNAGE', desc: { vi: 'Biển chỉ dẫn tòa nhà, sân bay, bảo tàng và pictogram chuẩn mực', en: 'Pictogram systems, architectural signage & exhibition graphics' } },
+  { id: 'infographic_data', arch: 'cyber_hud', mono: true, bg: '#f8fafc', cardBg: '#ffffff', vi: 'Thiết Kế Infographic & Trực Quan Hóa Dữ Liệu', en: 'Data Visualization & Information Design', fields: ['design', 'dev', 'business'], badge: 'DATA VIS // INFORMATION ATLAS', desc: { vi: 'Biểu đồ trực quan, bản đồ thông tin và báo cáo thường niên sinh động', en: 'Editorial data journalism, charts & visual reports' } },
+  { id: 'merch_street', arch: 'swiss_construct', dark: true, bg: '#09090b', fg: '#fafafa', cardBg: '#18181b', vi: 'Thiết Kế Áo Thun, Streetwear & Merchandise', en: 'Streetwear & Apparel Graphics', fields: ['design', 'fashion', 'art'], badge: 'DROP 01 // STREETWEAR GRAPHICS', desc: { vi: 'Lookbook áo thun, Hoodie, Sticker pack và nhãn mác quần áo', en: 'Bold apparel prints, lookbook drops & woven label specs' } },
+
+  // UI/UX, Digital Product, SaaS & Mobile Apps (10)
+  { id: 'saas_bento', arch: 'bento_studio', bg: '#090d16', fg: '#f8fafc', cardBg: '#111827', dark: true, vi: 'Thiết Kế SaaS & AI Product (Linear Style)', en: 'Dark SaaS & AI Product Studio', fields: ['uiux', 'dev'], badge: 'SAAS // PRODUCT DESIGN SYSTEM', desc: { vi: 'Nền tối viền sáng mảnh chuẩn Linear/Vercel, trưng bày Dashboard & UI Kit', en: 'Precision dark-mode Bento cards for SaaS & AI designers' } },
+  { id: 'design_system', arch: 'swiss_construct', mono: true, bg: '#ffffff', cardBg: '#f8fafc', vi: 'Kiến Trúc Design System & Figma Tokens', en: 'Design Systems & Component Library', fields: ['uiux', 'dev', 'design'], badge: 'FIGMA TOKENS // UI ARCHITECTURE', desc: { vi: 'Trưng bày Component, Auto-layout, Design Tokens và Accessibility chuẩn WCAG', en: 'Component specs, token matrices & multi-brand UI systems' } },
+  { id: 'fintech_ux', arch: 'bento_studio', bg: '#f0fdf4', cardBg: '#ffffff', vi: 'Thiết Kế Ứng Dụng Tài Chính (Fintech & Banking UX)', en: 'Fintech, Crypto & Banking UX', fields: ['uiux', 'business', 'dev'], badge: 'FINTECH // DIGITAL BANKING UX', desc: { vi: 'Trình bày luồng thanh toán, biểu đồ tài sản, thẻ ngân hàng số và tăng trưởng chuyển đổi', en: 'High-trust financial app flows, card mockups & conversion metrics' } },
+  { id: 'mobile_showcase', arch: 'bento_studio', bg: '#f8fafc', cardBg: '#ffffff', vi: 'iOS & Android App Store Showcase', en: 'Mobile App Store Lookbook', fields: ['uiux', 'dev'], badge: 'APP STORE // iOS & ANDROID', desc: { vi: 'Khung màn hình điện thoại, tương tác Micro-interaction và điểm xếp hạng 4.9★', en: 'Multi-screen mobile flows, onboarding & App Store feature boards' } },
+  { id: 'ux_research_lab', arch: 'editorial_spread', bg: '#fffbeb', cardBg: '#ffffff', vi: 'Hồ Sơ Nghiên Cứu Người Dùng (UX Research)', en: 'UX Research, Personas & Journey Maps', fields: ['uiux', 'business'], badge: 'USER LAB // EMPATHY & TESTING', desc: { vi: 'Tập trung vào User Persona, Customer Journey Map, Usability Testing và Insight', en: ' structured around user insights, synthesis & measurable UX impact' } },
+  { id: 'ecommerce_ux', arch: 'bento_studio', bg: '#fff7ed', cardBg: '#ffffff', vi: 'Thiết Kế Sàn TMĐT & D2C Conversion UX', en: 'E-Commerce & D2C Storefront UX', fields: ['uiux', 'business', 'fashion'], badge: 'D2C // CONVERSION STOREFRONT', desc: { vi: 'Tối ưu giỏ hàng, trang chi tiết sản phẩm (PDP), A/B Testing và tăng trưởng GMV', en: 'High-converting product pages, checkout flows & A/B test wins' } },
+  { id: 'healthtech_ux', arch: 'lookbook_arch', bg: '#f0fdfa', cardBg: '#ffffff', vi: 'Thiết Kế Ứng Dụng Y Tế & Sức Khỏe (HealthTech)', en: 'HealthTech & Wellness App Design', fields: ['uiux', 'dev'], badge: 'WELLNESS // MEDICAL & CARE UX', desc: { vi: 'Giao diện thân thiện, rõ ràng cho ứng dụng đặt lịch khám, theo dõi sức khỏe', en: 'Clean, accessible interfaces for telemedicine & wellness products' } },
+  { id: 'edtech_ux', arch: 'bento_studio', bg: '#fefce8', cardBg: '#ffffff', vi: 'Thiết Kế Nền Tảng Giáo Dục & Gamification', en: 'EdTech & Gamified Learning UX', fields: ['uiux', 'art', 'dev'], badge: 'EDTECH // INTERACTIVE LEARNING', desc: { vi: 'Giao diện học tập tương tác, huy hiệu Gamification và bảng tiến độ học viên', en: 'Engaging learning paths, badge systems & student dashboards' } },
+  { id: 'automotive_hmi', arch: 'cyber_hud', dark: true, bg: '#07090e', cardBg: '#111622', vi: 'Giao Diện Buồng Lái Ô Tô Điện (Automotive HMI)', en: 'Automotive Cockpit & Smart HMI', fields: ['uiux', '3d', 'motion'], badge: 'EV COCKPIT // AUTOMOTIVE HMI', desc: { vi: 'Màn hình trung tâm xe điện, đồng hồ tốc độ 3D, bản đồ dẫn đường tương lai', en: 'Futuristic EV dashboard clusters & spatial infotainment UI' } },
+  { id: 'wearable_spatial', arch: 'cyber_hud', dark: true, bg: '#0d0b18', cardBg: '#18142c', vi: 'Giao Diện Đồng Hồ Thông Minh & Kính Thực Tế Ảo', en: 'VisionOS, AR/VR & Wearable UI', fields: ['uiux', '3d', 'dev'], badge: 'VISION OS // SPATIAL COMPUTING', desc: { vi: 'Cửa sổ kính mờ nổi trong không gian 3D, điều khiển bằng ánh mắt và cử chỉ', en: 'Spatial glass windows, watchOS complications & AR interfaces' } },
+
+  // Motion, Video, Cinema, 3D & Game Art (12)
+  { id: 'cinema_anamo', arch: 'cyber_hud', dark: true, bg: '#050507', cardBg: '#121216', vi: 'Đạo Diễn Hình Ảnh (DOP) & Khung Hình 2.39:1', en: 'Cinematographer Anamorphic Widescreen', fields: ['motion', 'photo'], badge: '2.39:1 // ANAMORPHIC CINEMA', desc: { vi: 'Khung hình điện ảnh tỷ lệ rộng 21:9, bảng phân tích ánh sáng và Color Grading LUTs', en: 'Widescreen cinema frames, lighting setups & color grading stills' } },
+  { id: 'colorist_suite', arch: 'cyber_hud', dark: true, bg: '#0a0a0c', cardBg: '#141418', vi: 'Chuyên Gia Chỉnh Màu Phim (DaVinci Colorist)', en: 'Colorist & Post-Production Suite', fields: ['motion', 'photo'], badge: 'DAVINCI // COLOR GRADING LUT', desc: { vi: 'So sánh màu sắc Trước/Sau, biểu đồ Scopes và bảng палитра điện ảnh', en: 'Cinematic color palettes, node trees & commercial grading reels' } },
+  { id: 'vfx_compositor', arch: 'cyber_hud', dark: true, bg: '#080c14', cardBg: '#111827', vi: 'Kỹ Xảo Điện Ảnh & VFX Breakdown', en: 'VFX Compositor & CGI Breakdown', fields: ['motion', '3d'], badge: 'VFX // WIREFRAME TO FINAL SHOT', desc: { vi: 'Trình bày các lớp Wireframe, Clay Render, Phông xanh và cảnh phim hoàn chỉnh', en: 'Multi-pass CGI breakdowns from wireframe to final composite' } },
+  { id: 'anime_studio', arch: 'swiss_construct', bg: '#fff1f2', cardBg: '#ffffff', vi: 'Hoạt Hình 2D Anime & Key Animation (Sakuga)', en: '2D Animation, Sakuga & Storyboard', fields: ['motion', 'art', 'handcraft'], badge: 'SAKUGA // KEY ANIMATION SHEET', desc: { vi: 'Bảng Genga/Douga chuyển động, thiết kế nhân vật (Character Sheet) & Background Art', en: 'Key animation frames, character turnaround sheets & background art' } },
+  { id: 'character_3d', arch: 'cyber_hud', dark: true, bg: '#0d0914', cardBg: '#191226', vi: 'Điêu Khắc Nhân Vật 3D (ZBrush & Blender)', en: '3D Character Sculpting & Rigging', fields: ['3d', 'motion', 'art'], badge: 'ZBRUSH // TOPOLOGY & RIGGING', desc: { vi: 'Mô hình High-poly, lưới Retopology, UV Texture map và biểu cảm nhân vật', en: 'High-poly sculpts, clean topology wireframes & PBR textures' } },
+  { id: 'env_concept', arch: 'editorial_spread', dark: true, bg: '#090d11', fg: '#f1f5f9', cardBg: '#131b24', vi: 'Thiết Kế Bối Cảnh Thế Giới Game (Environment Art)', en: 'Unreal Engine 5 & Environment Concept', fields: ['3d', 'art', 'motion'], badge: 'UE5 // WORLD BUILDING & LORE', desc: { vi: 'Bối cảnh thế giới mở hùng vĩ, ánh sáng Lumen và kiến trúc giả tưởng', en: 'Atmospheric world-building, matte paintings & Unreal level art' } },
+  { id: 'product_render', arch: 'bento_studio', bg: '#f4f4f6', cardBg: '#ffffff', vi: 'Diễn Họa 3D Sản Phẩm Thương Mại (Cinema4D/Octane)', en: '3D Product Visualization & CGI Studio', fields: ['3d', 'design', 'motion'], badge: 'OCTANE // PHOTOREAL PRODUCT CGI', desc: { vi: 'Render 3D nước hoa, đồng hồ, tai nghe, đồ uống với chất liệu chân thực tuyệt đối', en: 'Hyper-realistic CGI product lighting, materials & packshots' } },
+  { id: 'jewelry_cad', arch: 'lookbook_arch', serif: true, dark: true, bg: '#0c0b0e', fg: '#f5f0e6', cardBg: '#17151c', vi: 'Thiết Kế Trang Sức & Đồng Hồ Chế Tác 3D', en: 'Haute Horlogerie & Fine Jewelry 3D', fields: ['3d', 'fashion', 'design'], badge: 'HAUTE JOAILLERIE // GEMSTONE CAD', desc: { vi: 'Bản vẽ 3D Rhino/Matrix, giác cắt kim cương và chế tác kim hoàn sang trọng', en: 'Precision gemstone CAD renders & luxury timepiece craftsmanship' } },
+  { id: 'furniture_id', arch: 'editorial_spread', serif: true, bg: '#f6f3ec', cardBg: '#ffffff', vi: 'Thiết Kế Kiểu Dáng Nội Thất & Đồ Gỗ (Furniture)', en: 'Bespoke Furniture & Object Design', fields: ['3d', 'arch', 'handcraft'], badge: 'OBJECT // FURNITURE CRAFTSMANSHIP', desc: { vi: 'Ghế, đèn, bàn gỗ tự nhiên, bản vẽ khớp nối mộng và chất liệu da/gỗ', en: 'Tactile wood, metal & leather furniture prototypes and specs' } },
+  { id: 'toy_collectible', arch: 'bento_studio', bg: '#fef3c7', cardBg: '#ffffff', vi: 'Thiết Kế Art Toy & Blindbox Figure 3D', en: 'Designer Art Toys & Collectible Figures', fields: ['3d', 'art', 'handcraft'], badge: 'ART TOY // VINYL COLLECTIBLE', desc: { vi: 'Mô hình nhân vật Chibi, hộp mù Blindbox, phối màu Secret Edition cực bắt mắt', en: 'Playful vinyl figure series, packaging boxes & character editions' } },
+  { id: 'stage_lighting', arch: 'cyber_hud', dark: true, bg: '#060609', cardBg: '#12121a', vi: 'Thiết Kế Sân Khấu, Visual LED & Concert', en: 'Stage Architecture, VJ & Concert Visuals', fields: ['3d', 'motion', 'arch'], badge: 'TIME-CODED // STAGE & LED VISUALS', desc: { vi: 'Bản vẽ 3D sân khấu lễ hội, hệ thống đèn Timecode và màn hình LED khổng lồ', en: 'Immersive concert stage renders, lighting plots & VJ loops' } },
+  { id: 'sound_podcast', arch: 'cyber_hud', dark: true, bg: '#0b0f17', cardBg: '#151c28', vi: 'Kỹ Sư Âm Thanh, Foley & Podcast Producer', en: 'Audio Engineer, Score & Podcast Studio', fields: ['motion', 'business'], badge: 'DOLBY ATMOS // SOUND DESIGN', desc: { vi: 'Thiết kế âm thanh phim, nhạc nền Game, mastering và sản xuất chuỗi Podcast', en: 'Spatial audio engineering, film scoring & sonic branding' } },
+
+  // Architecture, Interior, Photography & Fashion (12)
+  { id: 'landscape_arch', arch: 'editorial_spread', serif: true, bg: '#f2f7f2', cardBg: '#ffffff', vi: 'Kiến Trúc Cảnh Quan & Resort Sinh Thái', en: 'Landscape Architecture & Eco-Resort', fields: ['arch', 'photo'], badge: 'TOPOGRAPHY // LANDSCAPE & ECOLOGY', desc: { vi: 'Quy hoạch không gian xanh, mặt cắt địa hình, hệ thực vật và kiến trúc bền vững', en: 'Botanical masterplans, ecological sections & resort pavilions' } },
+  { id: 'japandi_living', arch: 'lookbook_arch', serif: true, bg: '#f5f2eb', cardBg: '#fcfaf7', vi: 'Nội Thất Phong Cách Japandi & Tối Giản Ấm', en: 'Japandi & Warm Minimalist Interior', fields: ['arch', 'design', 'photo'], badge: 'JAPANDI // WARM SPATIAL HARMONY', desc: { vi: 'Gỗ sồi sáng, tường hiệu ứng Wabi-Sabi, ánh sáng tự nhiên và bảng vật liệu', en: 'Natural oak, limewash textures & serene residential interiors' } },
+  { id: 'urban_master', arch: 'swiss_construct', mono: true, bg: '#f8fafc', cardBg: '#ffffff', vi: 'Quy Hoạch Đô Thị & Bản Đồ GIS (Urbanism)', en: 'Urban Planning, GIS & Civic Architecture', fields: ['arch', 'business'], badge: 'MASTERPLAN // URBAN & CIVIC SCALE', desc: { vi: 'Bản đồ phân khu đô thị, mật độ giao thông, không gian công cộng 1:5000', en: 'Macro-scale urban masterplans, zoning diagrams & civic spaces' } },
+  { id: 'analog_35mm', arch: 'editorial_spread', mono: true, dark: true, bg: '#0c0c0c', fg: '#f5f5f4', cardBg: '#171717', vi: 'Nhiếp Ảnh Phim Màu 35mm & Contact Sheet', en: '35mm Film Photography & Darkroom', fields: ['photo', 'art'], badge: 'KODAK PORTRA 400 // FILM ARCHIVE', desc: { vi: 'Viền phim âm bản, hạt Grain hoài cổ, thông số ống kính tiêu cự và cuộn phim', en: 'Authentic 35mm sprocket frames, film grain & EXIF lens notes' } },
+  { id: 'wedding_fineart', arch: 'lookbook_arch', serif: true, bg: '#fdfbf7', cardBg: '#ffffff', vi: 'Nhiếp Ảnh Cưới Nghệ Thuật & Phóng Sự (Fine-Art)', en: 'Fine-Art Wedding & Portrait Photography', fields: ['photo', 'fashion'], badge: 'TIMELESS LOVE // FINE ART ALBUM', desc: { vi: 'Bố cục sách ảnh cưới lãng mạn, tông màu sáng trong trẻo và cảm xúc tự nhiên', en: 'Romantic editorial wedding stories & luminous portrait galleries' } },
+  { id: 'culinary_photo', arch: 'bento_studio', serif: true, bg: '#14110f', fg: '#faf5ef', cardBg: '#211c18', dark: true, vi: 'Nhiếp Ảnh Ẩm Thực & Food Styling (Chiaroscuro)', en: 'Gastronomy & Food Styling Photography', fields: ['photo', 'business'], badge: 'GASTRONOMY // FOOD STYLING STUDIO', desc: { vi: 'Ánh sáng tương phản nghệ thuật làm nổi bật kết cấu món ăn và đồ uống cao cấp', en: 'Rich chiaroscuro food photography & Michelin-level styling' } },
+  { id: 'street_docu', arch: 'editorial_spread', bg: '#111111', fg: '#f4f4f5', cardBg: '#1c1c1e', dark: true, vi: 'Nhiếp Ảnh Đường Phố & Phóng Sự Báo Chí', en: 'Documentary & Street Photojournalism', fields: ['photo', 'business'], badge: 'MAGNUM STYLE // PHOTO ESSAY', desc: { vi: 'Chuỗi ảnh kể chuyện nhân văn, chú thích địa điểm – thời gian chân thực', en: 'High-impact monochrome & color photo essays with field captions' } },
+  { id: 'haute_couture', arch: 'editorial_spread', serif: true, bg: '#faf8f5', cardBg: '#ffffff', vi: 'Thiết Kế Thời Trang Cao Cấp & Rập Mẫu (Atelier)', en: 'Haute Couture & Fashion Collection', fields: ['fashion', 'handcraft', 'photo'], badge: 'ATELIER // RUNWAY COLLECTION', desc: { vi: 'Trưng bày bộ sưu tập theo mùa, phác thảo dáng người (Croquis), mẫu vải & sàn diễn', en: 'Seasonal runway lookbooks, croquis sketches & fabric swatches' } },
+  { id: 'bridal_atelier', arch: 'lookbook_arch', serif: true, bg: '#fffcfc', cardBg: '#ffffff', vi: 'Thiết Kế Váy Cưới & Dạ Hội Đính Kết Thủ Công', en: 'Bridal Couture & Evening Gown Atelier', fields: ['fashion', 'handcraft', 'photo'], badge: 'BRIDAL COUTURE // SILK & LACE', desc: { vi: 'Vẻ đẹp tinh khôi của lụa, ren Pháp và kỹ thuật đính kết pha lê tỉ mỉ', en: 'Ethereal silk, French lace & bespoke bridal gown lookbook' } },
+  { id: 'footwear_sneaker', arch: 'cyber_hud', dark: true, bg: '#0a0d12', cardBg: '#141923', vi: 'Thiết Kế Giày Sneaker & Phụ Kiện Công Thái Học', en: 'Sneaker, Footwear & Technical Gear Design', fields: ['fashion', '3d', 'design'], badge: 'FOOTWEAR LAB // SOLE & TECH SPEC', desc: { vi: 'Bản vẽ kỹ thuật đế giày, phối màu Colorway, vật liệu thoáng khí và mô hình 3D', en: 'Technical sneaker blueprints, colorway drops & sole cushioning specs' } },
+  { id: 'stylist_artdir', arch: 'editorial_spread', serif: true, bg: '#f4efe8', cardBg: '#ffffff', vi: 'Fashion Stylist & Giám Đốc Sáng Tạo Tạp Chí', en: 'Fashion Stylist & Editorial Art Director', fields: ['fashion', 'photo', 'design'], badge: 'VOGUE SPREAD // STYLING ARCHIVE', desc: { vi: 'Hồ sơ phối đồ cho nghệ sĩ, bìa tạp chí thời trang và TVC quảng cáo', en: 'Celebrity styling credits, magazine covers & campaign direction' } },
+  { id: 'real_estate_arch', arch: 'bento_studio', serif: true, bg: '#f8fafc', cardBg: '#ffffff', vi: 'Nhiếp Ảnh Kiến Trúc & Bất Động Sản Hạng Sang', en: 'Architectural & Luxury Villa Photography', fields: ['photo', 'arch', 'business'], badge: 'PAVILION // ARCHITECTURAL PHOTO', desc: { vi: 'Góc máy thẳng đứng chuẩn mực, ánh sáng hoàng hôn biệt thự, khách sạn 5 sao', en: 'Crisp perspective-corrected photography for villas & resorts' } },
+
+  // Dev, AI, Data, Marketing, Agency & Business (12)
+  { id: 'ai_engineer', arch: 'cyber_hud', mono: true, dark: true, bg: '#070b14', cardBg: '#0f172a', vi: 'Kỹ Sư AI, LLM & Machine Learning Research', en: 'AI Engineer, LLM & Neural Research', fields: ['dev', 'uiux'], badge: 'NEURAL LAB // LLM & AGENT OPS', desc: { vi: 'Trình bày mô hình AI, bài báo khoa học, HuggingFace/GitHub repos và Benchmark', en: 'Showcases LLM agents, model benchmarks, papers & live demos' } },
+  { id: 'data_scientist', arch: 'swiss_construct', mono: true, bg: '#f8fafc', cardBg: '#ffffff', vi: 'Chuyên Gia Khoa Học Dữ Liệu & BI Analytics', en: 'Data Scientist & Analytics Portfolio', fields: ['dev', 'business'], badge: 'JUPYTER // DATA & ML INSIGHTS', desc: { vi: 'Trình bày bài toán dự báo, mô hình thống kê, Dashboard PowerBI/Tableau và ROI', en: 'Predictive modeling case studies, SQL/Python pipelines & BI impact' } },
+  { id: 'cyber_sec_pf', arch: 'cyber_hud', mono: true, dark: true, bg: '#040806', cardBg: '#0a140f', vi: 'Chuyên Gia An Ninh Mạng & Red Team Researcher', en: 'Cybersecurity, Pentest & Bug Bounty', fields: ['dev'], badge: 'RED TEAM // CVE & SECURITY AUDIT', desc: { vi: 'Hồ sơ phát hiện lỗ hổng CVE, chứng chỉ OSCP/CISSP và nghiên cứu bảo mật', en: 'Security advisories, CTF writeups & zero-trust architecture' } },
+  { id: 'web3_solidity', arch: 'cyber_hud', mono: true, dark: true, bg: '#090714', cardBg: '#130f26', vi: 'Kỹ Sư Blockchain, Smart Contract & DeFi', en: 'Web3, Solidity & DeFi Protocol Builder', fields: ['dev', 'uiux'], badge: 'ON-CHAIN // SMART CONTRACT AUDIT', desc: { vi: 'Trình bày giao thức DeFi, tổng giá trị khóa (TVL), hợp đồng thông minh đã kiểm toán', en: 'On-chain protocols, audited smart contracts & dApp interfaces' } },
+  { id: 'creative_coder', arch: 'cyber_hud', dark: true, bg: '#08080c', cardBg: '#12121a', vi: 'Creative Technologist, WebGL & Shader Art', en: 'Creative Technologist & WebGL Shaders', fields: ['dev', 'motion', '3d'], badge: 'GLSL // THREE.JS & INTERACTIVE ART', desc: { vi: 'Nghệ thuật lập trình tương tác, hiệu ứng hạt, Three.js và cài đặt triển lãm số', en: 'Generative art, GLSL shaders, Three.js & interactive installations' } },
+  { id: 'growth_agency', arch: 'bento_studio', bg: '#ffffff', cardBg: '#f8fafc', vi: 'Growth Marketing, Performance Ads & SEO Case Study', en: 'Growth Marketing & ROAS Case Studies', fields: ['business', 'uiux'], badge: 'GROWTH // ROAS & FUNNEL METRICS', desc: { vi: 'Trình bày chiến dịch quảng cáo với số liệu ROAS, CPA, tăng trưởng doanh thu thực tế', en: 'Data-backed marketing campaigns with ROAS, CAC & revenue growth' } },
+  { id: 'copywriter_ed', arch: 'editorial_spread', serif: true, bg: '#fffdf7', cardBg: '#ffffff', vi: 'Creative Copywriter, Kịch Bản & Storytelling', en: 'Creative Copywriter & Brand Storyteller', fields: ['business', 'design'], badge: 'MANIFESTO // HEADLINES & SCRIPTS', desc: { vi: 'Tôn vinh sức mạnh ngôn từ: Slogan chiến dịch, kịch bản TVC và bài viết PR sắc sảo', en: ' Editorial showcase for taglines, TVC scripts & brand voice systems' } },
+  { id: 'social_creator', arch: 'bento_studio', bg: '#fdf2f8', cardBg: '#ffffff', vi: 'Media Kit Cho KOL, KOC & Content Creator', en: 'Creator Economy, KOL & UGC Media Kit', fields: ['business', 'motion', 'fashion'], badge: 'MEDIA KIT // ENGAGEMENT & COLLABS', desc: { vi: 'Thống kê người theo dõi, tỷ lệ tương tác (ER%), video triệu view và bảng giá Booking', en: 'Audience demographics, viral video showcase & brand sponsorship rates' } },
+  { id: 'creative_agency', arch: 'swiss_construct', bg: '#0f172a', fg: '#f8fafc', cardBg: '#1e293b', dark: true, vi: 'Hồ Sơ Năng Lực Creative Studio / Agency (Pitch Deck)', en: 'Boutique Creative Studio & Agency Deck', fields: ['business', 'design', 'uiux', 'motion'], badge: 'AGENCY CREDENTIALS // PITCH DECK', desc: { vi: 'Chuẩn hồ sơ năng lực công ty sáng tạo để gửi khách hàng lớn đấu thầu dự án', en: ' flagship studio credentials deck for pitching enterprise clients' } },
+  { id: 'event_director', arch: 'cyber_hud', dark: true, bg: '#0c0910', cardBg: '#181220', vi: 'Đạo Diễn Sự Kiện, Activation & Triển Lãm Thương Hiệu', en: 'Experiential Event & Brand Activation', fields: ['business', 'arch', 'motion'], badge: 'LIVE EXPERIENCE // GALA & EXPO', desc: { vi: 'Hồ sơ tổ chức sự kiện ra mắt sản phẩm, Pop-up Store, Gala và triển lãm quy mô lớn', en: 'Immersive brand pop-ups, product launches & experiential production' } },
+  { id: 'pr_consultant', arch: 'editorial_spread', serif: true, bg: '#f8fafc', cardBg: '#ffffff', vi: 'Chuyên Gia Truyền Thông, Quan Hệ Báo Chí & CSR', en: 'Public Relations, Comms & ESG Strategy', fields: ['business'], badge: 'PRESS DOSSIER // MEDIA IMPACT', desc: { vi: 'Chiến dịch truyền thông tích hợp, độ phủ báo chí (Earned Media) và quản trị danh tiếng', en: 'Strategic communications, media coverage highlights & CSR campaigns' } },
+  { id: 'indie_maker', arch: 'bento_studio', bg: '#f0fdf4', cardBg: '#ffffff', vi: 'Indie Hacker, Solopreneur & Danh Mục Sản Phẩm Số', en: 'Indie Maker & Micro-SaaS Portfolio', fields: ['dev', 'business', 'uiux'], badge: 'SHIPPED // INDIE MAKER PRODUCTS', desc: { vi: 'Trưng bày các sản phẩm số, tiện ích, khoá học, mẫu thiết kế và doanh thu MRR', en: 'Showcases shipped micro-SaaS apps, templates & digital products' } },
+  { id: 'robotics_cad', arch: 'cyber_hud', mono: true, dark: true, bg: '#060a10', cardBg: '#0f1623', vi: 'Kỹ Sư Robotics, Cơ Điện Tử & Drone Tự Hành', en: 'Robotics, Mechatronics & Autonomous Systems', fields: ['3d', 'dev', 'arch'], badge: 'ROS2 // MECHATRONICS & KINEMATICS', desc: { vi: 'Bản vẽ lắp ráp cơ khí CAD, mạch điều khiển nhúng, mô phỏng ROS2 và nguyên mẫu phần cứng', en: 'CAD assemblies, PCB layouts, ROS2 simulations & hardware prototypes' } },
+  { id: 'perfume_atelier', arch: 'lookbook_arch', serif: true, bg: '#faf6f2', cardBg: '#ffffff', vi: 'Nhà Điều Hương (Perfumer) & Thương Hiệu Nước Hoa Niche', en: 'Haute Parfumerie & Olfactory Art Direction', fields: ['fashion', 'design', '3d'], badge: 'OLFACTORY // NOTES & FLACON DESIGN', desc: { vi: 'Trình bày tháp hương (Top/Heart/Base notes), thiết kế chai thủy tinh và câu chuyện mùi hương', en: 'Olfactory pyramids, bespoke glass flacons & sensory campaigns' } },
+  { id: 'boardgame_box', arch: 'swiss_construct', hand: true, bg: '#fffbeb', cardBg: '#ffffff', vi: 'Thiết Kế Board Game, Card Game & Tabletop RPG', en: 'Tabletop Board Game & Card System Design', fields: ['handcraft', 'art', '3d'], badge: 'TABLETOP // RULEBOOK & CARD DECK', desc: { vi: 'Trưng bày bàn cờ, bộ bài minh họa, quân cờ Miniature 3D và quyển luật chơi', en: 'Game boards, illustrated card decks, miniatures & rulebook spreads' } },
+  { id: 'pastry_chocolat', arch: 'lookbook_arch', serif: true, bg: '#fdf8f5', cardBg: '#ffffff', vi: 'Nghệ Nhân Bánh Ngọt Pháp (Pâtissier & Chocolatier)', en: 'Artisanal Pâtisserie & Chocolate Sculpture', fields: ['handcraft', 'photo', 'business'], badge: 'HAUTE PÂTISSERIE // SUGAR & CACAO', desc: { vi: 'Trưng bày tác phẩm bánh nghệ thuật, mặt cắt lớp Entremet và thiết kế hộp quà lễ hội', en: 'Entremets cross-sections, chocolate sculptures & seasonal gift boxes' } },
+  { id: 'sustainable_esg', arch: 'editorial_spread', serif: true, bg: '#f2f8f4', cardBg: '#ffffff', vi: 'Chuyên Gia Phát Triển Bền Vững, ESG & Vật Liệu Xanh', en: 'Sustainability, Bio-Material & ESG Innovation', fields: ['arch', 'business', 'design'], badge: 'NET-ZERO // BIO-MATERIAL & ESG', desc: { vi: 'Nghiên cứu vật liệu tái chế, báo cáo tác động môi trường và thiết kế sinh thái tuần hoàn', en: 'Circular design systems, bio-materials & net-zero impact reports' } },
+  { id: 'medical_bio', arch: 'bento_studio', bg: '#f0fdfa', cardBg: '#ffffff', vi: 'Minh Họa Y Khoa & Trực Quan Hóa Sinh Học Phân Tử', en: 'Medical Illustration & Biomedical Visualization', fields: ['3d', 'art', 'dev'], badge: 'BIOMEDICAL // ANATOMICAL & 3D SCI-ART', desc: { vi: 'Hình vẽ giải phẫu chính xác, mô phỏng 3D tế bào/phân tử cho tạp chí khoa học và dược phẩm', en: 'Precision anatomical art, molecular 3D animations & surgical guides' } },
+  { id: 'watchmaker_horo', arch: 'cyber_hud', serif: true, dark: true, bg: '#09090b', cardBg: '#141418', vi: 'Nghệ Thuật Chế Tác Đồng Hồ Cơ Khí (Horology)', en: 'Mechanical Watchmaking & Micro-Engineering', fields: ['3d', 'fashion', 'arch'], badge: 'TOURBILLON // CALIBRE & DIAL SPEC', desc: { vi: 'Bản vẽ bộ máy cơ khí Calibre, mặt số Guilloché và hoàn thiện thủ công tinh xảo', en: 'Movement calibre blueprints, guilloché dials & complications' } },
+  { id: 'editorial_cartoon', arch: 'swiss_construct', hand: true, bg: '#f9f6f0', cardBg: '#ffffff', vi: 'Tranh Biếm Họa Báo Chí & Minh Họa Tạp Chí (New Yorker)', en: 'Editorial Illustration & Press Satire', fields: ['handcraft', 'art', 'business'], badge: 'OP-ED // PRESS & MAGAZINE ILLUSTRATION', desc: { vi: 'Tranh minh họa bình luận thời sự, bìa tạp chí văn hóa và tiểu luận thị giác', en: 'Conceptual op-ed illustrations, magazine covers & visual essays' } },
+  { id: 'acoustic_studio', arch: 'cyber_hud', mono: true, dark: true, bg: '#0b0d13', cardBg: '#141824', vi: 'Kiến Trúc Âm Học, Phòng Thu & Nhà Hát Giao Hưởng', en: 'Acoustic Architecture & Concert Hall Design', fields: ['arch', 'motion', '3d'], badge: 'DECIBEL // ACOUSTIC RAYTRACING', desc: { vi: 'Mô phỏng phản xạ âm thanh, thiết kế tiêu âm gỗ và không gian biểu diễn chuẩn Hi-End', en: 'Acoustic raytracing, timber baffling & recording studio architecture' } },
+  { id: 'exhibition_museum', arch: 'editorial_spread', serif: true, bg: '#f5f3ef', cardBg: '#ffffff', vi: 'Giám Tuyển Bảo Tàng & Thiết Kế Không Gian Triển Lãm', en: 'Museum Scenography & Exhibition Curating', fields: ['arch', 'art', 'design'], badge: 'SCENOGRAPHY // MUSEUM PAVILION', desc: { vi: 'Lộ trình tham quan bảo tàng, nghệ thuật sắp đặt ánh sáng và ấn phẩm dẫn chuyện', en: 'Spatial narratives, pavilion lighting & curatorial catalogs' } },
+  { id: 'strategy_mbb', arch: 'swiss_construct', bg: '#f8fafc', cardBg: '#ffffff', vi: 'Hồ Sơ Tư Vấn Chiến Lược, M&A & Chuyển Đổi Số', en: 'Management Consulting & Corporate Strategy', fields: ['business', 'dev'], badge: 'EXECUTIVE BRIEF // STRATEGY & ROI', desc: { vi: 'Trình bày dự án tái cấu trúc doanh nghiệp, tăng trưởng thị phần và lộ trình chuyển đổi số', en: 'Boardroom case studies, market expansion & digital transformation' } },
+  { id: 'film_storyboard', arch: 'editorial_spread', hand: true, bg: '#faf7f2', cardBg: '#ffffff', vi: 'Họa Sĩ Storyboard Điện Ảnh & TVC Quảng Cáo', en: 'Film Storyboard & Pre-Visualization Artist', fields: ['handcraft', 'motion', 'art'], badge: 'SHOT LIST // CINEMA STORYBOARD', desc: { vi: 'Chuỗi khung hình phân cảnh đạo diễn, góc máy, chuyển động camera và nhịp điệu dựng phim', en: 'Sequential director boards, camera blocking & animatic frames' } }
+];
+
 export const PORTFOLIO_FIELDS = {
   vi: { handcraft: '🎨 Vẽ tay – Nghệ thuật Độc bản', design: 'Thiết kế đồ họa', art: 'Minh họa – Vẽ tay', motion: 'Motion – Video', uiux: 'UI/UX – Sản phẩm', '3d': '3D – Game – Công nghiệp', arch: 'Kiến trúc – Nội thất', photo: 'Nhiếp ảnh', fashion: 'Thời trang', dev: 'Lập trình & AI', business: 'Kinh doanh – Nội dung – Âm thanh' },
   en: { handcraft: '🎨 Hand-drawn & Bespoke Art', design: 'Graphic design', art: 'Illustration', motion: 'Motion & video', uiux: 'UI/UX & Product', '3d': '3D, Game & Industrial', arch: 'Architecture', photo: 'Photography', fashion: 'Fashion', dev: 'Dev, AI & Open Source', business: 'Business, Media & Sound' }
 };
+
+const PF_SIG_ACCENTS = [
+  '#2563eb', '#d97706', '#059669', '#7c3aed', '#db2777', '#dc2626',
+  '#0891b2', '#4f46e5', '#b45309', '#0d9488', '#e11d48', '#15803d',
+  '#9333ea', '#0284c7', '#c2410c', '#4338ca', '#be123c', '#0f766e'
+];
+
+function makeUniqueSpecializedPortfolio(cfg, idx = 0) {
+  const hMode = idx % 12;
+  const gMode = (idx * 5 + Math.floor(idx / 12)) % 6;
+  const tint = PF_LIGHT_TINTS[(idx * 3) % PF_LIGHT_TINTS.length];
+  const defaultAccent = cfg.c || PF_SIG_ACCENTS[idx % PF_SIG_ACCENTS.length];
+
+  return function (d, L, lang) {
+    const vi = lang !== 'en';
+    const c = d.c || defaultAccent;
+    const dark = !!cfg.dark;
+    const bg = cfg.bg || (dark ? '#090d16' : tint[0]);
+    const fg = dark ? '#f8fafc' : (cfg.fg || '#0f172a');
+    const cardBg = cfg.cardBg || (dark ? '#111827' : tint[1]);
+    const bdr = cfg.bdr || (dark ? '#1e293b' : tint[2]);
+    const sub = dark ? '#94a3b8' : '#64748b';
+    const fonts = cfg.serif
+      ? 'family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;600;700'
+      : cfg.mono
+      ? 'family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@500;700'
+      : cfg.hand
+      ? 'family=Caveat:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;800'
+      : 'family=Plus+Jakarta+Sans:wght@400;600;800&family=Syne:wght@700;800';
+    const hFont = cfg.serif ? `'Playfair Display',Georgia,serif` : cfg.mono ? `'JetBrains Mono',monospace` : cfg.hand ? `'Caveat',cursive` : `'Syne','Plus Jakarta Sans',sans-serif`;
+    const bFont = cfg.mono ? `'Space Grotesk',sans-serif` : `'Plus Jakarta Sans','Be Vietnam Pro',sans-serif`;
+    const badge = cfg.badge || `EDITION // 0${idx + 1}`;
+    const specTitle = vi ? cfg.vi : cfg.en;
+    const specDesc = cfg.desc ? (vi ? cfg.desc.vi : cfg.desc.en) : d.bio;
+    const roleLabel = d.isThumb ? specTitle : d.role;
+    const bioLabel = d.isThumb ? specDesc : d.bio;
+
+    const logoBadge = d.logo
+      ? `<img src="${d.logo}" alt="${d.name}" style="height:36px;width:auto;max-width:140px;object-fit:contain;border-radius:6px">`
+      : `<span style="display:inline-flex;align-items:center;gap:8px;font-family:${hFont};font-weight:800;font-size:17px"><i style="width:10px;height:10px;border-radius:50%;background:${c};display:inline-block"></i>${d.name}</span>`;
+
+    const skillPills = d.skills.slice(0, 7).map((s) => `<span style="padding:4px 11px;border-radius:${idx % 2 ? '99px' : '6px'};background:${c}18;color:${dark ? '#fff' : c};border:1px solid ${c}44;font-size:11.5px;font-weight:700">${s}</span>`).join('');
+
+    // 6 Distinct Project Showcase Grids (gMode 0..5)
+    let workHtml = '';
+    if (gMode === 0) {
+      // Alternating Full-Width Editorial Spreads
+      workHtml = `<section id="work" style="display:grid;gap:24px">${d.projects.map((p, i) => `<article style="display:grid;grid-template-columns:${i % 2 ? '1fr 1.25fr' : '1.25fr 1fr'};gap:28px;padding:24px;background:${cardBg};border:1px solid ${bdr};border-radius:18px;align-items:center"><img src="${p.img}" alt="${p.title}" style="width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;order:${i % 2 ? 2 : 1}"><div><div style="font-family:monospace;font-size:11.5px;color:${c};font-weight:800">CHAPTER 0${i + 1} // ${p.cat} (${p.year})</div><h3 style="font-family:${hFont};font-size:clamp(24px,3vw,34px);margin:8px 0">${p.title}</h3><p style="font-size:15px;line-height:1.68;color:${sub};margin:0 0 12px">${p.desc}</p>${projLink(p, L)}</div></article>`).join('')}</section>`;
+    } else if (gMode === 1) {
+      // 3-Column Studio Showcase Matrix
+      workHtml = `<section id="work" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">${d.projects.map((p, i) => `<article style="background:${cardBg};border:1.5px solid ${bdr};border-top:4px solid ${c};border-radius:14px;overflow:hidden;display:flex;flex-direction:column"><img src="${p.img}" alt="${p.title}" style="width:100%;aspect-ratio:4/3;object-fit:cover"><div style="padding:18px;flex:1;display:flex;flex-direction:column;justify-content:space-between"><div><div style="font-family:monospace;font-size:11px;color:${c};font-weight:800">[0${i + 1}] ${p.cat} · ${p.year}</div><h3 style="font-family:${hFont};font-size:21px;margin:6px 0">${p.title}</h3><p style="font-size:13.5px;color:${sub};margin:0 0 10px">${p.desc}</p></div>${projLink(p, L)}</div></article>`).join('')}</section>`;
+    } else if (gMode === 2) {
+      // Asymmetric 12-Col Bento Span (7 + 5 rhythm)
+      workHtml = `<section id="work" style="display:grid;grid-template-columns:repeat(12,1fr);gap:18px">${d.projects.map((p, i) => {
+        const sp = i % 3 === 0 ? 7 : i % 3 === 1 ? 5 : 6;
+        return `<article style="grid-column:span ${sp};background:${cardBg};border:1px solid ${bdr};border-radius:22px;overflow:hidden"><img src="${p.img}" alt="${p.title}" style="width:100%;aspect-ratio:16/10;object-fit:cover"><div style="padding:20px"><span style="padding:3px 10px;border-radius:99px;background:${c}18;color:${c};font-size:11px;font-weight:800">0${i + 1} · ${p.cat}</span><h3 style="font-family:${hFont};font-size:23px;margin:8px 0 6px">${p.title}</h3><p style="font-size:14px;color:${sub};margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</div></article>`;
+      }).join('')}</section>`;
+    } else if (gMode === 3) {
+      // Arched Atelier Dome Cards (2-Col or 3-Col)
+      workHtml = `<section id="work" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">${d.projects.map((p, i) => `<article style="background:${cardBg};border:1px solid ${bdr};border-radius:140px 140px 20px 20px;padding:16px 16px 22px;text-align:center"><img src="${p.img}" alt="${p.title}" style="width:100%;aspect-ratio:1/1.08;object-fit:cover;border-radius:125px 125px 12px 12px;margin-bottom:12px;border:2px solid ${c}44"><div style="font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:${c};font-weight:800">✦ 0${i + 1} · ${p.cat}</div><h3 style="font-family:${hFont};font-size:22px;margin:6px 0">${p.title}</h3><p style="font-size:13.5px;color:${sub};margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</article>`).join('')}</section>`;
+    } else if (gMode === 4) {
+      // Neo-Brutalist Hard-Shadow Plates (2-Column)
+      workHtml = `<section id="work" style="display:grid;grid-template-columns:repeat(2,1fr);gap:22px">${d.projects.map((p, i) => `<article style="background:${cardBg};border:2.5px solid ${fg};box-shadow:6px 6px 0 ${c};padding:18px"><div style="display:flex;justify-content:space-between;font-family:monospace;font-size:11px;font-weight:800;margin-bottom:10px"><span style="background:${c};color:#fff;padding:2px 8px">PLATE #0${i + 1}</span><span>${p.cat} // ${p.year}</span></div><img src="${p.img}" alt="${p.title}" style="width:100%;aspect-ratio:16/10;object-fit:cover;border:2px solid ${fg};margin-bottom:12px"><h3 style="font-family:${hFont};font-size:24px;margin:4px 0 6px">${p.title}</h3><p style="font-size:14px;color:${sub};margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</article>`).join('')}</section>`;
+    } else {
+      // Curatorial Exhibition Horizontal Ledger Rows
+      workHtml = `<section id="work" style="border-top:2px solid ${fg}">${d.projects.map((p, i) => `<article style="display:grid;grid-template-columns:70px 1.1fr 1fr;gap:24px;padding:22px 0;border-bottom:1px solid ${bdr};align-items:center"><div style="font-family:${hFont};font-size:38px;font-weight:900;color:${c}">0${i + 1}</div><div><div style="font-family:monospace;font-size:11px;color:${c};font-weight:700;text-transform:uppercase">${p.cat} · ${p.year}</div><h3 style="font-family:${hFont};font-size:28px;margin:4px 0 8px">${p.title}</h3><p style="font-size:14.5px;color:${sub};margin:0 0 10px">${p.desc}</p>${projLink(p, L)}</div><img src="${p.img}" alt="${p.title}" style="width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;border:1px solid ${bdr}"></article>`).join('')}</section>`;
+    }
+
+    // 12 Distinct Hero & Page Architectures (hMode 0..11)
+    let heroHtml = '';
+    if (hMode === 0) {
+      // Left Sticky Dossier Card + Right Hero Banner
+      heroHtml = `<div style="display:grid;grid-template-columns:330px 1fr;gap:28px;margin-bottom:28px;align-items:stretch">
+        <aside style="background:${cardBg};border:1.5px solid ${bdr};border-top:6px solid ${c};border-radius:18px;padding:26px;display:flex;flex-direction:column;justify-content:space-between">
+          <div>${logoBadge}<div style="font-family:monospace;font-size:10.5px;color:${c};font-weight:800;margin:14px 0 4px">${badge}</div><h1 style="font-family:${hFont};font-size:36px;line-height:1.04;margin:0 0 8px">${d.name}</h1><div style="font-size:14px;font-weight:700;color:${c};margin-bottom:10px">${roleLabel}</div><p style="font-size:14px;line-height:1.65;color:${sub}">${bioLabel}</p></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">${skillPills}</div>
+        </aside>
+        <div style="border-radius:18px;overflow:hidden;position:relative;border:1px solid ${bdr};min-height:340px;background:#0f172a">
+          <img src="${d.projects[0]?.img || ''}" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.82">
+          <div style="position:absolute;inset:auto 0 0 0;padding:28px;background:linear-gradient(transparent,rgba(9,13,22,.92));color:#fff"><span style="padding:4px 12px;border-radius:99px;background:${c};font-size:11px;font-weight:800">FEATURED SHOWCASE</span><h2 style="font-family:${hFont};font-size:32px;margin:8px 0 4px">${specTitle}</h2><p style="margin:0;font-size:14px;opacity:.85">${specDesc}</p></div>
+        </div>
+      </div>`;
+    } else if (hMode === 1) {
+      // Broadsheet Editorial Masthead
+      heroHtml = `<header style="border-top:4px solid ${fg};border-bottom:2px solid ${fg};padding:18px 0;margin-bottom:28px">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:${sub};border-bottom:1px solid ${bdr};padding-bottom:10px;margin-bottom:16px">${logoBadge}<span style="color:${c};font-weight:800">${badge}</span><span>${d.loc}</span></div>
+        <div style="display:grid;grid-template-columns:1.45fr 1fr;gap:28px;align-items:end">
+          <div><div style="color:${c};font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">${roleLabel}</div><h1 style="font-family:${hFont};font-size:clamp(42px,6.2vw,80px);line-height:.94;margin:0">${d.name}</h1></div>
+          <div><p style="font-size:15.5px;line-height:1.68;color:${sub};margin:0 0 12px">${bioLabel}</p><div style="display:flex;flex-wrap:wrap;gap:6px">${skillPills}</div></div>
+        </div>
+      </header>`;
+    } else if (hMode === 2) {
+      // Cyber Telemetry HUD Console
+      heroHtml = `<div style="margin-bottom:26px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 18px;background:${cardBg};border:1.5px solid ${c};border-radius:10px;font-family:monospace;font-size:11.5px;margin-bottom:16px">${logoBadge}<span style="color:${c};font-weight:800">● ${badge}</span><span>LOC // ${d.loc}</span></div>
+        <section style="background:${cardBg};border:1.5px solid ${c};border-left:6px solid ${c};border-radius:16px;padding:30px;box-shadow:0 12px 36px ${c}18;display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:center">
+          <div><div style="font-family:monospace;color:${c};font-size:12px;font-weight:800;margin-bottom:6px">&gt; ${roleLabel}</div><h1 style="font-family:${hFont};font-size:clamp(36px,5.4vw,66px);margin:0 0 10px;line-height:1">${d.name}</h1><p style="font-size:15px;color:${sub};line-height:1.68;margin:0 0 14px">${bioLabel}</p><div style="display:flex;flex-wrap:wrap;gap:6px">${skillPills}</div></div>
+          <img src="${d.projects[0]?.img || ''}" alt="" style="width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:10px;border:1.5px solid ${c}">
+        </section>
+      </div>`;
+    } else if (hMode === 3) {
+      // Centered Arched Atelier Lookbook
+      heroHtml = `<header style="text-align:center;max-width:860px;margin:0 auto 32px;padding:32px;background:${cardBg};border:1.5px solid ${bdr};border-radius:40px">
+        <div style="margin-bottom:8px">${logoBadge}</div>
+        <div style="font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:${c};font-weight:800;margin-bottom:6px">✦ ${badge} ✦</div>
+        <h1 style="font-family:${hFont};font-size:clamp(38px,5.5vw,66px);margin:0 0 8px;line-height:1">${d.name}</h1>
+        <div style="font-size:15px;font-weight:700;color:${c};margin-bottom:10px">${roleLabel} — ${d.loc}</div>
+        <p style="font-size:15px;color:${sub};line-height:1.68;margin:0 auto 14px;max-width:660px">${bioLabel}</p>
+        <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px">${skillPills}</div>
+      </header>`;
+    } else if (hMode === 4) {
+      // Swiss Constructivist Offset-Shadow Header
+      heroHtml = `<header style="border:3px solid ${fg};background:${cardBg};box-shadow:8px 8px 0 ${c};margin-bottom:28px;display:grid;grid-template-columns:1.6fr 1fr">
+        <div style="padding:28px;border-right:3px solid ${fg}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">${logoBadge}<span style="background:${c};color:#fff;padding:4px 10px;font-family:monospace;font-size:11px;font-weight:800">${badge}</span></div>
+          <h1 style="font-family:${hFont};font-size:clamp(38px,5.8vw,72px);line-height:.95;margin:0 0 8px;text-transform:uppercase">${d.name}</h1>
+          <div style="font-size:15px;font-weight:800;color:${c};margin-bottom:8px">${roleLabel} // ${d.loc}</div>
+          <p style="font-size:15px;line-height:1.62;color:${sub};margin:0">${bioLabel}</p>
+        </div>
+        <div style="padding:26px;background:${c};color:#fff;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="font-family:monospace;font-size:11.5px;font-weight:800;letter-spacing:.12em">DISCIPLINE MATRIX //</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0">${d.skills.slice(0, 7).map((s) => `<span style="background:#fff;color:#111;border:2px solid #111;padding:4px 10px;font-size:11.5px;font-weight:800">${s}</span>`).join('')}</div>
+          <div style="font-family:monospace;font-size:12px;font-weight:700">${d.email}</div>
+        </div>
+      </header>`;
+    } else if (hMode === 5) {
+      // Full-Gradient Banner Hero
+      heroHtml = `<header style="background:linear-gradient(135deg,${c},color-mix(in srgb,${c} 38%,#090d16));color:#fff;border-radius:26px;padding:34px;margin-bottom:26px;display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:center">
+        <div>
+          <span style="display:inline-block;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.18);font-size:11px;font-weight:800;letter-spacing:.14em;margin-bottom:10px">${badge}</span>
+          <h1 style="font-family:${hFont};font-size:clamp(36px,5.4vw,66px);line-height:.98;margin:0 0 8px">${d.name}</h1>
+          <div style="font-size:15px;font-weight:700;opacity:.92;margin-bottom:10px">${roleLabel} · ${d.loc}</div>
+          <p style="font-size:15px;line-height:1.66;opacity:.9;margin:0">${bioLabel}</p>
+        </div>
+        <div style="background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:20px">
+          <div style="font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">${specTitle}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">${d.skills.slice(0, 7).map((s) => `<span style="padding:4px 11px;border-radius:99px;background:rgba(255,255,255,.22);font-size:11.5px;font-weight:700">${s}</span>`).join('')}</div>
+        </div>
+      </header>`;
+    } else if (hMode === 6) {
+      // Cinema Director Widescreen Stage with Filmstrip Bar
+      heroHtml = `<header style="background:#090a0f;color:#f8fafc;border-radius:20px;overflow:hidden;border:1.5px solid ${c};margin-bottom:26px">
+        <div style="background:#12151f;padding:8px 18px;display:flex;justify-content:space-between;font-family:monospace;font-size:11px;color:${c};border-bottom:1px dashed ${c}66"><span>● REC // ${badge}</span><span>TC 00:01:24:08 · 24FPS</span><span>${d.loc}</span></div>
+        <div style="padding:30px;display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center">
+          <div><div style="color:${c};font-family:monospace;font-size:12px;font-weight:800;margin-bottom:6px">DIRECTOR'S CUT // ${roleLabel}</div><h1 style="font-family:${hFont};font-size:clamp(36px,5.2vw,64px);margin:0 0 10px;line-height:1">${d.name}</h1><p style="color:#94a3b8;font-size:15px;line-height:1.65;margin:0 0 14px">${bioLabel}</p><div style="display:flex;flex-wrap:wrap;gap:6px">${skillPills}</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${d.projects.slice(0, 2).map((p) => `<img src="${p.img}" alt="" style="width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:8px;border:1.5px solid ${c}">`).join('')}</div>
+        </div>
+      </header>`;
+    } else if (hMode === 7) {
+      // Architectural CAD Blueprint Spec Table Header
+      heroHtml = `<header style="border:2px solid ${c};background:${cardBg};margin-bottom:26px">
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;border-bottom:2px solid ${c}">
+          <div style="padding:24px;border-right:2px solid ${c}"><div style="font-family:monospace;font-size:11px;color:${c};font-weight:800">DWG // ${badge}</div><h1 style="font-family:${hFont};font-size:clamp(36px,5.4vw,64px);margin:6px 0;line-height:1">${d.name}</h1><div style="font-family:monospace;font-size:14px;color:${c};font-weight:700">${roleLabel}</div></div>
+          <div style="padding:20px;font-family:monospace;font-size:11.5px;color:${sub};display:flex;flex-direction:column;justify-content:center;gap:6px"><div><b style="color:${fg}">SCALE:</b> 1:100 METRIC</div><div><b style="color:${fg}">LOCATION:</b> ${d.loc}</div><div><b style="color:${fg}">DISCIPLINE:</b> ${specTitle}</div><div><b style="color:${fg}">CONTACT:</b> ${d.email}</div></div>
+        </div>
+        <div style="padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px"><span style="font-size:14px;color:${sub}">${bioLabel}</span><div style="display:flex;flex-wrap:wrap;gap:6px">${skillPills}</div></div>
+      </header>`;
+    } else if (hMode === 8) {
+      // Polaroid & Washi Tape Atelier Board
+      heroHtml = `<header style="background:${cardBg};border:2px dashed ${c};border-radius:22px;padding:28px;margin-bottom:26px;display:grid;grid-template-columns:240px 1fr;gap:28px;align-items:center">
+        <div style="background:#fff;padding:10px 10px 26px;box-shadow:0 10px 24px rgba(0,0,0,.14);transform:rotate(-3deg);border:1px solid #e2e8f0;position:relative">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:80px;height:20px;background:${c}55"></div>
+          <img src="${d.avatar || d.projects[0]?.img || ''}" alt="" style="width:100%;aspect-ratio:1;object-fit:cover">
+          <div style="text-align:center;font-family:${hFont};font-size:16px;color:#1e293b;margin-top:8px;font-weight:700">${d.name}</div>
+        </div>
+        <div><span style="display:inline-block;padding:4px 12px;background:${c};color:#fff;border-radius:6px;font-size:11px;font-weight:800;transform:rotate(-1deg);margin-bottom:8px">★ ${badge}</span><h1 style="font-family:${hFont};font-size:clamp(36px,5.2vw,62px);margin:4px 0 8px;line-height:1.02">${specTitle}</h1><div style="font-size:15px;font-weight:700;color:${c};margin-bottom:8px">${d.name} · ${d.loc}</div><p style="font-size:15px;color:${sub};line-height:1.65;margin:0 0 12px">${bioLabel}</p><div style="display:flex;flex-wrap:wrap;gap:6px">${skillPills}</div></div>
+      </header>`;
+    } else if (hMode === 9) {
+      // Museum Curatorial Numbered Pavilion Header
+      heroHtml = `<header style="margin-bottom:28px;padding:28px;background:${cardBg};border-left:8px solid ${c};border-top:1px solid ${bdr};border-right:1px solid ${bdr};border-bottom:1px solid ${bdr}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">${logoBadge}<span style="font-family:monospace;font-size:11px;color:${c};font-weight:800">EXHIBITION CATALOG // ${badge}</span></div>
+        <div style="display:grid;grid-template-columns:110px 1fr;gap:20px;align-items:center">
+          <div style="font-family:${hFont};font-size:68px;font-weight:900;line-height:1;color:${c}">№1</div>
+          <div><h1 style="font-family:${hFont};font-size:clamp(34px,5vw,60px);margin:0 0 6px;line-height:1.02">${d.name} — ${roleLabel}</h1><p style="font-size:15px;color:${sub};margin:0 0 10px">${bioLabel}</p><div style="display:flex;flex-wrap:wrap;gap:6px">${skillPills}</div></div>
+        </div>
+      </header>`;
+    } else if (hMode === 10) {
+      // Bento Dual Box with Right Avatar/Monogram Tile
+      heroHtml = `<div style="margin-bottom:24px">
+        <nav style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:${cardBg};border:1px solid ${bdr};border-radius:99px;margin-bottom:16px">${logoBadge}<span style="font-size:11px;font-weight:800;letter-spacing:.14em;color:${c}">${badge}</span><span style="background:${c};color:#fff;padding:6px 14px;border-radius:99px;font-size:12px;font-weight:700">${d.loc}</span></nav>
+        <section style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px">
+          <div style="background:${cardBg};border:1px solid ${bdr};border-radius:24px;padding:28px"><span style="display:inline-block;padding:4px 12px;border-radius:99px;background:${c}18;color:${c};font-size:11.5px;font-weight:800;margin-bottom:8px">${roleLabel}</span><h1 style="font-family:${hFont};font-size:clamp(34px,5vw,62px);line-height:1;margin:0 0 10px">${d.name}</h1><p style="font-size:15px;color:${sub};line-height:1.65;margin:0">${bioLabel}</p></div>
+          <div style="background:${c};color:#fff;border-radius:24px;padding:26px;display:flex;flex-direction:column;justify-content:space-between"><div style="font-family:monospace;font-size:11px;opacity:.85">KEY CAPABILITIES</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0">${d.skills.slice(0, 6).map((s) => `<span style="padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.2);font-size:11.5px;font-weight:700">${s}</span>`).join('')}</div><div style="font-weight:800;font-size:13px">${d.email}</div></div>
+        </section>
+      </div>`;
+    } else {
+      // Executive Pitch Deck with 3 Pillar Metric Cards
+      heroHtml = `<header style="margin-bottom:26px">
+        <div style="background:${dark ? '#1e293b' : '#0f172a'};color:#fff;border-radius:20px;padding:28px 32px;border-bottom:5px solid ${c};margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:20px">
+          <div><div style="font-family:monospace;font-size:11px;color:${c};font-weight:800;letter-spacing:.15em">${badge}</div><h1 style="font-family:${hFont};font-size:clamp(34px,5vw,60px);margin:4px 0 6px;line-height:1.02">${d.name}</h1><div style="font-size:15px;color:#cbd5e1;font-weight:600">${roleLabel} · ${d.loc}</div><p style="font-size:14px;color:#94a3b8;margin:8px 0 0;max-width:680px">${bioLabel}</p></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">${d.skills.slice(0, 3).map((s, i) => `<div style="background:${cardBg};border:1px solid ${bdr};border-left:4px solid ${c};border-radius:12px;padding:14px 16px"><div style="font-family:monospace;font-size:10px;color:${c};font-weight:800">PILLAR 0${i + 1}</div><div style="font-family:${hFont};font-size:18px;font-weight:800;margin-top:3px">${s}</div></div>`).join('')}</div>
+      </header>`;
+    }
+
+    return doc({
+      lang,
+      title: `${d.name} – ${specTitle}`,
+      fonts,
+      css: `body{font-family:${bFont};background:${bg};color:${fg}}.w{max-width:1320px;margin:0 auto;padding:26px}@media(max-width:860px){.w section,.w header,.w div[style*="grid-template-columns"]{grid-template-columns:1fr!important}}`,
+      body: `<div class="w">${heroHtml}${workHtml}<footer id="contact" style="margin-top:34px;padding:32px;background:${cardBg};border:1.5px solid ${bdr};border-radius:18px;text-align:center"><h2 style="font-family:${hFont};font-size:34px;margin:0 0 10px">${L.hire}</h2><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:18px;font-weight:700;color:${c}">${contactLinks(d)}</div></footer></div>`
+    });
+  };
+}
 
 export const PORTFOLIO_STYLES = [
   { id: 'behance', fn: behance, vi: 'Case Study Artboard 1400px', en: 'Case Study (1400px Boards)', fields: ['design', 'uiux', 'art', 'arch', 'motion', '3d', 'handcraft'], desc: { vi: 'Bố cục Artboard: Bìa Poster, Mục lục & CV Spread, Bảng phân tích dự án + Bản vẽ phác thảo & Pantone', en: '1400px boards: Cover Poster, Index & CV Spread, Multi-frame Case Studies & Pantone specs' } },
@@ -1250,7 +1844,17 @@ export const PORTFOLIO_STYLES = [
   { id: 'game', fn: game, vi: 'Game Concept & 3D Artist', en: 'Game Concept & 3D Artist', fields: ['3d'], desc: { vi: 'Chữ Glitch cyberpunk, thẻ bài lật 3D hai mặt trưng bày Concept Art', en: 'Glitch title, 3D flip concept cards, neon accents' } },
   { id: 'uiux', fn: uiux, vi: 'Product & UI/UX Mockup Stage', en: 'Product & UI/UX Mockup Stage', fields: ['uiux', 'dev'], desc: { vi: 'Khung thiết bị Laptop + Mobile thực tế, sơ đồ quy trình 5 bước', en: 'Laptop & mobile device mockups, 5-step design process' } },
   { id: 'developer', fn: developer, vi: 'Kỹ Sư Phần Mềm (Terminal)', en: 'Software Engineer (Terminal)', fields: ['dev'], desc: { vi: 'Cửa sổ Terminal tự động gõ lệnh, danh mục dự án chuẩn Repository', en: 'Live typing terminal & repository case studies' } },
-  { id: 'professional', fn: professional, vi: 'Tối Giản Hiện Đại (Clean Grid)', en: 'Clean Minimalist Archive', fields: ['business', 'uiux', 'design'], desc: { vi: 'Bố cục sáng sủa, tập trung vào hình ảnh dự án và hồ sơ năng lực', en: 'Crisp minimalist layout focused on work and credentials' } }
+  { id: 'professional', fn: professional, vi: 'Tối Giản Hiện Đại (Clean Grid)', en: 'Clean Minimalist Archive', fields: ['business', 'uiux', 'design'], desc: { vi: 'Bố cục sáng sủa, tập trung vào hình ảnh dự án và hồ sơ năng lực', en: 'Crisp minimalist layout focused on work and credentials' } },
+  ...SPECIALIZED_PORTFOLIO_SPECS.map((s, idx) => ({
+    id: s.id,
+    fn: makeUniqueSpecializedPortfolio(s, idx),
+    accent: s.c || PF_SIG_ACCENTS[idx % PF_SIG_ACCENTS.length],
+    seed: idx + 1,
+    vi: s.vi,
+    en: s.en,
+    fields: s.fields,
+    desc: s.desc
+  }))
 ];
 
 export const PORTFOLIO_FONTS = {
@@ -1416,6 +2020,13 @@ function bespokeOverlay(values, c) {
   else if (tex === 'grid') css += `body{background-image:linear-gradient(color-mix(in srgb,currentColor 9%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,currentColor 9%,transparent) 1px,transparent 1px)!important;background-size:28px 28px!important}`;
   else if (tex === 'watercolor') css += `body{background-image:radial-gradient(circle at 15% 20%,${c}22 0,transparent 40%),radial-gradient(circle at 85% 75%,#f4a26126 0,transparent 45%)!important}`;
   else if (tex === 'kraft') css += `body{background-color:#f3ede0!important;color:#2b2118!important}`;
+  if (values.pfRadius === 'sharp') css += `article,section,header,footer,div,img,figure,.b-box,.b-item,.pfx-card,.pfx-dd,.pf-smart-item{border-radius:0px!important}`;
+  else if (values.pfRadius === 'soft') css += `article,.b-box,.b-item,.pfx-card,.pfx-dd,.pf-smart-item{border-radius:10px!important}`;
+  else if (values.pfRadius === 'round') css += `article,.b-box,.b-item,.pfx-card,.pfx-dd,.pf-smart-item{border-radius:28px!important}`;
+  if (values.pfWidth === 'compact') css += `.w,.pfx,.pf-smart-top,.pf-smart-gal-sec{max-width:1040px!important}`;
+  else if (values.pfWidth === 'wide') css += `.w,.pfx,.pf-smart-top,.pf-smart-gal-sec{max-width:1540px!important}`;
+  if (values.pfScale === 'compact') css += `html{font-size:92%!important}`;
+  else if (values.pfScale === 'large') css += `html{font-size:108%!important}`;
 
   let doodles = '';
   if (stk === 'doodle') {
@@ -1441,15 +2052,297 @@ var multi=function(k){return k==='bio'||/\\.(desc|challenge|solution|result)$/.t
 document.addEventListener('click',function(ev){var el=ev.target.closest&&ev.target.closest('[data-k]');if(!el)return;ev.preventDefault();ev.stopPropagation();
 if(el.isContentEditable)return;el.setAttribute('contenteditable','plaintext-only');if(!el.isContentEditable)el.setAttribute('contenteditable','true');el.focus();},true);
 document.addEventListener('input',function(ev){var el=ev.target.closest&&ev.target.closest('[data-k]');if(!el)return;var k=el.getAttribute('data-k'),t=el.innerText.replace(/\\s+/g,' ').trim();
-document.querySelectorAll('[data-k="'+k+'"]').forEach(function(o){if(o!==el)o.textContent=t;});parent.postMessage({type:'pf-edit',key:k,value:t},'*');});
+document.querySelectorAll('[data-k]').forEach(function(o){if(o!==el&&o.getAttribute('data-k')===k)o.textContent=t;});parent.postMessage({type:'pf-edit',key:k,value:t},'*');});
 document.addEventListener('keydown',function(ev){var el=ev.target;if(ev.key==='Enter'&&el.isContentEditable&&!multi(el.getAttribute('data-k')||'')){ev.preventDefault();el.blur();}});
 document.addEventListener('focusout',function(ev){if(ev.target.removeAttribute)ev.target.removeAttribute('contenteditable');});})();</script>`;
 }
 
+function smartAssetHubHtml(d, lang = 'vi') {
+  const vi = lang !== 'en';
+  const c = d.c;
+  const hasTop = !!(d.logo || d.banners.length || d.brandLogos.length);
+  const hasProducts = d.productGallery.length > 0;
+  if (!hasTop && !hasProducts) return { top: '', showcase: '' };
+
+  const line = 'color-mix(in srgb,currentColor 16%,transparent)';
+  const cardBg = 'color-mix(in srgb,currentColor 3%,transparent)';
+
+  let top = '';
+  if (hasTop) {
+    const brandBar = (d.logo || d.brandLogos.length) ? `
+      <div class="pf-smart-brandbar">
+        <div class="pf-smart-logo-main">
+          ${d.logo ? `<img src="${d.logo}" alt="${d.name}" class="pf-smart-logo-img">` : `<span class="pf-smart-logo-dot"></span>`}
+          <div>
+            <b>${d.name}</b>
+            <small>${d.role}${d.loc ? ` · ${d.loc}` : ''}</small>
+          </div>
+        </div>
+        ${d.brandLogos.length ? `<div class="pf-smart-partner-strip"><span class="pf-smart-partner-lbl">${vi ? 'THƯƠNG HIỆU & ĐỐI TÁC:' : 'BRANDS & CLIENTS:'}</span><div class="pf-smart-partner-list">${d.brandLogos.map((b) => `<figure class="pf-smart-partner-item" title="${b.name}"><img src="${b.src}" alt="${b.name}" data-pf-zoom="${b.src}"><figcaption>${b.name}</figcaption></figure>`).join('')}</div></div>` : ''}
+      </div>` : '';
+
+    let bannerGrid = '';
+    if (d.banners.length === 1) {
+      const b = d.banners[0];
+      bannerGrid = `<div class="pf-smart-bn-single"><img src="${b.src}" alt="${b.title}" data-pf-zoom="${b.src}"><div class="pf-smart-bn-cap"><span>KEY VISUAL BANNER // 01</span><h3>${b.title}</h3>${b.sub ? `<p>${b.sub}</p>` : ''}</div></div>`;
+    } else if (d.banners.length === 2) {
+      bannerGrid = `<div class="pf-smart-bn-split">${d.banners.map((b, i) => `<div class="pf-smart-bn-card s${i}"><img src="${b.src}" alt="${b.title}" data-pf-zoom="${b.src}"><div class="pf-smart-bn-cap"><span>CAMPAIGN BANNER // 0${i + 1}</span><h3>${b.title}</h3></div></div>`).join('')}</div>`;
+    } else if (d.banners.length >= 3) {
+      const [first, ...rest] = d.banners;
+      bannerGrid = `<div class="pf-smart-bn-multi">
+        <div class="pf-smart-bn-single"><img src="${first.src}" alt="${first.title}" data-pf-zoom="${first.src}"><div class="pf-smart-bn-cap"><span>HERO CAMPAIGN // 01</span><h3>${first.title}</h3>${first.sub ? `<p>${first.sub}</p>` : ''}</div></div>
+        <div class="pf-smart-bn-row">${rest.map((b, i) => `<div class="pf-smart-bn-card"><img src="${b.src}" alt="${b.title}" data-pf-zoom="${b.src}"><div class="pf-smart-bn-cap"><span>BANNER // 0${i + 2}</span><h3>${b.title}</h3></div></div>`).join('')}</div>
+      </div>`;
+    }
+
+    top = `<style>
+      .pf-smart-top{max-width:1320px;margin:0 auto;padding:22px 24px 8px}
+      .pf-smart-brandbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:18px;padding:14px 22px;border:1px solid ${line};border-radius:18px;background:${cardBg};margin-bottom:18px}
+      .pf-smart-logo-main{display:flex;align-items:center;gap:14px}
+      .pf-smart-logo-img{height:48px;width:auto;max-width:180px;object-fit:contain;border-radius:8px;background:#fff;padding:4px 8px;border:1px solid ${line}}
+      .pf-smart-logo-dot{width:14px;height:14px;border-radius:50%;background:${c};display:inline-block}
+      .pf-smart-logo-main b{display:block;font-size:17px;line-height:1.15}
+      .pf-smart-logo-main small{opacity:.68;font-size:12px}
+      .pf-smart-partner-strip{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+      .pf-smart-partner-lbl{font-family:monospace;font-size:10.5px;font-weight:700;letter-spacing:.14em;opacity:.65}
+      .pf-smart-partner-list{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+      .pf-smart-partner-item{margin:0;display:flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid ${line};border-radius:10px;background:#fff;color:#0f172a}
+      .pf-smart-partner-item img{height:26px;width:auto;max-width:90px;object-fit:contain;cursor:zoom-in}
+      .pf-smart-partner-item figcaption{font-size:11px;font-weight:700}
+      .pf-smart-bn-single{position:relative;border-radius:22px;overflow:hidden;border:1px solid ${line};margin-bottom:16px}
+      .pf-smart-bn-single img{width:100%;aspect-ratio:21/9;object-fit:cover;display:block;cursor:zoom-in;transition:transform .5s}
+      .pf-smart-bn-single:hover img,.pf-smart-bn-card:hover img{transform:scale(1.02)}
+      .pf-smart-bn-split{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-bottom:16px}
+      .pf-smart-bn-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:16px}
+      .pf-smart-bn-card{position:relative;border-radius:18px;overflow:hidden;border:1px solid ${line}}
+      .pf-smart-bn-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;cursor:zoom-in;transition:transform .5s}
+      .pf-smart-bn-cap{position:absolute;inset:auto 0 0 0;padding:24px 22px 16px;background:linear-gradient(transparent,rgba(0,0,0,.82));color:#fff;pointer-events:none}
+      .pf-smart-bn-cap span{font-family:monospace;font-size:10px;letter-spacing:.18em;color:${c};background:rgba(255,255,255,.92);padding:2px 8px;border-radius:4px;font-weight:800}
+      .pf-smart-bn-cap h3{margin:6px 0 2px;font-size:clamp(18px,2.4vw,28px)}
+      .pf-smart-bn-cap p{margin:0;font-size:13px;opacity:.85}
+      @media(max-width:760px){.pf-smart-bn-split{grid-template-columns:1fr}.pf-smart-bn-single img{aspect-ratio:16/9}}
+    </style><div class="pf-smart-top">${brandBar}${bannerGrid}</div>`;
+  }
+
+  let showcase = '';
+  if (hasProducts) {
+    const mode = d.autoLayoutMode || 'smart';
+    const cats = [...new Set(d.productGallery.map((p) => p.cat).filter(Boolean))];
+    const cellClass = (p, i) => {
+      if (p.span) return `${p.span} ar-${p.orient || 'landscape'}`;
+      if (mode === 'bento') return (i % 4 === 0 || i % 4 === 3) ? 'sp-8' : 'sp-4';
+      if (mode === 'lookbook') return 'sp-4 ar-portrait';
+      if (mode === 'catalog') return 'sp-3 ar-square';
+      // Smart aspect-ratio engine
+      if (p.orient === 'banner') return 'sp-12 ar-banner';
+      if (p.orient === 'portrait') return 'sp-4 ar-portrait';
+      if (p.orient === 'square') return 'sp-4 ar-square';
+      return 'sp-6 ar-landscape';
+    };
+
+    showcase = `<style>
+      .pf-smart-gal-sec{max-width:1220px;margin:0 auto;padding:48px 24px 24px;border-top:1px solid ${line}}
+      .pf-smart-gal-hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:24px}
+      .pf-smart-gal-hd h2{margin:4px 0 0;font-size:clamp(26px,3.6vw,42px);letter-spacing:-.02em}
+      .pf-smart-tabs{display:flex;flex-wrap:wrap;gap:8px}
+      .pf-smart-tab{padding:6px 14px;border-radius:99px;border:1px solid ${line};background:transparent;color:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:.2s}
+      .pf-smart-tab.on,.pf-smart-tab:hover{background:${c};color:#fff;border-color:${c}}
+      .pf-smart-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;grid-auto-flow:dense}
+      .pf-smart-item{border:1px solid ${line};border-radius:18px;overflow:hidden;background:${cardBg};display:flex;flex-direction:column;transition:transform .3s,border-color .3s}
+      .pf-smart-item:hover{transform:translateY(-5px);border-color:${c}}
+      .pf-smart-item.sp-12{grid-column:span 12}
+      .pf-smart-item.sp-8{grid-column:span 8}
+      .pf-smart-item.sp-6{grid-column:span 6}
+      .pf-smart-item.sp-4{grid-column:span 4}
+      .pf-smart-item.sp-3{grid-column:span 3}
+      .pf-smart-item img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;aspect-ratio:16/10;transition:transform .45s}
+      .pf-smart-item:hover img{transform:scale(1.03)}
+      .pf-smart-item.ar-banner img{aspect-ratio:21/9}
+      .pf-smart-item.ar-portrait img{aspect-ratio:3/4}
+      .pf-smart-item.ar-square img{aspect-ratio:1/1}
+      .pf-smart-item.ar-landscape img{aspect-ratio:16/10}
+      .pf-smart-meta{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid ${line}}
+      .pf-smart-meta b{font-size:14.5px}
+      .pf-smart-meta span{font-family:monospace;font-size:10.5px;padding:2px 8px;border-radius:99px;background:color-mix(in srgb,${c} 15%,transparent);color:${c};font-weight:700}
+      .pf-smart-lb{position:fixed;inset:0;background:rgba(9,13,22,.92);backdrop-filter:blur(8px);z-index:9999;display:none;place-items:center;padding:24px;cursor:zoom-out}
+      .pf-smart-lb.open{display:grid}
+      .pf-smart-lb img{max-width:92vw;max-height:88vh;object-fit:contain;border-radius:12px;box-shadow:0 25px 60px rgba(0,0,0,.5)}
+      @media(max-width:860px){.pf-smart-item.sp-8,.pf-smart-item.sp-6,.pf-smart-item.sp-4,.pf-smart-item.sp-3{grid-column:span 6}}
+      @media(max-width:560px){.pf-smart-item.sp-12,.pf-smart-item.sp-8,.pf-smart-item.sp-6,.pf-smart-item.sp-4,.pf-smart-item.sp-3{grid-column:span 12}}
+    </style>
+    <section class="pf-smart-gal-sec" id="product-showcase">
+      <div class="pf-smart-gal-hd">
+        <div>
+          <div style="font-family:monospace;font-size:11px;letter-spacing:.16em;color:${c};font-weight:800">✦ AUTO-LAYOUT PRODUCT &amp; WORK GALLERY (${d.productGallery.length} ITEMS)</div>
+          <h2>${vi ? 'Triển Lãm Sản Phẩm & Ấn Phẩm Đã Thực Hiện' : 'Curated Product & Artwork Showcase'}</h2>
+        </div>
+        ${cats.length > 1 ? `<div class="pf-smart-tabs"><button type="button" class="pf-smart-tab on" data-pf-cat="">${vi ? 'Tất cả' : 'All'} (${d.productGallery.length})</button>${cats.map((ct) => `<button type="button" class="pf-smart-tab" data-pf-cat="${ct}">${ct}</button>`).join('')}</div>` : ''}
+      </div>
+      <div class="pf-smart-grid">
+        ${d.productGallery.map((p, i) => `<article class="pf-smart-item ${cellClass(p, i)}" data-pf-item-cat="${p.cat}">
+          <div style="overflow:hidden;flex:1"><img src="${p.src}" alt="${p.title}" loading="lazy" data-pf-zoom="${p.src}"></div>
+          <div class="pf-smart-meta"><b>${p.title}</b><span>${p.cat}</span></div>
+        </article>`).join('')}
+      </div>
+    </section>`;
+  }
+
+  const lbScript = `<div class="pf-smart-lb" id="pf-smart-lb"><img src="" alt=""></div>
+  <script>(function(){
+    var lb=document.getElementById('pf-smart-lb');
+    if(lb){
+      document.addEventListener('click',function(e){
+        var z=e.target.closest&&e.target.closest('[data-pf-zoom]');
+        if(z){lb.querySelector('img').src=z.getAttribute('data-pf-zoom');lb.classList.add('open');return;}
+        if(e.target.closest('#pf-smart-lb'))lb.classList.remove('open');
+        var tab=e.target.closest&&e.target.closest('[data-pf-cat]');
+        if(tab){
+          var c=tab.getAttribute('data-pf-cat');
+          document.querySelectorAll('[data-pf-cat]').forEach(function(b){b.classList.toggle('on',b===tab)});
+          document.querySelectorAll('[data-pf-item-cat]').forEach(function(it){
+            it.style.display=(!c||it.getAttribute('data-pf-item-cat')===c)?'':'none';
+          });
+        }
+      });
+    }
+  })();</script>`;
+
+  return { top, showcase: showcase + lbScript };
+}
+
+function clientMagnetHtml(d, values, lang = 'vi') {
+  const vi = lang !== 'en';
+  const c = d.c || '#2563eb';
+  const pkgRows = lines(values.pricing).map((l) => {
+    const [tier = '', price = '', perks = ''] = l.split('|').map((x) => x.trim());
+    return { tier: e(tier), price: e(price), perks: e(perks), rawTier: tier, rawPrice: price };
+  }).filter((r) => r.tier);
+  const srvRows = lines(values.services).map((l) => {
+    const [title = ''] = l.split('|').map((x) => x.trim());
+    return e(title);
+  }).filter(Boolean);
+  const packages = pkgRows.length
+    ? pkgRows
+    : srvRows.map((s) => ({ tier: s, price: vi ? 'Báo giá theo yêu cầu' : 'Custom quote', perks: '' }));
+
+  const phoneRaw = String(values.bookingPhone || '').replace(/[^\d+]/g, '');
+  const payUrl = safeHref(values.paymentLink);
+  const emailRaw = String(values.email || 'hello@example.com').trim();
+  const availTxt = e(values.availability || (vi ? 'Đang nhận dự án & Commission mới' : 'Available for new projects & commissions'));
+
+  const seoLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: String(values.name || 'Portfolio'),
+    description: String(values.bio || ''),
+    jobTitle: String(values.role || ''),
+    email: emailRaw,
+    address: { '@type': 'PostalAddress', addressLocality: String(values.location || '') },
+    knowsAbout: list(values.skills),
+    makesOffer: pkgRows.map((p) => ({
+      '@type': 'Offer',
+      name: p.rawTier,
+      priceSpecification: { '@type': 'PriceSpecification', description: p.rawPrice }
+    }))
+  };
+  const headSeo = `<meta name="description" content="${e(String(values.role || '') + ' — ' + String(values.bio || '').slice(0, 140))}"><meta property="og:title" content="${d.name} — ${d.role}"><meta property="og:description" content="${d.bio}"><script type="application/ld+json">${JSON.stringify(seoLd).replace(/</g, '\\u003c')}</script>`;
+
+  const modalHtml = `<style>
+    .pf-mag-fab{position:fixed;left:22px;bottom:22px;z-index:9990;display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:999px;background:#0f172a;color:#fff;border:1.5px solid ${c};box-shadow:0 14px 34px rgba(0,0,0,.32);font:700 13px/1.2 system-ui,sans-serif;cursor:pointer;transition:transform .2s,box-shadow .2s}
+    .pf-mag-fab:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(0,0,0,.42)}
+    .pf-mag-dot{width:9px;height:9px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.25)}
+    .pf-mag-modal{position:fixed;inset:0;z-index:9998;background:rgba(9,13,22,.78);backdrop-filter:blur(6px);display:none;place-items:center;padding:18px;font-family:system-ui,-apple-system,sans-serif;color:#0f172a}
+    .pf-mag-modal.open{display:grid}
+    .pf-mag-box{width:100%;max-width:540px;background:#fff;border-radius:24px;padding:24px;box-shadow:0 25px 60px rgba(0,0,0,.45);border:1px solid #e2e8f0;max-height:90vh;overflow-y:auto}
+    .pf-mag-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .pf-mag-hd h3{margin:4px 0 0;font-size:20px;font-weight:800;color:#0f172a}
+    .pf-mag-close{background:#f1f5f9;border:0;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#334155}
+    .pf-mag-pkgs{display:grid;gap:8px;margin:12px 0}
+    .pf-mag-pkg{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;border:1.5px solid #cbd5e1;border-radius:14px;cursor:pointer;transition:.15s;background:#f8fafc}
+    .pf-mag-pkg.on{border-color:${c};background:color-mix(in srgb,${c} 8%,#fff)}
+    .pf-mag-pkg b{font-size:13.5px;color:#0f172a;display:block}
+    .pf-mag-pkg small{font-size:11.5px;color:#64748b}
+    .pf-mag-pkg span{font-weight:800;font-size:13px;color:${c};white-space:nowrap}
+    .pf-mag-in{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:10px;font:13.5px system-ui,sans-serif;margin-top:8px;box-sizing:border-box;color:#0f172a;background:#fff}
+    .pf-mag-acts{display:grid;gap:8px;margin-top:14px}
+    .pf-mag-btn{display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;font-weight:700;font-size:13.5px;text-decoration:none;border:0;cursor:pointer;transition:.15s}
+    .pf-mag-btn.pri{background:${c};color:#fff}
+    .pf-mag-btn.zalo{background:#0068ff;color:#fff}
+    .pf-mag-btn.pay{background:#059669;color:#fff}
+    @media print{.pf-mag-fab,.pf-mag-modal{display:none!important}}
+  </style>
+  <button type="button" class="pf-mag-fab" id="pf-mag-open">
+    <span class="pf-mag-dot"></span>
+    <span>⚡ ${vi ? 'Đặt Dịch Vụ & Báo Giá Nhanh' : 'Book Package & Instant Quote'}</span>
+  </button>
+  <div class="pf-mag-modal" id="pf-mag-modal">
+    <div class="pf-mag-box">
+      <div class="pf-mag-hd">
+        <div>
+          <span style="font-size:11px;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:.08em">● ${availTxt}</span>
+          <h3>${vi ? `Làm việc cùng ${d.name}` : `Work with ${d.name}`}</h3>
+        </div>
+        <button type="button" class="pf-mag-close" id="pf-mag-close">✕</button>
+      </div>
+      <div style="font-size:12.5px;font-weight:700;color:#475569">${vi ? '1. Chọn gói dịch vụ / hạng mục bạn quan tâm:' : '1. Select a package or service:'}</div>
+      <div class="pf-mag-pkgs" id="pf-mag-pkgs">
+        ${packages.map((p, i) => `<div class="pf-mag-pkg${i === 0 ? ' on' : ''}" data-pkg="${p.tier} (${p.price})"><div><b>${p.tier}</b>${p.perks ? `<small>${p.perks}</small>` : ''}</div><span>${p.price}</span></div>`).join('')}
+      </div>
+      <div style="font-size:12.5px;font-weight:700;color:#475569;margin-top:10px">${vi ? '2. Thông tin & yêu cầu dự án của bạn:' : '2. Your project details & timeline:'}</div>
+      <input type="text" class="pf-mag-in" id="pf-mag-client" placeholder="${vi ? 'Tên của bạn / Tên thương hiệu & SĐT...' : 'Your Name / Brand & Contact...'}" />
+      <textarea class="pf-mag-in" id="pf-mag-brief" rows="3" placeholder="${vi ? 'Mô tả ngắn nhu cầu (VD: Cần thiết kế bộ nhận diện / banner chiến dịch, thời gian cần hoàn thành)...' : 'Briefly describe your project goals, deliverables and target deadline...'}"></textarea>
+      <div class="pf-mag-acts">
+        <button type="button" class="pf-mag-btn pri" id="pf-mag-send-mail">📩 ${vi ? 'Gửi yêu cầu đặt lịch & nhận báo giá ngay' : 'Send Booking Request & Get Quote'}</button>
+        ${phoneRaw ? `<a class="pf-mag-btn zalo" id="pf-mag-zalo" href="${vi ? `https://zalo.me/${phoneRaw}` : `https://wa.me/${phoneRaw.replace(/^\+/, '')}`}" target="_blank" rel="noopener">💬 ${vi ? `Nhắn Zalo trực tiếp (${phoneRaw})` : `Chat on WhatsApp (${phoneRaw})`}</a>` : ''}
+        ${payUrl ? `<a class="pf-mag-btn pay" href="${payUrl}" target="_blank" rel="noopener">💳 ${vi ? 'Thanh toán / Đặt cọc giữ lịch ngay' : 'Pay Deposit / Book Instant Slot'}</a>` : ''}
+      </div>
+    </div>
+  </div>
+  <script>(function(){
+    var openBtn=document.getElementById('pf-mag-open'),modal=document.getElementById('pf-mag-modal'),closeBtn=document.getElementById('pf-mag-close');
+    if(!openBtn||!modal)return;
+    var selPkg=${JSON.stringify(packages[0] ? `${packages[0].tier} (${packages[0].price})` : 'Custom Project')};
+    openBtn.addEventListener('click',function(){modal.classList.add('open')});
+    if(closeBtn)closeBtn.addEventListener('click',function(){modal.classList.remove('open')});
+    modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('open')});
+    document.querySelectorAll('.pfx-rate,.pfx-srv').forEach(function(card){
+      card.style.cursor='pointer';
+      card.addEventListener('click',function(){modal.classList.add('open')});
+    });
+    modal.querySelectorAll('[data-pkg]').forEach(function(el){
+      el.addEventListener('click',function(){
+        modal.querySelectorAll('[data-pkg]').forEach(function(x){x.classList.remove('on')});
+        el.classList.add('on');
+        selPkg=el.getAttribute('data-pkg')||'';
+      });
+    });
+    var mailBtn=document.getElementById('pf-mag-send-mail');
+    if(mailBtn)mailBtn.addEventListener('click',function(){
+      var cl=(document.getElementById('pf-mag-client')||{}).value||'Client';
+      var br=(document.getElementById('pf-mag-brief')||{}).value||'';
+      var subj=encodeURIComponent('[Booking] '+selPkg+' — '+cl);
+      var body=encodeURIComponent(${vi ? "'Xin chào '" : "'Hi '"}+${JSON.stringify(values.name || '')}+',\\n\\n'+${vi ? "'Tôi muốn đặt gói dịch vụ: '" : "'I would like to book: '"}+selPkg+'\\n'+${vi ? "'Khách hàng: '" : "'Client: '"}+cl+'\\n'+${vi ? "'Chi tiết dự án: '" : "'Project brief: '"}+br);
+      window.location.href='mailto:${e(emailRaw)}?subject='+subj+'&body='+body;
+    });
+  })();</script>`;
+
+  return { headSeo, modalHtml };
+}
+
 export function renderPortfolio(styleId, values, images, lang = 'vi', opts = {}) {
-  const st = PORTFOLIO_STYLES.find((s) => s.id === styleId) || PORTFOLIO_STYLES[0];
-  const d = prepare(values, images);
+
+  const stIdx = PORTFOLIO_STYLES.findIndex((s) => s.id === styleId);
+  const st = PORTFOLIO_STYLES[stIdx >= 0 ? stIdx : 0];
+  const stWithMeta = { ...st, accent: st.accent || PF_SIG_ACCENTS[(stIdx >= 0 ? stIdx : 0) % PF_SIG_ACCENTS.length], seed: st.seed ?? (stIdx >= 0 ? stIdx : 0) };
+  const d = { ...prepare(values, images, stWithMeta, opts), isThumb: !!opts.thumb };
   let html = st.fn(d, T[lang] || T.vi, lang);
+  if (opts.thumb) return html;
+  const smart = smartAssetHubHtml(d, lang);
+  if (smart.top) html = html.replace('<body>', '<body>' + smart.top);
+  if (smart.showcase) {
+    const fAt = html.lastIndexOf('<footer');
+    html = fAt > 0 ? html.slice(0, fAt) + smart.showcase + html.slice(fAt) : html.replace('</body>', smart.showcase + '</body>');
+  }
   const extraVals = st.id === 'behance' && values.sections !== ''
     ? { ...values, sections: String(values.sections || SECTION_KEYS.join(',')).split(',').filter((k) => k !== 'deepdive').join(',') }
     : values;
@@ -1460,9 +2353,12 @@ export function renderPortfolio(styleId, values, images, lang = 'vi', opts = {})
   }
   const overlay = bespokeOverlay(values, d.c);
   if (overlay) html = html.replace('</body>', overlay + '</body>');
+  const magnet = clientMagnetHtml(d, values, lang);
+  if (magnet.headSeo) html = html.replace('</head>', magnet.headSeo + '</head>');
+  if (magnet.modalHtml) html = html.replace('</body>', magnet.modalHtml + '</body>');
   const font = PORTFOLIO_FONTS[values.font];
   if (font && font.q) {
-    html = html.replace('</head>', `<link href="https://fonts.googleapis.com/css2?${font.q}&display=swap" rel="stylesheet"><style>body,h1,h2,h3,h4,p,a,small,b,div,span,figcaption,button{font-family:'${values.font}',system-ui,sans-serif!important}</style></head>`);
+    html = html.replace('</head>', `<link href="https://fonts.googleapis.com/css2?${font.q}&display=swap" rel="stylesheet"><style>body,h1,h2,h3,h4,p,a,small,b,div,span,figcaption,button{font-family:'${e(values.font)}',system-ui,sans-serif!important}</style></head>`);
   }
   if (opts.edit) {
     const map = { name: values.name, role: values.role, bio: values.bio, location: values.location, manifesto: values.manifesto, availability: values.availability };
@@ -1494,6 +2390,8 @@ export function portfolioFields(lang = 'vi') {
     { name: 'signature', label: vi ? 'Chữ ký tay cá nhân (hiển thị cuối trang)' : 'Personal Handwritten Signature', default: vi ? 'Hà My Atelier ✦' : 'Maya Tran ✦' },
     { name: 'bio', label: vi ? 'Giới thiệu ngắn' : 'Short bio', type: 'textarea', default: vi ? 'Mình thiết kế nhận diện thương hiệu, minh họa vẽ tay và chuyển động cho các thương hiệu trẻ. 6 năm kinh nghiệm, 40+ dự án cho xuất bản, F&B, thời trang và công nghệ.' : 'I craft brand identities, hand-drawn illustrations and motion for young brands. 6 years, 40+ projects in publishing, F&B, fashion and tech.' },
     { name: 'email', label: 'Email', default: 'hello@hamy.design' },
+    { name: 'bookingPhone', label: vi ? 'Số Zalo / WhatsApp chốt khách nhanh' : 'WhatsApp / Phone for Instant Client Booking', default: vi ? '0901234567' : '+15552345678' },
+    { name: 'paymentLink', label: vi ? 'Link Nhận Cọc / Thanh Toán (VietQR, Momo, PayPal, Calendly)' : 'Deposit / Payment or Calendly Booking URL (https://...)', default: '' },
     { name: 'location', label: vi ? 'Nơi làm việc' : 'Location', default: vi ? 'Hà Nội, Việt Nam' : 'Hanoi, Vietnam' },
     { name: 'links', label: vi ? 'Liên kết – mỗi dòng: Tên | https://…' : 'Links – per line: Label | https://…', type: 'textarea', rows: 3, default: 'Website | https://example.com/\nInstagram | https://www.instagram.com/\nLinkedIn | https://www.linkedin.com/' },
     { name: 'skills', label: vi ? 'Kỹ năng & Chất liệu sáng tạo (phân tách dấu phẩy)' : 'Skills & Mediums (comma separated)', default: 'Hand-drawn Illustration, Watercolor, Branding, Motion Graphics, Procreate, Figma, Blender 3D' },

@@ -32,7 +32,7 @@ If the build or check fails, drip-feed restores the backlog and publishes nothin
 | Change | File |
 |---|---|
 | Site URL, name, pages per day | `src/config/site.json` |
-| Ads, affiliate links, Accesstrade prefix | `src/config/monetization.json` |
+| Ads, affiliate links, Accesstrade prefix, VietQR ủng hộ, Zalo | `src/config/monetization.json` (hướng dẫn 0 đồng: `docs/KIEM-TIEN.md`) |
 | Tax, base salary, regional minimum wage | `src/config/tax-vn.json` |
 | Electricity tariff | `src/lib/electric.js` |
 | Add/rename a tool, its SEO title and FAQ | `src/data/tools.js` (+ component in `src/components/tools/`, + line in `ToolRenderer.astro`) |

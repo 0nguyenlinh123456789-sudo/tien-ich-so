@@ -1,4 +1,8 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "../pages";
+@source "../layouts";
+@source "../components";
+@source "../lib";
 
 @theme {
   --color-brand-50: #eef6ff;

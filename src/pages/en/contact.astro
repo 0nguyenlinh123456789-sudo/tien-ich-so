@@ -1,10 +1,12 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import site from '../../config/site.json';
+import M from '../../config/monetization.json';
 // Public repository (verified 2026-11-03: issues page returns HTTP 200 without login).
 const ISSUES = 'https://github.com/0nguyenlinh123456789-sudo/tien-ich-so/issues';
 const email = (site.contactEmail || '').trim();
 const showEmail = !!email && !/example\.com/i.test(email);
+const zalo = String((M as any).zaloUrl || '').startsWith('https://zalo.me/') ? (M as any).zaloUrl : '';
 ---
 <Layout
   title="Contact, feedback and data-error reports"
@@ -19,6 +21,7 @@ const showEmail = !!email && !/example\.com/i.test(email);
     {showEmail
       ? <p>Or email: <a class="underline" href={`mailto:${email}`}>{email}</a></p>
       : <p>A contact email address will be added later.</p>}
+    {zalo && <p>Or message on Zalo: <a class="underline" href={zalo} target="_blank" rel="noopener nofollow">{zalo}</a></p>}
 
     <h2>Reporting a wrong legal figure</h2>
     <ul class="mb-3 list-disc pl-6">

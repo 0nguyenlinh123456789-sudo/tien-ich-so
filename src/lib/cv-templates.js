@@ -1083,6 +1083,737 @@ function retroCv(v, T) {
     </div>`);
 }
 
+// 41–108. Specialized Industry & Structural Archetype Engine (68 Distinct Non-Duplicate Architectures)
+const MONO_FONT = `'JetBrains Mono',Consolas,monospace`;
+const HAND_FONT = `'Segoe Print','Bradley Hand',cursive`;
+
+function renderSkillMode(list, c, mode = 0, dark = false) {
+  const m = mode % 8;
+  const fg = dark ? '#e2e8f0' : '#1e293b';
+  const mut = dark ? '#334155' : '#e2e8f0';
+  if (m === 0) {
+    return `<div style="display:flex;flex-wrap:wrap;gap:5px">${list.map((s) => `<span style="padding:3px 9px;border-radius:6px;background:${c}18;color:${dark ? '#fff' : c};border:1px solid ${c}44;font-size:11px;font-weight:700">${s.name} · ${s.level * 20}%</span>`).join('')}</div>`;
+  }
+  if (m === 1) {
+    return list.map((s) => `<div style="margin:5px 0"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:${fg}"><span>${s.name}</span><span style="color:${c}">${s.level}/5</span></div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:2px">${[1, 2, 3, 4, 5].map((i) => `<span style="height:5px;border-radius:2px;background:${i <= s.level ? c : mut}"></span>`).join('')}</div></div>`).join('');
+  }
+  if (m === 2) {
+    return `<table style="width:100%;border-collapse:collapse;font-size:11px">${list.map((s) => `<tr style="border-bottom:1px dashed ${mut}"><td style="padding:4px 0;font-weight:600;color:${fg}">${s.name}</td><td style="padding:4px 0;text-align:right;color:${c};font-family:${MONO_FONT}">${'■'.repeat(s.level)}${'□'.repeat(5 - s.level)}</td></tr>`).join('')}</table>`;
+  }
+  if (m === 3) {
+    return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">${list.map((s) => `<div style="padding:5px 8px;border:1px solid ${mut};border-radius:8px;display:flex;justify-content:space-between;align-items:center;font-size:11px"><b style="color:${fg}">${s.name}</b><span style="background:${c};color:#fff;border-radius:99px;padding:1px 6px;font-size:9.5px;font-weight:800">L${s.level}</span></div>`).join('')}</div>`;
+  }
+  if (m === 4) {
+    return list.map((s) => `<div style="display:flex;align-items:center;gap:8px;margin:5px 0;font-size:11px"><span style="width:85px;font-weight:600;color:${fg};flex-shrink:0">${s.name}</span><div style="flex:1;height:7px;background:${mut};border-radius:99px;overflow:hidden"><div style="width:${s.level * 20}%;height:100%;background:linear-gradient(90deg,${c},${c}aa)"></div></div></div>`).join('');
+  }
+  if (m === 5) {
+    return `<div style="display:flex;flex-wrap:wrap;gap:6px">${list.map((s) => `<span style="padding:3px 10px;border:1.5px solid ${dark ? c : '#0f172a'};box-shadow:2px 2px 0 ${c};font-size:10.5px;font-weight:800;background:${dark ? '#0f172a' : '#fff'};color:${fg}">#${s.name}</span>`).join('')}</div>`;
+  }
+  if (m === 6) {
+    return list.map((s) => `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11.5px;border-bottom:1px solid ${mut}"><span style="color:${fg}">${s.name}</span><span style="color:${c};letter-spacing:2px">${'●'.repeat(s.level)}${'○'.repeat(5 - s.level)}</span></div>`).join('');
+  }
+  return `<div style="display:flex;flex-wrap:wrap;gap:5px">${list.map((s) => `<span style="padding:3px 10px;border-radius:99px;background:${dark ? '#1e293b' : '#f1f5f9'};color:${fg};font-size:11px;font-weight:600"><b style="color:${c}">✦</b> ${s.name}</span>`).join('')}</div>`;
+}
+
+const SURFACE_TINTS = [
+  ['#ffffff', '#f8fafc', '#cbd5e1'],
+  ['#fcfbf7', '#f4f0e6', '#d6cfc2'],
+  ['#f6f9fc', '#edf2f7', '#cbd5e1'],
+  ['#f7fbf8', '#ebf5ee', '#c6e0ce'],
+  ['#faf8ff', '#f2edfc', '#d8ccf0'],
+  ['#fffaf5', '#fdf2e6', '#e8d2bc'],
+  ['#f8faf9', '#eef3f1', '#cbd8d3'],
+  ['#fff9fb', '#fceef3', '#e5c8d3']
+];
+
+function makeSpecializedCv(cfg) {
+  const seed = Array.from(String(cfg.key || '')).reduce((acc, ch, idx) => acc + ch.charCodeAt(0) * (idx + 3), 0);
+  const tint = SURFACE_TINTS[seed % SURFACE_TINTS.length];
+  const altVariant = seed % 2 === 1;
+  return function (v, T) {
+    const c = color(v.color, cfg.c || '#1e3a5f');
+    const font = cfg.serif ? SERIF : cfg.mono ? MONO_FONT : cfg.hand ? HAND_FONT : FONT;
+    const dark = !!cfg.dark;
+    const bg = cfg.bg || (dark ? '#0b1120' : tint[0]);
+    const fg = dark ? '#f1f5f9' : '#0f172a';
+    const sub = dark ? '#94a3b8' : '#475569';
+    const bdr = dark ? '#334155' : (cfg.bdr || tint[2]);
+    const cardBg = dark ? '#1e293b' : (cfg.cardBg || tint[1]);
+    const badge = cfg.badge || 'PRO DOSSIER';
+    const skMode = typeof cfg.sk === 'number' ? (cfg.sk + (seed % 3)) % 8 : seed % 8;
+    const skHtml = renderSkillMode(skills(v), c, skMode, dark);
+    const contactLine = contacts(v).map(([ic, x]) => `<span>${ic} ${e(x)}</span>`).join(cfg.sep || '  ·  ');
+
+    if (cfg.arch === 'hud' && altVariant) {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:0;display:grid;grid-template-columns:225px 1fr`, `
+        <aside style="background:${dark ? '#060911' : '#0f172a'};color:#e2e8f0;padding:28px 20px;border-right:3px solid ${c};display:flex;flex-direction:column;gap:14px">
+          <div style="font-family:${MONO_FONT};font-size:9.5px;color:${c};letter-spacing:1.5px;font-weight:800">// ${badge}</div>
+          ${cfg.photo ? `<div style="margin:4px 0">${avatar(v, 88, c, c)}</div>` : `<div style="width:64px;height:64px;border:2px solid ${c};background:${c}22;display:grid;place-items:center;font-family:${MONO_FONT};font-size:22px;font-weight:900;color:${c}">${e(initials(v.fullName))}</div>`}
+          <div>
+            <div style="font-family:${MONO_FONT};font-size:10px;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">[SYS.CONTACT]</div>
+            <div style="font-size:10.5px;line-height:1.7;color:#cbd5e1">${contacts(v).map(([ic, x]) => `<div style="word-break:break-word">${ic} ${e(x)}</div>`).join('')}</div>
+          </div>
+          <div>
+            <div style="font-family:${MONO_FONT};font-size:10px;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">[SYS.STACK]</div>
+            ${renderSkillMode(skills(v), c, 1, true)}
+          </div>
+          ${langs(v).length ? `<div><div style="font-family:${MONO_FONT};font-size:10px;color:${c};text-transform:uppercase;margin-bottom:4px">[LOCALE]</div><div style="font-size:11px;color:#cbd5e1">${langs(v).join('<br>')}</div></div>` : ''}
+        </aside>
+        <main style="padding:28px 30px">
+          <div style="border-bottom:2px solid ${c};padding-bottom:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-end">
+            <div>
+              <div style="font-size:28px;font-weight:900;letter-spacing:-.5px;color:${fg}">${e(v.fullName)}</div>
+              <div style="font-family:${MONO_FONT};font-size:13px;color:${c};font-weight:700;margin-top:2px">$ whoami :: ${e(v.title)}</div>
+            </div>
+            <span style="padding:3px 9px;background:${c}22;border:1px solid ${c};color:${c};font-family:${MONO_FONT};font-size:10px;font-weight:800">NODE_OK</span>
+          </div>
+          ${v.summary ? `<div style="padding:10px 14px;background:${cardBg};border:1px dashed ${c};border-radius:6px;font-size:12px;color:${sub};margin-bottom:14px">${e(v.summary)}</div>` : ''}
+          <div style="font-family:${MONO_FONT};font-size:11.5px;font-weight:800;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">01 // ${T.exp}</div>
+          ${exps(v).map((x, i) => `<div style="margin-bottom:11px;padding:10px 13px;border-left:3px solid ${c};background:${cardBg}"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13px;color:${fg}">[${i + 1}] ${x.role}</b><span style="font-family:${MONO_FONT};font-size:10.5px;color:${c}">${x.p}</span></div><div style="font-size:11.5px;color:${sub};font-weight:700">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px">
+            <div style="padding:10px 12px;border:1px solid ${bdr};background:${cardBg}">
+              <div style="font-family:${MONO_FONT};font-size:11px;font-weight:800;color:${c};text-transform:uppercase;margin-bottom:6px">02 // ${T.edu}</div>
+              ${edus(v).map((x) => `<div style="margin-bottom:6px;font-size:11.5px"><b>${x.s}</b><div style="color:${sub}">${x.m} (${x.p})</div></div>`).join('')}
+            </div>
+            <div style="padding:10px 12px;border:1px solid ${bdr};background:${cardBg}">
+              <div style="font-family:${MONO_FONT};font-size:11px;font-weight:800;color:${c};text-transform:uppercase;margin-bottom:6px">03 // ${T.cert}</div>
+              ${certs(v).map((x) => `<div style="font-size:11px;color:${sub};margin:3px 0">▸ ${x}</div>`).join('')}
+            </div>
+          </div>
+        </main>`);
+    }
+
+    if (cfg.arch === 'ledger' && altVariant) {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:34px 40px`, `
+        <div style="display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;border-top:4px solid ${c};border-bottom:1.5px solid ${fg};padding:14px 0;margin-bottom:16px">
+          <div>
+            <div style="font-size:10px;font-weight:800;letter-spacing:2.5px;color:${c};text-transform:uppercase">INDEX // ${badge}</div>
+            <div style="font-size:32px;font-weight:900;letter-spacing:-.6px;margin-top:2px">${e(v.fullName)}</div>
+            <div style="font-size:13.5px;font-weight:700;color:${sub};margin-top:2px">${e(v.title)}</div>
+          </div>
+          ${cfg.photo ? avatar(v, 80, c, c) : `<div style="text-align:right;font-size:11px;color:${sub};line-height:1.65">${contacts(v).map(([, x]) => `<div>${e(x)}</div>`).join('')}</div>`}
+        </div>
+        ${cfg.photo ? `<div style="font-size:11px;color:${sub};padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid ${bdr};display:flex;flex-wrap:wrap;gap:14px">${contactLine}</div>` : ''}
+        ${v.summary ? `<div style="display:grid;grid-template-columns:110px 1fr;gap:16px;padding:10px 0;border-bottom:1px solid ${bdr};margin-bottom:12px"><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px">01 / ${T.summary}</div><div style="font-size:12.5px;color:${sub}">${e(v.summary)}</div></div>` : ''}
+        <div style="display:grid;grid-template-columns:110px 1fr;gap:16px;padding:10px 0;border-bottom:1px solid ${bdr};margin-bottom:12px">
+          <div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px">02 / ${T.exp}</div>
+          <div>
+            ${exps(v).map((x) => `<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed ${bdr}"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:13.5px">${x.role} — <span style="color:${c}">${x.co}</span></b><span style="font-size:11px;font-weight:700;color:${sub}">${x.p}</span></div>${bullets(x.d)}</div>`).join('')}
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:110px 1fr 1fr;gap:16px;padding:10px 0">
+          <div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px">03 / ${T.skills} & ${T.edu}</div>
+          <div style="background:${cardBg};padding:12px;border-left:3px solid ${c}">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px;color:${c}">${T.skills}</div>
+            ${skHtml}
+          </div>
+          <div style="background:${cardBg};padding:12px;border-left:3px solid ${fg}">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px;color:${fg}">${T.edu}</div>
+            ${edus(v).map((x) => `<div style="margin-bottom:6px;font-size:11.5px"><b>${x.s}</b><div>${x.m} · ${x.p}</div></div>`).join('')}
+            ${certs(v).map((x) => `<div style="font-size:11px;color:${sub};margin-top:3px">• ${x}</div>`).join('')}
+          </div>
+        </div>`);
+    }
+
+    if (cfg.arch === 'deck' && altVariant) {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:28px 34px`, `
+        <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-bottom:16px">
+          <div style="background:${c};color:#fff;border-radius:14px;padding:22px 24px;display:flex;gap:16px;align-items:center">
+            ${cfg.photo ? avatar(v, 78, '#fff', 'rgba(255,255,255,.35)') : ''}
+            <div>
+              <div style="font-size:9.5px;font-weight:800;letter-spacing:2px;opacity:.85;text-transform:uppercase">${badge}</div>
+              <div style="font-size:28px;font-weight:900;line-height:1.06;margin-top:3px">${e(v.fullName)}</div>
+              <div style="font-size:13.5px;font-weight:600;opacity:.92;margin-top:3px">${e(v.title)}</div>
+            </div>
+          </div>
+          <div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;font-size:11px;line-height:1.7;color:${sub}">
+            <div style="font-size:10px;font-weight:800;color:${c};letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px">${T.contact}</div>
+            ${contacts(v).map(([ic, x]) => `<div style="word-break:break-word">${ic} ${e(x)}</div>`).join('')}
+          </div>
+        </div>
+        ${v.summary ? `<div style="padding:12px 16px;background:${cardBg};border-left:4px solid ${c};border-radius:0 10px 10px 0;margin-bottom:16px;font-size:12.5px;color:${sub}">${e(v.summary)}</div>` : ''}
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:20px">
+          <div>
+            <div style="font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:${c};margin-bottom:10px">■ ${T.exp}</div>
+            ${exps(v).map((x) => `<div style="margin-bottom:12px;padding:12px 14px;background:${cardBg};border:1px solid ${bdr};border-radius:10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:13.5px">${x.role}</b><span style="padding:2px 8px;border-radius:99px;background:${c}18;color:${c};font-size:10.5px;font-weight:700">${x.p}</span></div><div style="font-size:12px;font-weight:700;color:${sub};margin-top:2px">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="padding:14px 16px;background:${cardBg};border:1px solid ${bdr};border-radius:10px">
+              <div style="font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:${c};margin-bottom:8px">■ ${T.skills}</div>
+              ${skHtml}
+            </div>
+            <div style="padding:14px 16px;background:${cardBg};border:1px solid ${bdr};border-radius:10px">
+              <div style="font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:${c};margin-bottom:8px">■ ${T.edu}</div>
+              ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:${sub}">${x.p}</div></div>`).join('')}
+            </div>
+            ${langs(v).length || certs(v).length ? `<div style="padding:14px 16px;background:${cardBg};border:1px solid ${bdr};border-radius:10px"><div style="font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;color:${c};margin-bottom:6px">■ ${T.lang} & ${T.cert}</div>${[...langs(v), ...certs(v)].map((x) => `<div style="font-size:11.5px;margin:3px 0">▸ ${x}</div>`).join('')}</div>` : ''}
+          </div>
+        </div>`);
+    }
+
+    if (cfg.arch === 'editorial' && altVariant) {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:34px 38px`, `
+        <div style="text-align:center;border-top:3px double ${fg};border-bottom:3px double ${fg};padding:14px 0;margin-bottom:16px">
+          <div style="font-size:10px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:${c}">${badge} · EDITION 2026</div>
+          <div style="font-family:${SERIF};font-size:38px;font-weight:900;letter-spacing:-.5px;margin:4px 0">${e(v.fullName)}</div>
+          <div style="font-size:14px;font-style:italic;color:${c};font-weight:700">${e(v.title)}</div>
+          <div style="margin-top:8px;font-size:11px;color:${sub};display:flex;justify-content:center;flex-wrap:wrap;gap:14px">${contactLine}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1.65fr;gap:24px">
+          <div style="border-right:1px solid ${bdr};padding-right:20px">
+            ${cfg.photo ? `<div style="margin-bottom:14px;text-align:center">${avatar(v, 110, c, c)}</div>` : ''}
+            ${v.summary ? `<div style="margin-bottom:14px;font-size:12px;font-style:italic;color:${sub};background:${cardBg};padding:12px;border-top:2px solid ${c}">“${e(v.summary)}”</div>` : ''}
+            <div style="font-family:${SERIF};font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${c};border-bottom:1px solid ${bdr};padding-bottom:4px;margin-bottom:8px">${T.skills}</div>
+            ${skHtml}
+            <div style="font-family:${SERIF};font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${c};border-bottom:1px solid ${bdr};padding-bottom:4px;margin:14px 0 8px">${T.edu}</div>
+            ${edus(v).map((x) => `<div style="margin-bottom:8px;font-size:12px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:${sub}">${x.p}</div></div>`).join('')}
+            ${langs(v).length ? `<div style="font-family:${SERIF};font-size:13px;font-weight:800;text-transform:uppercase;color:${c};margin:14px 0 6px">${T.lang}</div><div style="font-size:11.5px">${langs(v).join(' · ')}</div>` : ''}
+          </div>
+          <div>
+            <div style="font-family:${SERIF};font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c};border-bottom:1.5px solid ${fg};padding-bottom:4px;margin-bottom:12px">${T.exp}</div>
+            ${exps(v).map((x, i) => `<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:14px;font-family:${SERIF}">§${i + 1}. ${x.role}</b><span style="font-size:11px;color:${c};font-weight:700">${x.p}</span></div><div style="font-size:12px;font-weight:700;color:${sub};margin-bottom:3px">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+            ${certs(v).length ? `<div style="font-family:${SERIF};font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c};border-bottom:1.5px solid ${fg};padding-bottom:4px;margin:16px 0 8px">${T.cert}</div>` + certs(v).map((x) => `<div style="font-size:11.5px;margin:3px 0">✦ ${x}</div>`).join('') : ''}
+          </div>
+        </div>`);
+    }
+
+    if (cfg.arch === 'hud') {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:28px 34px`, `
+        <div style="border:1.5px solid ${c};border-radius:12px;overflow:hidden;background:${cardBg};margin-bottom:16px">
+          <div style="background:${c};color:#fff;padding:6px 14px;font-family:${MONO_FONT};font-size:10px;font-weight:800;display:flex;justify-content:space-between">
+            <span>● ● ●  ${badge} // SYS.VER.2026</span><span>STATUS: ACTIVE</span>
+          </div>
+          <div style="padding:20px 24px;display:flex;gap:20px;align-items:center">
+            ${cfg.photo ? avatar(v, 86, c, c) : `<div style="width:68px;height:68px;border-radius:12px;border:2px solid ${c};display:grid;place-items:center;font-family:${MONO_FONT};font-size:24px;font-weight:900;color:${c}">${e(initials(v.fullName))}</div>`}
+            <div style="flex:1">
+              <div style="font-size:28px;font-weight:900;letter-spacing:-.5px;color:${fg}">${e(v.fullName)}</div>
+              <div style="font-family:${MONO_FONT};font-size:13px;color:${c};font-weight:700;margin-top:2px">&gt; ${e(v.title)}</div>
+              <div style="margin-top:8px;font-size:11px;color:${sub};display:flex;flex-wrap:wrap;gap:12px">${contactLine}</div>
+            </div>
+          </div>
+        </div>
+        ${v.summary ? `<div style="padding:10px 14px;border-left:3px solid ${c};background:${cardBg};font-size:12px;color:${sub};margin-bottom:14px"><b style="color:${c};font-family:${MONO_FONT}">// ${T.summary}:</b> ${e(v.summary)}</div>` : ''}
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px">
+          <div>
+            <div style="font-family:${MONO_FONT};font-size:11.5px;font-weight:800;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;border-bottom:1px solid ${bdr};padding-bottom:4px">[01] ${T.exp}</div>
+            ${exps(v).map((x, i) => `<div style="margin-bottom:11px;padding:11px 13px;border:1px solid ${bdr};border-radius:8px;background:${cardBg}"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13px;color:${fg}">0${i + 1}. ${x.role}</b><span style="font-family:${MONO_FONT};font-size:10.5px;color:${c};white-space:nowrap">[${x.p}]</span></div><div style="font-size:11.5px;color:${sub};font-weight:700">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+          </div>
+          <div>
+            <div style="font-family:${MONO_FONT};font-size:11.5px;font-weight:800;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;border-bottom:1px solid ${bdr};padding-bottom:4px">[02] ${T.skills}</div>
+            ${skHtml}
+            <div style="font-family:${MONO_FONT};font-size:11.5px;font-weight:800;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin:16px 0 8px;border-bottom:1px solid ${bdr};padding-bottom:4px">[03] ${T.edu}</div>
+            ${edus(v).map((x) => `<div style="margin-bottom:8px;font-size:12px"><b style="color:${fg}">${x.s}</b><div style="color:${sub}">${x.m}</div><div style="font-family:${MONO_FONT};font-size:10.5px;color:${c}">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join('')}
+            ${langs(v).length ? `<div style="font-family:${MONO_FONT};font-size:11.5px;font-weight:800;color:${c};text-transform:uppercase;margin:14px 0 6px">[04] ${T.lang}</div><div style="font-size:11.5px;color:${sub}">${langs(v).join(' · ')}</div>` : ''}
+            ${certs(v).length ? `<div style="font-family:${MONO_FONT};font-size:11.5px;font-weight:800;color:${c};text-transform:uppercase;margin:14px 0 6px">[05] ${T.cert}</div>` + certs(v).map((x) => `<div style="font-size:11px;color:${sub};margin:2px 0">✓ ${x}</div>`).join('') : ''}
+          </div>
+        </div>`);
+    }
+
+    if (cfg.arch === 'ledger') {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:32px 38px`, `
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid ${c};padding-bottom:8px;margin-bottom:12px">
+          <div><span style="font-size:10px;font-weight:800;letter-spacing:2px;color:${c};text-transform:uppercase">${badge}</span><div style="font-size:30px;font-weight:900;line-height:1.05">${e(v.fullName)}</div></div>
+          <div style="text-align:right;font-size:13px;font-weight:700;color:${c}">${e(v.title)}</div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11.5px;border:1.5px solid ${bdr}">
+          <tr>
+            ${cfg.photo ? `<td rowspan="2" style="width:96px;padding:8px;border:1px solid ${bdr};text-align:center;background:${cardBg}">${avatar(v, 80, c, bdr)}</td>` : ''}
+            <td style="padding:7px 12px;border:1px solid ${bdr};background:${cardBg};font-weight:700;width:110px;color:${c}">${T.contact}</td>
+            <td style="padding:7px 12px;border:1px solid ${bdr}">${contactLine}</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 12px;border:1px solid ${bdr};background:${cardBg};font-weight:700;color:${c}">${T.summary}</td>
+            <td style="padding:7px 12px;border:1px solid ${bdr}">${e(v.summary || '')}</td>
+          </tr>
+        </table>
+        <div style="background:${c};color:#fff;padding:5px 12px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px">${T.exp}</div>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:14px;border:1.5px solid ${bdr}">
+          ${exps(v).map((x) => `<tr><td style="width:135px;padding:10px 12px;border:1px solid ${bdr};background:${cardBg};vertical-align:top;font-weight:700;font-size:11px;color:${c}">${x.p}<div style="color:${sub};font-weight:600;margin-top:2px">${x.co}</div></td><td style="padding:10px 14px;border:1px solid ${bdr};vertical-align:top"><b style="font-size:13px">${x.role}</b>${bullets(x.d)}</td></tr>`).join('')}
+        </table>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <div style="background:${c};color:#fff;padding:5px 12px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">${T.edu} & ${T.cert}</div>
+            <div style="border:1.5px solid ${bdr};padding:10px 12px">
+              ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b> — ${x.m} <span style="color:${c};font-size:11px">(${x.p})</span></div>`).join('')}
+              ${certs(v).map((x) => `<div style="font-size:11.5px;margin-top:4px">▪ ${x}</div>`).join('')}
+            </div>
+          </div>
+          <div>
+            <div style="background:${c};color:#fff;padding:5px 12px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">${T.skills} & ${T.lang}</div>
+            <div style="border:1.5px solid ${bdr};padding:10px 12px">
+              ${skHtml}
+              ${langs(v).length ? `<div style="margin-top:8px;padding-top:6px;border-top:1px dashed ${bdr};font-size:11.5px"><b>${T.lang}:</b> ${langs(v).join(' · ')}</div>` : ''}
+            </div>
+          </div>
+        </div>`);
+    }
+
+    if (cfg.arch === 'deck') {
+      const topSkills = skills(v).slice(0, 3);
+      return page(`background:${bg};color:${fg};font-family:${font};padding:0`, `
+        <header style="background:${c};color:#fff;padding:28px 40px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:10px;font-weight:800;letter-spacing:2px;opacity:.85;text-transform:uppercase">${badge}</div>
+            <div style="font-size:34px;font-weight:900;line-height:1.05;margin-top:2px">${e(v.fullName)}</div>
+            <div style="font-size:14px;font-weight:600;opacity:.92;margin-top:3px">${e(v.title)}</div>
+          </div>
+          ${cfg.photo ? avatar(v, 86, '#fff', 'rgba(255,255,255,.35)') : `<div style="text-align:right;font-size:11px;line-height:1.7;opacity:.92">${contacts(v).map(([, x]) => `<div>${e(x)}</div>`).join('')}</div>`}
+        </header>
+        ${cfg.photo ? `<div style="background:#0f172a;color:#e2e8f0;padding:7px 40px;font-size:11px;display:flex;flex-wrap:wrap;gap:16px">${contactLine}</div>` : ''}
+        <div style="padding:22px 40px">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+            ${topSkills.map((s, i) => `<div style="background:${cardBg};border:1px solid ${bdr};border-top:3px solid ${c};border-radius:8px;padding:10px 12px"><div style="font-size:10px;font-weight:800;color:${c}">PILLAR 0${i + 1}</div><div style="font-size:13px;font-weight:800;margin-top:2px">${s.name}</div><div style="font-size:10.5px;color:${sub}">Proficiency: ${s.level * 20}%</div></div>`).join('')}
+          </div>
+          ${v.summary ? `<div style="background:${cardBg};border:1px solid ${bdr};border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:12.5px"><b>${T.summary}:</b> ${e(v.summary)}</div>` : ''}
+          <div style="display:grid;grid-template-columns:1.65fr 1fr;gap:24px">
+            <div>
+              <div style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;color:${c};border-bottom:2px solid ${c};padding-bottom:4px;margin-bottom:10px">${T.exp}</div>
+              ${exps(v).map((x) => `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:13.5px">${x.role}</b><span style="font-size:11px;font-weight:700;color:${c}">${x.p}</span></div><div style="font-size:12px;font-weight:700;color:${sub}">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;color:${c};border-bottom:2px solid ${c};padding-bottom:4px;margin-bottom:10px">${T.skills}</div>
+              ${skHtml}
+              <div style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;color:${c};border-bottom:2px solid ${c};padding-bottom:4px;margin:16px 0 10px">${T.edu}</div>
+              ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:${sub}">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join('')}
+              ${langs(v).length || certs(v).length ? `<div style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;color:${c};border-bottom:2px solid ${c};padding-bottom:4px;margin:16px 0 8px">${T.lang} & ${T.cert}</div>` + [...langs(v), ...certs(v)].map((x) => `<div style="font-size:11.5px;margin:3px 0">▸ ${x}</div>`).join('') : ''}
+            </div>
+          </div>
+        </div>`);
+    }
+
+    if (cfg.arch === 'editorial') {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:38px 44px`, `
+        <div style="display:grid;grid-template-columns:${cfg.photo ? '130px 1fr' : '1fr'};gap:24px;align-items:center;border-bottom:2px solid ${fg};padding-bottom:18px">
+          ${cfg.photo ? `<div style="width:130px;height:155px;border-radius:${cfg.archPhoto ? '65px 65px 12px 12px' : '14px'};overflow:hidden;border:2px solid ${c};background:${c};color:#fff;display:grid;place-items:center;font-size:38px;font-weight:800">${photoSrc(v.photo) ? `<img src="${photoSrc(v.photo)}" alt="" style="width:100%;height:100%;object-fit:cover"/>` : e(initials(v.fullName))}</div>` : ''}
+          <div>
+            <div style="font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:${c}">${badge}</div>
+            <div style="font-family:${SERIF};font-size:40px;font-weight:900;line-height:.96;margin:4px 0">${e(v.fullName)}</div>
+            <div style="font-size:15px;font-style:italic;color:${c};font-weight:700">${e(v.title)}</div>
+            <div style="margin-top:10px;font-size:11px;color:${sub};display:flex;flex-wrap:wrap;gap:12px">${contactLine}</div>
+          </div>
+        </div>
+        ${v.summary ? `<div style="padding:14px 0;border-bottom:1px solid ${bdr};font-size:13px;font-style:italic;color:${sub}">“${e(v.summary)}”</div>` : ''}
+        <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:28px;margin-top:16px">
+          <div>
+            <div style="font-family:${SERIF};font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:${c};margin-bottom:10px">I. ${T.exp}</div>
+            ${exps(v).map((x, i) => `<div style="margin-bottom:13px;padding-bottom:10px;border-bottom:1px dashed ${bdr}"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:13.5px"><span style="color:${c};font-family:${SERIF};margin-right:4px">0${i + 1}.</span>${x.role}</b><span style="font-size:11px;color:${c};font-weight:700">${x.p}</span></div><div style="font-size:12px;font-style:italic;color:${sub}">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+          </div>
+          <div style="background:${cardBg};padding:18px;border-radius:14px;border:1px solid ${bdr}">
+            <div style="font-family:${SERIF};font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${c};margin-bottom:8px">II. ${T.skills}</div>
+            ${skHtml}
+            <div style="font-family:${SERIF};font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${c};margin:16px 0 8px">III. ${T.edu}</div>
+            ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:${sub}">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join('')}
+            ${langs(v).length ? `<div style="font-family:${SERIF};font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${c};margin:14px 0 6px">IV. ${T.lang}</div><div style="font-size:11.5px">${langs(v).join(' · ')}</div>` : ''}
+            ${certs(v).length ? `<div style="font-family:${SERIF};font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${c};margin:14px 0 6px">V. ${T.cert}</div>` + certs(v).map((x) => `<div style="font-size:11.5px;margin:2px 0">✦ ${x}</div>`).join('') : ''}
+          </div>
+        </div>`);
+    }
+
+    if (cfg.arch === 'dock' && altVariant) {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:26px 30px`, `
+        <div style="background:linear-gradient(135deg,${c},${dark ? '#020617' : '#0f172a'});color:#fff;border-radius:16px;padding:22px 26px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <span style="padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.16);font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase">${badge}</span>
+            <div style="font-size:30px;font-weight:900;margin-top:6px">${e(v.fullName)}</div>
+            <div style="font-size:14px;opacity:.9;font-weight:600">${e(v.title)}</div>
+          </div>
+          ${cfg.photo ? avatar(v, 86, '#fff', 'rgba(255,255,255,.4)') : `<div style="width:68px;height:68px;border-radius:50%;border:2px solid rgba(255,255,255,.5);display:grid;place-items:center;font-size:24px;font-weight:900">${e(initials(v.fullName))}</div>`}
+        </div>
+        <div style="display:grid;grid-template-columns:230px 1fr;gap:18px">
+          <aside style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:6px">${T.contact}</div>
+              <div style="font-size:11px;line-height:1.7;color:${sub}">${contacts(v).map(([ic, x]) => `<div style="word-break:break-word">${ic} ${e(x)}</div>`).join('')}</div>
+            </div>
+            <div>
+              <div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:6px">${T.skills}</div>
+              ${skHtml}
+            </div>
+            ${langs(v).length ? `<div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:4px">${T.lang}</div><div style="font-size:11.5px;color:${sub}">${langs(v).join('<br>')}</div></div>` : ''}
+            ${certs(v).length ? `<div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:4px">${T.cert}</div>${certs(v).map((x) => `<div style="font-size:11px;color:${sub};margin:3px 0">★ ${x}</div>`).join('')}</div>` : ''}
+          </aside>
+          <main>
+            ${v.summary ? `<div style="padding:12px 16px;background:${cardBg};border:1px solid ${bdr};border-radius:12px;margin-bottom:14px;font-size:12.5px;color:${sub}">${e(v.summary)}</div>` : ''}
+            <div style="font-size:12px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:10px">${T.exp}</div>
+            ${exps(v).map((x) => `<div style="position:relative;padding-left:16px;margin-bottom:13px;border-left:2px solid ${c}"><span style="position:absolute;left:-5px;top:4px;width:8px;height:8px;border-radius:50%;background:${c}"></span><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:13.5px">${x.role}</b><span style="font-size:11px;font-weight:700;color:${c}">${x.p}</span></div><div style="font-size:12px;font-weight:700;color:${sub}">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+            <div style="font-size:12px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin:14px 0 8px">${T.edu}</div>
+            ${edus(v).map((x) => `<div style="padding:10px 14px;background:${cardBg};border:1px solid ${bdr};border-radius:10px;margin-bottom:8px"><b>${x.s}</b> — ${x.m} <span style="font-size:11px;color:${c}">(${x.p})</span></div>`).join('')}
+          </main>
+        </div>`);
+    }
+
+    if (cfg.arch === 'dock') {
+      const side = `<aside style="width:248px;background:${cfg.sideBg || c};color:${cfg.sideFg || '#fff'};padding:34px 24px;flex-shrink:0;display:flex;flex-direction:column;gap:14px">
+        <div style="text-align:center">
+          ${cfg.photo ? `<div style="display:inline-block">${avatar(v, 108, cfg.sideFg || '#fff', 'rgba(255,255,255,.35)')}</div>` : `<div style="width:76px;height:76px;margin:0 auto;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font-size:28px;font-weight:900">${e(initials(v.fullName))}</div>`}
+          <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.8;margin-top:10px">${badge}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid rgba(255,255,255,.25);padding-bottom:4px;margin-bottom:6px">${T.contact}</div>
+          <div style="font-size:11px;line-height:1.75;opacity:.92">${contacts(v).map(([ic, x]) => `<div style="word-break:break-word">${ic} ${e(x)}</div>`).join('')}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid rgba(255,255,255,.25);padding-bottom:4px;margin-bottom:6px">${T.skills}</div>
+          ${skills(v).map((s) => `<div style="margin:5px 0;font-size:11px"><div style="display:flex;justify-content:space-between"><span>${s.name}</span><b>${s.level * 20}%</b></div><div style="height:4px;background:rgba(255,255,255,.22);border-radius:99px;margin-top:2px"><div style="height:4px;width:${s.level * 20}%;background:${cfg.sideFg || '#fff'};border-radius:99px"></div></div></div>`).join('')}
+        </div>
+        ${langs(v).length ? `<div><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid rgba(255,255,255,.25);padding-bottom:4px;margin-bottom:6px">${T.lang}</div><div style="font-size:11px">${langs(v).join('<br>')}</div></div>` : ''}
+        ${certs(v).length ? `<div><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid rgba(255,255,255,.25);padding-bottom:4px;margin-bottom:6px">${T.cert}</div><div style="font-size:11px">${certs(v).map((x) => `<div style="margin:3px 0">★ ${x}</div>`).join('')}</div></div>` : ''}
+      </aside>`;
+      const main = `<main style="flex:1;padding:36px 34px;background:${bg};color:${fg}">
+        <div style="border-left:4px solid ${c};padding-left:14px;margin-bottom:16px">
+          <div style="font-size:32px;font-weight:900;line-height:1.05">${e(v.fullName)}</div>
+          <div style="font-size:14px;font-weight:700;color:${c};margin-top:4px">${e(v.title)}</div>
+        </div>
+        ${v.summary ? `<div style="background:${cardBg};border:1px solid ${bdr};border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:${sub}">${e(v.summary)}</div>` : ''}
+        <div style="font-size:12.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;color:${c};margin-bottom:10px;display:flex;align-items:center;gap:8px"><span style="width:18px;height:3px;background:${c}"></span>${T.exp}</div>
+        ${exps(v).map((x) => `<div style="margin-bottom:13px;padding:12px 14px;border:1px solid ${bdr};border-radius:10px;background:${cardBg}"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${x.role}</b><span style="font-size:11px;font-weight:700;color:${c};white-space:nowrap">${x.p}</span></div><div style="font-size:12px;font-weight:600;color:${sub}">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+        <div style="font-size:12.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;color:${c};margin:16px 0 10px;display:flex;align-items:center;gap:8px"><span style="width:18px;height:3px;background:${c}"></span>${T.edu}</div>
+        ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b> — ${x.m} <span style="font-size:11px;color:${sub}">(${x.p})</span></div>`).join('')}
+      </main>`;
+      return page(`display:flex;font-family:${font}`, cfg.right ? main + side : side + main);
+    }
+
+    if (altVariant) {
+      return page(`background:${bg};color:${fg};font-family:${font};padding:28px 34px`, `
+        <div style="background:${cardBg};border:2px solid ${fg};box-shadow:5px 5px 0 ${c};padding:20px 24px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:18px">
+          <div>
+            <span style="display:inline-block;padding:2px 9px;background:${c};color:#fff;font-size:9.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase">${badge}</span>
+            <div style="font-size:31px;font-weight:900;line-height:1.05;margin-top:5px">${e(v.fullName)}</div>
+            <div style="font-size:14px;font-weight:800;color:${c};margin-top:2px">${e(v.title)}</div>
+            <div style="margin-top:8px;font-size:11px;color:${sub};display:flex;flex-wrap:wrap;gap:12px">${contactLine}</div>
+          </div>
+          ${cfg.photo ? avatar(v, 88, c, fg) : `<div style="width:70px;height:70px;border:2px solid ${fg};background:${c};color:#fff;display:grid;place-items:center;font-size:26px;font-weight:900;box-shadow:3px 3px 0 ${fg}">${e(initials(v.fullName))}</div>`}
+        </div>
+        <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:16px">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            ${v.summary ? `<div style="background:${cardBg};border:1.5px solid ${fg};box-shadow:3px 3px 0 ${c};padding:13px 16px"><div style="font-size:10.5px;font-weight:900;text-transform:uppercase;color:${c};margin-bottom:4px">${T.summary}</div><div style="font-size:12.5px;color:${sub}">${e(v.summary)}</div></div>` : ''}
+            <div style="background:${cardBg};border:1.5px solid ${fg};box-shadow:3px 3px 0 ${c};padding:16px 18px">
+              <div style="font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.3px;color:${c};border-bottom:1.5px solid ${fg};padding-bottom:5px;margin-bottom:10px">${T.exp}</div>
+              ${exps(v).map((x) => `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${x.role}</b><span style="font-size:10.5px;font-weight:800;color:${c}">${x.p}</span></div><div style="font-size:12px;color:${sub};font-weight:700">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:${cardBg};border:1.5px solid ${fg};box-shadow:3px 3px 0 ${c};padding:15px 17px">
+              <div style="font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.3px;color:${c};border-bottom:1.5px solid ${fg};padding-bottom:5px;margin-bottom:8px">${T.skills}</div>
+              ${skHtml}
+            </div>
+            <div style="background:${cardBg};border:1.5px solid ${fg};box-shadow:3px 3px 0 ${c};padding:15px 17px">
+              <div style="font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.3px;color:${c};border-bottom:1.5px solid ${fg};padding-bottom:5px;margin-bottom:8px">${T.edu}</div>
+              ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:${sub}">${x.p}</div></div>`).join('')}
+            </div>
+            ${langs(v).length || certs(v).length ? `<div style="background:${cardBg};border:1.5px solid ${fg};box-shadow:3px 3px 0 ${c};padding:14px 17px"><div style="font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:1.3px;color:${c};margin-bottom:6px">${T.lang} & ${T.cert}</div>${[...langs(v), ...certs(v)].map((x) => `<div style="font-size:11.5px;margin:3px 0">▪ ${x}</div>`).join('')}</div>` : ''}
+          </div>
+        </div>`);
+    }
+
+    return page(`background:${bg};color:${fg};font-family:${font};padding:28px 32px`, `
+      <div style="background:${cardBg};border:2px solid ${bdr};border-radius:18px;padding:22px 26px;margin-bottom:14px;display:flex;gap:20px;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.03)">
+        ${cfg.photo ? avatar(v, 92, c, c) : `<div style="width:72px;height:72px;border-radius:16px;background:${c};color:#fff;display:grid;place-items:center;font-size:26px;font-weight:900;flex-shrink:0">${e(initials(v.fullName))}</div>`}
+        <div style="flex:1">
+          <span style="display:inline-block;padding:2px 10px;border-radius:99px;background:${c}18;color:${c};font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase">${badge}</span>
+          <div style="font-size:30px;font-weight:900;line-height:1.08;margin-top:4px">${e(v.fullName)}</div>
+          <div style="font-size:14px;font-weight:700;color:${c}">${e(v.title)}</div>
+          <div style="margin-top:6px;font-size:11px;color:${sub};display:flex;flex-wrap:wrap;gap:12px">${contactLine}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          ${v.summary ? `<div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:14px 16px"><div style="font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:${c};margin-bottom:4px">${T.summary}</div><div style="font-size:12.5px;color:${sub}">${e(v.summary)}</div></div>` : ''}
+          <div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:16px 18px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:${c};margin-bottom:10px">${T.exp}</div>
+            ${exps(v).map((x) => `<div style="margin-bottom:12px;padding-left:12px;border-left:3px solid ${c}"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13.5px">${x.role}</b><span style="font-size:10.5px;font-weight:700;color:${c};white-space:nowrap">${x.p}</span></div><div style="font-size:12px;color:${sub};font-weight:600">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:16px 18px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:${c};margin-bottom:8px">${T.skills}</div>
+            ${skHtml}
+          </div>
+          <div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:16px 18px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:${c};margin-bottom:8px">${T.edu}</div>
+            ${edus(v).map((x) => `<div style="margin-bottom:8px"><b>${x.s}</b><div>${x.m}</div><div style="font-size:11px;color:${sub}">${x.p}${x.n ? ` · ${x.n}` : ''}</div></div>`).join('')}
+          </div>
+          ${langs(v).length || certs(v).length ? `<div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:14px 18px"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:${c};margin-bottom:6px">${T.lang} & ${T.cert}</div>${[...langs(v), ...certs(v)].map((x) => `<div style="font-size:11.5px;margin:3px 0">• ${x}</div>`).join('')}</div>` : ''}
+        </div>
+      </div>`);
+  };
+}
+
+const SPECIALIZED_CV_SPECS = [
+  { key: 'devops', arch: 'hud', mono: true, photo: false, cols: 2, sk: 1, badge: 'DEVOPS // K8S PIPELINE', vi: 'Kỹ sư DevOps & Cloud', en: 'DevOps & Cloud Pipeline', tags: ['it', 'ats'] },
+  { key: 'datasci', arch: 'bento', mono: false, photo: true, cols: 2, sk: 2, badge: 'DATA SCIENCE // ML NOTEBOOK', vi: 'Khoa học Dữ liệu & AI', en: 'Data Science Notebook', tags: ['it', 'finance'] },
+  { key: 'cybersec', arch: 'hud', dark: true, bg: '#090d16', cardBg: '#111827', mono: true, photo: false, cols: 2, sk: 2, badge: 'SEC-OPS // CLEARANCE', vi: 'An ninh Mạng SOC', en: 'Cybersecurity Matrix', tags: ['it'] },
+  { key: 'mobiledev', arch: 'bento', bg: '#f8fafc', cardBg: '#ffffff', photo: true, cols: 2, sk: 0, badge: 'iOS & ANDROID STUDIO', vi: 'Lập trình Mobile App', en: 'Mobile App Developer', tags: ['it', 'creative'] },
+  { key: 'gamedev', arch: 'hud', dark: true, bg: '#0f0b1d', cardBg: '#1a1433', photo: true, cols: 2, sk: 1, badge: 'GAME ENGINE // SHADER HUD', vi: 'Lập trình Game & 3D', en: 'Game Dev HUD', tags: ['it', 'creative'] },
+  { key: 'aieng', arch: 'ledger', mono: true, photo: false, cols: 1, sk: 3, badge: 'AI RESEARCH // LLM LAB', vi: 'Kỹ sư AI & Deep Learning', en: 'AI & LLM Researcher', tags: ['it', 'ats'] },
+  { key: 'qaeng', arch: 'ledger', photo: false, cols: 1, sk: 2, badge: 'QA AUTOMATION // TEST MATRIX', vi: 'Kiểm thử Phần mềm QA/QC', en: 'QA Test Matrix', tags: ['it', 'ats'] },
+  { key: 'blockchain', arch: 'hud', mono: true, photo: false, cols: 2, sk: 5, badge: 'WEB3 // SMART CONTRACT', vi: 'Kỹ sư Blockchain Web3', en: 'Web3 Ledger', tags: ['it', 'finance'] },
+  { key: 'embedded', arch: 'hud', bg: '#f0fdf4', cardBg: '#ffffff', mono: true, photo: false, cols: 2, sk: 4, badge: 'IOT // FIRMWARE PCB', vi: 'Kỹ sư Nhúng & IoT', en: 'Embedded Systems PCB', tags: ['it'] },
+  { key: 'sysarch', arch: 'deck', photo: false, cols: 2, sk: 3, badge: 'ENTERPRISE CLOUD ARCHITECT', vi: 'Kiến trúc sư Hệ thống', en: 'Solution Architect', tags: ['it', 'manager'] },
+  { key: 'uxresearch', arch: 'editorial', photo: true, cols: 2, sk: 7, badge: 'UX RESEARCH & EMPATHY LAB', vi: 'Nghiên cứu UX & Sản phẩm', en: 'UX Research Dossier', tags: ['it', 'creative'] },
+  { key: 'productmgr', arch: 'deck', photo: true, cols: 2, sk: 0, badge: 'PRODUCT ROADMAP & OKRs', vi: 'Quản lý Sản phẩm (PM/PO)', en: 'Product Manager OKR', tags: ['it', 'manager', 'sales'] },
+  { key: 'vogue', arch: 'editorial', serif: true, photo: true, archPhoto: true, cols: 2, sk: 6, badge: 'HAUTE EDITORIAL LOOKBOOK', vi: 'Biên tập Thời trang Vogue', en: 'Fashion Lookbook', tags: ['creative'] },
+  { key: 'film', arch: 'hud', dark: true, bg: '#0c0a09', cardBg: '#1c1917', photo: true, cols: 2, sk: 4, badge: '35MM DIRECTOR // TIMECODE', vi: 'Đạo diễn & Dựng phim', en: 'Cinema Filmstrip', tags: ['creative'] },
+  { key: 'interior', arch: 'editorial', bg: '#faf7f2', cardBg: '#f3ede2', serif: true, photo: true, archPhoto: true, cols: 2, sk: 6, badge: 'SPATIAL & INTERIOR ATELIER', vi: 'Thiết kế Nội thất', en: 'Interior Moodboard', tags: ['creative', 'traditional'] },
+  { key: 'packaging', arch: 'bento', bg: '#fffbeb', cardBg: '#ffffff', bdr: '#d97706', photo: true, cols: 2, sk: 5, badge: 'DIELINE // PACKAGING STUDIO', vi: 'Thiết kế Bao bì Thương hiệu', en: 'Packaging Dieline', tags: ['creative'] },
+  { key: 'motion', arch: 'hud', dark: true, bg: '#09090b', cardBg: '#18181b', photo: false, cols: 2, sk: 1, badge: 'KEYFRAME // 3D MOTION', vi: 'Hoạt hình & Motion 3D', en: 'Motion Keyframe', tags: ['creative', 'it'] },
+  { key: 'brandstrat', arch: 'deck', serif: true, photo: false, cols: 2, sk: 7, badge: 'BRAND STRATEGY & MANIFESTO', vi: 'Chiến lược Thương hiệu', en: 'Brand Strategist', tags: ['creative', 'sales', 'manager'] },
+  { key: 'photography', arch: 'editorial', bg: '#f4f4f5', cardBg: '#ffffff', photo: true, cols: 2, sk: 6, badge: 'EXIF // FINE ART PHOTOGRAPHY', vi: 'Nhiếp ảnh gia Nghệ thuật', en: 'Photographer Contact Sheet', tags: ['creative'] },
+  { key: 'musicprod', arch: 'hud', dark: true, bg: '#0a0e17', cardBg: '#131b2e', photo: true, cols: 2, sk: 1, badge: 'MASTERING // SOUND STUDIO', vi: 'Sản xuất Âm nhạc & Audio', en: 'Sound Producer Studio', tags: ['creative'] },
+  { key: 'illust', arch: 'editorial', bg: '#fffdf9', cardBg: '#fef7ed', serif: true, photo: true, archPhoto: true, cols: 2, sk: 7, badge: 'BESPOKE ILLUSTRATION ATELIER', vi: 'Họa sĩ Minh họa Sách', en: 'Book Illustrator', tags: ['creative', 'student'] },
+  { key: 'bauhaus2', arch: 'ledger', bg: '#f4f1ea', cardBg: '#ffffff', bdr: '#111111', photo: false, cols: 1, sk: 5, badge: 'DE STIJL // CONSTRUCTIVIST', vi: 'Hội họa Khối Mondrian', en: 'Mondrian Constructivist', tags: ['creative'] },
+  { key: 'risocv', arch: 'bento', bg: '#f7f3e8', cardBg: '#ffffff', bdr: '#1d3557', photo: true, cols: 2, sk: 5, badge: 'RISOGRAPH // INDIE ZINE', vi: 'Ấn bản Risograph Zine', en: 'Risograph Print', tags: ['creative', 'student'] },
+  { key: 'calligraphy', arch: 'editorial', bg: '#fbf9f5', cardBg: '#f3efe6', serif: true, photo: false, cols: 2, sk: 6, badge: 'ORIENTAL INK // SEAL STAMP', vi: 'Thủy mặc & Ấn chương', en: 'Oriental Ink Seal', tags: ['creative', 'traditional'] },
+  { key: 'origami', arch: 'dock', right: true, photo: true, cols: 2, sk: 3, badge: 'FOLDED PRISM STUDIO', vi: 'Nếp gấp Origami Hiện đại', en: 'Origami Prism', tags: ['creative', 'office'] },
+  { key: 'artgallery', arch: 'editorial', serif: true, photo: false, cols: 2, sk: 6, badge: 'CURATORIAL EXHIBITION CATALOG', vi: 'Giám tuyển Nghệ thuật', en: 'Exhibition Catalog', tags: ['creative', 'traditional'] },
+  { key: 'mckinsey', arch: 'deck', photo: false, cols: 2, sk: 3, badge: 'MANAGEMENT CONSULTING BRIEF', vi: 'Tư vấn Chiến lược (MBB)', en: 'Consulting Slide Deck', tags: ['manager', 'finance', 'ats'] },
+  { key: 'wallstreet', arch: 'ledger', serif: true, photo: false, cols: 1, sk: 2, badge: 'INVESTMENT BANKING // M&A', vi: 'Ngân hàng Đầu tư M&A', en: 'Wall Street Deal Sheet', tags: ['finance', 'manager', 'ats'] },
+  { key: 'harvard', arch: 'ledger', serif: true, photo: false, cols: 1, sk: 6, badge: 'JURISPRUDENCE & LEGAL COUNSEL', vi: 'Luật sư & Pháp chế Harvard', en: 'Harvard Legal Brief', tags: ['traditional', 'ats', 'manager'] },
+  { key: 'cfo', arch: 'deck', photo: true, cols: 2, sk: 2, badge: 'CFO // FINANCIAL CONTROLLER', vi: 'Giám đốc Tài chính (CFO)', en: 'CFO Balance Ledger', tags: ['finance', 'manager'] },
+  { key: 'board', arch: 'editorial', serif: true, photo: true, cols: 2, sk: 6, badge: 'C-SUITE & BOARD EXECUTIVE', vi: 'Hội đồng Quản trị C-Suite', en: 'Board Director Dossier', tags: ['manager', 'traditional'] },
+  { key: 'privateeq', arch: 'deck', photo: false, cols: 2, sk: 0, badge: 'VENTURE CAPITAL & PRIVATE EQUITY', vi: 'Quỹ Đầu tư & Chứng khoán', en: 'Private Equity Matrix', tags: ['finance', 'manager'] },
+  { key: 'actuary', arch: 'ledger', mono: true, photo: false, cols: 1, sk: 2, badge: 'ACTUARIAL & QUANTITATIVE RISK', vi: 'Định phí Bảo hiểm & Rủi ro', en: 'Actuarial Risk Grid', tags: ['finance', 'ats'] },
+  { key: 'audit', arch: 'ledger', photo: true, cols: 1, sk: 3, badge: 'BIG-4 AUDIT & TAX COMPLIANCE', vi: 'Kiểm toán & Thuế (Big4)', en: 'Audit & Tax Dossier', tags: ['finance', 'office', 'ats'] },
+  { key: 'diplomat', arch: 'editorial', serif: true, photo: true, cols: 2, sk: 6, badge: 'DIPLOMATIC & FOREIGN SERVICE', vi: 'Ngoại giao & Quan hệ Quốc tế', en: 'Diplomatic Protocol', tags: ['traditional', 'office', 'manager'] },
+  { key: 'realty', arch: 'dock', photo: true, cols: 2, sk: 4, badge: 'LUXURY REAL ESTATE PORTFOLIO', vi: 'Chuyên gia Bất động sản', en: 'Luxury Real Estate', tags: ['sales', 'finance'] },
+  { key: 'procurement', arch: 'deck', photo: false, cols: 2, sk: 4, badge: 'SUPPLY CHAIN & LOGISTICS OPS', vi: 'Chuỗi Cung ứng & Logistics', en: 'Supply Chain Ops', tags: ['office', 'manager', 'sales'] },
+  { key: 'hrdirector', arch: 'dock', right: true, photo: true, cols: 2, sk: 7, badge: 'PEOPLE & CULTURE EXECUTIVE', vi: 'Giám đốc Nhân sự (CHRO)', en: 'HR & People Culture', tags: ['office', 'manager'] },
+  { key: 'prcomms', arch: 'editorial', serif: true, photo: true, cols: 2, sk: 7, badge: 'PUBLIC RELATIONS & MEDIA KIT', vi: 'Truyền thông & PR Đối ngoại', en: 'PR & Media Release', tags: ['creative', 'sales', 'office'] },
+  { key: 'corpsec', arch: 'ledger', serif: true, photo: false, cols: 1, sk: 6, badge: 'CORPORATE GOVERNANCE', vi: 'Thư ký Công ty & Quản trị', en: 'Corporate Governance', tags: ['traditional', 'office', 'finance'] },
+  { key: 'growth', arch: 'deck', photo: true, cols: 2, sk: 0, badge: 'GROWTH & PERFORMANCE FUNNEL', vi: 'Growth Marketing & Ads', en: 'Growth Funnel', tags: ['sales', 'creative'] },
+  { key: 'ecom', arch: 'bento', photo: true, cols: 2, sk: 3, badge: 'E-COMMERCE & GMV SCORECARD', vi: 'Quản lý Sàn TMĐT (E-Com)', en: 'E-Commerce GMV', tags: ['sales', 'office'] },
+  { key: 'social', arch: 'bento', bg: '#fdf2f8', cardBg: '#ffffff', photo: true, cols: 2, sk: 7, badge: 'CREATOR & SOCIAL MEDIA KIT', vi: 'Sáng tạo Nội dung TikTok/Social', en: 'Social Creator Kit', tags: ['creative', 'sales', 'student'] },
+  { key: 'b2bsales', arch: 'deck', photo: true, cols: 2, sk: 4, badge: 'ENTERPRISE B2B QUOTA BOARD', vi: 'Kinh doanh B2B (Key Account)', en: 'Enterprise Sales Quota', tags: ['sales', 'manager'] },
+  { key: 'seo', arch: 'hud', photo: false, cols: 2, sk: 0, badge: 'SERP // SEO & CONTENT GROWTH', vi: 'Chuyên gia SEO & Content', en: 'SEO & Content SERP', tags: ['sales', 'it', 'creative'] },
+  { key: 'eventmgr', arch: 'dock', photo: true, cols: 2, sk: 7, badge: 'EXPERIENTIAL EVENT PRODUCER', vi: 'Tổ chức Sự kiện & Activation', en: 'Event Run-of-Show', tags: ['service', 'creative', 'sales'] },
+  { key: 'retail', arch: 'bento', photo: true, cols: 2, sk: 4, badge: 'FLAGSHIP RETAIL MERCHANDISING', vi: 'Quản lý Chuỗi Cửa hàng Retail', en: 'Retail Storefront', tags: ['sales', 'service', 'manager'] },
+  { key: 'crm', arch: 'deck', photo: false, cols: 2, sk: 3, badge: 'CUSTOMER SUCCESS & LIFECYCLE', vi: 'Chăm sóc Khách hàng & CRM', en: 'Customer Success CRM', tags: ['service', 'sales', 'office'] },
+  { key: 'copywriter', arch: 'editorial', bg: '#fffbeb', cardBg: '#ffffff', serif: true, photo: false, cols: 2, sk: 6, badge: 'STORYTELLING & COPYWRITING', vi: 'Copywriter & Biên kịch', en: 'Copywriter Column', tags: ['creative', 'sales'] },
+  { key: 'tradeglobal', arch: 'ledger', photo: false, cols: 1, sk: 2, badge: 'INTERNATIONAL TRADE & CUSTOMS', vi: 'Xuất Nhập Khẩu & Hải quan', en: 'Global Trade Manifest', tags: ['office', 'sales', 'finance'] },
+  { key: 'medical', arch: 'ledger', bg: '#f0fdfa', cardBg: '#ffffff', photo: true, cols: 1, sk: 3, badge: 'CLINICAL PHYSICIAN & SURGEON', vi: 'Bác sĩ Đa khoa & Chuyên khoa', en: 'Medical Clinical Chart', tags: ['traditional', 'service'] },
+  { key: 'pharma', arch: 'deck', bg: '#f8fafc', cardBg: '#ffffff', photo: true, cols: 2, sk: 2, badge: 'PHARMACEUTICAL & BIOTECH R&D', vi: 'Dược sĩ & Công nghệ Sinh học', en: 'Biotech & Pharma Lab', tags: ['service', 'traditional'] },
+  { key: 'nursing', arch: 'dock', photo: true, cols: 2, sk: 4, badge: 'REGISTERED NURSE CARE PLAN', vi: 'Điều dưỡng & Chăm sóc Y tế', en: 'Nursing Care Plan', tags: ['service'] },
+  { key: 'dentist', arch: 'editorial', bg: '#f0f9ff', cardBg: '#ffffff', photo: true, archPhoto: true, cols: 2, sk: 7, badge: 'DENTAL & AESTHETIC SPECIALIST', vi: 'Bác sĩ Nha khoa & Thẩm mỹ', en: 'Dental Specialist', tags: ['service'] },
+  { key: 'professor', arch: 'editorial', serif: true, photo: true, cols: 2, sk: 6, badge: 'UNIVERSITY FACULTY & RESEARCH', vi: 'Giảng viên Đại học & Nghiên cứu', en: 'Faculty Curriculum Vitae', tags: ['traditional', 'ats'] },
+  { key: 'teacher', arch: 'bento', bg: '#fefce8', cardBg: '#ffffff', photo: true, cols: 2, sk: 7, badge: 'INTERNATIONAL EDUCATOR LESSON', vi: 'Giáo viên & Sư phạm Quốc tế', en: 'Educator Lesson Card', tags: ['service', 'office', 'student'] },
+  { key: 'culinary', arch: 'editorial', bg: '#fffaf5', cardBg: '#ffffff', serif: true, photo: true, cols: 2, sk: 6, badge: 'GASTRONOMY & EXECUTIVE CHEF', vi: 'Bếp trưởng Điều hành (Chef)', en: 'Executive Chef Menu', tags: ['service', 'creative'] },
+  { key: 'aviation', arch: 'ledger', photo: true, cols: 1, sk: 1, badge: 'FLIGHT LOGBOOK & AVIATION CREW', vi: 'Hàng không & Tiếp viên / Phi công', en: 'Aviation Flight Log', tags: ['service'] },
+  { key: 'hospitality', arch: 'dock', right: true, serif: true, photo: true, cols: 2, sk: 6, badge: '5-STAR HOSPITALITY CONCIERGE', vi: 'Quản lý Khách sạn & Resort 5★', en: 'Luxury Hospitality GM', tags: ['service', 'manager'] },
+  { key: 'ngo', arch: 'deck', bg: '#f0fdf4', cardBg: '#ffffff', photo: true, cols: 2, sk: 0, badge: 'ESG & SUSTAINABILITY IMPACT', vi: 'Phát triển Bền vững ESG / NGO', en: 'ESG Impact Dossier', tags: ['service', 'office', 'manager'] },
+  { key: 'europass', arch: 'dock', photo: true, cols: 2, sk: 1, badge: 'EUROPASS STANDARD CURRICULUM', vi: 'Chuẩn Châu Âu (Europass CV)', en: 'Europass EU Standard', tags: ['ats', 'office', 'student'] },
+  { key: 'rirekisho', arch: 'ledger', serif: true, photo: true, cols: 1, sk: 2, badge: '履歴書 // JAPANESE RIREKISHO', vi: 'Chuẩn Nhật Bản (Rirekisho)', en: 'Japanese Rirekisho Grid', tags: ['traditional', 'ats', 'office'] },
+  { key: 'korean', arch: 'ledger', photo: true, cols: 1, sk: 3, badge: '이력서 // K-CORPORATE STANDARD', vi: 'Chuẩn Tập đoàn Hàn Quốc', en: 'Korean Chaebol Table', tags: ['office', 'ats', 'traditional'] },
+  { key: 'scandi', arch: 'editorial', bg: '#f5f5f0', cardBg: '#ffffff', photo: false, cols: 2, sk: 6, badge: 'COPENHAGEN NORDIC HAIRLINE', vi: 'Tối giản Bắc Âu (Copenhagen)', en: 'Copenhagen Minimal', tags: ['creative', 'office', 'ats'] },
+  { key: 'pastelcard', arch: 'bento', bg: '#fdf8f5', cardBg: '#ffffff', photo: true, cols: 2, sk: 7, badge: 'SOFT PASTEL STUDIO CARDS', vi: 'Thẻ Bo Tròn Pastel Nhẹ Nhàng', en: 'Soft Pastel Cards', tags: ['student', 'office', 'service'] },
+  { key: 'asymband', arch: 'dock', right: true, photo: true, cols: 2, sk: 4, badge: 'ASYMMETRIC CONTRAST STUDIO', vi: 'Dải Bất Đối Xứng Hiện Đại', en: 'Asymmetric Band', tags: ['creative', 'sales', 'it'] },
+  { key: 'pillar', arch: 'deck', photo: false, cols: 2, sk: 1, badge: 'THREE-PILLAR COMPETENCY MATRIX', vi: 'Ma trận 3 Trụ cột Năng lực', en: 'Three-Pillar Matrix', tags: ['manager', 'ats', 'finance'] },
+  { key: 'passport', arch: 'bento', bg: '#f8fafc', cardBg: '#ffffff', photo: true, cols: 2, sk: 0, badge: 'GLOBAL REMOTE NOMAD PASSPORT', vi: 'Làm việc Từ xa (Global Remote)', en: 'Global Nomad Passport', tags: ['it', 'creative', 'student'] }
+];
+
+const CV_SIG_COLORS = ['#0f766e', '#1d4ed8', '#b45309', '#7c3aed', '#be123c', '#15803d', '#0369a1', '#c2410c', '#4338ca', '#a21caf', '#1e3a5f', '#334155'];
+
+function makeUniqueSpecializedCv(cfg, idx = 0) {
+  const hMode = idx % 12;
+  const bMode = (idx * 3 + Math.floor(idx / 12)) % 7;
+  const tint = SURFACE_TINTS[(idx * 5) % SURFACE_TINTS.length];
+  const sigHex = cfg.c || CV_SIG_COLORS[idx % CV_SIG_COLORS.length];
+
+  return function (v, T) {
+    const c = color(v.color, sigHex);
+    const font = cfg.serif ? SERIF : cfg.mono ? MONO_FONT : cfg.hand ? HAND_FONT : FONT;
+    const dark = !!cfg.dark;
+    const bg = cfg.bg || (dark ? '#090d16' : tint[0]);
+    const fg = dark ? '#f1f5f9' : '#0f172a';
+    const sub = dark ? '#94a3b8' : '#475569';
+    const bdr = dark ? '#334155' : (cfg.bdr || tint[2]);
+    const cardBg = dark ? '#151f32' : (cfg.cardBg || tint[1]);
+    const badge = cfg.badge || `SPEC // 0${idx + 1}`;
+    const roleText = v.__thumb ? (T.summary === 'Giới thiệu' ? cfg.vi : cfg.en) : v.title;
+    const skMode = (idx * 3 + (cfg.sk || 0)) % 8;
+    const skHtml = renderSkillMode(skills(v), c, skMode, dark);
+    const contactLine = contacts(v).map(([ic, x]) => `<span>${ic} ${e(x)}</span>`).join('  ·  ');
+    const contactStack = contacts(v).map(([ic, x]) => `<div style="word-break:break-word;margin:3px 0">${ic} ${e(x)}</div>`).join('');
+    const avNode = (sz = 84, ring = c) => cfg.photo
+      ? avatar(v, sz, c, ring)
+      : `<div style="width:${sz - 12}px;height:${sz - 12}px;border-radius:${idx % 3 === 0 ? '50%' : idx % 3 === 1 ? '14px' : '4px'};border:2px solid ${ring};background:${c}20;color:${ring === '#fff' ? '#fff' : c};display:grid;place-items:center;font-size:${Math.round(sz * 0.32)}px;font-weight:900;flex-shrink:0">${e(initials(v.fullName))}</div>`;
+
+    // 12 Distinct Masthead Architectures (hMode 0..11)
+    let headerHtml = '';
+    if (hMode === 0) {
+      headerHtml = `<header style="background:${c};color:#fff;padding:24px 32px;border-radius:14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:18px">
+        <div><div style="font-size:9.5px;font-weight:800;letter-spacing:2px;opacity:.88;text-transform:uppercase">${badge}</div><div style="font-size:30px;font-weight:900;line-height:1.05;margin-top:3px">${e(v.fullName)}</div><div style="font-size:13.5px;font-weight:600;opacity:.95;margin-top:3px">${e(roleText)}</div><div style="margin-top:8px;font-size:10.5px;opacity:.9;display:flex;flex-wrap:wrap;gap:12px">${contactLine}</div></div>
+        ${avNode(82, '#fff')}
+      </header>`;
+    } else if (hMode === 1) {
+      headerHtml = `<header style="text-align:center;border-top:3px double ${c};border-bottom:2px solid ${fg};padding:14px 0;margin-bottom:16px">
+        <div style="font-size:9.5px;font-weight:800;letter-spacing:3.2px;text-transform:uppercase;color:${c}">✦ ${badge} ✦</div>
+        <div style="font-family:${SERIF};font-size:36px;font-weight:900;letter-spacing:-.5px;margin:4px 0">${e(v.fullName)}</div>
+        <div style="font-size:14px;font-style:italic;color:${c};font-weight:700">${e(roleText)}</div>
+        <div style="margin-top:7px;font-size:10.5px;color:${sub};display:flex;justify-content:center;flex-wrap:wrap;gap:12px">${contactLine}</div>
+      </header>`;
+    } else if (hMode === 2) {
+      headerHtml = `<header style="border:1.5px solid ${c};border-radius:12px;overflow:hidden;background:${cardBg};margin-bottom:14px">
+        <div style="background:${c};color:#fff;padding:5px 14px;font-family:${MONO_FONT};font-size:9.5px;font-weight:800;display:flex;justify-content:space-between"><span>● ● ●  ${badge}</span><span>ID #${100 + idx}</span></div>
+        <div style="padding:18px 22px;display:flex;gap:18px;align-items:center">${avNode(78, c)}<div style="flex:1"><div style="font-size:27px;font-weight:900;color:${fg}">${e(v.fullName)}</div><div style="font-family:${MONO_FONT};font-size:12.5px;color:${c};font-weight:700;margin-top:2px">&gt; ${e(roleText)}</div><div style="margin-top:6px;font-size:10.5px;color:${sub};display:flex;flex-wrap:wrap;gap:10px">${contactLine}</div></div></div>
+      </header>`;
+    } else if (hMode === 3) {
+      headerHtml = `<header style="display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:14px">
+        <div style="background:${dark ? '#1e293b' : '#0f172a'};color:#fff;border-radius:16px;padding:20px 22px;display:flex;gap:14px;align-items:center;border-bottom:4px solid ${c}">${avNode(74, c)}<div><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;color:${c}">${badge}</div><div style="font-size:26px;font-weight:900;line-height:1.05;margin-top:2px">${e(v.fullName)}</div><div style="font-size:12.5px;color:#cbd5e1;margin-top:3px">${e(roleText)}</div></div></div>
+        <div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:16px;padding:14px 18px;font-size:10.5px;color:${sub};display:flex;flex-direction:column;justify-content:center"><div style="font-size:9.5px;font-weight:900;color:${c};text-transform:uppercase;margin-bottom:4px">${T.contact}</div>${contactStack}</div>
+      </header>`;
+    } else if (hMode === 4) {
+      headerHtml = `<header style="display:grid;grid-template-columns:1.55fr 1fr;border:2px solid ${c};background:${cardBg};margin-bottom:14px">
+        <div style="padding:16px 20px;border-right:2px solid ${c}"><div style="font-family:${MONO_FONT};font-size:9.5px;color:${c};font-weight:800">BLUEPRINT // ${badge}</div><div style="font-size:29px;font-weight:900;letter-spacing:-.8px;margin-top:2px">${e(v.fullName)}</div><div style="font-family:${MONO_FONT};font-size:12.5px;color:${c};font-weight:700">${e(roleText)}</div></div>
+        <div style="padding:12px 16px;font-family:${MONO_FONT};font-size:10px;color:${sub};display:flex;flex-direction:column;justify-content:center">${contactStack}</div>
+      </header>`;
+    } else if (hMode === 5) {
+      headerHtml = `<header style="background:${cardBg};border:1px solid ${bdr};border-radius:26px;padding:20px 26px;margin-bottom:14px;display:flex;gap:22px;align-items:center">
+        <div style="width:86px;height:106px;border-radius:43px 43px 10px 10px;overflow:hidden;background:${c};color:#fff;display:grid;place-items:center;font-size:28px;font-weight:800;border:2.5px solid ${c};flex-shrink:0">${photoSrc(v.photo) ? `<img src="${photoSrc(v.photo)}" alt="" style="width:100%;height:100%;object-fit:cover"/>` : e(initials(v.fullName))}</div>
+        <div style="flex:1"><span style="padding:3px 10px;border-radius:99px;background:${c}18;color:${c};font-size:9.5px;font-weight:800;letter-spacing:1.5px">${badge}</span><div style="font-family:${SERIF};font-size:32px;font-weight:800;margin-top:5px">${e(v.fullName)}</div><div style="font-size:13.5px;color:${c};font-weight:700">${e(roleText)}</div><div style="margin-top:6px;font-size:10.5px;color:${sub};display:flex;flex-wrap:wrap;gap:10px">${contactLine}</div></div>
+      </header>`;
+    } else if (hMode === 6) {
+      headerHtml = `<header style="background:${cardBg};border:2.5px solid ${fg};box-shadow:5px 5px 0 ${c};padding:18px 22px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:16px">
+        <div><span style="display:inline-block;padding:2px 9px;background:${c};color:#fff;font-size:9.5px;font-weight:900;letter-spacing:1.4px;border:1.5px solid ${fg}">${badge}</span><div style="font-size:30px;font-weight:900;line-height:1.04;margin-top:5px">${e(v.fullName)}</div><div style="font-size:13.5px;font-weight:800;color:${c};margin-top:2px">${e(roleText)}</div><div style="margin-top:6px;font-size:10.5px;color:${sub};display:flex;flex-wrap:wrap;gap:10px">${contactLine}</div></div>
+        ${avNode(78, fg)}
+      </header>`;
+    } else if (hMode === 7) {
+      const firstCh = e(String(v.fullName || 'A').trim().split(/\s+/).pop()[0] || 'A');
+      headerHtml = `<header style="border-bottom:2px solid ${fg};padding-bottom:14px;margin-bottom:14px;display:flex;align-items:center;gap:18px">
+        <div style="font-family:${SERIF};font-size:78px;line-height:.82;font-weight:900;color:${c};padding-right:12px;border-right:2px solid ${c}">${firstCh}</div>
+        <div style="flex:1"><div style="font-size:9.5px;font-weight:800;letter-spacing:2.4px;color:${sub};text-transform:uppercase">${badge}</div><div style="font-family:${SERIF};font-size:32px;font-weight:900;line-height:1.05">${e(v.fullName)}</div><div style="font-size:13.5px;font-weight:700;color:${c};margin-top:2px">${e(roleText)}</div><div style="margin-top:5px;font-size:10.5px;color:${sub};display:flex;flex-wrap:wrap;gap:10px">${contactLine}</div></div>
+      </header>`;
+    } else if (hMode === 8) {
+      headerHtml = `<header style="background:linear-gradient(120deg,${c},${dark ? '#020617' : '#0f172a'});color:#fff;padding:22px 28px 28px;clip-path:polygon(0 0,100% 0,100% 82%,0 100%);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+        <div><span style="padding:2px 9px;background:rgba(255,255,255,.18);border-radius:4px;font-size:9.5px;font-weight:800;letter-spacing:1.6px">${badge}</span><div style="font-size:31px;font-weight:900;margin-top:5px">${e(v.fullName)}</div><div style="font-size:13.5px;opacity:.92;font-weight:600">${e(roleText)}</div><div style="margin-top:6px;font-size:10.5px;opacity:.88;display:flex;flex-wrap:wrap;gap:10px">${contactLine}</div></div>
+        ${avNode(78, '#fff')}
+      </header>`;
+    } else if (hMode === 9) {
+      const seal = e(initials(v.fullName) || 'ẤN');
+      headerHtml = `<table style="width:100%;border-collapse:collapse;border:2px solid ${fg};margin-bottom:14px;background:${cardBg}">
+        <tr>
+          <td style="padding:14px 18px;border:1px solid ${bdr}"><div style="font-size:9.5px;font-weight:800;color:${c};letter-spacing:2px">${badge}</div><div style="font-size:28px;font-weight:900;margin-top:2px">${e(v.fullName)}</div><div style="font-size:13px;font-weight:700;color:${c}">${e(roleText)}</div></td>
+          <td style="padding:10px 14px;border:1px solid ${bdr};font-size:10.5px;color:${sub};width:220px">${contactStack}</td>
+          <td style="width:74px;border:1px solid ${bdr};text-align:center;vertical-align:middle"><div style="width:46px;height:46px;margin:0 auto;border:2px solid #dc2626;color:#dc2626;border-radius:6px;display:grid;place-items:center;font-weight:900;font-size:15px;transform:rotate(-5deg)">${seal}</div></td>
+        </tr>
+      </table>`;
+    } else if (hMode === 10) {
+      const top3 = skills(v).slice(0, 3);
+      headerHtml = `<header style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid ${c};padding-bottom:10px;margin-bottom:10px">
+          <div><div style="font-size:9.5px;font-weight:800;color:${c};letter-spacing:2px">${badge}</div><div style="font-size:31px;font-weight:900;line-height:1">${e(v.fullName)}</div><div style="font-size:13.5px;font-weight:700;color:${sub};margin-top:3px">${e(roleText)}</div></div>
+          <div style="text-align:right;font-size:10.5px;color:${sub}">${contactStack}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${top3.map((s, i) => `<div style="background:${cardBg};border:1px solid ${bdr};border-top:3px solid ${c};border-radius:8px;padding:7px 10px"><div style="font-size:9px;font-weight:800;color:${c}">KEY PILLAR 0${i + 1}</div><div style="font-size:12px;font-weight:800">${s.name}</div></div>`).join('')}</div>
+      </header>`;
+    } else {
+      headerHtml = `<header style="display:flex;align-items:center;gap:18px;background:${cardBg};border-left:6px solid ${c};border-radius:0 14px 14px 0;padding:18px 22px;margin-bottom:14px;border-top:1px solid ${bdr};border-right:1px solid ${bdr};border-bottom:1px solid ${bdr}">
+        <div style="width:58px;height:58px;transform:rotate(45deg);background:${c};color:#fff;display:grid;place-items:center;flex-shrink:0;margin:6px"><span style="transform:rotate(-45deg);font-weight:900;font-size:20px">${e(initials(v.fullName))}</span></div>
+        <div style="flex:1"><div style="font-size:9.5px;font-weight:800;color:${c};letter-spacing:1.8px">${badge}</div><div style="font-size:29px;font-weight:900;line-height:1.05">${e(v.fullName)}</div><div style="font-size:13px;font-weight:700;color:${sub}">${e(roleText)}</div><div style="margin-top:5px;font-size:10.5px;color:${sub};display:flex;flex-wrap:wrap;gap:10px">${contactLine}</div></div>
+      </header>`;
+    }
+
+    // 7 Distinct Body & Column Geometries (bMode 0..6)
+    const sumHtml = v.summary ? `<div style="padding:10px 14px;background:${cardBg};border-left:3px solid ${c};border-radius:6px;font-size:12px;color:${sub};margin-bottom:12px">${e(v.summary)}</div>` : '';
+    const expCards = exps(v).map((x, i) => `<div style="margin-bottom:11px;padding:10px 13px;background:${cardBg};border:1px solid ${bdr};border-left:3.5px solid ${c};border-radius:8px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13px;color:${fg}">${i + 1}. ${x.role}</b><span style="font-size:10.5px;font-weight:700;color:${c};white-space:nowrap">${x.p}</span></div><div style="font-size:11.5px;font-weight:700;color:${sub}">${x.co}</div>${bullets(x.d)}</div>`).join('');
+    const eduList = edus(v).map((x) => `<div style="margin-bottom:7px;font-size:11.5px"><b style="color:${fg}">${x.s}</b><div style="color:${sub}">${x.m} · <span style="color:${c}">${x.p}</span></div></div>`).join('');
+    const certList = certs(v).map((x) => `<div style="font-size:11px;color:${sub};margin:3px 0">✦ ${x}</div>`).join('');
+    const langList = langs(v).join(' · ');
+
+    let bodyHtml = '';
+    if (bMode === 0) {
+      // Left Sidebar Dock + Right Main Timeline
+      bodyHtml = `<div style="display:grid;grid-template-columns:220px 1fr;gap:18px">
+        <aside style="background:${cardBg};border:1.5px solid ${bdr};border-top:4px solid ${c};border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">${T.skills}</div>${skHtml}</div>
+          <div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">${T.edu}</div>${eduList}</div>
+          ${langList ? `<div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;margin-bottom:4px">${T.lang}</div><div style="font-size:11px;color:${sub}">${langList}</div></div>` : ''}
+          ${certList ? `<div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;margin-bottom:4px">${T.cert}</div>${certList}</div>` : ''}
+        </aside>
+        <main>${sumHtml}<div style="font-size:11.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px">■ ${T.exp}</div>${expCards}</main>
+      </div>`;
+    } else if (bMode === 1) {
+      // Left Main + Right Tinted Sidebar Dock
+      bodyHtml = `<div style="display:grid;grid-template-columns:1fr 225px;gap:18px">
+        <main>${sumHtml}<div style="font-size:11.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;border-bottom:2px solid ${c};padding-bottom:4px;margin-bottom:10px">${T.exp}</div>${expCards}</main>
+        <aside style="background:${c}12;border:1.5px solid ${c}44;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">${T.skills}</div>${skHtml}</div>
+          <div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px">${T.edu}</div>${eduList}</div>
+          ${langList || certList ? `<div><div style="font-size:10.5px;font-weight:900;color:${c};text-transform:uppercase;margin-bottom:4px">${T.lang} & ${T.cert}</div><div style="font-size:11px;color:${sub}">${langList}</div>${certList}</div>` : ''}
+        </aside>
+      </div>`;
+    } else if (bMode === 2) {
+      // Swiss Left-Index Grid (115px label column + 1fr content)
+      bodyHtml = `<div>
+        ${v.summary ? `<div style="display:grid;grid-template-columns:115px 1fr;gap:14px;padding:10px 0;border-bottom:1px solid ${bdr}"><div style="font-size:10px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px">01 // ${T.summary}</div><div style="font-size:12px;color:${sub}">${e(v.summary)}</div></div>` : ''}
+        <div style="display:grid;grid-template-columns:115px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid ${bdr}">
+          <div style="font-size:10px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px">02 // ${T.exp}</div>
+          <div>${expCards}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:115px 1fr 1fr;gap:14px;padding:12px 0">
+          <div style="font-size:10px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px">03 // ${T.skills} & ${T.edu}</div>
+          <div style="background:${cardBg};padding:12px;border-radius:10px;border:1px solid ${bdr}">${skHtml}</div>
+          <div style="background:${cardBg};padding:12px;border-radius:10px;border:1px solid ${bdr}">${eduList}${certList}</div>
+        </div>
+      </div>`;
+    } else if (bMode === 3) {
+      // Structured Ledger Table Rows
+      bodyHtml = `<div>
+        ${sumHtml}
+        <div style="background:${c};color:#fff;padding:5px 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px">${T.exp}</div>
+        <table style="width:100%;border-collapse:collapse;margin-bottom:14px;border:1.5px solid ${bdr}">
+          ${exps(v).map((x) => `<tr><td style="width:130px;padding:9px 11px;border:1px solid ${bdr};background:${cardBg};vertical-align:top;font-weight:700;font-size:10.5px;color:${c}">${x.p}<div style="color:${sub};margin-top:2px">${x.co}</div></td><td style="padding:9px 12px;border:1px solid ${bdr};vertical-align:top"><b style="font-size:13px">${x.role}</b>${bullets(x.d)}</td></tr>`).join('')}
+        </table>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="border:1.5px solid ${bdr};padding:12px;background:${cardBg}"><div style="font-size:11px;font-weight:900;color:${c};text-transform:uppercase;margin-bottom:6px">${T.skills}</div>${skHtml}</div>
+          <div style="border:1.5px solid ${bdr};padding:12px;background:${cardBg}"><div style="font-size:11px;font-weight:900;color:${c};text-transform:uppercase;margin-bottom:6px">${T.edu} & ${T.cert}</div>${eduList}${certList}</div>
+        </div>
+      </div>`;
+    } else if (bMode === 4) {
+      // Bento Modular Cards (1.55fr + 1fr)
+      bodyHtml = `<div style="display:grid;grid-template-columns:1.55fr 1fr;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          ${sumHtml}
+          <div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:15px"><div style="font-size:11px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">✦ ${T.exp}</div>${expCards}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:15px"><div style="font-size:11px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">✦ ${T.skills}</div>${skHtml}</div>
+          <div style="background:${cardBg};border:1.5px solid ${bdr};border-radius:14px;padding:15px"><div style="font-size:11px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px">✦ ${T.edu}</div>${eduList}${certList}</div>
+        </div>
+      </div>`;
+    } else if (bMode === 5) {
+      // Equal 50/50 Editorial Split with Central Divider
+      bodyHtml = `${sumHtml}<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;border-top:1.5px solid ${bdr};padding-top:14px">
+        <div style="border-right:1.5px solid ${bdr};padding-right:20px">
+          <div style="font-size:11.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:10px">I. ${T.exp}</div>
+          ${exps(v).map((x, i) => `<div style="margin-bottom:12px;padding-left:12px;border-left:2.5px solid ${c}"><div style="display:flex;justify-content:space-between"><b style="font-size:13px">§${i + 1}. ${x.role}</b><span style="font-size:10.5px;color:${c};font-weight:700">${x.p}</span></div><div style="font-size:11.5px;color:${sub};font-weight:600">${x.co}</div>${bullets(x.d)}</div>`).join('')}
+        </div>
+        <div>
+          <div style="font-size:11.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px">II. ${T.skills}</div>
+          ${skHtml}
+          <div style="font-size:11.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin:14px 0 8px">III. ${T.edu}</div>
+          ${eduList}
+          ${langList || certList ? `<div style="font-size:11.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin:14px 0 6px">IV. ${T.lang} & ${T.cert}</div><div style="font-size:11px;color:${sub}">${langList}</div>${certList}` : ''}
+        </div>
+      </div>`;
+    } else {
+      // Single-Column Timeline Spine + Bottom 3-Card Deck
+      bodyHtml = `<div>
+        ${sumHtml}
+        <div style="font-size:11.5px;font-weight:900;color:${c};text-transform:uppercase;letter-spacing:1.4px;margin-bottom:10px">01 // ${T.exp}</div>
+        <div style="border-left:2.5px solid ${c};margin-left:8px;padding-left:18px;margin-bottom:14px">
+          ${exps(v).map((x) => `<div style="position:relative;margin-bottom:11px;background:${cardBg};border:1px solid ${bdr};border-radius:8px;padding:9px 12px"><span style="position:absolute;left:-25px;top:12px;width:11px;height:11px;border-radius:50%;background:${c};border:2px solid ${bg}"></span><div style="display:flex;justify-content:space-between"><b style="font-size:13px">${x.role} — <span style="color:${c}">${x.co}</span></b><span style="font-size:10.5px;font-weight:700;color:${sub}">${x.p}</span></div>${bullets(x.d)}</div>`).join('')}
+        </div>
+        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:14px">
+          <div style="background:${cardBg};border:1px solid ${bdr};border-top:3px solid ${c};border-radius:10px;padding:12px"><div style="font-size:11px;font-weight:900;color:${c};text-transform:uppercase;margin-bottom:6px">02 // ${T.skills}</div>${skHtml}</div>
+          <div style="background:${cardBg};border:1px solid ${bdr};border-top:3px solid ${fg};border-radius:10px;padding:12px"><div style="font-size:11px;font-weight:900;color:${fg};text-transform:uppercase;margin-bottom:6px">03 // ${T.edu} & ${T.cert}</div>${eduList}${certList}</div>
+        </div>
+      </div>`;
+    }
+
+    return page(`background:${bg};color:${fg};font-family:${font};padding:28px 34px`, headerHtml + bodyHtml);
+  };
+}
+
 const LAYOUTS = [
   { key: 'claude', fn: claudeCv, cols: 2, photo: true, vi: 'Biên tập Ấm áp', en: 'Warm Editorial', tags: ['creative', 'it', 'manager', 'office'] },
   { key: 'behance', fn: behanceCv, cols: 2, photo: true, vi: 'Giám đốc Nghệ thuật', en: 'Art Director', tags: ['creative', 'it', 'sales'] },
@@ -1115,7 +1846,24 @@ const LAYOUTS = [
   { key: 'split', fn: split, cols: 2, photo: true, vi: 'Chia Đôi Tương phản', en: 'Split Contrast', tags: ['office', 'it'] },
   { key: 'geometric', fn: geometric, cols: 1, photo: true, vi: 'Hình khối Đa giác', en: 'Geometric Prism', tags: ['creative', 'it'] },
   { key: 'sketch', fn: sketch, cols: 1, photo: true, vi: 'Sổ tay Vẽ tay', en: 'Hand-Drawn Sketch', tags: ['creative', 'student'] },
-  { key: 'badges', fn: badges, cols: 1, photo: true, vi: 'Huy hiệu Vector', en: 'Icon Badges', tags: ['office', 'service', 'sales'] }
+  { key: 'badges', fn: badges, cols: 1, photo: true, vi: 'Huy hiệu Vector', en: 'Icon Badges', tags: ['office', 'service', 'sales'] },
+  { key: 'frame', fn: frame, cols: 1, photo: false, vi: 'Khung Viền Cổ Điển', en: 'Ornamental Frame', tags: ['traditional', 'office', 'finance'] },
+  { key: 'zen', fn: zen, cols: 1, photo: false, vi: 'Tối Giản Thiền Định (Zen)', en: 'Zen Centered', tags: ['office', 'service', 'ats'] },
+  { key: 'boxed', fn: boxed, cols: 2, photo: true, vi: 'Thẻ Hộp Khung Rõ Ràng', en: 'Boxed Cards', tags: ['office', 'sales', 'student'] },
+  { key: 'diagonal', fn: diagonal, cols: 2, photo: true, vi: 'Cắt Chéo Năng Động', en: 'Diagonal Cut', tags: ['creative', 'sales', 'it'] },
+  { key: 'gauges', fn: gauges, cols: 2, photo: true, vi: 'Vòng tròn Năng lực SVG', en: 'Circular Gauges', tags: ['creative', 'sales', 'it'] },
+  { key: 'waves', fn: waves, cols: 2, photo: true, vi: 'Sóng Lượn Nghệ thuật', en: 'Fluid Waves', tags: ['creative', 'service', 'student'] },
+  { key: 'twotone', fn: twotone, cols: 2, photo: true, vi: 'Hai Tông Màu Hiện Đại', en: 'Two-Tone Split', tags: ['office', 'sales', 'manager'] },
+  { key: 'ribbon', fn: ribbon, cols: 1, photo: true, vi: 'Dải Ruy-băng Nổi', en: 'Ribbon Banner', tags: ['service', 'student', 'office'] },
+  ...SPECIALIZED_CV_SPECS.map((s, idx) => ({
+    key: s.key,
+    fn: makeUniqueSpecializedCv(s, idx),
+    cols: s.cols,
+    photo: s.photo,
+    vi: s.vi,
+    en: s.en,
+    tags: s.tags
+  }))
 ];
 
 const PALETTES = [
@@ -1133,7 +1881,7 @@ const PALETTES = [
 ];
 
 // Ids of removed near-duplicate designs keep working by pointing at their closest replacement.
-export const RETIRED_CV_IDS = { 'cv-classic': 'cv-luxury-wine' };
+export const RETIRED_CV_IDS = { 'cv-classic': 'cv-classic-wine' };
 const RETIRED_LAYOUTS = {
   classic: 'luxury',
   centered: 'timeline',
@@ -1150,7 +1898,8 @@ const RETIRED_LAYOUTS = {
 };
 export const resolveCvId = (id) => {
   if (RETIRED_CV_IDS[id]) return RETIRED_CV_IDS[id];
-  const m = /^cv-([a-z]+)-([a-z]+)$/.exec(id || '');
+  const m = /^cv-([a-z0-9]+)-([a-z]+)$/.exec(id || '');
+  if (m && LAYOUTS.some((l) => l.key === m[1])) return id;
   return m && RETIRED_LAYOUTS[m[1]] ? `cv-${RETIRED_LAYOUTS[m[1]]}-${m[2]}` : id;
 };
 
@@ -1160,22 +1909,41 @@ export const CV_FILTERS = {
 };
 
 // 30 distinct layouts × 9 palettes (near-duplicates removed in 10/2026). The gallery shows one card per layout; colour is picked separately. Old ids (cv, cv-creative, …) still resolve.
+function applyCvFineTuning(html, v) {
+  const fontMap = { sans: FONT, serif: SERIF, mono: MONO_FONT, hand: HAND_FONT };
+  const scaleMap = { compact: '0.92', normal: '1', large: '1.06' };
+  const lineMap = { tight: '1.36', normal: '1.55', airy: '1.72' };
+  const fFam = fontMap[v.cvFont] || '';
+  const fScale = scaleMap[v.cvScale] || '1';
+  const fLine = lineMap[v.cvDensity] || '';
+  const rules = [];
+  if (fFam) rules.push(`.cv-tune-wrap, .cv-tune-wrap * { font-family: ${fFam} !important; }`);
+  if (fLine) rules.push(`.cv-tune-wrap > div { line-height: ${fLine} !important; }`);
+  if (v.cvRadius === 'sharp') rules.push(`.cv-tune-wrap div, .cv-tune-wrap aside, .cv-tune-wrap header { border-radius: 0px !important; }`);
+  if (v.cvRadius === 'round') rules.push(`.cv-tune-wrap div { border-radius: 14px; }`);
+  if (fScale !== '1') rules.push(`.cv-tune-wrap > div { zoom: ${fScale}; }`);
+  if (!rules.length) return html;
+  return `<div class="cv-tune-wrap"><style>${rules.join('\n')}</style>${html}</div>`;
+}
+
 export function cvTemplates(lang = 'vi') {
   const vi = lang === 'vi';
   const T = sectionTitles(vi);
   const fields = fieldsFor(vi);
   const legacy = { 'modern-navy': 'cv', 'creative-teal': 'cv-creative', 'executive-amber': 'cv-executive', 'minimal-graphite': 'cv-minimal' };
   const out = [];
-  for (const L of LAYOUTS) {
+  for (let lIdx = 0; lIdx < LAYOUTS.length; lIdx++) {
+    const L = LAYOUTS[lIdx];
+    const sigPal = PALETTES[(lIdx * 3 + (lIdx % 2)) % PALETTES.length].key;
     for (const P of PALETTES) {
       out.push({
         id: legacy[`${L.key}-${P.key}`] || `cv-${L.key}-${P.key}`,
         group: 'cv', fullBleed: true, accent: P.c,
-        layout: L.key, cols: L.cols, photo: L.photo, tags: L.tags,
+        layout: L.key, cols: L.cols, photo: L.photo, tags: L.tags, sigPalette: sigPal,
         layoutName: vi ? L.vi : L.en, paletteName: vi ? P.vi : P.en, palette: P.key,
         name: `CV · ${vi ? L.vi : L.en} · ${vi ? P.vi : P.en}`,
         fields,
-        render: (v) => L.fn({ ...v, color: v.color || P.c }, T)
+        render: (v) => applyCvFineTuning(L.fn({ ...v, color: v.color || P.c }, T), v)
       });
     }
   }

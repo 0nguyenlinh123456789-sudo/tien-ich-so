@@ -11,7 +11,191 @@
   "accesstradeDeepLinkPrefix": "",
   "adsTxt": "",
   "donateUrl": "",
+  "_donateHelp": "Ủng hộ qua VietQR: điền bank (tên hoặc BIN trong src/lib/vietqr.js), account (số tài khoản), name (tên chủ TK). Để account rỗng = ẩn toàn bộ khối ủng hộ. donateUrl: link Buy Me a Coffee / Ko-fi / PayPal.me (cho khách nước ngoài). zaloUrl: link https://zalo.me/0xxxxxxxxx để khách đặt dịch vụ.",
+  "donate": {
+    "bank": "",
+    "account": "",
+    "name": "",
+    "memo": "Ung ho Tien Ich So",
+    "amounts": [10000, 20000, 50000]
+  },
+  "zaloUrl": "",
+  "inboundServices": {
+    "enabled": true,
+    "badge": {
+      "vi": "💎 DỊCH VỤ & HỢP TÁC TỰ ĐỘNG 24/7",
+      "en": "💎 SELF-SERVE STUDIO & SPONSORSHIP"
+    },
+    "headline": {
+      "vi": "Cần gắn Tên Miền Riêng (.com/.vn) cho Portfolio, Thiết kế Hồ sơ VIP hoặc Đặt Tài Trợ trên trang?",
+      "en": "Want a Custom Domain (.com) for your Portfolio, Bespoke Design, or Sponsored Placement?"
+    },
+    "subtext": {
+      "vi": "Khách truy cập từ Google có thể tự đặt gói tự động hoặc tải trọn bộ mã nguồn chuẩn SEO ngay trên web.",
+      "en": "Instant self-service packages and high-converting tools for freelancers, creators and brands."
+    },
+    "tiers": [
+      {
+        "id": "portfolio-pro",
+        "icon": "🎨",
+        "title": {
+          "vi": "Tạo Website Portfolio Chốt Khách Tự Động",
+          "en": "Client-Winning Portfolio Studio (108 Styles)"
+        },
+        "desc": {
+          "vi": "Tải Logo, Banner & Sản phẩm để AI tự dàn trang kèm Bảng giá & Nút nhận cọc VietQR/Zalo.",
+          "en": "Upload Logos, Banners & Products for automatic layout with built-in Service Pricing & Booking."
+        },
+        "price": {
+          "vi": "Miễn phí 100%",
+          "en": "100% Free"
+        },
+        "cta": {
+          "vi": "Mở Studio ngay",
+          "en": "Launch Studio"
+        },
+        "href": {
+          "vi": "/cong-cu/tao-portfolio-online",
+          "en": "/en/tools/portfolio-website-builder"
+        }
+      },
+      {
+        "id": "cv-ats-pro",
+        "icon": "📄",
+        "title": {
+          "vi": "108 Mẫu CV Chuẩn ATS & Hợp Đồng Song Ngữ",
+          "en": "108 ATS Resume Layouts & Global Contracts"
+        },
+        "desc": {
+          "vi": "Xuất PDF/Word sắc nét, kèm hợp đồng mẫu theo Luật Việt Nam & Luật Quốc tế (Anh, Mỹ, Singapore).",
+          "en": "Export crisp A4 PDF/Word resumes and legal contracts under US, UK, Singapore & Delaware law."
+        },
+        "price": {
+          "vi": "Miễn phí 100%",
+          "en": "100% Free"
+        },
+        "cta": {
+          "vi": "Tạo CV & Hợp đồng",
+          "en": "Build Resume / Contract"
+        },
+        "href": {
+          "vi": "/cong-cu/tao-cv-hop-dong-mau",
+          "en": "/en/tools/cv-contract-templates"
+        }
+      },
+      {
+        "id": "qr-payment-pro",
+        "icon": "🔳",
+        "title": {
+          "vi": "Tạo Mã QR Nhận Tiền & Đặt Cọc (VietQR / Link)",
+          "en": "Instant Payment & Booking QR Generator"
+        },
+        "desc": {
+          "vi": "Tạo mã QR chuyển khoản tự điền số tiền & nội dung cọc để gắn vào Portfolio, báo giá, hóa đơn.",
+          "en": "Generate instant vector QR codes for payment links, invoices, portfolios and WiFi."
+        },
+        "price": {
+          "vi": "Tạo trong 5 giây",
+          "en": "Instant PNG/SVG"
+        },
+        "cta": {
+          "vi": "Tạo mã QR nhận tiền",
+          "en": "Create Payment QR"
+        },
+        "href": {
+          "vi": "/cong-cu/tao-ma-qr-chuyen-khoan",
+          "en": "/en/tools/qr-code-generator"
+        }
+      }
+    ]
+  },
   "topAffiliateOffers": [
+    {
+      "id": "portfolio-gear-vi",
+      "tools": [
+        "portfolio",
+        "documents"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Màn hình đồ họa chuẩn màu & Bảng vẽ cho Designer / Creator",
+      "description": "Chuẩn màu 100% sRGB, thiết kế Portfolio, Banner & chỉnh ảnh sắc nét.",
+      "cta": "Xem ưu đãi Shopee Mall",
+      "url": "https://shopee.vn/search?keyword=man%20hinh%20do%20hoa%20chuan%20mau",
+      "wrapWithAccesstrade": true,
+      "icon": "🖥️"
+    },
+    {
+      "id": "career-workspace-vi",
+      "tools": [
+        "portfolio",
+        "documents",
+        "forms",
+        "salary"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Chuột công thái học & Bàn phím cơ làm việc văn phòng / Freelance",
+      "description": "Tăng hiệu suất làm việc, chống mỏi cổ tay khi code và thiết kế cả ngày.",
+      "cta": "Săn giá tốt",
+      "url": "https://shopee.vn/search?keyword=chuot%20cong%20thai%20hoc%20logitech",
+      "wrapWithAccesstrade": true,
+      "icon": "🖱️"
+    },
+    {
+      "id": "compress-studio-vi",
+      "tools": [
+        "compress"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Đèn Ring Light & Phông nền chụp ảnh thẻ / sản phẩm tại nhà",
+      "description": "Ánh sáng đều đẹp như studio, chụp ảnh thẻ 3×4 và ảnh sản phẩm chuyên nghiệp.",
+      "cta": "Xem bộ đèn Studio",
+      "url": "https://shopee.vn/search?keyword=den%20ring%20light%20chup%20anh",
+      "wrapWithAccesstrade": true,
+      "icon": "📸"
+    },
+    {
+      "id": "qr-standee-vi",
+      "tools": [
+        "qr",
+        "hkd",
+        "vat"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Bảng Mica để bàn in mã VietQR nhận tiền cho Cửa hàng / Quán",
+      "description": "Chống nước, sang trọng, đặt quầy thu ngân để khách quét mã thanh toán ngay.",
+      "cta": "Đặt bảng QR",
+      "url": "https://shopee.vn/search?keyword=bang%20mica%20ma%20qr%20de%20ban",
+      "wrapWithAccesstrade": true,
+      "icon": "🔳"
+    },
+    {
+      "id": "finance-books-vi",
+      "tools": [
+        "salary",
+        "pitannual",
+        "loan",
+        "savings",
+        "fire",
+        "lumpsum"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Tủ sách Tự do Tài chính (FIRE), Đầu tư Lãi kép & Quản lý Tiền bạc",
+      "description": "Tâm lý học về tiền, Người giàu có nhất thành Babylon & Lập kế hoạch hưu trí.",
+      "cta": "Xem sách bán chạy",
+      "url": "https://shopee.vn/search?keyword=sach%20tam%20ly%20hoc%20ve%20tien",
+      "wrapWithAccesstrade": true,
+      "icon": "📚"
+    },
     {
       "id": "bmi-scale",
       "tools": [
@@ -20,9 +204,9 @@
       "lang": [
         "vi"
       ],
-      "title": "Cân sức khỏe điện tử đo mỡ",
-      "description": "Theo dõi cân nặng, % mỡ, cơ mỗi ngày.",
-      "cta": "Xem giá",
+      "title": "Cân sức khỏe điện tử phân tích 12 chỉ số cơ & mỡ",
+      "description": "Theo dõi cân nặng, BMI, % mỡ nội tạng, khối lượng cơ qua app điện thoại.",
+      "cta": "Xem giá ưu đãi",
       "url": "https://shopee.vn/search?keyword=can%20dien%20tu%20do%20mo",
       "wrapWithAccesstrade": true,
       "icon": "⚖️"
@@ -35,8 +219,8 @@
       "lang": [
         "vi"
       ],
-      "title": "Yến mạch, hạt, đồ ăn eat clean",
-      "description": "Bữa sáng ít calo, no lâu.",
+      "title": "Yến mạch, hạt dinh dưỡng, thực phẩm Eat Clean chuẩn TDEE",
+      "description": "Bữa sáng giàu protein, ít calo, kiểm soát cân nặng hiệu quả.",
       "cta": "Xem ưu đãi",
       "url": "https://shopee.vn/search?keyword=yen%20mach%20eat%20clean",
       "wrapWithAccesstrade": true,
@@ -45,13 +229,14 @@
     {
       "id": "preg-vitamin",
       "tools": [
-        "pregnancy"
+        "pregnancy",
+        "maternity"
       ],
       "lang": [
         "vi"
       ],
-      "title": "Đồ dùng mẹ bầu & sơ sinh",
-      "description": "Gối bầu, bình sữa, tã – hàng chính hãng.",
+      "title": "Trọn bộ Đồ dùng Mẹ bầu & Sơ sinh chính hãng",
+      "description": "Gối bầu, máy hâm sữa, bình sữa, tã – ưu đãi Shopee Mall.",
       "cta": "Xem ngay",
       "url": "https://shopee.vn/search?keyword=do%20so%20sinh",
       "wrapWithAccesstrade": true,
@@ -65,8 +250,8 @@
       "lang": [
         "vi"
       ],
-      "title": "Que thử thai, que thử rụng trứng",
-      "description": "Biết sớm, kín đáo, giao nhanh.",
+      "title": "Que thử thai điện tử & que thử rụng trứng độ nhạy cao",
+      "description": "Biết sớm, đóng gói che tên kín đáo, giao nhanh trong ngày.",
       "cta": "Xem giá",
       "url": "https://shopee.vn/search?keyword=que%20thu%20rung%20trung",
       "wrapWithAccesstrade": true,
@@ -75,13 +260,14 @@
     {
       "id": "elec-save",
       "tools": [
-        "electric"
+        "electric",
+        "water"
       ],
       "lang": [
         "vi"
       ],
-      "title": "Ổ cắm hẹn giờ, bóng LED tiết kiệm điện",
-      "description": "Cắt điện chờ, giảm hóa đơn mỗi tháng.",
+      "title": "Ổ cắm thông minh đo điện năng kWh & Bóng LED tiết kiệm điện",
+      "description": "Theo dõi số kWh từng thiết bị trên điện thoại, cắt điện chờ giảm hóa đơn.",
       "cta": "Xem ưu đãi",
       "url": "https://shopee.vn/search?keyword=o%20cam%20hen%20gio%20tiet%20kiem%20dien",
       "wrapWithAccesstrade": true,
@@ -95,8 +281,8 @@
       "lang": [
         "vi"
       ],
-      "title": "Máy lạnh Inverter tiết kiệm điện",
-      "description": "Tiết kiệm điện hơn máy thường khi chạy lâu.",
+      "title": "Máy lạnh & Quạt Inverter tiết kiệm đến 60% điện năng",
+      "description": "Giải pháp hạ bậc thang tiền điện mùa nắng nóng.",
       "cta": "So sánh giá",
       "url": "https://shopee.vn/search?keyword=may%20lanh%20inverter",
       "wrapWithAccesstrade": true,
@@ -106,13 +292,15 @@
       "id": "lunar-calendar",
       "tools": [
         "lunar",
-        "countdown"
+        "countdown",
+        "goodday",
+        "holidays"
       ],
       "lang": [
         "vi"
       ],
-      "title": "Lịch treo tường, lịch bloc 2027",
-      "description": "Lịch âm dương, đặt sớm giá tốt.",
+      "title": "Lịch gỗ để bàn, lịch bloc đại 2027 sang trọng",
+      "description": "Lịch âm dương phong thủy, quà tặng đối tác và gia đình.",
       "cta": "Xem mẫu",
       "url": "https://shopee.vn/search?keyword=lich%20bloc%202027",
       "wrapWithAccesstrade": true,
@@ -122,63 +310,36 @@
       "id": "forms-office",
       "tools": [
         "forms",
-        "documents"
+        "documents",
+        "moneywords",
+        "textcount"
       ],
       "lang": [
         "vi"
       ],
-      "title": "Giấy A4, bìa hồ sơ xin việc",
-      "description": "Bộ hồ sơ, bút ký, giao trong ngày.",
+      "title": "Giấy in A4 định lượng cao, Bìa trình ký & Bút ký doanh nhân",
+      "description": "In hợp đồng, CV và đơn từ sắc nét, chuyên nghiệp.",
       "cta": "Mua ngay",
       "url": "https://shopee.vn/search?keyword=bo%20ho%20so%20xin%20viec",
       "wrapWithAccesstrade": true,
       "icon": "🗂️"
     },
     {
-      "id": "bmi-en",
+      "id": "ielts-gpa-vi",
       "tools": [
-        "bmi"
-      ],
-      "lang": [
-        "en"
-      ],
-      "title": "Smart body-fat scales",
-      "description": "Track weight, body fat and muscle.",
-      "cta": "See deals",
-      "url": "",
-      "wrapWithAccesstrade": false,
-      "icon": "⚖️"
-    },
-    {
-      "id": "bank-card",
-      "contexts": [
-        "finance"
+        "ielts",
+        "gpa",
+        "diemtb"
       ],
       "lang": [
         "vi"
       ],
-      "title": "Mở thẻ tín dụng hoàn tiền – nhận quà đến 500.000đ",
-      "description": "Mở online 100% bằng CCCD, duyệt nhanh, hoàn tiền khi chi tiêu.",
-      "cta": "Mở thẻ ngay",
-      "url": "",
+      "title": "Bộ sách luyện thi IELTS Cambridge & Máy tính khoa học Casio",
+      "description": "Tài liệu ôn luyện chuẩn band 7.0+ và dụng cụ học tập chính hãng.",
+      "cta": "Xem trên Shopee",
+      "url": "https://shopee.vn/search?keyword=sach%20cambridge%20ielts",
       "wrapWithAccesstrade": true,
-      "icon": "💳"
-    },
-    {
-      "id": "bank-account",
-      "contexts": [
-        "finance",
-        "tools"
-      ],
-      "lang": [
-        "vi"
-      ],
-      "title": "Mở tài khoản ngân hàng số miễn phí",
-      "description": "Miễn phí chuyển khoản, chọn số tài khoản đẹp, nhận thưởng khi đăng ký.",
-      "cta": "Đăng ký",
-      "url": "",
-      "wrapWithAccesstrade": true,
-      "icon": "🏦"
+      "icon": "🎓"
     },
     {
       "id": "shopee-fengshui",
@@ -188,8 +349,8 @@
       "lang": [
         "vi"
       ],
-      "title": "Vật phẩm phong thủy hợp mệnh – Shopee Mall",
-      "description": "Vòng tay đá, tỳ hưu, cây phong thủy chính hãng, freeship.",
+      "title": "Vật phẩm phong thủy hợp mệnh & Bộ bài Tarot chuẩn Rider-Waite",
+      "description": "Vòng đá tự nhiên, bài Tarot tiếng Việt/Anh kèm sách hướng dẫn chi tiết.",
       "cta": "Xem trên Shopee",
       "url": "https://shopee.vn/search?keyword=vat%20pham%20phong%20thuy",
       "wrapWithAccesstrade": true,
@@ -205,28 +366,77 @@
       "lang": [
         "vi"
       ],
-      "title": "Săn sale Lazada hôm nay",
-      "description": "Mã giảm giá, flash sale khung giờ vàng cập nhật mỗi ngày.",
-      "cta": "Săn sale",
+      "title": "Săn Deal Công Nghệ, Văn Phòng & Đời Sống hôm nay",
+      "description": "Mã giảm giá, freeship và flash sale thương hiệu chính hãng mỗi ngày.",
+      "cta": "Săn ưu đãi",
       "url": "https://www.lazada.vn/",
       "wrapWithAccesstrade": true,
       "icon": "🛍️"
     },
     {
-      "id": "office-software",
-      "contexts": [
-        "tools"
+      "id": "intl-portfolio-studio",
+      "tools": [
+        "portfolio",
+        "documents",
+        "forms"
       ],
       "lang": [
-        "vi",
         "en"
       ],
-      "title": "Office & PDF software deals",
-      "description": "Edit PDF, sign documents and design CVs with pro templates.",
-      "cta": "See deal",
-      "url": "",
+      "title": "4K Color-Calibrated Designer Monitors & Ergonomic Desk Setup",
+      "description": "Upgrade your creative studio for portfolio design, remote engineering and client calls.",
+      "cta": "Explore Studio Gear",
+      "url": "https://www.amazon.com/s?k=4k+designer+monitor+ergonomic+mouse",
       "wrapWithAccesstrade": false,
-      "icon": "🧰"
+      "icon": "🖥️"
+    },
+    {
+      "id": "intl-photo-lighting",
+      "tools": [
+        "compress",
+        "qr"
+      ],
+      "lang": [
+        "en"
+      ],
+      "title": "Desktop Ring Light & Collapsible White/Blue Backdrop Kit",
+      "description": "Shoot studio-grade passport/ID portraits and product photography from home.",
+      "cta": "See Studio Kit",
+      "url": "https://www.amazon.com/s?k=ring+light+white+backdrop+kit",
+      "wrapWithAccesstrade": false,
+      "icon": "📸"
+    },
+    {
+      "id": "bmi-en",
+      "tools": [
+        "bmi",
+        "pregnancy"
+      ],
+      "lang": [
+        "en"
+      ],
+      "title": "Smart Wi-Fi Body Composition & BMI Scales",
+      "description": "Track weight, body fat percentage, muscle mass and TDEE progress automatically.",
+      "cta": "See Top Rated Scales",
+      "url": "https://www.amazon.com/s?k=smart+body+fat+scale",
+      "wrapWithAccesstrade": false,
+      "icon": "⚖️"
+    },
+    {
+      "id": "intl-academic",
+      "tools": [
+        "gpa",
+        "ielts"
+      ],
+      "lang": [
+        "en"
+      ],
+      "title": "Official IELTS Practice Books & Academic Productivity Planners",
+      "description": "Cambridge IELTS prep guides and study timers for top band scores.",
+      "cta": "Browse Study Guides",
+      "url": "https://www.amazon.com/s?k=cambridge+ielts+official+guide",
+      "wrapWithAccesstrade": false,
+      "icon": "🎓"
     },
     {
       "id": "intl-broker",
@@ -236,12 +446,27 @@
       "lang": [
         "en"
       ],
-      "title": "Start investing with low-fee index funds",
-      "description": "Open a brokerage account and automate your FIRE plan.",
-      "cta": "Learn more",
-      "url": "",
+      "title": "Bestselling FIRE, Compound Investing & Personal Finance Books",
+      "description": "Master index-fund investing, mortgage payoff strategies and The Psychology of Money.",
+      "cta": "Explore Finance Books",
+      "url": "https://www.amazon.com/s?k=the+psychology+of+money+simple+path+to+wealth",
       "wrapWithAccesstrade": false,
       "icon": "📈"
+    },
+    {
+      "id": "intl-office-gear",
+      "contexts": [
+        "tools"
+      ],
+      "lang": [
+        "en"
+      ],
+      "title": "Home Office Essentials for Remote Work & Freelancers",
+      "description": "Mechanical keyboards, document scanners, ergonomic chairs and desk organizers.",
+      "cta": "See Remote Work Deals",
+      "url": "https://www.amazon.com/s?k=home+office+ergonomic+accessories",
+      "wrapWithAccesstrade": false,
+      "icon": "🧰"
     },
     {
       "id": "intl-tarot",
@@ -251,10 +476,10 @@
       "lang": [
         "en"
       ],
-      "title": "Crystal & tarot decks bestsellers",
-      "description": "Hand-picked tarot decks and healing crystals.",
-      "cta": "Shop now",
-      "url": "",
+      "title": "Classic Rider-Waite Tarot Decks & Numerology Guidebooks",
+      "description": "Hand-crafted 78-card tarot decks, velvet bags and Pythagorean numerology books.",
+      "cta": "Shop Tarot & Guides",
+      "url": "https://www.amazon.com/s?k=rider+waite+tarot+deck",
       "wrapWithAccesstrade": false,
       "icon": "🔮"
     }

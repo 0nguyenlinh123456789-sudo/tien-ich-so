@@ -2,7 +2,7 @@
 import MonetizedResult from '../MonetizedResult.astro';
 interface Props { lang?: 'vi' | 'en'; preset?: Record<string, any>; autorun?: boolean; }
 const { lang = 'vi', preset = {}, autorun = false } = Astro.props;
-const p = { amount: '', currency: 'VND', outLang: lang, ...preset };
+const p = { amount: '', currency: lang === 'en' ? 'USD' : 'VND', outLang: lang, ...preset };
 const vi = lang === 'vi';
 ---
 <div data-tool="moneywords" data-lang={lang}>

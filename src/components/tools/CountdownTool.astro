@@ -48,8 +48,8 @@ const vi = lang === 'vi';
       // US Thanksgiving: fourth Thursday of November.
       const tg = (y: number) => { const d = new Date(y, 10, 1); d.setDate(1 + ((11 - d.getDay()) % 7) + 21); return d; };
       const t0 = tg(now.getFullYear());
-      events.splice(1, 3, ['Christmas', next(12, 25)], ['Halloween', next(10, 31)], ['Thanksgiving', t0 > now ? t0 : tg(now.getFullYear() + 1)], ["Valentine's Day", next(2, 14)], ['New Year', next(1, 1)]);
-      events.push(events.shift()!); // lead with Christmas for English readers
+      events.splice(0, events.length, ['🎄 Christmas', next(12, 25)], ['🎆 New Year', next(1, 1)], ['🎃 Halloween', next(10, 31)], ['🦃 Thanksgiving', t0 > now ? t0 : tg(now.getFullYear() + 1)], ["💝 Valentine's Day", next(2, 14)], [`🧧 Lunar New Year ${tetD.getFullYear()}`, tetD]);
+
     }
     const q = new URLSearchParams(location.search);
     const custom = q.get('date') ? new Date(q.get('date') + 'T00:00:00') : null;

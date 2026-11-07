@@ -20,7 +20,8 @@ const SECTION_SLUG = {
 const BUILD_DATE = new Date().toISOString();
 const RECORD_LASTMOD = new Map();
 const PUBLISHED = fileURLToPath(new URL('./src/data/published/', import.meta.url));
-for (const dir of readdirSync(PUBLISHED)) {
+const IS_BUILD = process.argv.includes('build');
+for (const dir of IS_BUILD ? readdirSync(PUBLISHED) : []) {
   const full = join(PUBLISHED, dir);
   if (!statSync(full).isDirectory()) continue;
   for (const f of readdirSync(full)) {
@@ -52,6 +53,11 @@ export default defineConfig({
     })
   ],
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    server: {
+      watch: {
+        ignored: ['**/data-backlog/**', '**/src/data/published/**']
+      }
+    }
   }
 });

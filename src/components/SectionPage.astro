@@ -7,7 +7,7 @@ import Layout from '../layouts/Layout.astro';
 import ToolRenderer from './ToolRenderer.astro';
 import AffiliateCards from './AffiliateCards.astro';
 import AdSlot from './AdSlot.astro';
-import { SECTIONS, toolsIn, getTool, toolUrl, sectionUrl, recordUrl, homeUrl } from '../data/tools.js';
+import { SECTIONS, toolsIn, primaryToolsIn, secondaryToolsIn, marketBadge, nextStepToolsFor, getTool, toolUrl, sectionUrl, recordUrl, homeUrl } from '../data/tools.js';
 import { buildRecordContent } from '../lib/seo-content.js';
 import { t } from '../i18n/ui.js';
 import site from '../config/site.json';
@@ -22,10 +22,16 @@ interface Props {
   popular?: any[];
 }
 const { kind, sectionId, lang, toolId, record, related = [], popular = [] } = Astro.props;
+const vi = lang === 'vi';
 const section = (SECTIONS as any)[sectionId];
 const L = t(lang);
 const other = lang === 'vi' ? 'en' : 'vi';
 const tool = toolId ? getTool(toolId) : null;
+const badge = tool ? marketBadge(tool, lang) : null;
+const nextSteps = toolId ? nextStepToolsFor(toolId, lang) : [];
+const primaryTools = primaryToolsIn(sectionId, lang);
+const secondaryTools = secondaryToolsIn(sectionId, lang);
+
 // These tools already render offers and ads inside MonetizedResult.
 const LEGACY_MONETIZED = ['salary', 'loan', 'fire', 'numerology', 'tarot', 'goodday', 'compress', 'moneywords', 'documents', 'portfolio'];
 // Google shows ~155 chars; short UI copy is expanded with the SEO title and first FAQ answer.
@@ -35,12 +41,11 @@ const content = kind === 'record' ? buildRecordContent(record) : null;
 let title: string, description: string, h1: string, alternate: string | null;
 if (kind === 'index') {
   title = section.seo?.[lang] || section.name[lang];
-  description = section.meta?.[lang] ? metaDesc(section.meta[lang]) : metaDesc(`${section.desc[lang]} ${toolsIn(sectionId).map((x: any) => x.title[lang]).join(', ')}.`);
+  description = section.meta?.[lang] ? metaDesc(section.meta[lang]) : metaDesc(`${section.desc[lang]} ${primaryTools.map((x: any) => x.title[lang]).join(', ')}.`);
   h1 = `${section.icon} ${section.name[lang]}`;
   alternate = sectionUrl(sectionId, other);
 } else if (kind === 'tool') {
   title = (tool as any).seo?.[lang] || tool!.title[lang];
-  // Hand-written meta (tools.js) avoids repeating the title; fallback keeps old pages working.
   description = (tool as any).meta?.[lang] ? metaDesc((tool as any).meta[lang]) : metaDesc(`${(tool as any).seo?.[lang] || tool!.title[lang]}. ${tool!.desc[lang]} ${(tool as any).faq?.[0]?.a?.[lang] || ''}`);
   h1 = tool!.title[lang];
   alternate = toolUrl(tool!, other);
@@ -65,9 +70,8 @@ const jsonLd: any[] = [
   }
 ];
 if (tool && kind === 'tool') {
-  jsonLd.push({ '@context': 'https://schema.org', '@type': 'WebApplication', name: tool.title[lang], url: new URL(toolUrl(tool, lang), site.siteUrl).href, inLanguage: lang, description: tool.desc[lang], applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: 'VND' } });
+  jsonLd.push({ '@context': 'https://schema.org', '@type': 'WebApplication', name: tool.title[lang], url: new URL(toolUrl(tool, lang), site.siteUrl).href, inLanguage: lang, description: tool.desc[lang], applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', offers: { '@type': 'Offer', price: '0', priceCurrency: vi ? 'VND' : 'USD' } });
 }
-// Editorial content (reviewed articles) stored in the record itself: record.article = [{heading, paragraphs[]}], record.faq = [{q, a}]
 const article: { heading: string; paragraphs: string[] }[] = Array.isArray(record?.article) ? record.article : [];
 const toolFaq: { q: string; a: string }[] = kind === 'tool' && Array.isArray((tool as any)?.faq) ? (tool as any).faq.map((f: any) => ({ q: f.q[lang], a: f.a[lang] })) : [];
 const faqs: { q: string; a: string }[] = [...(Array.isArray(record?.faq) ? record.faq : []), ...(content?.faq || []), ...toolFaq];
@@ -75,40 +79,109 @@ if (content) content.faq = faqs;
 if (faqs.length) {
   jsonLd.push({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
 }
+
+// Peer tools in footer: if current tool is a regional secondary tool, show all tools in section; otherwise prioritize primary market tools.
+const peerTools = ((tool as any)?.market === 'vn' && !vi) || ((tool as any)?.market === 'intl' && vi)
+  ? toolsIn(sectionId)
+  : primaryTools;
 ---
 <Layout title={title} description={description} lang={lang} alternate={alternate} jsonLd={jsonLd}>
-  <nav class="mb-4 text-sm text-slate-500" aria-label="breadcrumb">
-    {crumbs.map((c, i) => (
-      <span>{i > 0 && ' / '}{i < crumbs.length - 1 ? <a href={c.url} class="hover:text-brand-600">{c.name}</a> : <span class="text-slate-700">{c.name}</span>}</span>
-    ))}
-  </nav>
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+    <nav class="text-sm text-slate-500" aria-label="breadcrumb">
+      {crumbs.map((c, i) => (
+        <span>{i > 0 && ' / '}{i < crumbs.length - 1 ? <a href={c.url} class="hover:text-brand-600">{c.name}</a> : <span class="text-slate-700">{c.name}</span>}</span>
+      ))}
+    </nav>
+    {badge && (
+      <span class={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${badge.cls}`}>
+        {badge.label}
+      </span>
+    )}
+  </div>
 
   <h1 class="text-2xl font-extrabold md:text-4xl">{h1}</h1>
+
+  {/* Contextual Market Logic Banner when viewing a region-specific tool in the opposite edition */}
+  {kind !== 'index' && tool && (tool as any).market === 'vn' && !vi && (
+    <div class="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-2.5 text-xs text-amber-950">
+      <span>🇻🇳 <b>Vietnam Local Rule (VND / GMT+7)</b></span>
+      <a href="/en" class="font-bold text-brand-700 underline hover:text-brand-900">Browse Global & US Calculators →</a>
+    </div>
+  )}
+  {kind !== 'index' && tool && (tool as any).market === 'intl' && vi && (
+    <div class="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-indigo-200 bg-indigo-50/90 px-4 py-2.5 text-xs text-indigo-950">
+      <span>🌍 <b>Chuẩn Quốc tế (USD / Âu–Mỹ)</b></span>
+      {toolId === 'mortgage' && (
+        <a href={toolUrl('loan', 'vi')} class="font-bold text-brand-700 underline hover:text-brand-900">Chuyển sang Tính Lãi Vay Ngân Hàng Việt Nam (VNĐ) →</a>
+      )}
+    </div>
+  )}
 
   {kind === 'index' && (
     <>
       <p class="mt-3 max-w-3xl text-lg text-slate-600">{section.desc[lang]}</p>
       <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {toolsIn(sectionId).map((tl) => (
-          <a href={toolUrl(tl, lang)} class="card group transition hover:-translate-y-0.5 hover:shadow-md">
-            <div class="text-3xl">{tl.icon}</div>
-            <div class="mt-2 text-lg font-bold group-hover:text-brand-700">{tl.title[lang]}</div>
-            <p class="mt-1 text-sm text-slate-600">{tl.desc[lang]}</p>
-          </a>
-        ))}
+        {primaryTools.map((tl) => {
+          const b = marketBadge(tl, lang);
+          return (
+            <a href={toolUrl(tl, lang)} class="card group transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md">
+              <div class="flex items-center justify-between gap-2">
+                <div class="text-3xl">{tl.icon}</div>
+                <span class={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${b.cls}`}>{b.label}</span>
+              </div>
+              <div class="mt-2 text-lg font-bold group-hover:text-brand-700">{tl.title[lang]}</div>
+              <p class="mt-1 text-sm text-slate-600">{tl.desc[lang]}</p>
+            </a>
+          );
+        })}
       </div>
-      <AffiliateCards context={section.context} lang={lang} limit={2} />
+
+      {secondaryTools.length > 0 && (
+        <div class="mt-10 rounded-2xl border border-slate-200 bg-slate-50/80 p-5">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-extrabold text-slate-800">
+                {vi
+                  ? `🌍 Công cụ Thị trường Quốc tế / Âu–Mỹ (${secondaryTools.length})`
+                  : `🇻🇳 Vietnam Expat & Local Regulatory Calculators (${secondaryTools.length})`}
+              </h2>
+              <p class="text-xs text-slate-500">
+                {vi
+                  ? 'Tách riêng cho người Việt ở nước ngoài, du học sinh hoặc giao dịch quốc tế bằng USD.'
+                  : 'Separated for expats, HR teams and businesses operating under Vietnamese tax, social insurance and lunar calendar rules.'}
+              </p>
+            </div>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {secondaryTools.map((tl) => {
+              const b = marketBadge(tl, lang);
+              return (
+                <a href={toolUrl(tl, lang)} class="group flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3.5 transition hover:border-brand-400 hover:shadow-sm">
+                  <span class="text-2xl">{tl.icon}</span>
+                  <span class="min-w-0 flex-1">
+                    <span class={`mb-1 inline-block rounded-full px-2 py-0.5 text-[9px] font-bold ${b.cls}`}>{b.label}</span>
+                    <span class="block text-sm font-bold text-slate-900 group-hover:text-brand-700">{tl.title[lang]}</span>
+                    <span class="block text-xs text-slate-500">{tl.desc[lang]}</span>
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <AffiliateCards context={section.context} lang={lang} limit={4} />
     </>
   )}
 
   {kind === 'tool' && (
     <>
-      <p class="mt-3 max-w-3xl text-slate-600">{tool!.desc[lang]}</p>
+      <p class="mt-1.5 text-sm text-slate-500">{tool!.desc[lang]}</p>
       <div class="mt-6"><ToolRenderer toolId={toolId!} lang={lang} /></div>
-      {!LEGACY_MONETIZED.includes(toolId!) && (<><AffiliateCards context={section.context} tool={toolId} lang={lang} /><AdSlot lang={lang} /></>)}
+      {!LEGACY_MONETIZED.includes(toolId!) && (<><AffiliateCards context={section.context} tool={toolId} lang={lang} limit={4} /><AdSlot lang={lang} /></>)}
       {toolFaq.length > 0 && (
         <section class="mt-10 max-w-3xl">
-          <h2 class="mb-3 text-xl font-bold">{lang === 'vi' ? 'Hỏi nhanh' : 'FAQ'}</h2>
+          <h2 class="mb-3 text-xl font-bold">{lang === 'vi' ? 'Câu hỏi thường gặp' : 'Frequently Asked Questions'}</h2>
           {toolFaq.map((f) => (
             <details class="card mb-2"><summary class="cursor-pointer font-semibold">{f.q}</summary><p class="mt-2 text-slate-700">{f.a}</p></details>
           ))}
@@ -152,6 +225,33 @@ if (faqs.length) {
     </>
   )}
 
+  {/* Smart Inbound Next-Step Value Funnel: Converts single-tool visitors into Studio users */}
+  {kind !== 'index' && nextSteps.length > 0 && (
+    <section class="mt-10 rounded-3xl border border-indigo-200/90 bg-gradient-to-br from-indigo-50/80 via-white to-amber-50/60 p-5 shadow-2xs">
+      <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <span class="inline-block rounded-full bg-indigo-600 px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider text-white uppercase">
+            {vi ? '⚡ Bước tiếp theo đề xuất' : '⚡ Recommended Next Step'}
+          </span>
+          <h2 class="mt-0.5 text-base font-extrabold text-slate-900">
+            {vi ? 'Làm tiếp trong 1 chạm' : '1-Click Next Steps'}
+          </h2>
+        </div>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-3">
+        {nextSteps.map((nt: any) => (
+          <a href={toolUrl(nt, lang)} class="group flex items-start gap-3 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs transition hover:-translate-y-0.5 hover:border-indigo-400 hover:shadow-md">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-indigo-50 text-2xl transition group-hover:scale-110">{nt.icon}</span>
+            <span class="min-w-0 flex-1">
+              <span class="block font-bold text-slate-900 group-hover:text-indigo-700">{nt.title[lang]}</span>
+              <span class="mt-1 inline-block text-xs font-extrabold text-indigo-600">{vi ? 'Mở ngay →' : 'Open →'}</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
   {(related.length > 0 || popular.length > 0) && (
     <section class="mt-10">
       <h2 class="mb-3 text-xl font-bold">{kind === 'record' ? L.related : L.popular}</h2>
@@ -167,11 +267,10 @@ if (faqs.length) {
     <section class="mt-10">
       <h2 class="mb-3 text-xl font-bold">{L.moreTools}</h2>
       <div class="flex flex-wrap gap-2">
-        {toolsIn(sectionId).filter((tl) => tl.id !== toolId).map((tl) => (
+        {peerTools.filter((tl) => tl.id !== toolId).map((tl) => (
           <a href={toolUrl(tl, lang)} class="rounded-full border border-slate-300 bg-white px-4 py-1.5 text-sm hover:border-brand-500">{tl.icon} {tl.title[lang]}</a>
         ))}
       </div>
     </section>
   )}
 </Layout>
-

@@ -13,7 +13,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
 <div data-tool="portfolio" data-lang={lang}>
   <div class="card mb-6">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-      <h2 class="text-lg font-bold">{vi ? `1. Chọn mẫu giao diện (${styles.length} mẫu, gồm phong cách Vẽ tay)` : `1. Choose a template (${styles.length} styles incl. hand-drawn)`}</h2>
+      <h2 class="text-lg font-extrabold">{vi ? `1. Chọn mẫu (${styles.length} mẫu độc bản)` : `1. Pick a style (${styles.length} unique templates)`}</h2>
       <span class="text-xs text-slate-500">{vi ? 'Bản xem trước trực tiếp' : 'Live interactive thumbnails'}</span>
     </div>
     <div class="mb-4 flex flex-wrap gap-2">
@@ -22,7 +22,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
     </div>
     <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4" data-styles>
       {styles.map((s, i) => (
-        <button type="button" data-style={s.id} data-fields={s.fields} hidden={i >= 8} class={`group rounded-xl border-2 bg-white p-2 text-left transition hover:border-brand-400 ${i === 0 ? 'border-brand-600' : 'border-slate-200'}`}>
+        <button type="button" data-style={s.id} data-fields={s.fields} hidden={i >= 12} class={`group rounded-xl border-2 bg-white p-2 text-left transition hover:border-brand-400 ${i === 0 ? 'border-brand-600' : 'border-slate-200'}`}>
           <div class="relative overflow-hidden rounded-lg bg-slate-100" style="aspect-ratio:16/11" data-thumb={s.id}></div>
           <div class="mt-2 px-1 font-semibold text-slate-900">{s.name}</div>
           <div class="px-1 pb-1 text-xs text-slate-500">{s.desc}</div>
@@ -30,7 +30,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
       ))}
     </div>
     <div class="mt-4 text-center">
-      <button type="button" class="btn-ghost text-sm" data-pf-more>{vi ? `Xem tất cả ${styles.length} mẫu Portfolio (+${styles.length - 8})` : `Show all ${styles.length} templates (+${styles.length - 8})`}</button>
+      <button type="button" class="btn-ghost text-sm" data-pf-more>{vi ? `Xem tất cả ${styles.length} mẫu Portfolio độc bản (+${styles.length - 12})` : `Show all ${styles.length} unique templates (+${styles.length - 12})`}</button>
     </div>
   </div>
 
@@ -47,15 +47,27 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
       <div data-studio-panel="presets">
         <div class="mb-3.5 rounded-xl bg-gradient-to-br from-amber-50 via-rose-50/60 to-violet-50 p-3.5 ring-1 ring-amber-200/80">
           <div class="mb-2 flex flex-wrap items-center justify-between gap-1">
-            <span class="text-xs font-bold text-slate-800">⚡ {vi ? `${PORTFOLIO_PRESETS.length} Hồ sơ Mẫu theo Ngành (Tự động điền đầy đủ dự án & Case Study):` : `${PORTFOLIO_PRESETS.length} Industry Presets (Auto-fills projects & Case Studies):`}</span>
+            <span class="text-xs font-extrabold text-slate-800">⚡ {vi ? 'Chọn ngành (1 chạm tự điền mẫu):' : '1-Click Industry Auto-Fill:'}</span>
           </div>
           <div class="flex flex-wrap gap-1.5">
-            {PORTFOLIO_PRESETS.map((p) => <button type="button" data-preset={p.id} class="rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold transition hover:border-brand-500 hover:text-brand-700">{p.icon} {p.label?.[lang] || (p as any)[lang]?.label}</button>)}
+            {PORTFOLIO_PRESETS.slice(0, 8).map((p) => <button type="button" data-preset={p.id} class="rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold transition hover:border-brand-500 hover:text-brand-700">{p.icon} {p.label?.[lang] || (p as any)[lang]?.label}</button>)}
+            <details class="w-full pt-1">
+              <summary class=" inline-flex cursor-pointer list-none items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold text-brand-700 ring-1 ring-slate-200 hover:bg-brand-50">
+                ＋ {vi ? `Xem thêm ${PORTFOLIO_PRESETS.length - 8} ngành khác ⌄` : `More (${PORTFOLIO_PRESETS.length - 8} industries) ⌄`}
+              </summary>
+              <div class="mt-2 flex flex-wrap gap-1.5">
+                {PORTFOLIO_PRESETS.slice(8).map((p) => <button type="button" data-preset={p.id} class="rounded-full border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold transition hover:border-brand-500 hover:text-brand-700">{p.icon} {p.label?.[lang] || (p as any)[lang]?.label}</button>)}
+              </div>
+            </details>
           </div>
         </div>
 
-        <div class="mb-4 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5">
-          <div class="mb-1.5 text-xs font-bold text-slate-800">🎨 {vi ? '16 Hệ Thiết Kế Độc Bản (Bố cục + Chất liệu Giấy + Bảng màu):' : '16 Design Systems (Layout + Paper + Palette):'}</div>
+        <div><div><details class="group mb-3.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3">
+          <summary class="flex cursor-pointer list-none items-center justify-between text-xs font-extrabold text-slate-800">
+            <span>🎨 {vi ? 'Đổi Chất liệu Giấy, Bảng màu & Mockup (16 hệ thiết kế)' : 'Paper Textures, Palettes & Mockups (16 systems)'}</span>
+            <span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-brand-700 ring-1 ring-slate-200">{vi ? 'Mở ⌄' : 'Open ⌄'}</span>
+          </summary>
+          <div class="mt-2.5">
           <div class="flex flex-wrap gap-1.5">
             {OPEN_SOURCE_THEMES.map((th) => (
               <button type="button" data-os-theme={th.id} class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-brand-500 hover:bg-amber-50/40">
@@ -72,6 +84,9 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
             <button type="button" data-os-avatar class="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-brand-500">🎭 {vi ? 'Avatar Minh Họa' : 'Illustrated Avatar'}</button>
             <button type="button" data-pf-export-json class="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-brand-500">⬇ JSON</button>
             <label class="cursor-pointer rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-brand-500">⬆ JSON<input type="file" accept=".json,application/json" class="hidden" data-pf-import-json /></label>
+          </div>
+          </div>
+        </details>
           </div>
         </div>
       </div>
@@ -96,6 +111,117 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
             <span data-gh-status class="font-semibold text-emerald-700"></span>
           </div>
           <div data-discovery-results class="mt-2.5 hidden grid-cols-1 gap-2 sm:grid-cols-2"></div>
+        </div>
+      </div>
+
+      <!-- Smart Auto-Layout Hub: Logo, Banner & Bulk Product Upload -->
+      <div class="mb-4 rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-sky-50/80 p-3.5 shadow-sm">
+        <div class="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div class="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white">✨ AI Auto-Layout Studio</div>
+            <h3 class="mt-0.5 text-sm font-extrabold text-slate-900">{vi ? 'Tải Logo · Banner · Sản Phẩm (Tự Động Dàn Trang)' : 'Upload Logo · Banners · Products (Smart Auto-Layout)'}</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-pf-load-sample-pack class="rounded-xl border border-indigo-300 bg-white px-2.5 py-1.5 text-xs font-bold text-indigo-900 shadow-2xs transition hover:border-indigo-500 hover:bg-indigo-50">⚡ {vi ? 'Nạp Bộ Mẫu (Logo + Banner + 9 Sản phẩm)' : 'Load Sample Pack'}</button>
+            <button type="button" data-pf-auto-arrange class="rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-700">✨ {vi ? 'Tự động bố trí đẹp nhất' : 'Smart Auto-Arrange'}</button>
+          </div>
+        </div>
+
+        <div class="grid gap-2.5 sm:grid-cols-3">
+          <!-- 1. Brand Logo & Partner Logos -->
+          <div class="rounded-xl border border-slate-200 bg-white p-2.5 shadow-2xs">
+            <div class="mb-1 flex items-center justify-between">
+              <span class="text-xs font-extrabold text-slate-800">🏷️ {vi ? '1. Logo Thương Hiệu' : '1. Brand & Client Logos'}</span>
+              <span class="text-[10px] font-semibold text-indigo-600" data-pf-logo-count></span>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5">
+              <label class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50/70 px-2 py-1.5 text-[11px] font-bold text-indigo-900 transition hover:bg-indigo-100">
+                ⬆ {vi ? 'Logo chính' : 'Main Logo'}
+                <input type="file" accept="image/*" class="hidden" data-pf-logo-input />
+              </label>
+              <label class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:bg-slate-100">
+                ＋ {vi ? 'Logo đối tác' : 'Client Logos'}
+                <input type="file" accept="image/*" multiple class="hidden" data-pf-brand-logos-input />
+              </label>
+            </div>
+            <div class="mt-2 flex flex-wrap items-center gap-1.5" data-pf-logo-list></div>
+          </div>
+
+          <!-- 2. Hero / Campaign Banners -->
+          <div class="rounded-xl border border-slate-200 bg-white p-2.5 shadow-2xs">
+            <div class="mb-1 flex items-center justify-between">
+              <span class="text-xs font-extrabold text-slate-800">🖼️ {vi ? '2. Banner Chiến Dịch' : '2. Campaign Banners'}</span>
+              <span class="text-[10px] font-semibold text-indigo-600" data-pf-banner-count></span>
+            </div>
+
+            <label class="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50/80 px-2.5 py-1.5 text-[11px] font-bold text-amber-950 transition hover:bg-amber-100">
+              ⬆ {vi ? 'Tải 1 hoặc nhiều Banner lên' : 'Upload Campaign Banners'}
+              <input type="file" accept="image/*" multiple class="hidden" data-pf-banners-input />
+            </label>
+            <div class="mt-2 grid grid-cols-2 gap-1.5" data-pf-banner-list></div>
+          </div>
+
+          <!-- 3. Bulk Products / Works -->
+          <div class="rounded-xl border border-slate-200 bg-white p-2.5 shadow-2xs">
+            <div class="mb-1 flex items-center justify-between">
+              <span class="text-xs font-extrabold text-slate-800">📦 {vi ? '3. Hàng Loạt Sản Phẩm' : '3. Bulk Products / Works'}</span>
+              <span class="text-[10px] font-semibold text-emerald-700" data-pf-prod-count></span>
+            </div>
+
+            <label class="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50/80 px-2.5 py-1.5 text-[11px] font-bold text-emerald-950 transition hover:bg-emerald-100">
+              ⬆ {vi ? 'Tải nhiều Sản phẩm cùng lúc' : 'Bulk Upload Products'}
+              <input type="file" accept="image/*" multiple class="hidden" data-pf-products-input />
+            </label>
+            <div class="mt-2 grid grid-cols-4 gap-1" data-pf-prod-list></div>
+          </div>
+        </div>
+
+        <div class="mt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-indigo-100 pt-2 text-xs">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="font-bold text-slate-700">{vi ? 'Chế độ tự dàn trang sản phẩm:' : 'Auto-Layout Mode:'}</span>
+            <select data-pf-autolayout-mode class="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-800">
+              <option value="smart">{vi ? '✨ Tự động thông minh theo tỷ lệ ảnh (Ngang/Dọc/Vuông/Banner)' : '✨ Smart Aspect-Ratio Auto-Grid'}</option>
+              <option value="bento">{vi ? '⊞ Bento Case Study Bất đối xứng (8 cột + 4 cột)' : '⊞ Asymmetric Bento Spread'}</option>
+              <option value="lookbook">{vi ? '📖 Tạp chí Lookbook Đứng 3 Cột' : '📖 3-Column Editorial Lookbook'}</option>
+              <option value="catalog">{vi ? '🛍️ Catalog Sản phẩm Thương mại 4 Cột' : '🛍️ 4-Column Commercial Catalog'}</option>
+            </select>
+          </div>
+          <button type="button" data-pf-clear-smart-assets class="text-[11px] font-semibold text-slate-400 hover:text-rose-600">{vi ? 'Xóa bộ Logo/Banner/Sản phẩm tải thêm' : 'Clear uploaded assets'}</button>
+        </div>
+      </div>
+
+      <div class="mb-3 rounded-xl border border-indigo-200/80 bg-indigo-50/40 p-3">
+        <div class="mb-2 flex items-center justify-between">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-950">🎛 {vi ? 'Tinh chỉnh Linh hoạt Giao diện Portfolio (Bo góc · Khổ rộng · Cỡ chữ)' : 'Live Portfolio Design Fine-Tuning (Corners · Width · Type Scale)'}</span>
+          <span class="text-[11px] font-semibold text-indigo-700">{vi ? 'Áp dụng cho cả 108 mẫu' : 'Applies to all 108 templates'}</span>
+        </div>
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <label class="block text-[11px] font-semibold text-slate-700">
+            {vi ? 'Kiểu Bo góc Thẻ & Ảnh' : 'Card & Image Corners'}
+            <select data-pf-tune="pfRadius" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs font-semibold text-slate-800">
+              <option value="">{vi ? 'Theo mẫu gốc' : 'Template Default'}</option>
+              <option value="sharp">{vi ? 'Vuông sắc nét (0px)' : 'Sharp Brutalist (0px)'}</option>
+              <option value="soft">{vi ? 'Bo nhẹ hiện đại (10px)' : 'Soft Editorial (10px)'}</option>
+              <option value="round">{vi ? 'Bo tròn mềm mại (28px)' : 'Rounded Studio (28px)'}</option>
+            </select>
+          </label>
+          <label class="block text-[11px] font-semibold text-slate-700">
+            {vi ? 'Khổ rộng Trang trưng bày' : 'Stage Container Width'}
+            <select data-pf-tune="pfWidth" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs font-semibold text-slate-800">
+              <option value="">{vi ? 'Chuẩn Artboard (1320px)' : 'Standard (1320px)'}</option>
+              <option value="compact">{vi ? 'Thu gọn tập trung (1040px)' : 'Focused (1040px)'}</option>
+              <option value="wide">{vi ? 'Triển lãm toàn khung (1540px)' : 'Wide Exhibition (1540px)'}</option>
+            </select>
+          </label>
+          <label class="block text-[11px] font-semibold text-slate-700">
+            {vi ? 'Tỷ lệ Cỡ chữ Toàn trang' : 'Typography Scale'}
+            <select data-pf-tune="pfScale" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs font-semibold text-slate-800">
+              <option value="">{vi ? 'Cân đối (100%)' : 'Balanced (100%)'}</option>
+              <option value="compact">{vi ? 'Tinh gọn (92%)' : 'Compact (92%)'}</option>
+              <option value="large">{vi ? 'Ấn tượng cỡ lớn (108%)' : 'Bold Display (108%)'}</option>
+            </select>
+          </label>
         </div>
       </div>
 
@@ -142,12 +268,26 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
   </div>
 
   <MonetizedResult context="tools" lang={lang} visible share={false} title={vi ? 'Gợi ý trình bày Portfolio chuyên nghiệp' : 'Tips for a professional portfolio presentation'}>
-    <p class="text-sm text-slate-600">{vi ? 'Khác với website thông thường, một Portfolio tốt thường được trình bày như một cuốn Sách Triển Lãm (Editorial Artbook 1400px): mở đầu bằng Poster Bìa có dấu cắt khung (Crop Marks), tiếp nối bằng Mục Lục Tác Phẩm (Index 01–06), đi sâu vào từng Case Study đa khung (Mockup thực tế + Bản vẽ phác thảo tỷ lệ vàng + Bảng mã màu Pantone) và khép lại bằng tấm thẻ Tri Ân (Thank You for Watching).' : 'Unlike a generic website, a strong portfolio is often art-directed as a 1400px Editorial Exhibition Book: opening with a Cover Poster Artboard with crop marks, followed by an Indexed Table of Works (01–06), multi-board Case Studies (Hero Mockup + Wireframe Sketch + Pantone Spec Sheet), and closing with an Appreciation Colophon.'}</p>
+    <p class="text-sm text-slate-600">{vi ? 'Khác với website thông thường, một Portfolio tốt thường được trình bày như một cuốn Sách Triển Lãm (Editorial Artbook 1400px): mở đầu bằng Poster Bìa có dấu cắt khung (Crop Marks), tiếp nối bằng Mục Lục Tác Phẩm (Index 01–06), đi sâu vào từng Case Study đa khung và khép lại bằng tấm thẻ Tri Ân.' : 'Unlike a generic website, a strong portfolio is art-directed as a 1400px Editorial Exhibition Book: opening with a Cover Poster Artboard with crop marks, followed by an Indexed Table of Works (01–06), multi-board Case Studies, and closing with an Appreciation Colophon.'}</p>
+    <div class="mt-4 grid gap-3 sm:grid-cols-3">
+      <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
+        <div class="text-xs font-extrabold text-emerald-900">1. 🔍 {vi ? 'Chuẩn SEO Google Tự Động' : 'Built-in Google SEO Schema'}</div>
+        <p class="mt-1 text-xs text-slate-600">{vi ? 'File HTML tải về đã nhúng sẵn cấu trúc JSON-LD ProfessionalService & Bảng giá giúp khách hàng tự tìm thấy bạn trên Google.' : 'Every exported HTML file embeds JSON-LD ProfessionalService schema so clients discover your services via search.'}</p>
+      </div>
+      <div class="rounded-xl border border-indigo-200 bg-indigo-50/70 p-3">
+        <div class="text-xs font-extrabold text-indigo-900">2. ⚡ {vi ? 'Hộp Chốt Gói & Báo Giá Tức Thì' : 'Interactive Package Booking'}</div>
+        <p class="mt-1 text-xs text-slate-600">{vi ? 'Tích hợp sẵn nút "⚡ Đặt Dịch Vụ & Báo Giá Nhanh" ngay góc trang để khách chọn gói dịch vụ, điền yêu cầu và nhắn Zalo/Email.' : 'Includes a floating "⚡ Book Package & Instant Quote" widget so visitors can pick a tier and message you via WhatsApp/Email.'}</p>
+      </div>
+      <div class="rounded-xl border border-amber-200 bg-amber-50/70 p-3">
+        <div class="text-xs font-extrabold text-amber-900">3. 💳 {vi ? 'Nhận Cọc Giữ Lịch 24/7' : 'Direct Deposit & Payment Link'}</div>
+        <p class="mt-1 text-xs text-slate-600">{vi ? 'Điền Số Zalo và Link Nhận Cọc (VietQR / Momo / Calendly) ở phần thông tin để khách chuyển khoản đặt cọc ngay trên Portfolio.' : 'Add your WhatsApp and Deposit/Payment URL in the form so clients can pay a deposit and lock in your schedule.'}</p>
+      </div>
+    </div>
   </MonetizedResult>
 </div>
 
 <script>
-  import { renderPortfolio, portfolioFields, SECTION_KEYS, SECTION_NAMES, placeholder, handDrawnPlaceholder } from '../../lib/portfolio-templates.js';
+  import { renderPortfolio, portfolioFields, SECTION_KEYS, SECTION_NAMES, placeholder, handDrawnPlaceholder, sampleLogoSvg, sampleBannerSvg, sampleProductSvg, classifyRatio } from '../../lib/portfolio-templates.js';
   import { downloadBlob, escapeHtml } from '../../lib/format.js';
   import { safeImageSrc } from '../../lib/safe-url.js';
   import { openImageEditor } from '../../lib/image-editor.js';
@@ -163,6 +303,24 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
         cv.getContext('2d')!.drawImage(img, 0, 0, cv.width, cv.height);
         URL.revokeObjectURL(img.src);
         resolve(cv.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  function shrinkWithMeta(file: File, max = 1400): Promise<{ src: string; ratio: number; orient: 'banner' | 'portrait' | 'square' | 'landscape' }> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const k = Math.min(1, max / Math.max(img.width, img.height));
+        const cv = document.createElement('canvas');
+        cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+        cv.getContext('2d')!.drawImage(img, 0, 0, cv.width, cv.height);
+        const ratio = cv.width / (cv.height || 1);
+        const orient = classifyRatio(ratio) as 'banner' | 'portrait' | 'square' | 'landscape';
+        URL.revokeObjectURL(img.src);
+        resolve({ src: cv.toDataURL('image/jpeg', 0.84), ratio, orient });
       };
       img.onerror = reject;
       img.src = URL.createObjectURL(file);
@@ -196,7 +354,16 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
       : fromText(saved.projects ?? fields.find((f: any) => f.name === 'projects')?.default ?? '');
     try {
       const imgs = JSON.parse(localStorage.getItem(storeKey + ':img') || '[]');
-      imgs.forEach((x: any, i: number) => { if (projects[i] && x) Object.assign(projects[i], x, { gallery: Array.isArray(x.gallery) ? x.gallery : [] }); });
+      imgs.forEach((x: any, i: number) => {
+        if (projects[i] && x) {
+          Object.assign(projects[i], {
+            orig: safeImageSrc(x.orig),
+            img: safeImageSrc(x.img),
+            edit: x.edit || null,
+            gallery: Array.isArray(x.gallery) ? x.gallery.map((g: any) => safeImageSrc(g)).filter(Boolean) : []
+          });
+        }
+      });
     } catch { /* no saved images */ }
 
     const SWATCHES = [
@@ -374,13 +541,47 @@ ${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escape
     const values = () => {
       const v: Record<string, string> = {};
       root.querySelectorAll<HTMLInputElement>('[data-pf-fields] [name]').forEach((el) => (v[el.name] = el.value));
+      root.querySelectorAll<HTMLSelectElement>('[data-pf-tune]').forEach((sel) => {
+        if (sel.dataset.pfTune) v[sel.dataset.pfTune] = sel.value;
+      });
       const clean = (s: string) => String(s || '').replace(/[|\n]/g, ' ').trim();
       v.projects = projects.map((p) => [p.title || ' ', p.cat, p.year, p.desc, p.link].map(clean).join(' | ')).join('\n');
       return v;
     };
+    type SmartBanner = { src: string; title: string; subtitle: string; ratio: number };
+    type SmartProduct = { src: string; title: string; cat: string; desc: string; ratio: number; orient: 'banner' | 'portrait' | 'square' | 'landscape'; span?: string };
+    let logo: string = '';
+    let brandLogos: string[] = [];
+    let banners: SmartBanner[] = [];
+    let productGallery: SmartProduct[] = [];
+    let autoLayoutMode: string = 'smart';
+    try {
+      const smartSaved = JSON.parse(localStorage.getItem(storeKey + ':smart') || '{}');
+      if (smartSaved.logo) logo = safeImageSrc(smartSaved.logo);
+      if (Array.isArray(smartSaved.brandLogos)) brandLogos = smartSaved.brandLogos.map((x: any) => safeImageSrc(typeof x === 'string' ? x : x?.src)).filter(Boolean);
+      if (Array.isArray(smartSaved.banners)) banners = smartSaved.banners.map((b: any) => ({ ...b, src: safeImageSrc(b?.src) })).filter((b: any) => b.src);
+      if (Array.isArray(smartSaved.productGallery)) productGallery = smartSaved.productGallery.map((p: any) => ({ ...p, src: safeImageSrc(p?.src) })).filter((p: any) => p.src);
+      if (smartSaved.autoLayoutMode) autoLayoutMode = smartSaved.autoLayoutMode;
+      root.querySelectorAll<HTMLSelectElement>('[data-pf-tune]').forEach((sel) => {
+        const k = sel.dataset.pfTune!;
+        if (saved[k] !== undefined) sel.value = saved[k];
+      });
+    } catch { /* no smart assets saved */ }
+
+    const inferCategory = (name: string) => {
+      const n = name.toLowerCase();
+      if (/banner|cover|header|hero|campaign|poster/.test(n)) return 'Banner & Campaign';
+      if (/logo|brand|identity|monogram|mark/.test(n)) return 'Logo & Branding';
+      if (/pack|box|bottle|label|hop|bao bi/.test(n)) return 'Packaging';
+      if (/ui|ux|web|app|mobile|screen|dashboard/.test(n)) return 'UI/UX & Digital';
+      if (/3d|render|cgi|model/.test(n)) return '3D & Motion';
+      if (/illust|art|sketch|draw|ve/.test(n)) return 'Illustration';
+      return L('Sản phẩm Thiết kế', 'Featured Product');
+    };
+
     let editMode = true;
     const html = (preview = false) => renderPortfolio(style, {
-      ...values(), avatar,
+      ...values(), avatar, logo, brandLogos, banners, productGallery, autoLayoutMode,
       projectDetails: projects.map(({ challenge, solution, result, gallery }) => ({ challenge, solution, result, gallery }))
     }, projects.map((p) => p.img || p.orig), lang, { edit: preview && editMode });
 
@@ -443,6 +644,8 @@ ${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escape
         try { localStorage.setItem(storeKey, JSON.stringify({ ...rest, projectList })); } catch { /* quota */ }
         try { localStorage.setItem(storeKey + ':img', JSON.stringify(projects.map(({ orig, img, edit, gallery }) => ({ orig, img, edit, gallery })))); }
         catch { try { localStorage.removeItem(storeKey + ':img'); } catch { /* blocked */ } }
+        try { localStorage.setItem(storeKey + ':smart', JSON.stringify({ logo, brandLogos, banners, productGallery, autoLayoutMode })); }
+        catch { /* quota */ }
       }, 250);
     };
 
@@ -454,7 +657,7 @@ ${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escape
     const drawProjects = () => {
       q('[data-pf-count]').textContent = `(${projects.length})`;
       q('[data-pf-projects]').innerHTML = projects.map((p, i) => {
-        const src = p.img || p.orig;
+        const src = safeImageSrc(p.img || p.orig);
         const pic = src
           ? `<button type="button" data-pa="edit" class="group relative block aspect-[4/3] w-full overflow-hidden rounded-lg bg-slate-100" title="${L('Chỉnh sửa ảnh', 'Edit image')}"><img src="${src}" alt="" class="h-full w-full object-cover" /><span class="absolute inset-0 flex items-center justify-center bg-black/50 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100">✎ ${L('Chỉnh ảnh', 'Edit')}</span></button>`
           : `<label class="flex aspect-[4/3] w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500 hover:border-brand-500">⬆<span>${L('Thêm ảnh', 'Add image')}</span><input type="file" accept="image/*" class="hidden" data-pa="file" /></label>`;
@@ -475,18 +678,399 @@ ${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escape
 <textarea class="${inp}" rows="2" data-pk="solution" placeholder="${L('Giải pháp: bạn nghiên cứu, phác thảo và thiết kế thế nào?', 'Solution: how did you research, sketch, design?')}">${escapeHtml(p.solution)}</textarea>
 <textarea class="${inp}" rows="2" data-pk="result" placeholder="${L('Kết quả: con số, phản hồi, giải thưởng (VD: doanh số +30%)', 'Result: numbers, feedback, awards')}">${escapeHtml(p.result)}</textarea>
 <div class="text-xs font-semibold text-slate-600">${L('Bộ ảnh quá trình (phác thảo tay, màu nước, mockup) – tối đa 8', 'Process gallery (hand sketches, mockups) – up to 8')}</div>
-<div class="grid grid-cols-4 gap-1.5">${p.gallery.map((g, k) => `<div class="group relative"><button type="button" data-pa="gedit" data-g="${k}" class="block w-full"><img src="${g}" alt="" class="aspect-square w-full rounded object-cover" /></button><button type="button" data-pa="gdel" data-g="${k}" class="absolute -right-1 -top-1 hidden h-5 w-5 rounded-full bg-red-600 text-xs text-white group-hover:block" aria-label="${L('Xóa ảnh', 'Remove')}">✕</button></div>`).join('')}
+<div class="grid grid-cols-4 gap-1.5">${p.gallery.map((g, k) => `<div class="group relative"><button type="button" data-pa="gedit" data-g="${k}" class="block w-full"><img src="${safeImageSrc(g)}" alt="" class="aspect-square w-full rounded object-cover" /></button><button type="button" data-pa="gdel" data-g="${k}" class="absolute -right-1 -top-1 hidden h-5 w-5 rounded-full bg-red-600 text-xs text-white group-hover:block" aria-label="${L('Xóa ảnh', 'Remove')}">✕</button></div>`).join('')}
 ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-center justify-center rounded border-2 border-dashed border-slate-300 text-lg text-slate-400 hover:border-brand-500">＋<input type="file" accept="image/*" multiple class="hidden" data-pa="gfile" /></label>` : ''}</div></div></details></div>`;
       }).join('') || `<p class="text-center text-sm text-slate-500">${L('Chưa có dự án nào – tải sản phẩm lên để bắt đầu.', 'No projects yet – upload your work.')}</p>`;
     };
     const nameOf = (f: File) => f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
-    const addFiles = async (files: File[]) => {
-      const list = files.filter((f) => f.type.startsWith('image/')).slice(0, 30);
-      for (const f of list) {
-        try { projects.push(blank({ title: nameOf(f), orig: await shrink(f) })); } catch { /* unreadable */ }
+    const drawSmartAssets = () => {
+      const logoList = root.querySelector<HTMLElement>('[data-pf-logo-list]');
+      const logoCount = root.querySelector<HTMLElement>('[data-pf-logo-count]');
+      const bannerList = root.querySelector<HTMLElement>('[data-pf-banner-list]');
+      const bannerCount = root.querySelector<HTMLElement>('[data-pf-banner-count]');
+      const prodList = root.querySelector<HTMLElement>('[data-pf-prod-list]');
+      const prodCount = root.querySelector<HTMLElement>('[data-pf-prod-count]');
+      const modeSelect = root.querySelector<HTMLSelectElement>('[data-pf-autolayout-mode]');
+      if (modeSelect && modeSelect.value !== autoLayoutMode) modeSelect.value = autoLayoutMode;
+
+      const totalLogos = (logo ? 1 : 0) + brandLogos.length;
+      if (logoCount) logoCount.textContent = `${totalLogos} logo`;
+      if (logoList) {
+        const items: string[] = [];
+        if (logo) {
+          items.push(`<div class="group relative inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50/70 px-1.5 py-1 text-[10px] font-bold text-indigo-900"><img src="${safeImageSrc(logo)}" alt="Logo" class="h-6 w-12 object-contain" /><span>Logo chính</span><button type="button" data-smart-del="logo" class="ml-0.5 rounded px-1 text-slate-400 hover:bg-red-100 hover:text-red-600">✕</button></div>`);
+        }
+        brandLogos.forEach((bl, idx) => {
+          items.push(`<div class="group relative inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-1.5 py-1 text-[10px] text-slate-600"><img src="${safeImageSrc(bl)}" alt="Brand" class="h-5 w-10 object-contain" /><button type="button" data-smart-del="brand" data-idx="${idx}" class="rounded px-1 text-slate-400 hover:bg-red-100 hover:text-red-600">✕</button></div>`);
+        });
+        logoList.innerHTML = items.join('') || `<span class="text-[11px] text-slate-400">${L('Chưa tải logo – có thể tải Logo cá nhân & Logo khách hàng', 'No logo uploaded yet')}</span>`;
       }
-      drawProjects(); render();
+
+      if (bannerCount) bannerCount.textContent = `${banners.length} banner`;
+      if (bannerList) {
+        bannerList.innerHTML = banners.map((b, idx) => `<div class="group relative overflow-hidden rounded-lg border border-purple-200 bg-slate-900 aspect-[21/9]"><img src="${safeImageSrc(b.src)}" alt="" class="h-full w-full object-cover" /><input type="text" data-smart-banner-title="${idx}" value="${escapeHtml(b.title || `Banner #${idx + 1}`)}" class="absolute bottom-1 left-1 right-6 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-white focus:bg-black focus:outline-none" /><button type="button" data-smart-del="banner" data-idx="${idx}" class="absolute right-1 top-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] text-white hover:bg-red-600">✕</button></div>`).join('') || `<span class="col-span-2 text-[11px] text-slate-400">${L('Chưa có banner – tải 1 hoặc nhiều ảnh bìa chiến dịch', 'No campaign banners yet')}</span>`;
+      }
+
+      if (prodCount) prodCount.textContent = `${productGallery.length} ${L('sản phẩm', 'items')}`;
+      if (prodList) {
+        const badgeLabel: Record<string, string> = { banner: '21:9 Wide', landscape: '16:10 Ngang', square: '1:1 Vuông', portrait: '3:4 Dọc' };
+        prodList.innerHTML = productGallery.map((p, idx) => `<div class="group relative overflow-hidden rounded-lg border border-emerald-200 bg-white p-1 col-span-2 flex flex-col gap-1"><div class="relative aspect-[16/10] overflow-hidden rounded bg-slate-100"><img src="${safeImageSrc(p.src)}" alt="" class="h-full w-full object-cover" /><span class="absolute bottom-0.5 left-0.5 rounded bg-black/70 px-1 py-0.2 text-[8px] font-bold text-emerald-300">${badgeLabel[p.orient] || 'Auto'}</span><button type="button" data-smart-del="prod" data-idx="${idx}" class="absolute right-0.5 top-0.5 rounded-full bg-black/60 px-1 text-[9px] text-white hover:bg-red-600">✕</button></div><input type="text" data-smart-prod-title="${idx}" value="${escapeHtml(p.title)}" class="w-full rounded border border-slate-200 px-1 py-0.5 text-[10px] font-bold text-slate-800" placeholder="Tên sản phẩm" /><div class="grid grid-cols-2 gap-1"><input type="text" data-smart-prod-cat="${idx}" value="${escapeHtml(p.cat)}" class="w-full rounded border border-slate-200 px-1 py-0.5 text-[9.5px] text-slate-600" placeholder="Nhóm" /><select data-smart-prod-span="${idx}" class="w-full rounded border border-slate-200 bg-slate-50 px-1 py-0.5 text-[9.5px] font-semibold text-indigo-800"><option value=""${!p.span ? ' selected' : ''}>Tự động</option><option value="sp-12"${p.span === 'sp-12' ? ' selected' : ''}>Rộng 100%</option><option value="sp-8"${p.span === 'sp-8' ? ' selected' : ''}>Lớn 66%</option><option value="sp-6"${p.span === 'sp-6' ? ' selected' : ''}>Vừa 50%</option><option value="sp-4"${p.span === 'sp-4' ? ' selected' : ''}>Nhỏ 33%</option><option value="sp-3"${p.span === 'sp-3' ? ' selected' : ''}>Thẻ 25%</option></select></div></div>`).join('') || `<span class="col-span-4 text-[11px] text-slate-400">${L('Tải hàng loạt ảnh sản phẩm, poster, bao bì, UI/UX... Hệ thống sẽ tự đo tỷ lệ khung hình & dàn trang tự động!', 'Upload multiple product shots for automatic aspect-ratio layout!')}</span>`;
+      }
     };
+
+    const autoArrangeSmartAssets = () => {
+      // Sort productGallery into a balanced visual rhythm: wide banner -> portrait -> square -> landscape
+      const buckets: Record<string, SmartProduct[]> = { banner: [], landscape: [], square: [], portrait: [] };
+      productGallery.forEach((p) => { (buckets[p.orient] || buckets.landscape).push(p); });
+      const arranged: SmartProduct[] = [];
+      const order = ['banner', 'landscape', 'portrait', 'square'];
+      let keepGoing = true;
+      while (keepGoing) {
+        keepGoing = false;
+        for (const k of order) {
+          if (buckets[k].length > 0) {
+            arranged.push(buckets[k].shift()!);
+            keepGoing = true;
+          }
+        }
+      }
+      productGallery = arranged;
+
+      // Also sync into main projects list if user hasn't uploaded custom images to default sample projects
+      if (productGallery.length > 0) {
+        const hasCustomProjectImgs = projects.some((p) => Boolean(p.img || p.orig));
+        if (!hasCustomProjectImgs) {
+          projects = productGallery.slice(0, 12).map((pg) => blank({
+            title: pg.title,
+            cat: pg.cat,
+            year: String(new Date().getFullYear()),
+            desc: pg.desc || L('Sản phẩm thực tế được dàn trang tự động theo tỷ lệ khung hình chuẩn.', 'Curated work automatically arranged by aspect-ratio engine.'),
+            orig: pg.src
+          }));
+        }
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets();
+      drawProjects();
+      render();
+    };
+
+    const addFiles = async (files: File[]) => {
+      const list = files.filter((f) => f.type.startsWith('image/')).slice(0, 36);
+      for (const f of list) {
+        try {
+          const meta = await shrinkWithMeta(f);
+          const title = nameOf(f) || L('Sản phẩm Thiết kế', 'Design Work');
+          const cat = inferCategory(title);
+          projects.push(blank({ title, cat, orig: meta.src }));
+          productGallery.push({
+            src: meta.src,
+            title,
+            cat,
+            desc: L('Tác phẩm đã hoàn thiện & bàn giao thực tế.', 'Completed & delivered client work.'),
+            ratio: meta.ratio,
+            orient: meta.orient
+          });
+        } catch { /* unreadable */ }
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets(); drawProjects(); render();
+    };
+
+    // Wire Smart Asset Hub inputs & actions
+    root.querySelector<HTMLInputElement>('[data-pf-logo-input]')?.addEventListener('change', async (ev) => {
+      const f = (ev.target as HTMLInputElement).files?.[0];
+      if (!f) return;
+      try {
+        logo = await shrink(f, 800);
+        const dom = await dominant(logo);
+        if (dom) {
+          const colorInput = root.querySelector<HTMLInputElement>('[name="color"]');
+          if (colorInput) colorInput.value = dom;
+        }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets(); render();
+      } catch { /* ignore */ }
+      (ev.target as HTMLInputElement).value = '';
+    });
+
+    root.querySelector<HTMLInputElement>('[data-pf-brand-logos-input]')?.addEventListener('change', async (ev) => {
+      const files = [...((ev.target as HTMLInputElement).files || [])].slice(0, 12);
+      for (const f of files) {
+        try { brandLogos.push(await shrink(f, 600)); } catch { /* ignore */ }
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets(); render();
+      (ev.target as HTMLInputElement).value = '';
+    });
+
+    root.querySelector<HTMLInputElement>('[data-pf-banners-input]')?.addEventListener('change', async (ev) => {
+      const files = [...((ev.target as HTMLInputElement).files || [])].slice(0, 8);
+      for (const f of files) {
+        try {
+          const meta = await shrinkWithMeta(f, 1600);
+          banners.push({
+            src: meta.src,
+            title: nameOf(f) || L('Chiến dịch Chủ đạo', 'Key Campaign Banner'),
+            subtitle: L('Banner chiến dịch & nhận diện thương hiệu', 'Campaign Key Visual & Art Direction'),
+            ratio: meta.ratio
+          });
+        } catch { /* ignore */ }
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets(); render();
+      (ev.target as HTMLInputElement).value = '';
+    });
+
+    root.querySelector<HTMLInputElement>('[data-pf-products-input]')?.addEventListener('change', async (ev) => {
+      const files = [...((ev.target as HTMLInputElement).files || [])].slice(0, 36);
+      for (const f of files) {
+        try {
+          const meta = await shrinkWithMeta(f, 1400);
+          const title = nameOf(f) || `${L('Sản phẩm', 'Product')} #${productGallery.length + 1}`;
+          const cat = inferCategory(title);
+          productGallery.push({
+            src: meta.src,
+            title,
+            cat,
+            desc: L('Tác phẩm thực tế phân loại & bố trí tự động theo khung hình.', 'Production asset auto-arranged by aspect ratio.'),
+            ratio: meta.ratio,
+            orient: meta.orient
+          });
+        } catch { /* ignore */ }
+      }
+      autoArrangeSmartAssets();
+      (ev.target as HTMLInputElement).value = '';
+    });
+
+    root.querySelector<HTMLSelectElement>('[data-pf-autolayout-mode]')?.addEventListener('change', (ev) => {
+      autoLayoutMode = (ev.target as HTMLSelectElement).value || 'smart';
+      render();
+    });
+
+    root.querySelector<HTMLElement>('[data-pf-auto-arrange]')?.addEventListener('click', () => {
+      const modes = ['smart', 'bento', 'lookbook', 'catalog'];
+      autoLayoutMode = modes[(modes.indexOf(autoLayoutMode) + 1) % modes.length];
+      autoArrangeSmartAssets();
+    });
+
+    root.querySelector<HTMLElement>('[data-pf-load-sample-pack]')?.addEventListener('click', () => {
+      const color = root.querySelector<HTMLInputElement>('[name="color"]')?.value || '#4f46e5';
+      const nameVal = root.querySelector<HTMLInputElement>('[name="name"]')?.value || 'ATELIER STUDIO';
+      logo = sampleLogoSvg(nameVal, 0, color);
+      brandLogos = [
+        sampleLogoSvg('VOGUE LAB', 1, '#0f172a'),
+        sampleLogoSvg('KINETIC AI', 2, '#2563eb'),
+        sampleLogoSvg('MONOLITH', 3, '#059669'),
+        sampleLogoSvg('AURA CRAFT', 4, '#d97706')
+      ];
+      banners = [
+        {
+          src: sampleBannerSvg(L('Chiến dịch Thương hiệu Toàn cầu 2025', 'Global Brand Campaign 2025'), L('Key Visual · Art Direction · Hệ thống nhận diện đa điểm chạm', 'Key Visual · Art Direction · Multi-touchpoint Identity'), 0, color),
+          title: L('Chiến dịch Thương hiệu Toàn cầu 2025', 'Global Brand Campaign 2025'),
+          subtitle: L('Key Visual · Art Direction · Hệ thống nhận diện đa điểm chạm', 'Key Visual · Art Direction · Multi-touchpoint Identity'),
+          ratio: 2.4
+        },
+        {
+          src: sampleBannerSvg(L('Triển lãm Sản phẩm & Bao bì Cao cấp', 'Luxury Packaging & Product Showcase'), L('Bố cục tự động cân chỉnh ánh sáng và tỷ lệ vàng', 'Automated Golden-Ratio Visual Showcase'), 1, '#ec4899'),
+          title: L('Triển lãm Sản phẩm & Bao bì Cao cấp', 'Luxury Packaging & Product Showcase'),
+          subtitle: L('Bố cục tự động cân chỉnh ánh sáng và tỷ lệ vàng', 'Automated Golden-Ratio Visual Showcase'),
+          ratio: 2.4
+        }
+      ];
+      const sampleSpecs: Array<{ t: string; c: string; o: 'banner' | 'portrait' | 'square' | 'landscape'; r: number }> = [
+        { t: L('Hệ thống Nhận diện Thương hiệu Lumina', 'Lumina Brand Identity System'), c: 'Logo & Branding', o: 'banner', r: 2.1 },
+        { t: L('Poster Chiến dịch Thời trang Thu Đông', 'AW25 Fashion Lookbook Poster'), c: 'Banner & Campaign', o: 'portrait', r: 0.75 },
+        { t: L('Bao bì Trà Thủ công Hộp Thiếc', 'Artisanal Tea Packaging Tin'), c: 'Packaging', o: 'square', r: 1.0 },
+        { t: L('Giao diện Ứng dụng Ngân hàng Số NeoBank', 'NeoBank Fintech Mobile UI/UX'), c: 'UI/UX & Digital', o: 'landscape', r: 1.5 },
+        { t: L('Ấn phẩm Editorial Tạp chí Kiến trúc', 'Architectural Digest Editorial Spread'), c: 'Editorial & Print', o: 'portrait', r: 0.75 },
+        { t: L('3D Key Visual Tai nghe Không dây', '3D CGI Wireless Headphone Render'), c: '3D & Motion', o: 'square', r: 1.0 },
+        { t: L('Bộ Minh họa Độc bản Lễ hội Văn hóa', 'Bespoke Cultural Festival Illustration'), c: 'Illustration', o: 'landscape', r: 1.5 },
+        { t: L('Billboard Quảng cáo Ngoài trời OOH', 'OOH Megaboard Campaign Visual'), c: 'Banner & Campaign', o: 'banner', r: 2.1 },
+        { t: L('Bộ Sản phẩm Mỹ phẩm Hữu cơ Botanica', 'Botanica Organic Skincare Line'), c: 'Packaging', o: 'square', r: 1.0 }
+      ];
+      productGallery = sampleSpecs.map((sp, i) => ({
+        src: sampleProductSvg(sp.t, sp.c, sp.o, i, color),
+        title: sp.t,
+        cat: sp.c,
+        desc: L('Sản phẩm được tự động phân tích tỷ lệ khung hình và sắp xếp vào lưới trưng bày tối ưu.', 'Automatically analyzed aspect ratio and placed into optimal showcase grid.'),
+        ratio: sp.r,
+        orient: sp.o
+      }));
+      projects = productGallery.slice(0, 6).map((pg) => blank({
+        title: pg.title,
+        cat: pg.cat,
+        year: '2025',
+        desc: pg.desc,
+        orig: pg.src
+      }));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets();
+      drawProjects();
+      render();
+    });
+
+    root.querySelector<HTMLElement>('[data-pf-clear-smart-assets]')?.addEventListener('click', () => {
+      logo = '';
+      brandLogos = [];
+      banners = [];
+      productGallery = [];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets();
+      render();
+    });
+
+    root.addEventListener('click', (ev) => {
+      const delBtn = (ev.target as HTMLElement).closest<HTMLElement>('[data-smart-del]');
+      if (!delBtn) return;
+      const kind = delBtn.dataset.smartDel;
+      const idx = Number(delBtn.dataset.idx || 0);
+      if (kind === 'logo') logo = '';
+      else if (kind === 'brand') brandLogos.splice(idx, 1);
+      else if (kind === 'banner') banners.splice(idx, 1);
+      else if (kind === 'prod') productGallery.splice(idx, 1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets();
+      render();
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets();
 
     root.addEventListener('click', (ev) => {
       const t = ev.target as HTMLElement;
@@ -520,6 +1104,25 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
       render();
     });
 
+    root.addEventListener('input', (ev) => {
+      const t = ev.target as HTMLInputElement | HTMLSelectElement;
+      if (t.dataset.smartBannerTitle !== undefined) {
+        const idx = Number(t.dataset.smartBannerTitle);
+        if (banners[idx]) { banners[idx].title = t.value; render(); }
+      } else if (t.dataset.smartProdTitle !== undefined) {
+        const idx = Number(t.dataset.smartProdTitle);
+        if (productGallery[idx]) { productGallery[idx].title = t.value; render(); }
+      } else if (t.dataset.smartProdCat !== undefined) {
+        const idx = Number(t.dataset.smartProdCat);
+        if (productGallery[idx]) { productGallery[idx].cat = t.value; render(); }
+      } else if (t.dataset.smartProdSpan !== undefined) {
+        const idx = Number(t.dataset.smartProdSpan);
+        if (productGallery[idx]) { productGallery[idx].span = t.value; render(); }
+      } else if (t.dataset.pfTune !== undefined) {
+        render();
+      }
+    });
+
     let avatarOrig = '';
     let avatarEditState: any = null;
     const syncAvatarUi = () => {
@@ -541,6 +1144,8 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
           avatarEditState = null;
           syncAvatarUi();
           render();
+          syncAvatarUi();
+  
         } catch { /* unreadable */ }
       }
     });
@@ -637,7 +1242,7 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
       f.setAttribute('tabindex', '-1');
       f.title = box.dataset.thumb!;
       f.style.cssText = `width:1280px;height:880px;border:0;transform:scale(${box.clientWidth / 1280});transform-origin:top left;pointer-events:none`;
-      f.srcdoc = renderPortfolio(box.dataset.thumb!, thumbValues, [], lang);
+      f.srcdoc = renderPortfolio(box.dataset.thumb!, thumbValues, [], lang, { thumb: true });
       box.appendChild(f);
     }), { rootMargin: '120px' });
     root.querySelectorAll('[data-thumb]').forEach((el) => thumbIo.observe(el));
@@ -649,17 +1254,21 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
       const cards = [...root.querySelectorAll<HTMLElement>('[data-style]')];
       const matching = cards.filter((c) => !activeField || c.dataset.fields!.split(' ').includes(activeField));
       cards.forEach((c) => { c.hidden = true; });
-      const limit = pfExpanded || activeField ? matching.length : 8;
+      const limit = pfExpanded || activeField ? matching.length : 12;
       matching.slice(0, limit).forEach((c) => {
         c.hidden = false;
         const th = c.querySelector('[data-thumb]');
         if (th && !th.firstChild) thumbIo.observe(th);
       });
       if (pfMoreBtn) {
-        pfMoreBtn.classList.toggle('hidden', !!activeField || matching.length <= 8);
-        pfMoreBtn.textContent = pfExpanded
-          ? L('↑ Thu gọn danh sách mẫu', '↑ Show fewer templates')
-          : L(`Xem tất cả ${matching.length} mẫu Portfolio (+${matching.length - 8})`, `Show all ${matching.length} templates (+${matching.length - 8})`);
+        pfMoreBtn.classList.toggle('hidden', !!activeField || matching.length <= 12);
+
+        pfMoreBtn.textContent = pfExpanded ? L('↑ Thu gọn danh sách mẫu', '↑ Show fewer templates') : L(`Xem tất cả ${matching.length} mẫu Portfolio độc bản (+${matching.length - 12})`, `Show all ${matching.length} unique templates (+${matching.length - 12})`);
+
+        pfMoreBtn.classList.toggle('hidden', !!activeField || matching.length <= 12);
+        pfMoreBtn.textContent = pfExpanded ? L('↑ Thu gọn danh sách mẫu', '↑ Show fewer templates') : L(`Xem tất cả ${matching.length} mẫu Portfolio độc bản (+${matching.length - 12})`, `Show all ${matching.length} unique templates (+${matching.length - 12})`);
+
+
       }
     };
     pfMoreBtn?.addEventListener('click', () => {
@@ -901,7 +1510,7 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
     });
 
     root.querySelector<HTMLElement>('[data-pf-export-json]')?.addEventListener('click', () => {
-      const payload = { style, avatar, values: values(), projects };
+      const payload = { style, avatar, logo, brandLogos, banners, productGallery, autoLayoutMode, values: values(), projects };
       downloadBlob('portfolio-data.json', new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
     });
     root.querySelector<HTMLInputElement>('[data-pf-import-json]')?.addEventListener('change', async (ev) => {
@@ -910,14 +1519,36 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
       try {
         const data = JSON.parse(await f.text());
         if (data.style) style = data.style;
-        if (data.avatar) avatar = data.avatar;
+        if (data.avatar) avatar = safeImageSrc(data.avatar);
         if (data.values) {
           Object.entries(data.values).forEach(([k, val]) => {
             const el = root.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[data-pf-fields] [name="${k}"]`);
             if (el && typeof val === 'string') el.value = val;
           });
         }
-        if (Array.isArray(data.projects)) projects = data.projects.map((p: any) => blank(p));
+        if (Array.isArray(data.projects)) projects = data.projects.map((p: any) => blank({ ...p, orig: safeImageSrc(p?.orig), img: safeImageSrc(p?.img), gallery: Array.isArray(p?.gallery) ? p.gallery.map((g: any) => safeImageSrc(g)).filter(Boolean) : [] }));
+        if (data.logo !== undefined) logo = safeImageSrc(data.logo);
+        if (Array.isArray(data.brandLogos)) brandLogos = data.brandLogos.map((x: any) => safeImageSrc(typeof x === 'string' ? x : x?.src)).filter(Boolean);
+        if (Array.isArray(data.banners)) banners = data.banners.map((b: any) => ({ ...b, src: safeImageSrc(b?.src) })).filter((b: any) => b.src);
+        if (Array.isArray(data.productGallery)) productGallery = data.productGallery.map((p: any) => ({ ...p, src: safeImageSrc(p?.src) })).filter((p: any) => p.src);
+        if (data.autoLayoutMode) autoLayoutMode = data.autoLayoutMode;
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      drawSmartAssets();
         syncAllVisualLists(); drawProjects(); markStyle(); render();
       } catch { alert(L('File JSON không hợp lệ.', 'Invalid JSON file.')); }
     });
@@ -952,6 +1583,8 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
           writeVisualToTextarea(vwrap.dataset.vwrap!);
           drawVisualList(vwrap.dataset.vwrap!);
           render();
+          drawVisualList(vwrap.dataset.vwrap!);
+  
         }
         return;
       }

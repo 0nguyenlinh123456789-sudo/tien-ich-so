@@ -10,9 +10,21 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
   <form class="card grid min-w-0 content-start gap-3" data-f>
     <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><rect x="4" y="4" width="48" height="48" rx="4" fill="#fff" stroke="#1a45b8" stroke-width="2.5"/><rect x="10" y="10" width="14" height="14" fill="#1a45b8"/><rect x="32" y="10" width="14" height="14" fill="#1a45b8"/><rect x="10" y="32" width="14" height="14" fill="#1a45b8"/><rect x="32" y="32" width="6" height="6" fill="#2f6bff"/><rect x="40" y="40" width="6" height="6" fill="#2f6bff"/><path d="M66 28h30" stroke="#94a3b8" stroke-width="3" stroke-dasharray="4 4"/><rect x="106" y="12" width="56" height="34" rx="6" fill="#ecfdf5" stroke="#0d9488" stroke-width="2.5"/><text x="134" y="34" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">VietQR</text><rect x="176" y="8" width="26" height="42" rx="5" fill="#fff" stroke="#2f6bff" stroke-width="2.5"/><path d="M212 20a14 14 0 0 1 20 0M216 26a8 8 0 0 1 12 0" stroke="#d97706" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="222" cy="32" r="2.5" fill="#d97706"/></svg>
     <div class="flex gap-2" role="radiogroup" aria-label={vi ? 'Loại mã QR' : 'QR type'}>
-      <label class={blk}><input type="radio" name="mode" value="bank" class="sr-only" checked />{vi ? 'Chuyển khoản' : 'Bank transfer'}</label>
-      <label class={blk}><input type="radio" name="mode" value="text" class="sr-only" />{vi ? 'Link / chữ' : 'Link / text'}</label>
-      <label class={blk}><input type="radio" name="mode" value="wifi" class="sr-only" />WiFi</label>
+      {vi ? (
+        <>
+          <label class={blk}><input type="radio" name="mode" value="bank" class="sr-only" checked />🇻🇳 VietQR Ngân hàng</label>
+          <label class={blk}><input type="radio" name="mode" value="text" class="sr-only" />🔗 Link / Văn bản</label>
+          <label class={blk}><input type="radio" name="mode" value="wifi" class="sr-only" />📶 WiFi</label>
+        </>
+      ) : (
+        <>
+          <label class={blk}><input type="radio" name="mode" value="text" class="sr-only" checked />🔗 Website / Text</label>
+          <label class={blk}><input type="radio" name="mode" value="wifi" class="sr-only" />📶 WiFi QR</label>
+          <label class={blk}><input type="radio" name="mode" value="bank" class="sr-only" />🇻🇳 VietQR (VN Bank)</label>
+        </>
+      )}
+
+
     </div>
     <div class="grid gap-3" data-bank>
       <div class="min-w-0"><label class="label" for="qr-bank">{vi ? 'Ngân hàng nhận' : 'Bank'}</label>
@@ -22,7 +34,7 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
       <div class="min-w-0"><label class="label" for="qr-amt">{vi ? 'Số tiền (để trống = người chuyển tự nhập)' : 'Amount (blank = payer enters it)'}</label><input id="qr-amt" class="input w-full min-w-0" name="amount" inputmode="numeric" /></div>
       <div class="min-w-0"><label class="label" for="qr-memo">{vi ? 'Nội dung chuyển khoản' : 'Transfer note'}</label><input id="qr-memo" class="input w-full min-w-0" name="memo" maxlength="60" /></div>
     </div>
-    <div class="hidden min-w-0" data-text><label class="label" for="qr-text">{vi ? 'Link hoặc nội dung' : 'Link or text'}</label><textarea id="qr-text" class="input min-h-28 w-full min-w-0" name="text" maxlength="1200">https://</textarea></div>
+    <div class="hidden min-w-0" data-text><label class="label" for="qr-text">{vi ? 'Link hoặc nội dung' : 'Link or text'}</label><textarea id="qr-text" class="input min-h-28 w-full min-w-0" name="text" maxlength="1200">{vi ? 'https://' : 'https://example.com'}</textarea></div>
     <div class="hidden grid gap-3" data-wifi>
       <div class="min-w-0"><label class="label" for="qr-ssid">{vi ? 'Tên WiFi (SSID)' : 'Network name (SSID)'}</label><input id="qr-ssid" class="input w-full min-w-0" name="ssid" autocomplete="off" /></div>
       <div class="min-w-0"><label class="label" for="qr-pass">{vi ? 'Mật khẩu' : 'Password'}</label><input id="qr-pass" class="input w-full min-w-0" name="pass" autocomplete="off" /></div>

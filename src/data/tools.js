@@ -5,9 +5,9 @@ export const SECTIONS = {
     id: 'life',
     slug: { vi: 'doi-song', en: 'life' },
     name: { vi: 'Đời sống', en: 'Everyday' },
-    desc: { vi: 'Lịch âm, tiền điện, địa chỉ mới.', en: 'Lunar calendar, BMI, percent, countdown.' },
-    seo: { vi: 'Công cụ đời sống – lịch âm, tiền điện, BMI, tính ngày', en: 'Everyday Calculators – Lunar Calendar, BMI, Dates, Units' },
-    meta: { vi: 'Bộ công cụ đời sống miễn phí: lịch âm, tiền điện 6 bậc, tiền nước, BMI, ngày dự sinh, tính tuổi, đếm ngày, lịch nghỉ lễ, đổi đơn vị, địa chỉ 34 tỉnh mới.', en: 'Free everyday calculators: Vietnamese lunar calendar, BMI and calories, due date, age, days between dates, holiday countdown and unit converter.' },
+    desc: { vi: 'Lịch âm, tiền điện, địa chỉ mới.', en: 'BMI, dates, GPA, IELTS, units & countdown.' },
+    seo: { vi: 'Công cụ đời sống – lịch âm, tiền điện, BMI, tính ngày', en: 'Everyday Calculators – BMI, Age, Date, GPA & Unit Converter' },
+    meta: { vi: 'Bộ công cụ đời sống miễn phí: lịch âm, tiền điện 6 bậc, tiền nước, BMI, ngày dự sinh, tính tuổi, đếm ngày, lịch nghỉ lễ, đổi đơn vị, địa chỉ 34 tỉnh mới.', en: 'Free everyday calculators for global users: BMI and daily calories, due date, exact age, business days, GPA 4.0, IELTS band, tip splitter and unit converter.' },
     icon: '🌿',
     context: 'tools'
   },
@@ -19,8 +19,8 @@ export const SECTIONS = {
       vi: 'Lương, vay, tiết kiệm, nghỉ hưu.',
       en: 'Salary, loans, savings, retirement.'
     },
-    seo: { vi: 'Công cụ tài chính – tính lương, thuế TNCN, BHXH, lãi vay', en: 'Vietnam Finance Calculators – Salary, Tax, Loans, Pension' },
-    meta: { vi: 'Tính lương Gross–Net, quyết toán thuế TNCN, BHXH 1 lần, lương hưu, thai sản, trợ cấp thôi việc, lãi vay, tiết kiệm, VAT, thuế hộ kinh doanh mới nhất.', en: 'Vietnam salary, tax and money calculators: gross to net pay, PIT finalization, pension, social insurance lump sum, severance, loans, savings, VAT and FIRE.' },
+    seo: { vi: 'Công cụ tài chính – tính lương, thuế TNCN, BHXH, lãi vay', en: 'Finance & Wealth Calculators – Mortgage, FIRE, Loans & Savings' },
+    meta: { vi: 'Tính lương Gross–Net, quyết toán thuế TNCN, BHXH 1 lần, lương hưu, thai sản, trợ cấp thôi việc, lãi vay, tiết kiệm, VAT, thuế hộ kinh doanh mới nhất.', en: 'Global finance & wealth calculators: US mortgage (PITI & PMI), compound interest & FIRE retirement, loan amortization, savings interest, FX & Vietnam expat tax.' },
     icon: '💰',
     context: 'finance'
   },
@@ -46,7 +46,7 @@ export const SECTIONS = {
       en: 'CV, portfolio, contracts, images.'
     },
     seo: { vi: 'Công cụ văn phòng – tạo CV, mẫu đơn, hợp đồng, nén ảnh', en: 'Office Tools – CV Builder, Letters, Image Compressor' },
-    meta: { vi: 'Tạo CV, portfolio 38 mẫu, điền mẫu đơn nghỉ việc, nghỉ phép, hợp đồng mẫu, đọc số tiền bằng chữ, đổi nền ảnh thẻ, nén ảnh theo KB. Miễn phí, chạy trên máy.', en: 'Free office tools: CV builder, portfolio site with 38 styles, letter and contract templates, amount in words and ID photo editing with KB compression.' },
+    meta: { vi: 'Tạo CV 108 mẫu, portfolio 108 mẫu, điền mẫu đơn nghỉ việc, nghỉ phép, hợp đồng mẫu, đọc số tiền bằng chữ, đổi nền ảnh thẻ, nén ảnh theo KB. Miễn phí, chạy trên máy.', en: 'Free office tools: 108-style CV builder, portfolio site with 108 styles, letter and contract templates, amount in words and ID photo editing with KB compression.' },
     icon: '🧰',
     context: 'tools'
   }
@@ -565,8 +565,8 @@ export const TOOLS = [
     id: 'documents', section: 'tools', icon: '📄',
     slug: { vi: 'tao-cv-hop-dong-mau', en: 'cv-contract-templates' },
     title: { vi: 'CV & Hợp đồng', en: 'CV & Contracts' },
-    seo: { vi: 'Tạo CV xin việc & hợp đồng mẫu miễn phí – 32 mẫu CV', en: 'Free CV Builder & Contract Templates – 32 Layouts' },
-    desc: { vi: '32 mẫu CV, xuất PDF, Word.', en: '32 CV layouts, PDF, Word.' },
+    seo: { vi: 'Tạo CV xin việc & hợp đồng mẫu miễn phí – 108 mẫu CV độc bản', en: 'Free CV Builder & Contract Templates – 108 Distinct Layouts' },
+    desc: { vi: '108 mẫu CV độc bản, xuất PDF, Word.', en: '108 unique CV layouts, PDF, Word.' },
     // Meta description (120–155 ký tự); số liệu khớp src/lib + src/config.
     meta: { vi: 'Điền thông tin một lần để tạo CV xin việc với nhiều mẫu, đổi màu, xuất PDF hoặc Word; kèm hợp đồng lao động, thuê nhà mẫu. Không cần đăng ký.', en: 'Fill in your details once to build a CV from many layouts and colours, export to PDF or Word, and draft common contracts. No sign-up needed.' }
   },
@@ -588,14 +588,107 @@ export const TOOLS = [
     id: 'portfolio', section: 'tools', icon: '🎨',
     slug: { vi: 'tao-portfolio-online', en: 'portfolio-website-builder' },
     title: { vi: 'Portfolio', en: 'Portfolio' },
-    seo: { vi: 'Tạo portfolio online miễn phí – 38 mẫu, xuất HTML', en: 'Free Portfolio Website Builder – 38 Templates' },
-    desc: { vi: '38 mẫu, có vẽ tay, xuất HTML.', en: '38 styles, 1-file HTML export.' },
+    seo: { vi: 'Tạo portfolio online miễn phí – 108 mẫu độc bản, tự động dàn trang sản phẩm', en: 'Free Portfolio Website Builder – 108 Templates & Smart Asset Layout' },
+    desc: { vi: '108 mẫu, tự động sắp xếp Logo, Banner & Sản phẩm.', en: '108 styles, auto-arrange Logo, Banner & Products.' },
     // Meta description (120–155 ký tự); số liệu khớp src/lib + src/config.
-    meta: { vi: 'Chọn 1 trong 38 mẫu, điền dự án, kỹ năng, liên hệ để có trang portfolio cá nhân; xuất một file HTML để tự đăng lên GitHub Pages, Netlify miễn phí.', en: 'Choose one of 38 styles, add projects, skills and contacts, and export a single HTML file you can host free on GitHub Pages or Netlify. No account needed.' }
+    meta: { vi: 'Chọn 1 trong 108 mẫu portfolio độc bản, tải lên Logo, Banner, Sản phẩm để hệ thống tự động bố trí đẹp mắt; xuất file HTML đăng miễn phí.', en: 'Choose from 108 unique portfolio templates, upload Logos, Banners & Products for automatic smart layout, and export a 1-file HTML site.' }
   }
 ];
 
+// Market classification: 'vn' = Vietnam-specific law/culture, 'intl' = US/Western-specific, 'global' = Universal (adapts to both markets).
+export const VN_ONLY_TOOL_IDS = new Set([
+  'lunar', 'electric', 'water', 'address', 'holidays', 'diemtb',
+  'salary', 'pitannual', 'maternity', 'lumpsum', 'pension', 'retireage',
+  'severance', 'hkd', 'truocba', 'overtime', 'goodday'
+]);
+export const INTL_ONLY_TOOL_IDS = new Set(['mortgage', 'tip']);
+
+const PRIORITY_ORDER = ['portfolio', 'documents', 'compress', 'qr', 'forms', 'fire', 'mortgage', 'salary', 'pitannual', 'loan', 'savings', 'bmi', 'gpa', 'ielts', 'numerology', 'tarot'];
+
+for (const t of TOOLS) {
+  /** @type {any} */ (t).market = VN_ONLY_TOOL_IDS.has(t.id) ? 'vn' : INTL_ONLY_TOOL_IDS.has(t.id) ? 'intl' : 'global';
+}
+
 export const getTool = (id) => TOOLS.find((t) => t.id === id);
+
+function sortByPriority(list) {
+  return [...list].sort((a, b) => {
+    const ia = PRIORITY_ORDER.indexOf(a.id);
+    const ib = PRIORITY_ORDER.indexOf(b.id);
+    return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+  });
+}
+
+export function primaryToolsIn(section, lang = 'vi') {
+  const all = TOOLS.filter((t) => t.section === section);
+  const filtered = lang === 'en'
+    ? all.filter((t) => /** @type {any} */ (t).market !== 'vn')
+    : all.filter((t) => /** @type {any} */ (t).market !== 'intl');
+  return sortByPriority(filtered);
+}
+
+export function secondaryToolsIn(section, lang = 'vi') {
+  const all = TOOLS.filter((t) => t.section === section);
+  return lang === 'en'
+    ? all.filter((t) => /** @type {any} */ (t).market === 'vn')
+    : all.filter((t) => /** @type {any} */ (t).market === 'intl');
+}
+
+export function marketBadge(toolOrId, lang = 'vi') {
+  const t = typeof toolOrId === 'string' ? getTool(toolOrId) : toolOrId;
+  const m = /** @type {any} */ (t)?.market || 'global';
+  if (m === 'vn') {
+    return {
+      code: 'vn',
+      label: lang === 'vi' ? '🇻🇳 Chuẩn Việt Nam' : '🇻🇳 Vietnam Local',
+      cls: 'bg-rose-50 text-rose-700 ring-1 ring-rose-200'
+    };
+  }
+  if (m === 'intl') {
+    return {
+      code: 'intl',
+      label: lang === 'vi' ? '🌍 Chuẩn Quốc tế (US)' : '🇺🇸 US & Global',
+      cls: 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200'
+    };
+  }
+  return {
+    code: 'global',
+    label: lang === 'vi' ? '🌐 Đa thị trường' : '🌐 Global Standard',
+    cls: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
+  };
+}
+
+export function nextStepToolsFor(toolId, lang = 'vi') {
+  const mapVi = {
+    salary: ['documents', 'portfolio', 'pitannual', 'fire'],
+    pitannual: ['salary', 'documents', 'portfolio', 'savings'],
+    severance: ['documents', 'portfolio', 'forms', 'lumpsum'],
+    overtime: ['salary', 'documents', 'portfolio', 'savings'],
+    lumpsum: ['pension', 'retireage', 'savings', 'documents'],
+    maternity: ['pregnancy', 'savings', 'salary', 'documents'],
+    hkd: ['qr', 'vat', 'moneywords', 'portfolio'],
+    documents: ['portfolio', 'compress', 'forms', 'salary'],
+    portfolio: ['documents', 'compress', 'qr', 'fire'],
+    compress: ['documents', 'portfolio', 'forms', 'qr'],
+    forms: ['documents', 'portfolio', 'compress', 'severance'],
+    qr: ['portfolio', 'hkd', 'moneywords', 'vat']
+  };
+  const mapEn = {
+    portfolio: ['documents', 'compress', 'qr', 'fire'],
+    documents: ['portfolio', 'compress', 'forms', 'fire'],
+    compress: ['documents', 'portfolio', 'qr', 'forms'],
+    mortgage: ['loan', 'fire', 'savings', 'portfolio'],
+    fire: ['savings', 'mortgage', 'loan', 'portfolio'],
+    loan: ['mortgage', 'savings', 'fire', 'documents'],
+    bmi: ['pregnancy', 'age', 'convert', 'portfolio'],
+    gpa: ['ielts', 'documents', 'portfolio', 'compress'],
+    ielts: ['gpa', 'documents', 'portfolio', 'compress']
+  };
+  const fallbackVi = ['portfolio', 'documents', 'compress', 'salary'];
+  const fallbackEn = ['portfolio', 'documents', 'compress', 'fire'];
+  const ids = (lang === 'en' ? mapEn[toolId] || fallbackEn : mapVi[toolId] || fallbackVi).filter((id) => id !== toolId);
+  return ids.slice(0, 3).map((id) => getTool(id)).filter(Boolean);
+}
 export const toolsIn = (section) => TOOLS.filter((t) => t.section === section);
 
 export function sectionUrl(sectionId, lang = 'vi') {

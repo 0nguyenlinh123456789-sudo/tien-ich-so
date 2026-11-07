@@ -1,0 +1,28 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DonateBox from '../../components/DonateBox.astro';
+import { donateInfo, donateUrl } from '../../lib/monetize.js';
+const d = donateInfo();
+const ext = donateUrl();
+---
+<Layout
+  title="Support Smart Tools Hub"
+  description="Voluntary support keeps Smart Tools Hub free: buy the author a coffee or scan the bank QR. Nothing is locked behind payment."
+  lang="en"
+  alternate="/ung-ho"
+  noindex={!d && !ext}
+>
+  <article class="prose-lite card max-w-3xl">
+    <h1 class="text-3xl font-bold">☕ Support the author</h1>
+    <p>Every tool runs in your browser, free, with no data collection. Hosting is covered by light ads, affiliate links and voluntary support.</p>
+    <p>Supporting unlocks nothing: everything is and will stay free.</p>
+    <DonateBox lang="en" compact={true} />
+    {!d && !ext && <p class="mt-4 text-sm text-slate-500">Support details will be added soon.</p>}
+    <h2>Other ways to help</h2>
+    <ul class="mb-3 list-disc pl-6">
+      <li>Share a tool you found useful.</li>
+      <li>Report a wrong figure via the <a class="underline" href="/en/contact">contact page</a>.</li>
+      <li>Shop through the suggested links: same price for you, a small commission for the site.</li>
+    </ul>
+  </article>
+</Layout>
