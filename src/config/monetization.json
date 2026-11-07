@@ -115,6 +115,33 @@
   },
   "topAffiliateOffers": [
     {
+      "id": "tpbank-open-account-vi",
+      "tools": [
+        "salary",
+        "pitannual",
+        "savings",
+        "lumpsum",
+        "fire",
+        "loan",
+        "mortgage",
+        "overtime",
+        "maternity",
+        "severance",
+        "pension",
+        "fx",
+        "qr"
+      ],
+      "lang": [
+        "vi"
+      ],
+      "title": "Mở tài khoản TPBank online miễn phí, nhận tiền và gửi tiết kiệm ngay trên app",
+      "description": "Mở bằng CCCD trong vài phút, không phí duy trì. Tài trợ: trang nhận hoa hồng khi bạn mở tài khoản qua link.",
+      "cta": "Mở tài khoản",
+      "url": "https://go.isclix.com/deep_link/v6/7102804567469033199/6185948314413521231?sub4=oneatweb&url_enc=aHR0cHM6Ly9scC5jYWlhcHAub25saW5lL2Rhbmcta3k%3D",
+      "wrapWithAccesstrade": false,
+      "icon": "🏦"
+    },
+    {
       "id": "portfolio-gear-vi",
       "tools": [
         "portfolio",
