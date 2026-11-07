@@ -13,11 +13,15 @@
   "donateUrl": "",
   "_donateHelp": "Ủng hộ qua VietQR: điền bank (tên hoặc BIN trong src/lib/vietqr.js), account (số tài khoản), name (tên chủ TK). Để account rỗng = ẩn toàn bộ khối ủng hộ. donateUrl: link Buy Me a Coffee / Ko-fi / PayPal.me (cho khách nước ngoài). zaloUrl: link https://zalo.me/0xxxxxxxxx để khách đặt dịch vụ.",
   "donate": {
-    "bank": "",
-    "account": "",
+    "bank": "VietinBank",
+    "account": "105612356699",
     "name": "",
     "memo": "Ung ho Tien Ich So",
-    "amounts": [10000, 20000, 50000]
+    "amounts": [
+      10000,
+      20000,
+      50000
+    ]
   },
   "zaloUrl": "",
   "inboundServices": {
