@@ -14,7 +14,7 @@ export const SECTIONS = {
   finance: {
     id: 'finance',
     slug: { vi: 'tai-chinh', en: 'finance' },
-    name: { vi: 'Tài chính & Tiền bạc', en: 'Finance & Money' },
+    name: { vi: 'Tài chính', en: 'Finance' },
     desc: {
       vi: 'Lương, vay, tiết kiệm, nghỉ hưu.',
       en: 'Salary, loans, savings, retirement.'
@@ -27,7 +27,7 @@ export const SECTIONS = {
   destiny: {
     id: 'destiny',
     slug: { vi: 'van-menh', en: 'destiny' },
-    name: { vi: 'Thần số học, Tarot & Vận mệnh', en: 'Numerology, Tarot & Destiny' },
+    name: { vi: 'Tarot & Vận mệnh', en: 'Tarot & Destiny' },
     desc: {
       vi: 'Thần số học, Tarot, ngày tốt.',
       en: 'Numerology, tarot, lucky days.'

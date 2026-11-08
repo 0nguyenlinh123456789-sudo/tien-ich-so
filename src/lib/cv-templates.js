@@ -1633,9 +1633,18 @@ function makeUniqueSpecializedCv(cfg, idx = 0) {
     const skHtml = renderSkillMode(skills(v), c, skMode, dark);
     const contactLine = contacts(v).map(([ic, x]) => `<span>${ic} ${e(x)}</span>`).join('  ·  ');
     const contactStack = contacts(v).map(([ic, x]) => `<div style="word-break:break-word;margin:3px 0">${ic} ${e(x)}</div>`).join('');
+    const vecList = [
+      (col) => `<svg data-cv-vec="1" width="34" height="34" viewBox="0 0 36 36" fill="none" stroke="${col}" stroke-width="2.4" style="flex-shrink:0;cursor:pointer"><rect x="4" y="4" width="28" height="28" fill="${col}22"/><rect x="11" y="11" width="14" height="14" fill="${col}"/></svg>`,
+      (col) => `<svg data-cv-vec="1" width="34" height="34" viewBox="0 0 36 36" fill="none" stroke="${col}" stroke-width="2.4" style="flex-shrink:0;cursor:pointer"><circle cx="18" cy="18" r="14" fill="${col}22"/><circle cx="18" cy="18" r="6" fill="${col}"/></svg>`,
+      (col) => `<svg data-cv-vec="1" width="34" height="34" viewBox="0 0 36 36" fill="${col}" style="flex-shrink:0;cursor:pointer"><path d="M18 2 L22 14 L34 18 L22 22 L18 34 L14 22 L2 18 L14 14 Z"/></svg>`,
+      (col) => `<svg data-cv-vec="1" width="34" height="34" viewBox="0 0 36 36" fill="none" stroke="${col}" stroke-width="2.4" style="flex-shrink:0;cursor:pointer"><polygon points="18,3 33,31 3,31" fill="${col}22"/><circle cx="18" cy="22" r="4.5" fill="${col}"/></svg>`,
+      (col) => `<svg data-cv-vec="1" width="34" height="34" viewBox="0 0 36 36" fill="none" stroke="${col}" stroke-width="2.4" style="flex-shrink:0;cursor:pointer"><polygon points="18,3 32,11 32,25 18,33 4,25 4,11" fill="${col}22"/><circle cx="18" cy="18" r="5" fill="${col}"/></svg>`,
+      (col) => `<svg data-cv-vec="1" width="34" height="34" viewBox="0 0 36 36" fill="none" stroke="${col}" stroke-width="2.4" style="flex-shrink:0;cursor:pointer"><rect x="4" y="4" width="18" height="18" fill="${col}"/><circle cx="24" cy="24" r="9" fill="${col}44"/></svg>`
+    ];
+    const vecIcon = (col = c) => vecList[idx % vecList.length](col);
     const avNode = (sz = 84, ring = c) => cfg.photo
       ? avatar(v, sz, c, ring)
-      : `<div style="width:${sz - 12}px;height:${sz - 12}px;border-radius:${idx % 3 === 0 ? '50%' : idx % 3 === 1 ? '14px' : '4px'};border:2px solid ${ring};background:${c}20;color:${ring === '#fff' ? '#fff' : c};display:grid;place-items:center;font-size:${Math.round(sz * 0.32)}px;font-weight:900;flex-shrink:0">${e(initials(v.fullName))}</div>`;
+      : `<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">${vecIcon(ring)}<div style="width:${sz - 16}px;height:${sz - 16}px;border-radius:${idx % 3 === 0 ? '50%' : idx % 3 === 1 ? '14px' : '0px'};border:2px solid ${ring};background:${c}20;color:${ring === '#fff' ? '#fff' : c};display:grid;place-items:center;font-size:${Math.round(sz * 0.3)}px;font-weight:900;flex-shrink:0">${e(initials(v.fullName))}</div></div>`;
 
     // 12 Distinct Masthead Architectures (hMode 0..11)
     let headerHtml = '';
@@ -1714,7 +1723,16 @@ function makeUniqueSpecializedCv(cfg, idx = 0) {
 
     // 7 Distinct Body & Column Geometries (bMode 0..6)
     const sumHtml = v.summary ? `<div style="padding:10px 14px;background:${cardBg};border-left:3px solid ${c};border-radius:6px;font-size:12px;color:${sub};margin-bottom:12px">${e(v.summary)}</div>` : '';
-    const expCards = exps(v).map((x, i) => `<div style="margin-bottom:11px;padding:10px 13px;background:${cardBg};border:1px solid ${bdr};border-left:3.5px solid ${c};border-radius:8px"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13px;color:${fg}">${i + 1}. ${x.role}</b><span style="font-size:10.5px;font-weight:700;color:${c};white-space:nowrap">${x.p}</span></div><div style="font-size:11.5px;font-weight:700;color:${sub}">${x.co}</div>${bullets(x.d)}</div>`).join('');
+    const cardStyles = [
+      `margin-bottom:11px;padding:10px 13px;background:${cardBg};border:2px solid ${fg};box-shadow:3px 3px 0 ${c};border-radius:0px`,
+      `margin-bottom:11px;padding:10px 13px;background:${cardBg};border:1px solid ${bdr};border-left:4px solid ${c};border-radius:10px`,
+      `margin-bottom:11px;padding:10px 13px;background:${cardBg};border:1px solid ${bdr};border-top:3.5px solid ${c};border-radius:6px`,
+      `margin-bottom:11px;padding:10px 13px;background:${cardBg};border:1.5px dashed ${c};border-radius:12px`,
+      `margin-bottom:11px;padding:8px 0 10px;background:transparent;border-bottom:1.5px solid ${bdr};border-radius:0px`,
+      `margin-bottom:11px;padding:10px 13px;background:${cardBg};border:3px double ${c};border-radius:4px`
+    ];
+    const expStyle = cardStyles[(idx * 2 + Math.floor(idx / 6)) % cardStyles.length];
+    const expCards = exps(v).map((x, i) => `<div style="${expStyle}"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13px;color:${fg}">${i + 1}. ${x.role}</b><span style="font-size:10.5px;font-weight:700;color:${c};white-space:nowrap">${x.p}</span></div><div style="font-size:11.5px;font-weight:700;color:${sub}">${x.co}</div>${bullets(x.d)}</div>`).join('');
     const eduList = edus(v).map((x) => `<div style="margin-bottom:7px;font-size:11.5px"><b style="color:${fg}">${x.s}</b><div style="color:${sub}">${x.m} · <span style="color:${c}">${x.p}</span></div></div>`).join('');
     const certList = certs(v).map((x) => `<div style="font-size:11px;color:${sub};margin:3px 0">✦ ${x}</div>`).join('');
     const langList = langs(v).join(' · ');

@@ -1,28 +1,90 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import DonateBox from '../../components/DonateBox.astro';
+import AffiliateCards from '../../components/AffiliateCards.astro';
 import { donateInfo, donateUrl } from '../../lib/monetize.js';
+import { buildVietQrSvg } from '../../lib/vietqr.js';
 const d = donateInfo();
 const ext = donateUrl();
+const vipPackages = d ? [
+  {
+    icon: '🌐',
+    title: 'Custom Domain (.com / .design) & Lifetime SSL Setup',
+    price: 199000,
+    priceLabel: '$9 (199.000đ)',
+    memo: 'VIP Custom Domain',
+    perks: ['Deploy your HTML Portfolio onto your own custom domain', 'Free lifetime HTTPS/SSL certificate & global CDN', 'Full Google SEO & OpenGraph social preview setup'],
+    svg: buildVietQrSvg({ bank: d.bankName, account: d.account, amount: 199000, memo: 'VIP Custom Domain' })
+  },
+  {
+    icon: '🎨',
+    title: '1-on-1 Bespoke Portfolio & ATS Resume Polish',
+    price: 499000,
+    priceLabel: '$22 (499.000đ)',
+    memo: 'VIP Bespoke Design',
+    perks: ['Custom art direction, vector styling, colour & layout polish', 'Matching Web Portfolio + Bilingual ATS-ready A4 Resume', 'Built-in instant client booking & deposit QR checkout'],
+    svg: buildVietQrSvg({ bank: d.bankName, account: d.account, amount: 499000, memo: 'VIP Bespoke Design' })
+  },
+  {
+    icon: '📣',
+    title: 'Sponsored Tool Placement / Brand Feature',
+    price: 990000,
+    priceLabel: '$45 / month',
+    memo: 'VIP Sponsor Slot',
+    perks: ['Featured sponsor card across high-traffic calculators & studios', 'Direct CTA button to your website, product or booking page', 'Transparent monthly impression & click reporting'],
+    svg: buildVietQrSvg({ bank: d.bankName, account: d.account, amount: 990000, memo: 'VIP Sponsor Slot' })
+  }
+] : [];
 ---
 <Layout
-  title="Support Smart Tools Hub"
-  description="Voluntary support keeps Smart Tools Hub free: buy the author a coffee or scan the bank QR. Nothing is locked behind payment."
+  title="Support & VIP Studio Services — Smart Tools Hub"
+  description="Support the creator via QR or book instant VIP services: custom domain setup for your Portfolio, 1-on-1 bespoke CV/Portfolio design, and sponsorship."
   lang="en"
   alternate="/ung-ho"
   noindex={!d && !ext}
 >
-  <article class="prose-lite card max-w-3xl">
-    <h1 class="text-3xl font-bold">☕ Support the author</h1>
-    <p>Every tool runs in your browser, free, with no data collection. Hosting is covered by light ads, affiliate links and voluntary support.</p>
-    <p>Supporting unlocks nothing: everything is and will stay free.</p>
-    <DonateBox lang="en" compact={true} />
-    {!d && !ext && <p class="mt-4 text-sm text-slate-500">Support details will be added soon.</p>}
-    <h2>Other ways to help</h2>
-    <ul class="mb-3 list-disc pl-6">
-      <li>Share a tool you found useful.</li>
-      <li>Report a wrong figure via the <a class="underline" href="/en/contact">contact page</a>.</li>
-      <li>Shop through the suggested links: same price for you, a small commission for the site.</li>
-    </ul>
-  </article>
+  <div class="mx-auto max-w-5xl space-y-6">
+    <section class="card">
+      <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-800">⚡ 24/7 INSTANT QR SUPPORT & VIP STUDIO</span>
+      <h1 class="mt-2 text-2xl font-extrabold text-slate-900 md:text-3xl">☕ Support the Creator & Book VIP Services</h1>
+      <p class="mt-1 text-sm text-slate-600">Every tool here runs 100% free in your browser. Buy the creator a coffee or book a turnkey upgrade package below.</p>
+      <DonateBox lang="en" compact={true} />
+    </section>
+
+    {vipPackages.length > 0 && (
+      <section class="card">
+        <div class="mb-4">
+          <span class="inline-block rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-extrabold text-amber-900 uppercase">💎 TURNKEY UPGRADE PACKAGES</span>
+          <h2 class="mt-1 text-xl font-extrabold text-slate-900">Instant Self-Serve Studio Packages</h2>
+          <p class="text-xs text-slate-500">Each QR code below is pre-filled with the exact package amount and reference memo.</p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+          {vipPackages.map((pkg) => (
+            <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-brand-500 hover:bg-white hover:shadow-md">
+              <div>
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-2xl">{pkg.icon}</span>
+                  <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-800">{pkg.priceLabel}</span>
+                </div>
+                <h3 class="mt-2 text-base font-extrabold text-slate-900">{pkg.title}</h3>
+                <ul class="mt-2.5 space-y-1.5 text-xs text-slate-600">
+                  {pkg.perks.map((p) => <li class="flex items-start gap-1.5"><span class="font-bold text-emerald-600">✓</span><span>{p}</span></li>)}
+                </ul>
+              </div>
+              <div class="mt-4 rounded-xl border border-slate-200 bg-white p-3 text-center">
+                {pkg.svg && <div class="mx-auto w-32" set:html={pkg.svg} />}
+                <div class="mt-1.5 text-[11px] font-bold text-slate-800">{d?.bankName} · <span class="font-mono select-all">{d?.account}</span></div>
+                <div class="text-[10.5px] text-slate-500">Memo: <b>{pkg.memo}</b></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="card">
+      <h2 class="text-lg font-extrabold text-slate-900">🎁 Featured Partner Perks & Financial Tools</h2>
+      <AffiliateCards context="tools" lang="en" limit={4} />
+    </section>
+  </div>
 </Layout>

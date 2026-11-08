@@ -1,28 +1,91 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import DonateBox from '../components/DonateBox.astro';
+import AffiliateCards from '../components/AffiliateCards.astro';
 import { donateInfo, donateUrl } from '../lib/monetize.js';
+import { buildVietQrSvg } from '../lib/vietqr.js';
 const d = donateInfo();
 const ext = donateUrl();
+const vipPackages = d ? [
+  {
+    icon: '🌐',
+    title: 'Gắn Tên Miền Riêng (.com / .vn) & Hosting Trọn Đời',
+    price: 199000,
+    priceLabel: '199.000đ',
+    memo: 'VIP Ten Mien Portfolio',
+    perks: ['Đưa file Portfolio HTML lên tên miền riêng của bạn', 'Cài đặt chứng chỉ bảo mật HTTPS/SSL miễn phí trọn đời', 'Tối ưu chuẩn SEO Google & OpenGraph khi gửi link qua Zalo/LinkedIn'],
+    svg: buildVietQrSvg({ bank: d.bankName, account: d.account, amount: 199000, memo: 'VIP Ten Mien Portfolio' })
+  },
+  {
+    icon: '🎨',
+    title: 'Thiết Kế & Tinh Chỉnh Độc Bản Portfolio + CV 1-1',
+    price: 499000,
+    priceLabel: '499.000đ',
+    memo: 'VIP Thiet Ke Ho So',
+    perks: ['Chỉnh sửa bố cục, màu sắc, Vector và hình ảnh theo đúng gu cá nhân', 'Đồng bộ 1 bộ Portfolio Web + 1 bản CV A4 chuẩn ATS song ngữ Việt–Anh', 'Tích hợp sẵn mã VietQR nhận cọc tự động trên Portfolio'],
+    svg: buildVietQrSvg({ bank: d.bankName, account: d.account, amount: 499000, memo: 'VIP Thiet Ke Ho So' })
+  },
+  {
+    icon: '📣',
+    title: 'Đặt Vị Trí Tài Trợ / Quảng Bá Dịch Vụ Trên Trang',
+    price: 990000,
+    priceLabel: '990.000đ / tháng',
+    memo: 'VIP Tai Tro Web',
+    perks: ['Hiển thị thẻ giới thiệu dịch vụ/sản phẩm tại các công cụ đông truy cập', 'Nút CTA dẫn thẳng khách hàng về Zalo, Website hoặc Landing Page của bạn', 'Báo cáo lượt hiển thị minh bạch hàng tháng'],
+    svg: buildVietQrSvg({ bank: d.bankName, account: d.account, amount: 990000, memo: 'VIP Tai Tro Web' })
+  }
+] : [];
 ---
 <Layout
-  title="Ủng hộ Tiện Ích Số"
-  description="Ủng hộ tự nguyện để Tiện Ích Số duy trì miễn phí: quét mã VietQR chuyển khoản hoặc mời một ly cà phê. Không bắt buộc, không mở khóa tính năng."
+  title="Ủng hộ & Dịch vụ VIP — Tiện Ích Số"
+  description="Ủng hộ tác giả qua VietQR hoặc đặt gói dịch vụ VIP: gắn tên miền riêng cho Portfolio, thiết kế hồ sơ CV/Portfolio độc bản 1-1 và đặt tài trợ."
   lang="vi"
   alternate="/en/support"
   noindex={!d && !ext}
 >
-  <article class="prose-lite card max-w-3xl">
-    <h1 class="text-3xl font-bold">☕ Ủng hộ tác giả</h1>
-    <p>Toàn bộ công cụ trên trang chạy ngay trên máy bạn, miễn phí, không thu thập dữ liệu. Chi phí duy trì được bù bằng quảng cáo nhẹ, link tiếp thị liên kết và sự ủng hộ tự nguyện của bạn.</p>
-    <p>Ủng hộ không mở khóa tính năng nào: mọi thứ đã và sẽ luôn miễn phí.</p>
-    <DonateBox lang="vi" compact={true} />
-    {!d && !ext && <p class="mt-4 text-sm text-slate-500">Thông tin ủng hộ sẽ được cập nhật sau.</p>}
-    <h2>Cách khác để giúp trang</h2>
-    <ul class="mb-3 list-disc pl-6">
-      <li>Chia sẻ link công cụ bạn thấy hữu ích lên Zalo, Facebook.</li>
-      <li>Báo lỗi số liệu qua trang <a class="underline" href="/lien-he">Liên hệ</a>.</li>
-      <li>Khi mua sắm, đi qua link gợi ý trên trang: bạn không mất thêm tiền, trang nhận hoa hồng nhỏ từ sàn.</li>
-    </ul>
-  </article>
+  <div class="mx-auto max-w-5xl space-y-6">
+    <section class="card">
+      <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-800">⚡ THANH TOÁN TỰ ĐỘNG 24/7 QUA VIETQR</span>
+      <h1 class="mt-2 text-2xl font-extrabold text-slate-900 md:text-3xl">☕ Ủng hộ tác giả & Dịch vụ Thiết kế VIP</h1>
+      <p class="mt-1 text-sm text-slate-600">Toàn bộ công cụ trên web hoạt động miễn phí 100%. Bạn có thể mời tác giả một ly cà phê hoặc đặt nhanh các gói dịch vụ nâng cấp bên dưới bằng cách quét mã VietQR.</p>
+      <DonateBox lang="vi" compact={true} />
+    </section>
+
+    {vipPackages.length > 0 && (
+      <section class="card">
+        <div class="mb-4">
+          <span class="inline-block rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-extrabold text-amber-900 uppercase">💎 DỊCH VỤ NÂNG CẤP TRỌN GÓI</span>
+          <h2 class="mt-1 text-xl font-extrabold text-slate-900">Đặt Gói Dịch Vụ Nhanh (Quét QR Chốt Lịch Ngay)</h2>
+          <p class="text-xs text-slate-500">Mỗi mã VietQR bên dưới đã tự động điền sẵn đúng số tiền và nội dung gói dịch vụ.</p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+          {vipPackages.map((pkg) => (
+            <div class="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-brand-500 hover:bg-white hover:shadow-md">
+              <div>
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-2xl">{pkg.icon}</span>
+                  <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-800">{pkg.priceLabel}</span>
+                </div>
+                <h3 class="mt-2 text-base font-extrabold text-slate-900">{pkg.title}</h3>
+                <ul class="mt-2.5 space-y-1.5 text-xs text-slate-600">
+                  {pkg.perks.map((p) => <li class="flex items-start gap-1.5"><span class="font-bold text-emerald-600">✓</span><span>{p}</span></li>)}
+                </ul>
+              </div>
+              <div class="mt-4 rounded-xl border border-slate-200 bg-white p-3 text-center">
+                {pkg.svg && <div class="mx-auto w-32" set:html={pkg.svg} />}
+                <div class="mt-1.5 text-[11px] font-bold text-slate-800">{d?.bankName} · <span class="font-mono select-all">{d?.account}</span></div>
+                <div class="text-[10.5px] text-slate-500">Nội dung: <b>{pkg.memo}</b></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="card">
+      <h2 class="text-lg font-extrabold text-slate-900">🎁 Ưu đãi & Công cụ Tài chính khuyên dùng</h2>
+      <p class="text-xs text-slate-500">Đăng ký qua liên kết đối tác chính thức bên dưới giúp bạn nhận ưu đãi độc quyền và giúp trang có thêm kinh phí duy trì miễn phí:</p>
+      <AffiliateCards context="tools" lang="vi" limit={4} />
+    </section>
+  </div>
 </Layout>

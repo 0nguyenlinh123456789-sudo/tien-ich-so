@@ -37,10 +37,10 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]" data-pf-workspace>
     <form class="card self-start" data-pf-form onsubmit="return false">
       <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h2 class="text-lg font-bold">{vi ? '2. Thiết kế Hồ sơ & Tác phẩm' : '2. Customize Profile & Works'}</h2>
+        <h2 class="text-base font-extrabold whitespace-nowrap">{vi ? '2. Thiết kế Hồ sơ' : '2. Customize Profile'}</h2>
         <div class="inline-flex rounded-xl border border-slate-200 bg-slate-100 p-0.5 text-xs font-bold">
-          <button type="button" data-studio-tab="presets" class="rounded-lg bg-slate-900 px-3 py-1.5 text-white transition">🎨 {vi ? 'Mẫu Điền Nhanh' : 'Presets & Themes'}</button>
-          <button type="button" data-studio-tab="import" class="rounded-lg px-3 py-1.5 text-slate-600 transition hover:text-slate-900">🌐 {vi ? 'Đồng bộ GitHub / Tác giả' : 'Sync GitHub / Creators'}</button>
+          <button type="button" data-studio-tab="presets" class="whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1 text-white transition">🎨 {vi ? 'Mẫu Điền Nhanh' : 'Presets'}</button>
+          <button type="button" data-studio-tab="import" class="whitespace-nowrap rounded-lg px-2.5 py-1 text-slate-600 transition hover:text-slate-900">🌐 {vi ? 'Đồng bộ GitHub' : 'Sync GitHub'}</button>
         </div>
       </div>
 
@@ -64,8 +64,8 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
 
         <div><div><details class="group mb-3.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3">
           <summary class="flex cursor-pointer list-none items-center justify-between text-xs font-extrabold text-slate-800">
-            <span>🎨 {vi ? 'Đổi Chất liệu Giấy, Bảng màu & Mockup (16 hệ thiết kế)' : 'Paper Textures, Palettes & Mockups (16 systems)'}</span>
-            <span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-brand-700 ring-1 ring-slate-200">{vi ? 'Mở ⌄' : 'Open ⌄'}</span>
+            <span class=" truncate">🎨 {vi ? 'Chất liệu Giấy, Bảng màu & Mockup' : 'Paper Textures, Palettes & Mockups'}</span>
+            <span class="shrink-0 whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-brand-700 ring-1 ring-slate-200">{vi ? 'Mở ⌄' : 'Open ⌄'}</span>
           </summary>
           <div class="mt-2.5">
           <div class="flex flex-wrap gap-1.5">
@@ -122,8 +122,8 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
             <h3 class="mt-0.5 text-sm font-extrabold text-slate-900">{vi ? 'Tải Logo · Banner · Sản Phẩm (Tự Động Dàn Trang)' : 'Upload Logo · Banners · Products (Smart Auto-Layout)'}</h3>
           </div>
           <div class="flex flex-wrap gap-1.5">
-            <button type="button" data-pf-load-sample-pack class="rounded-xl border border-indigo-300 bg-white px-2.5 py-1.5 text-xs font-bold text-indigo-900 shadow-2xs transition hover:border-indigo-500 hover:bg-indigo-50">⚡ {vi ? 'Nạp Bộ Mẫu (Logo + Banner + 9 Sản phẩm)' : 'Load Sample Pack'}</button>
-            <button type="button" data-pf-auto-arrange class="rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-700">✨ {vi ? 'Tự động bố trí đẹp nhất' : 'Smart Auto-Arrange'}</button>
+            <button type="button" data-pf-load-sample-pack class="whitespace-nowrap rounded-xl border border-indigo-300 bg-white px-2.5 py-1.5 text-xs font-bold text-indigo-900 shadow-2xs transition hover:border-indigo-500 hover:bg-indigo-50">⚡ {vi ? 'Nạp Bộ Mẫu' : 'Sample Pack'}</button>
+            <button type="button" data-pf-auto-arrange class="whitespace-nowrap rounded-xl bg-indigo-600 px-2.5 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-700">✨ {vi ? 'Tự động bố trí' : 'Auto-Arrange'}</button>
           </div>
         </div>
 
@@ -193,7 +193,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
 
       <div class="mb-3 rounded-xl border border-indigo-200/80 bg-indigo-50/40 p-3">
         <div class="mb-2 flex items-center justify-between">
-          <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-950">🎛 {vi ? 'Tinh chỉnh Linh hoạt Giao diện Portfolio (Bo góc · Khổ rộng · Cỡ chữ)' : 'Live Portfolio Design Fine-Tuning (Corners · Width · Type Scale)'}</span>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-950 truncate">🎛 {vi ? 'Tinh chỉnh Bo góc · Khổ rộng · Cỡ chữ' : 'Fine-Tune Corners · Width · Scale'}</span>
           <span class="text-[11px] font-semibold text-indigo-700">{vi ? 'Áp dụng cho cả 108 mẫu' : 'Applies to all 108 templates'}</span>
         </div>
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -248,7 +248,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
 
     <div class="lg:sticky lg:top-20 lg:self-start" data-pf-stage>
       <div class="mb-3 flex flex-wrap items-center gap-2">
-        <h2 class="mr-auto text-lg font-bold">{vi ? '3. Trình Chiếu Artboard 1400px & Xuất Bản' : '3. 1400px Artboard Stage & Export'}</h2>
+        <h2 class="mr-auto text-base font-extrabold whitespace-nowrap">{vi ? '3. Xem trước & Xuất bản' : '3. Live Stage & Export'}</h2>
         <div class="inline-flex rounded-xl border border-slate-300 bg-white p-0.5 text-xs font-bold">
           <button type="button" data-device="1400" class="rounded-lg bg-slate-900 px-2.5 py-1 text-white" title="1400px Artboard">🖥 1400px</button>
           <button type="button" data-device="390" class="rounded-lg px-2.5 py-1" title="Mobile Lookbook">📱 Mobile</button>
@@ -263,7 +263,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
           <iframe title="Portfolio preview" data-pf-iframe sandbox="allow-scripts allow-modals" class="block rounded-lg bg-white shadow-xl" style="width:1400px;height:900px;border:0"></iframe>
         </div>
       </div>
-      <p class="mt-2 text-xs text-slate-600">{vi ? '✎ Bấm trực tiếp vào tiêu đề, tuyên ngôn nghệ thuật, câu chuyện dự án hoặc bảng thông số trên Artboard để chỉnh sửa tại chỗ. Bấm "⛶ Rộng 100%" để ngắm trọn vẹn khổ 1400px.' : '✎ Click any title, artist statement, case study narrative or spec sheet directly on the artboard to edit inline. Click "⛶ Full Stage" to inspect at full 1400px scale.'}</p>
+      <p class="mt-2 text-xs text-slate-600">{vi ? '✦ Bấm trực tiếp vào bất kỳ Vector SVG, Khung vuông, Chữ, Ảnh hoặc Khối nào trên Artboard để đổi màu, bo góc, phóng to, xoay, kéo di chuyển tự do hoặc chèn thêm khối mới.' : '✦ Click any SVG Vector, Square Frame, Text, Image or Block directly on the Artboard to recolor, reshape, resize, rotate, drag freely or insert new blocks.'}</p>
     </div>
   </div>
 
@@ -292,6 +292,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
   import { safeImageSrc } from '../../lib/safe-url.js';
   import { openImageEditor } from '../../lib/image-editor.js';
   import { PORTFOLIO_PRESETS, OPEN_SOURCE_THEMES, QUICK_SNIPPETS } from '../../lib/portfolio-presets.js';
+  import { gate } from '../../scripts/download-gate.js';
 
   function shrink(file: File, max = 1400): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -477,7 +478,7 @@ ${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escape
     };
 
     const GROUPS = [
-      { t: L('① Hồ sơ chính & Liên hệ', '① Main Profile & Contact'), keys: ['name', 'role', 'availability', 'manifesto', 'signature', 'bio', 'email', 'location', 'links', 'skills'], open: true },
+      { t: L('① Hồ sơ chính & Nhận cọc VietQR', '① Main Profile & Instant Deposit'), keys: ['name', 'role', 'availability', 'manifesto', 'signature', 'bio', 'email', 'bookingPhone', 'bankName', 'bankAccount', 'paymentLink', 'location', 'links', 'skills'], open: true },
       { t: L('② Bảng giá, Dịch vụ & Mục mở rộng', '② Pricing, Services & Extra Sections'), keys: ['sections', 'stats', 'services', 'pricing', 'process', 'testimonials', 'experience', 'awards', 'clients'], layout: true, open: false },
       { t: L('③ Chất liệu Giấy, Font & Màu sắc', '③ Paper Texture, Font & Color'), keys: ['paperTexture', 'handSticker', 'font', 'color', 'coverMode'], open: false }
     ];
@@ -630,15 +631,16 @@ ${SWATCHES.map(([c, n]) => `<button type="button" data-sw="${c}" title="${escape
         iframe.contentWindow?.print();
       } catch {
         const w = window.open('', '_blank');
-        if (w) { w.document.write(html()); w.document.close(); w.focus(); setTimeout(() => w.print(), 350); }
+        if (w) { w.document.write(liveEditedHtml || html()); w.document.close(); w.focus(); setTimeout(() => w.print(), 350); }
       }
     });
 
     let timer = 0;
+    let liveEditedHtml = '';
     const render = (quiet: any = false) => {
       clearTimeout(timer);
       timer = window.setTimeout(() => {
-        if (quiet !== true) iframe.srcdoc = html(true);
+        if (quiet !== true) { liveEditedHtml = ''; iframe.srcdoc = html(true); }
         const { projects: _txt, ...rest } = values();
         const projectList = projects.map(({ orig, img, edit, gallery, open, ...p }) => p);
         try { localStorage.setItem(storeKey, JSON.stringify({ ...rest, projectList })); } catch { /* quota */ }
@@ -1076,9 +1078,9 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
       const t = ev.target as HTMLElement;
       const s = t.closest<HTMLElement>('[data-style]');
       if (s) {
-        style = s.dataset.style!; if (colorInput) colorInput.value = '#e11d48';
+        const cEl = root.querySelector<HTMLInputElement>('[data-pf-fields] [name="color"]'); style = s.dataset.style!; if (cEl) cEl.value = '#e11d48';
         history.replaceState(null, '', location.pathname + '?style=' + style);
-        markStyle(); render();
+        markStyle(); iframe.srcdoc = html(true); render();
         if (innerWidth < 1024) q('[data-pf-form]').scrollIntoView({ behavior: 'smooth' });
         return;
       }
@@ -1226,7 +1228,7 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
     });
     q('[data-pf-download]').addEventListener('click', () => {
       const name = (values().name || 'portfolio').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-      downloadBlob(`${name}-portfolio.html`, new Blob([html()], { type: 'text/html;charset=utf-8' }));
+      gate(() => downloadBlob(`${name}-portfolio.html`, new Blob([liveEditedHtml || html()], { type: 'text/html;charset=utf-8' })));
     });
     window.addEventListener('resize', fit);
 
@@ -1641,7 +1643,9 @@ ${p.gallery.length < 8 ? `<label class="flex aspect-square cursor-pointer items-
     sortable(q('[data-pf-layout]'), 'data-li', (f, t) => writeLayout(shift(readLayout(), f, t)));
 
     window.addEventListener('message', (ev) => {
-      if (ev.source !== iframe.contentWindow || ev.data?.type !== 'pf-edit') return;
+      if (ev.source !== iframe.contentWindow) return;
+      if (ev.data?.type === 'pf-dom-snapshot' && typeof ev.data.html === 'string') { liveEditedHtml = ev.data.html; return; }
+      if (ev.data?.type !== 'pf-edit') return;
       const key = String(ev.data.key), value = String(ev.data.value).slice(0, 2000);
       const m = /^p(\d+)\.(title|cat|desc|challenge|solution|result)$/.exec(key);
       const f = /^f:(stats|services|pricing|process|testimonials|experience|awards|clients):(\d+):(\d+)$/.exec(key);

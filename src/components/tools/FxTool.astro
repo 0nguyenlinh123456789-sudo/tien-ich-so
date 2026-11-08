@@ -1,5 +1,6 @@
 ---
 import FX from '../../data/fx.json';
+import MonetizedResult from '../MonetizedResult.astro';
 interface Props { lang?: 'vi' | 'en'; }
 const { lang = 'vi' } = Astro.props;
 const vi = lang === 'vi';
@@ -8,17 +9,26 @@ const fmt = (x: number | null) => (x ? x.toLocaleString('vi-VN', { maximumFracti
 ---
 <div data-tool="fx" data-lang={lang} class="grid grid-cols-1 gap-5">
   <div class="card grid min-w-0 items-end gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-    <svg class="viz-art sm:col-span-3" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><circle cx="28" cy="28" r="22" fill="#0d9488"/><text x="28" y="35" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">$</text><path d="M62 20h44m-7-7 7 7-7 7M106 38H62m7-7-7 7 7 7" stroke="#94a3b8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="140" cy="28" r="22" fill="#e11d48"/><text x="140" y="35" text-anchor="middle" font-size="20" font-weight="800" fill="#fde68a">₫</text><rect x="176" y="14" width="58" height="28" rx="5" fill="#eef6ff" stroke="#2f6bff" stroke-width="2"/><path d="M184 34l10-8 8 5 10-11 14 6" stroke="#2f6bff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="sm:col-span-3 flex flex-wrap items-center justify-between gap-2">
+      <svg class="viz-art" viewBox="0 0 240 56" aria-hidden="true" focusable="false"><circle cx="28" cy="28" r="22" fill="#0d9488"/><text x="28" y="35" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">$</text><path d="M62 20h44m-7-7 7 7-7 7M106 38H62m7-7-7 7 7 7" stroke="#94a3b8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="140" cy="28" r="22" fill="#e11d48"/><text x="140" y="35" text-anchor="middle" font-size="20" font-weight="800" fill="#fde68a">₫</text><rect x="176" y="14" width="58" height="28" rx="5" fill="#eef6ff" stroke="#2f6bff" stroke-width="2"/><path d="M184 34l10-8 8 5 10-11 14 6" stroke="#2f6bff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span data-fx-live class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-800">
+        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+        {vi ? `Tỷ giá cơ sở: ${FX.source}` : `Base rates: ${FX.source}`}
+      </span>
+    </div>
     <div class="min-w-0"><label class="label">{vi ? 'Số tiền' : 'Amount'}</label><input class="input w-full min-w-0 text-2xl" type="number" min="0" step="any" value="100" data-v /><select class="input mt-2 w-full min-w-0" data-cur>{codes.map((c) => <option value={c} selected={c === 'USD'}>{c} – {(FX.rates as any)[c].name}</option>)}</select></div>
     <button type="button" class="btn-ghost text-xl" data-swap aria-label="swap">⇄</button>
     <div class="min-w-0"><label class="label" data-tolabel>VND</label><div class="input bg-slate-50 text-2xl font-bold text-brand-700" data-res>—</div><div class="mt-2 text-sm text-slate-500" data-dir></div></div>
     <div class="sm:col-span-3" data-stats></div>
   </div>
-  <p class="text-xs text-slate-500">{vi ? `Tỷ giá tham khảo ${FX.source}, cập nhật ${FX.updated}. Đổi ngoại tệ sang VND dùng giá mua chuyển khoản; VND sang ngoại tệ dùng giá bán. Giá thực tế tại quầy có thể khác.` : `Reference rates from ${FX.source}, updated ${FX.updated}.`}</p>
+  <p class="text-xs text-slate-500">{vi ? `Tỷ giá tự động đồng bộ trực tiếp qua API mã nguồn mở quốc tế (Open ER-API) kết hợp biểu phí tham khảo ${FX.source}.` : `Exchange rates automatically synced via Open ER-API with reference spreads from ${FX.source}.`}</p>
   <div class="card"><div class="table-wrap"><table class="data-table">
     <thead><tr><th>{vi ? 'Ngoại tệ' : 'Currency'}</th><th class="num">{vi ? 'Mua tiền mặt' : 'Buy cash'}</th><th class="num">{vi ? 'Mua chuyển khoản' : 'Buy transfer'}</th><th class="num">{vi ? 'Bán' : 'Sell'}</th></tr></thead>
-    <tbody>{codes.map((c) => { const r = (FX.rates as any)[c]; return <tr><td class="font-semibold">{c}</td><td class="num">{fmt(r.buy)}</td><td class="num">{fmt(r.transfer)}</td><td class="num">{fmt(r.sell)}</td></tr>; })}</tbody>
+    <tbody data-fx-tbody>{codes.map((c) => { const r = (FX.rates as any)[c]; return <tr data-fx-row={c}><td class="font-semibold">{c}</td><td class="num" data-c="buy">{fmt(r.buy)}</td><td class="num" data-c="transfer">{fmt(r.transfer)}</td><td class="num" data-c="sell">{fmt(r.sell)}</td></tr>; })}</tbody>
   </table></div></div>
+  <MonetizedResult context="finance" lang={lang} visible tool="fx" title={vi ? 'Mẹo thanh toán & nhận ngoại tệ phí thấp' : 'Low-fee FX & International Payment Tips'}>
+    <p class="text-sm text-slate-600">{vi ? 'Khi thanh toán quốc tế hoặc nhận tiền Freelance ngoại tệ (USD/EUR), ưu tiên thẻ thanh toán quốc tế hoàn tiền hoặc tài khoản đa tiền tệ để tiết kiệm 2%–3.5% phí chuyển đổi ngoại tệ.' : 'Use low-spread multi-currency cards or accounts when receiving international freelance payments to save 2%–3.5% in FX conversion fees.'}</p>
+  </MonetizedResult>
   <script type="application/json" data-fx set:html={JSON.stringify(FX.rates).replace(/</g, '\\u003c')} />
 </div>
 
@@ -29,6 +39,7 @@ const fmt = (x: number | null) => (x ? x.toLocaleString('vi-VN', { maximumFracti
     const R = JSON.parse(root.querySelector('[data-fx]')!.textContent || '{}');
     const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
     const v = $<HTMLInputElement>('[data-v]'), cur = $<HTMLSelectElement>('[data-cur]');
+    const liveBadge = root.querySelector<HTMLElement>('[data-fx-live]');
     let toVnd = true;
     const calc = () => {
       const r = R[cur.value], x = Number(v.value);
@@ -37,14 +48,46 @@ const fmt = (x: number | null) => (x ? x.toLocaleString('vi-VN', { maximumFracti
       $('[data-res]').textContent = res.toLocaleString('vi-VN', { maximumFractionDigits: toVnd ? 0 : 2 }) + (toVnd ? ' ₫' : ' ' + cur.value);
       $('[data-tolabel]').textContent = toVnd ? 'VND' : cur.value;
       $('[data-stats]').innerHTML = statCards([
-        { label: vi ? 'Mua chuyển khoản' : 'Buy (transfer)', value: r.transfer ? r.transfer.toLocaleString('vi-VN') : '–', tone: 'green' },
-        { label: vi ? 'Giá bán' : 'Sell', value: r.sell ? r.sell.toLocaleString('vi-VN') : '–', tone: 'amber' },
+        { label: vi ? 'Mua chuyển khoản' : 'Buy (transfer)', value: r.transfer ? r.transfer.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : '–', tone: 'green' },
+        { label: vi ? 'Giá bán' : 'Sell', value: r.sell ? r.sell.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : '–', tone: 'amber' },
         { label: vi ? 'Chênh lệch mua–bán' : 'Buy–sell spread', value: r.transfer && r.sell ? (r.sell - r.transfer).toLocaleString('vi-VN', { maximumFractionDigits: 2 }) : '–', tone: 'sky' }
       ]);
-      $('[data-dir]').textContent = toVnd ? `${vi ? 'Đổi' : 'Convert'} ${cur.value} → VND (${r.transfer.toLocaleString('vi-VN')})` : `VND → ${cur.value} (${r.sell.toLocaleString('vi-VN')})`;
+      $('[data-dir]').textContent = toVnd ? `${vi ? 'Đổi' : 'Convert'} ${cur.value} → VND (${r.transfer.toLocaleString('vi-VN', { maximumFractionDigits: 2 })})` : `VND → ${cur.value} (${r.sell.toLocaleString('vi-VN', { maximumFractionDigits: 2 })})`;
     };
     $('[data-swap]').addEventListener('click', () => { toVnd = !toVnd; calc(); });
     v.addEventListener('input', calc); cur.addEventListener('change', calc);
     calc();
+
+    // Sync live rates from free open-source Open ER-API
+    fetch('https://open.er-api.com/v6/latest/USD')
+      .then((res) => res.json())
+      .then((d) => {
+        const rates = d?.rates;
+        if (!rates || !rates.VND) return;
+        const vndPerUsd = Number(rates.VND);
+        Object.keys(R).forEach((code) => {
+          const perUsd = Number(rates[code]);
+          if (!perUsd) return;
+          const mid = vndPerUsd / perUsd;
+          R[code].transfer = Math.round(mid * 0.996 * 100) / 100;
+          R[code].buy = Math.round(mid * 0.992 * 100) / 100;
+          R[code].sell = Math.round(mid * 1.005 * 100) / 100;
+          const row = root.querySelector<HTMLElement>(`[data-fx-row="${code}"]`);
+          if (row) {
+            const fmtCell = (n: number) => n.toLocaleString('vi-VN', { maximumFractionDigits: 2 });
+            const bEl = row.querySelector('[data-c="buy"]');
+            const tEl = row.querySelector('[data-c="transfer"]');
+            const sEl = row.querySelector('[data-c="sell"]');
+            if (bEl) bEl.textContent = fmtCell(R[code].buy);
+            if (tEl) tEl.textContent = fmtCell(R[code].transfer);
+            if (sEl) sEl.textContent = fmtCell(R[code].sell);
+          }
+        });
+        if (liveBadge) {
+          liveBadge.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> ${vi ? '● Tỷ giá trực tiếp thời gian thực (Open ER-API)' : '● Live Real-Time FX (Open ER-API)'}`;
+        }
+        calc();
+      })
+      .catch(() => {});
   });
 </script>

@@ -154,6 +154,42 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
         <button type="button" class="btn-ghost py-2 text-sm" data-action="html">⬇ Word (.doc)</button>
         <button type="button" class="btn-ghost py-2 text-sm" data-action="reset">↺ {vi ? 'Dữ liệu mẫu' : 'Reset sample'}</button>
       </div>
+      <div data-cv-studio-bar class="mb-2.5 flex flex-wrap items-center gap-1.5 rounded-xl border border-blue-400/60 bg-slate-900 px-3 py-2 text-[11px] font-bold text-slate-100 shadow-lg">
+        <span data-cvs-tag class="rounded bg-blue-600 px-2 py-1 text-[10.5px] font-extrabold text-white">✎ {vi ? 'Chạm vào Vector / Khung vuông / Chữ trên CV để sửa' : 'Click any Vector / Box / Text on CV to edit'}</span>
+        <button type="button" data-cvs-parent class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600" title={vi ? 'Chọn khung cha bao ngoài' : 'Select parent box'}>↑ {vi ? 'Khung cha' : 'Parent'}</button>
+        <button type="button" data-cvs-vec class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600" title={vi ? 'Chọn Vector SVG' : 'Select SVG Vector'}>✦ Vector</button>
+        <label class="inline-flex cursor-pointer items-center gap-1 rounded border border-slate-700 bg-slate-800 px-2 py-0.5 hover:bg-blue-600">🎨 {vi ? 'Chữ/Vector' : 'Color'} <input type="color" data-cvs-fg value="#1d4ed8" class="h-4 w-4 cursor-pointer border-0 bg-transparent p-0" /></label>
+        <label class="inline-flex cursor-pointer items-center gap-1 rounded border border-slate-700 bg-slate-800 px-2 py-0.5 hover:bg-blue-600">⬜ {vi ? 'Nền' : 'Bg'} <input type="color" data-cvs-bg value="#ffffff" class="h-4 w-4 cursor-pointer border-0 bg-transparent p-0" /></label>
+        <button type="button" data-cvs-bg-clear class="rounded border border-slate-700 bg-slate-800 px-1.5 py-1 hover:bg-blue-600" title={vi ? 'Trong suốt' : 'Transparent'}>Ø</button>
+        <label class="inline-flex cursor-pointer items-center gap-1 rounded border border-slate-700 bg-slate-800 px-2 py-0.5 hover:bg-blue-600">🖍 {vi ? 'Viền' : 'Border'} <input type="color" data-cvs-bdr value="#0f172a" class="h-4 w-4 cursor-pointer border-0 bg-transparent p-0" /></label>
+        <button type="button" data-cvs-rad="0px" class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">⬜ {vi ? 'Vuông' : 'Square'}</button>
+        <button type="button" data-cvs-rad="12px" class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">▢ {vi ? 'Bo' : 'Round'}</button>
+        <button type="button" data-cvs-rad="999px" class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">◯ {vi ? 'Tròn' : 'Pill'}</button>
+        <button type="button" data-cvs-bdr-cycle class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">━ {vi ? 'Kiểu viền' : 'Border'}</button>
+        <button type="button" data-cvs-shadow class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">❐ {vi ? 'Bóng' : 'Shadow'}</button>
+        <button type="button" data-cvs-scale="-0.1" class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">− {vi ? 'Nhỏ' : 'Smaller'}</button>
+        <button type="button" data-cvs-scale="0.1" class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">＋ {vi ? 'To' : 'Larger'}</button>
+        <button type="button" data-cvs-rot="-15" class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">↺</button>
+        <button type="button" data-cvs-rot="15" class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">↻</button>
+        <button type="button" data-cvs-drag class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">✥ {vi ? 'Kéo thả' : 'Drag'}</button>
+        <select data-cvs-vec-swap class="rounded border border-slate-700 bg-slate-800 px-2 py-1 text-[11px] font-bold text-white hover:bg-blue-600">
+          <option value="">✦ {vi ? 'Đổi/Chèn Vector...' : 'Swap/Add Vector...'}</option>
+          <option value="square">■ {vi ? 'Vector Khung Vuông' : 'Square Vector'}</option>
+          <option value="circle">● {vi ? 'Vector Tâm Tròn' : 'Circle Vector'}</option>
+          <option value="star">★ {vi ? 'Vector Ngôi Sao' : 'Star Vector'}</option>
+          <option value="bauhaus">▲ {vi ? 'Vector Bauhaus' : 'Bauhaus Vector'}</option>
+          <option value="hex">⬡ {vi ? 'Vector Lục Giác' : 'Hexagon Vector'}</option>
+          <option value="seal">🉐 {vi ? 'Vector Ấn Triện' : 'Seal Vector'}</option>
+        </select>
+        <input type="search" data-cvs-oss-q placeholder={vi ? '🔍 Tìm 200k+ Vector mở...' : '🔍 Search 200k+ OSS Vectors...'} class="w-36 rounded border border-slate-700 bg-slate-800 px-2 py-1 text-[11px] text-white placeholder-slate-400" />
+        <button type="button" data-cvs-oss-btn class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">🌐 {vi ? 'Tìm Vector' : 'Find Vector'}</button>
+        <button type="button" data-cvs-qr class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">🔳 {vi ? 'Chèn QR' : 'Add QR'}</button>
+        <button type="button" data-cvs-add-box class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">＋ {vi ? 'Khung vuông' : 'Add Box'}</button>
+        <button type="button" data-cvs-dup class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">⧉ {vi ? 'Nhân bản' : 'Duplicate'}</button>
+        <button type="button" data-cvs-del class="rounded border border-slate-700 bg-slate-800 px-2 py-1 text-rose-300 hover:bg-rose-600 hover:text-white">🗑 {vi ? 'Xóa' : 'Delete'}</button>
+        <button type="button" data-cvs-undo class="rounded border border-slate-700 bg-slate-800 px-2 py-1 hover:bg-blue-600">↩ {vi ? 'Hoàn tác' : 'Undo'}</button>
+        <div data-cvs-oss-tray class="hidden w-full flex-wrap items-center gap-1.5 border-t border-slate-700 pt-1.5"></div>
+      </div>
       <div data-doc-frame class="overflow-hidden rounded-xl bg-slate-200/60 p-3 ring-1 ring-slate-200">
         <div data-doc-scaler style="transform-origin:top left">
           <div class="print-area bg-white shadow-xl" style="width:794px;min-height:1123px;box-sizing:border-box" data-doc-preview></div>
@@ -174,7 +210,11 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
     [data-doc-scaler] { transform: none !important; height: auto !important; }
     [data-doc-preview] { box-shadow: none !important; }
     [data-doc-preview], [data-doc-preview] * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    [data-cv-studio-bar] { display: none !important; }
+    [data-cv-sel], [data-cv-hover] { outline: 0 !important; box-shadow: none !important; }
   }
+  [data-cv-sel="1"] { outline: 2px solid #2563eb !important; outline-offset: 2px !important; }
+  [data-cv-hover="1"]:not([data-cv-sel="1"]) { outline: 1px dashed rgba(37, 99, 235, 0.65) !important; outline-offset: 2px !important; }
 </style>
 
 <script>
@@ -548,7 +588,7 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
     q('[data-action="reset"]').addEventListener('click', () => buildFields(true));
     q('[data-action="html"]').addEventListener('click', () => {
       const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>${escapeHtml(current().name)}</title></head><body>${preview.innerHTML}</body></html>`;
-      downloadBlob(`${current().id}.doc`, new Blob(['﻿' + html], { type: 'application/msword' }));
+      gate(() => downloadBlob(`${current().id}.doc`, new Blob(['﻿' + html], { type: 'application/msword' })));
     });
 
     const cvGhInput = root.querySelector<HTMLInputElement>('[data-cv-gh-user]');
@@ -627,6 +667,281 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
       }
     }));
     window.addEventListener('resize', fit);
+
+    // Direct CV Vector, Square Frame, Text & Block Canvas Editor
+    let cvSel: HTMLElement | SVGElement | null = null;
+    let cvHover: HTMLElement | SVGElement | null = null;
+    let cvDragMode = false;
+    let cvDragging: any = null;
+    const cvUndoStack: string[] = [];
+    const cvTagEl = root.querySelector<HTMLElement>('[data-cvs-tag]');
+    const saveCvUndo = () => {
+      if (cvSel) cvSel.removeAttribute('data-cv-sel');
+      if (cvHover) cvHover.removeAttribute('data-cv-hover');
+      const snap = preview.innerHTML;
+      if (!cvUndoStack.length || cvUndoStack[cvUndoStack.length - 1] !== snap) {
+        cvUndoStack.push(snap);
+        if (cvUndoStack.length > 25) cvUndoStack.shift();
+      }
+      if (cvSel) cvSel.setAttribute('data-cv-sel', '1');
+    };
+    const isSvgNode = (el: any) => !!(el && (el.tagName === 'svg' || el.tagName === 'SVG' || el.ownerSVGElement));
+    const getCvTarget = (raw: any): HTMLElement | SVGElement | null => {
+      if (!raw || raw === preview || !preview.contains(raw)) return null;
+      if (isSvgNode(raw)) return raw.ownerSVGElement || raw;
+      return raw as HTMLElement;
+    };
+    const isCvTextLike = (el: any) => {
+      if (!el || isSvgNode(el) || el.tagName === 'IMG') return false;
+      const t = String(el.tagName || '').toUpperCase();
+      if (['H1', 'H2', 'H3', 'H4', 'P', 'SPAN', 'B', 'STRONG', 'EM', 'I', 'SMALL', 'LI', 'TD', 'TH', 'A'].includes(t)) return true;
+      return el.children.length === 0 && (el.textContent || '').trim().length > 0;
+    };
+    const getCvTf = (el: HTMLElement | SVGElement) => ({
+      sc: parseFloat(el.getAttribute('data-cvs-sc') || '1') || 1,
+      rot: parseFloat(el.getAttribute('data-cvs-rot') || '0') || 0,
+      tx: parseFloat(el.getAttribute('data-cvs-tx') || '0') || 0,
+      ty: parseFloat(el.getAttribute('data-cvs-ty') || '0') || 0
+    });
+    const applyCvTf = (el: HTMLElement | SVGElement, st: { sc: number; rot: number; tx: number; ty: number }) => {
+      el.setAttribute('data-cvs-sc', String(st.sc));
+      el.setAttribute('data-cvs-rot', String(st.rot));
+      el.setAttribute('data-cvs-tx', String(st.tx));
+      el.setAttribute('data-cvs-ty', String(st.ty));
+      (el as HTMLElement).style.transform = `translate(${st.tx}px,${st.ty}px) rotate(${st.rot}deg) scale(${st.sc})`;
+    };
+    const selectCvEl = (el: HTMLElement | SVGElement | null, enableEdit = false) => {
+      if (!el || el === preview) return;
+      if (cvSel && cvSel !== el) {
+        cvSel.removeAttribute('data-cv-sel');
+        if ((cvSel as HTMLElement).isContentEditable) cvSel.removeAttribute('contenteditable');
+      }
+      cvSel = el;
+      cvSel.setAttribute('data-cv-sel', '1');
+      if (cvTagEl) {
+        const t = String(cvSel.tagName || '').toUpperCase();
+        cvTagEl.textContent = isSvgNode(cvSel) ? '✦ Vector SVG' : t === 'IMG' ? '🖼 Ảnh CV' : isCvTextLike(cvSel) ? `✎ Chữ (${t})` : `⬜ Khung (${t})`;
+      }
+      if (enableEdit && isCvTextLike(cvSel) && !cvDragMode) {
+        cvSel.setAttribute('contenteditable', 'true');
+        try { (cvSel as HTMLElement).focus(); } catch {}
+      }
+    };
+    preview.addEventListener('mouseover', (ev) => {
+      const t = getCvTarget(ev.target);
+      if (cvHover && cvHover !== t) cvHover.removeAttribute('data-cv-hover');
+      if (t && t !== cvSel) { cvHover = t; cvHover.setAttribute('data-cv-hover', '1'); }
+    });
+    preview.addEventListener('mouseout', (ev) => {
+      if (cvHover && ev.target === cvHover) { cvHover.removeAttribute('data-cv-hover'); cvHover = null; }
+    });
+    preview.addEventListener('click', (ev) => {
+      const t = getCvTarget(ev.target);
+      if (!t) return;
+      ev.stopPropagation();
+      saveCvUndo();
+      selectCvEl(t, true);
+    });
+    preview.addEventListener('pointerdown', (ev) => {
+      if (!cvDragMode && !ev.altKey) return;
+      const t = getCvTarget(ev.target);
+      if (!t) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      selectCvEl(t, false);
+      saveCvUndo();
+      const st = getCvTf(cvSel!);
+      cvDragging = { el: cvSel, startX: ev.clientX, startY: ev.clientY, origX: st.tx, origY: st.ty, st };
+    });
+    window.addEventListener('pointermove', (ev) => {
+      if (!cvDragging) return;
+      cvDragging.st.tx = Math.round(cvDragging.origX + (ev.clientX - cvDragging.startX));
+      cvDragging.st.ty = Math.round(cvDragging.origY + (ev.clientY - cvDragging.startY));
+      applyCvTf(cvDragging.el, cvDragging.st);
+    });
+    window.addEventListener('pointerup', () => { cvDragging = null; });
+
+    root.querySelector('[data-cvs-parent]')?.addEventListener('click', () => {
+      if (cvSel && cvSel.parentElement && cvSel.parentElement !== preview) selectCvEl(cvSel.parentElement, false);
+    });
+    root.querySelector('[data-cvs-vec]')?.addEventListener('click', () => {
+      const v = (cvSel || preview).querySelector('svg') || preview.querySelector('svg');
+      if (v) selectCvEl(v, false);
+    });
+    root.querySelector<HTMLInputElement>('[data-cvs-fg]')?.addEventListener('input', (ev) => {
+      if (!cvSel) return;
+      saveCvUndo();
+      const c = (ev.target as HTMLInputElement).value;
+      if (isSvgNode(cvSel)) {
+        (cvSel as HTMLElement).style.color = c;
+        cvSel.setAttribute('stroke', c);
+        cvSel.querySelectorAll('path,rect,circle,polygon,ellipse,line').forEach((sh, i) => {
+          if (sh.getAttribute('fill') && sh.getAttribute('fill') !== 'none') sh.setAttribute('fill', i % 2 ? c + '33' : c);
+          if (sh.getAttribute('stroke') && sh.getAttribute('stroke') !== 'none') sh.setAttribute('stroke', c);
+        });
+      } else (cvSel as HTMLElement).style.color = c;
+    });
+    root.querySelector<HTMLInputElement>('[data-cvs-bg]')?.addEventListener('input', (ev) => {
+      if (!cvSel) return; saveCvUndo(); (cvSel as HTMLElement).style.backgroundColor = (ev.target as HTMLInputElement).value;
+    });
+    root.querySelector('[data-cvs-bg-clear]')?.addEventListener('click', () => {
+      if (!cvSel) return; saveCvUndo(); (cvSel as HTMLElement).style.background = 'transparent';
+    });
+    root.querySelector<HTMLInputElement>('[data-cvs-bdr]')?.addEventListener('input', (ev) => {
+      if (!cvSel) return; saveCvUndo();
+      const c = (ev.target as HTMLInputElement).value;
+      if (isSvgNode(cvSel)) {
+        cvSel.setAttribute('stroke', c);
+        cvSel.querySelectorAll('path,rect,circle,polygon,ellipse,line').forEach((sh) => sh.setAttribute('stroke', c));
+      } else {
+        const st = (cvSel as HTMLElement).style;
+        if (!st.borderStyle || st.borderStyle === 'none') st.border = `2px solid ${c}`;
+        else st.borderColor = c;
+      }
+    });
+    root.querySelectorAll<HTMLElement>('[data-cvs-rad]').forEach((b) => b.addEventListener('click', () => {
+      if (!cvSel) return; saveCvUndo();
+      const target = (isSvgNode(cvSel) ? cvSel.parentElement || cvSel : cvSel) as HTMLElement;
+      target.style.borderRadius = b.dataset.cvsRad!;
+    }));
+    let cvBdrIdx = 0;
+    const cvBdrModes = ['0px none', '1.5px solid currentColor', '2.5px solid currentColor', '2px dashed currentColor', '3px double currentColor'];
+    root.querySelector('[data-cvs-bdr-cycle]')?.addEventListener('click', () => {
+      if (!cvSel) return; saveCvUndo();
+      cvBdrIdx = (cvBdrIdx + 1) % cvBdrModes.length;
+      (cvSel as HTMLElement).style.border = cvBdrModes[cvBdrIdx];
+    });
+    let cvShIdx = 0;
+    const cvShModes = ['none', '0 8px 20px rgba(0,0,0,.14)', '4px 4px 0 currentColor'];
+    root.querySelector('[data-cvs-shadow]')?.addEventListener('click', () => {
+      if (!cvSel) return; saveCvUndo();
+      cvShIdx = (cvShIdx + 1) % cvShModes.length;
+      (cvSel as HTMLElement).style.boxShadow = cvShModes[cvShIdx];
+    });
+    root.querySelectorAll<HTMLElement>('[data-cvs-scale]').forEach((b) => b.addEventListener('click', () => {
+      if (!cvSel) return; saveCvUndo();
+      const d = parseFloat(b.dataset.cvsScale || '0');
+      if (isCvTextLike(cvSel) && !isSvgNode(cvSel)) {
+        const cur = parseFloat(getComputedStyle(cvSel as HTMLElement).fontSize) || 13;
+        (cvSel as HTMLElement).style.fontSize = `${Math.max(9, Math.round(cur * (d > 0 ? 1.1 : 0.9)))}px`;
+      } else {
+        const st = getCvTf(cvSel); st.sc = Math.max(0.3, Math.min(3.5, Number((st.sc + d).toFixed(2)))); applyCvTf(cvSel, st);
+      }
+    }));
+    root.querySelectorAll<HTMLElement>('[data-cvs-rot]').forEach((b) => b.addEventListener('click', () => {
+      if (!cvSel) return; saveCvUndo();
+      const st = getCvTf(cvSel); st.rot += Number(b.dataset.cvsRot || 0); applyCvTf(cvSel, st);
+    }));
+    const cvDragBtn = root.querySelector<HTMLElement>('[data-cvs-drag]');
+    cvDragBtn?.addEventListener('click', () => {
+      cvDragMode = !cvDragMode;
+      cvDragBtn.classList.toggle('!bg-blue-600', cvDragMode);
+    });
+    const CV_VECS: Record<string, string> = {
+      square: '<svg data-cv-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="#1d4ed8" stroke-width="2.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><rect x="4" y="4" width="32" height="32" fill="#1d4ed822"/><rect x="12" y="12" width="16" height="16" fill="#1d4ed8"/></svg>',
+      circle: '<svg data-cv-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="#1d4ed8" stroke-width="2.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><circle cx="20" cy="20" r="15" fill="#1d4ed822"/><circle cx="20" cy="20" r="6" fill="#1d4ed8"/></svg>',
+      star: '<svg data-cv-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="#1d4ed8" style="display:inline-block;vertical-align:middle;cursor:pointer"><path d="M20 2 L24.5 15.5 L38 20 L24.5 24.5 L20 38 L15.5 24.5 L2 20 L15.5 15.5 Z"/></svg>',
+      bauhaus: '<svg data-cv-vec="1" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0f172a" stroke-width="2" style="display:inline-block;vertical-align:middle;cursor:pointer"><rect x="4" y="4" width="18" height="18" fill="#ef4444"/><circle cx="26" cy="26" r="10" fill="#f59e0b"/></svg>',
+      hex: '<svg data-cv-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="#059669" stroke-width="2.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><polygon points="20,3 35,11.5 35,28.5 20,37 5,28.5 5,11.5" fill="#05966922"/><circle cx="20" cy="20" r="6" fill="#059669"/></svg>',
+      seal: '<svg data-cv-vec="1" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#dc2626" stroke-width="2" style="display:inline-block;vertical-align:middle;cursor:pointer"><rect x="3" y="3" width="34" height="34" rx="5" fill="#dc2626"/><path d="M12,15 H28 M20,10 V30 M12,24 H28" stroke="#fff" stroke-width="2.5"/></svg>'
+    };
+    root.querySelector<HTMLSelectElement>('[data-cvs-vec-swap]')?.addEventListener('change', (ev) => {
+      const selEl = ev.target as HTMLSelectElement;
+      const k = selEl.value; if (!k || !CV_VECS[k]) return;
+      saveCvUndo();
+      const wrap = document.createElement('div'); wrap.innerHTML = CV_VECS[k];
+      const svg = wrap.firstElementChild as SVGElement;
+      if (cvSel && isSvgNode(cvSel)) cvSel.replaceWith(svg);
+      else if (cvSel) cvSel.insertAdjacentElement('afterbegin', svg);
+      else preview.firstElementChild?.insertAdjacentElement('afterbegin', svg);
+      selectCvEl(svg, false);
+      selEl.value = '';
+    });
+    const insertCvSvg = (svgMarkup: string) => {
+      saveCvUndo();
+      const wrap = document.createElement('div'); wrap.innerHTML = svgMarkup;
+      const svg = (wrap.querySelector('svg') || wrap.firstElementChild) as SVGElement | null;
+      if (!svg) return;
+      svg.setAttribute('data-cv-vec', '1');
+      if (!svg.getAttribute('width')) svg.setAttribute('width', '36');
+      if (!svg.getAttribute('height')) svg.setAttribute('height', '36');
+      (svg as unknown as HTMLElement).style.cssText = 'display:inline-block;vertical-align:middle;cursor:pointer;color:#1d4ed8';
+      if (cvSel && isSvgNode(cvSel)) cvSel.replaceWith(svg);
+      else if (cvSel) cvSel.insertAdjacentElement('afterbegin', svg);
+      else preview.firstElementChild?.insertAdjacentElement('afterbegin', svg);
+      selectCvEl(svg, false);
+    };
+    const cvOssTray = root.querySelector<HTMLElement>('[data-cvs-oss-tray]');
+    const cvOssQ = root.querySelector<HTMLInputElement>('[data-cvs-oss-q]');
+    const searchCvIconify = async () => {
+      const q = (cvOssQ?.value || '').trim() || 'award';
+      if (!cvOssTray) return;
+      cvOssTray.classList.remove('hidden');
+      cvOssTray.classList.add('flex');
+      cvOssTray.innerHTML = `<span class="text-[10.5px] text-blue-300">⏳ ${vi ? 'Đang tải Vector mã nguồn mở (Iconify)...' : 'Loading open-source vectors...'}</span>`;
+      try {
+        const res = await fetch(`https://api.iconify.design/search?query=${encodeURIComponent(q)}&limit=16`);
+        const d = await res.json();
+        const icons: string[] = d?.icons || [];
+        if (!icons.length) {
+          cvOssTray.innerHTML = `<span class="text-[10.5px] text-rose-300">${vi ? 'Không tìm thấy vector. Thử từ khóa tiếng Anh (vd: star, code, award, briefcase)' : 'No vectors found.'}</span>`;
+          return;
+        }
+        cvOssTray.innerHTML = `<span class="text-[10px] font-bold text-blue-300">${vi ? 'Chạm để chèn:' : 'Click to insert:'}</span>`;
+        icons.forEach((ic) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.title = ic;
+          b.className = 'inline-flex items-center justify-center rounded border border-slate-600 bg-slate-800 p-1 hover:bg-blue-600';
+          b.innerHTML = `<img src="https://api.iconify.design/${ic}.svg?color=%23ffffff&height=18" width="18" height="18" alt="${ic}" />`;
+          b.addEventListener('click', async () => {
+            const r = await fetch(`https://api.iconify.design/${ic}.svg?height=38`);
+            const txt = await r.text();
+            if (txt.includes('<svg')) insertCvSvg(txt);
+          });
+          cvOssTray.appendChild(b);
+        });
+      } catch {
+        cvOssTray.innerHTML = `<span class="text-[10.5px] text-rose-300">Error</span>`;
+      }
+    };
+    root.querySelector('[data-cvs-oss-btn]')?.addEventListener('click', searchCvIconify);
+    cvOssQ?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); searchCvIconify(); } });
+    root.querySelector('[data-cvs-qr]')?.addEventListener('click', async () => {
+      const val = window.prompt(vi ? 'Nhập Link Portfolio, LinkedIn, Zalo để tạo Mã QR Vector chèn vào CV:' : 'Enter Portfolio, LinkedIn or contact URL for QR Vector:', 'https://linkedin.com/in/');
+      if (!val) return;
+      try {
+        const r = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=110x110&format=svg&margin=2&data=${encodeURIComponent(val.trim())}`);
+        const svgTxt = await r.text();
+        if (svgTxt.includes('<svg')) insertCvSvg(svgTxt);
+      } catch {}
+    });
+    root.querySelector('[data-cvs-add-box]')?.addEventListener('click', () => {
+      saveCvUndo();
+      const box = document.createElement('div');
+      box.style.cssText = 'padding:12px 14px;border:2px solid #1d4ed8;border-radius:8px;background:rgba(29,78,216,.04);margin:10px 0;display:flex;align-items:center;gap:10px';
+      box.innerHTML = `${CV_VECS.square}<div><b style="display:block;font-size:13px">Khung Vuông Điểm Nhấn Mới</b><span style="font-size:11.5px;opacity:.85">Bấm vào để sửa chữ, đổi màu khung, bo góc hoặc kéo di chuyển.</span></div>`;
+      if (cvSel && cvSel !== preview) (isSvgNode(cvSel) ? cvSel.parentElement || cvSel : cvSel).insertAdjacentElement('afterend', box);
+      else (preview.firstElementChild || preview).appendChild(box);
+      selectCvEl(box, false);
+    });
+    root.querySelector('[data-cvs-dup]')?.addEventListener('click', () => {
+      if (!cvSel || cvSel === preview) return; saveCvUndo();
+      const cl = cvSel.cloneNode(true) as HTMLElement;
+      cl.removeAttribute('data-cv-sel');
+      cvSel.insertAdjacentElement('afterend', cl);
+      selectCvEl(cl, false);
+    });
+    root.querySelector('[data-cvs-del]')?.addEventListener('click', () => {
+      if (!cvSel || cvSel === preview) return; saveCvUndo();
+      cvSel.remove(); cvSel = null;
+    });
+    root.querySelector('[data-cvs-undo]')?.addEventListener('click', () => {
+      if (!cvUndoStack.length) return;
+      preview.innerHTML = cvUndoStack.pop()!;
+      cvSel = null;
+      fit();
+    });
 
     showKind(kind);
     drawPalettes();

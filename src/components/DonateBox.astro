@@ -9,7 +9,13 @@ const { lang = 'vi', compact = true } = Astro.props;
 const d = donateInfo();
 const ext = donateUrl();
 const vi = lang === 'vi';
-const fmt = (n: number) => n.toLocaleString('vi-VN') + 'đ';
+const fmt = (n: number) => {
+  const s = n.toLocaleString('vi-VN') + 'đ';
+  if (n <= 10000) return `☕ ${s}`;
+  if (n <= 20000) return `💛 ${s}`;
+  if (n <= 50000) return `⚡ ${s} (Server)`;
+  return `🚀 ${s} (VIP / Tên miền)`;
+};
 ---
 {(d || ext) && (
   <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-5" data-donate>
@@ -27,7 +33,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN') + 'đ';
         {d && (
           <div class="mt-2 text-sm text-slate-700">
             <div><span class="text-slate-500">{vi ? 'Ngân hàng' : 'Bank'}:</span> <b>{d.bankName}</b></div>
-            <div><span class="text-slate-500">{vi ? 'Số TK' : 'Account'}:</span> <b class="select-all">{d.account}</b>{d.name && <> · {d.name}</>}</div>
+            <div class="flex flex-wrap items-center gap-2"><span class="text-slate-500">{vi ? 'Số TK' : 'Account'}:</span> <b class="select-all font-mono text-base text-slate-900">{d.account}</b> <button type="button" data-copy-acc={d.account} class="rounded-full border border-amber-400 bg-white px-2.5 py-0.5 text-xs font-bold text-amber-800 hover:bg-amber-100">📋 {vi ? 'Sao chép STK' : 'Copy'}</button>{d.name && <> · {d.name}</>}</div>
             <div class="text-xs text-slate-500">{vi ? 'Nội dung' : 'Memo'}: {d.memo}</div>
           </div>
         )}
@@ -47,6 +53,13 @@ const fmt = (n: number) => n.toLocaleString('vi-VN') + 'đ';
   // Tapping an amount swaps in the QR that already carries that amount (VietQR dynamic code).
   document.querySelectorAll<HTMLElement>('[data-donate]').forEach((box) => {
     const qr = box.querySelector<HTMLElement>('[data-donate-qr]');
+    box.querySelector<HTMLButtonElement>('[data-copy-acc]')?.addEventListener('click', (ev) => {
+      const btn = ev.currentTarget as HTMLButtonElement;
+      navigator.clipboard?.writeText(btn.dataset.copyAcc || '');
+      const orig = btn.textContent;
+      btn.textContent = '✓ Đã sao chép';
+      setTimeout(() => { btn.textContent = orig; }, 1600);
+    });
     box.querySelectorAll<HTMLButtonElement>('[data-donate-amount]').forEach((b) => {
       b.addEventListener('click', () => {
         if (qr && b.dataset.svg) qr.innerHTML = b.dataset.svg; // build-time SVG from our own config, not user input

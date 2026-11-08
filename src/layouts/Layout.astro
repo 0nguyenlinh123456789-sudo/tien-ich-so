@@ -5,7 +5,7 @@ import '../styles/global.css';
 import fontLatin400 from '@fontsource/be-vietnam-pro/files/be-vietnam-pro-latin-400-normal.woff2?url';
 import fontVi400 from '@fontsource/be-vietnam-pro/files/be-vietnam-pro-vietnamese-400-normal.woff2?url';
 import site from '../config/site.json';
-import { donateInfo, MONETIZATION } from '../lib/monetize.js';
+import { donateInfo, offersFor, MONETIZATION } from '../lib/monetize.js';
 import { t } from '../i18n/ui.js';
 import { SECTIONS, sectionUrl, homeUrl } from '../data/tools.js';
 
@@ -37,11 +37,20 @@ const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 const email = (site.contactEmail || '').trim();
 const showEmail = !!email && !/example\.com/i.test(email);
 const donateUrl = (MONETIZATION.donateUrl || "").startsWith("https://") ? MONETIZATION.donateUrl : "";
-const hasDonate = Boolean(donateUrl || donateInfo());
+const dGate = donateInfo();
+const topOffer = offersFor('tools', undefined, 1)[0];
+const hasDonate = Boolean(donateUrl || dGate);
 const zaloUrl = String((MONETIZATION as any).zaloUrl || '').startsWith('https://zalo.me/') ? (MONETIZATION as any).zaloUrl : '';
 // Organization markup on the home pages only.
 const isHome = ['/', '/en', '/en/'].includes(clean(Astro.url.pathname));
 if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization', name: site.siteName, url: site.siteUrl, logo: new URL('/favicon.svg', site.siteUrl).href, sameAs: [] });
+const fmtAmt = (n: number) => {
+  const s = n.toLocaleString('vi-VN') + 'đ';
+  if (n <= 10000) return `☕ ${s}`;
+  if (n <= 20000) return `💛 ${s}`;
+  if (n <= 50000) return `⚡ ${s} (Server)`;
+  return `🚀 ${s} (VIP)`;
+};
 ---
 <!doctype html>
 <html lang={lang}>
@@ -81,28 +90,33 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
   <body class={stickyAd ? 'min-h-screen pb-[72px] md:pb-0' : 'min-h-screen'}>
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[70] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:text-brand-700 focus:shadow-lg">{lang === 'en' ? 'Skip to content' : 'Bỏ qua tới nội dung'}</a>
     <header class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-lg">
-      <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-        <a href={homeUrl(lang)} class="flex items-center gap-2 text-lg font-extrabold text-brand-700">
+      <div class="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2.5 overflow-x-auto no-scrollbar">
+        <a href={homeUrl(lang)} class="flex shrink-0 items-center gap-2 whitespace-nowrap text-base font-extrabold text-brand-700">
           <span class="grid h-8 w-8 place-items-center rounded-lg bg-brand-600 text-white">⚡</span>
           <span>{siteName}</span>
         </a>
-        <nav class="ml-auto hidden items-center gap-1 md:flex">
-          <a href={lang === 'en' ? '/en/tools/portfolio-website-builder' : '/cong-cu/tao-portfolio-ca-nhan'} class="mr-1 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 px-3 py-1 text-xs font-extrabold text-white shadow-xs transition hover:brightness-110">
-            🎨 {lang === 'en' ? '108 Portfolios' : '108 Mẫu Portfolio'}
+        <nav class="ml-auto hidden shrink-0 items-center gap-1 whitespace-nowrap md:flex">
+          <a href={lang === 'en' ? '/en/tools/portfolio-website-builder' : '/cong-cu/tao-portfolio-ca-nhan'} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-gradient-to-r from-rose-600 to-amber-600 px-2.5 py-1 text-xs font-extrabold text-white shadow-xs transition hover:brightness-110">
+            🎨 {lang === 'en' ? 'Portfolios' : 'Portfolio'}
           </a>
-          <a href={lang === 'en' ? '/en/tools/cv-contract-invoice' : '/cong-cu/tao-cv-hop-dong-hoa-don'} class="mr-1 inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-xs font-extrabold text-white shadow-xs transition hover:bg-slate-800">
-            📄 {lang === 'en' ? '108 CVs & Contracts' : '108 Mẫu CV & HĐ'}
+          <a href={lang === 'en' ? '/en/tools/cv-contract-invoice' : '/cong-cu/tao-cv-hop-dong-hoa-don'} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-xs font-extrabold text-white shadow-xs transition hover:bg-slate-800">
+            📄 {lang === 'en' ? 'CV & Docs' : 'CV & Hợp đồng'}
           </a>
           {Object.values(SECTIONS).map((s) => (
-            <a href={sectionUrl(s.id, lang)} class="rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">
+            <a href={sectionUrl(s.id, lang)} class="shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900">
               {s.icon} {s.name[lang]}
             </a>
           ))}
+          {hasDonate && (
+            <a href={lang === 'en' ? '/en/support' : '/ung-ho'} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-800 transition hover:bg-emerald-100">
+              💎 {lang === 'en' ? 'VIP / Support' : 'Ủng hộ / VIP'}
+            </a>
+          )}
         </nav>
         {altHref ? (
-          <a href={alternate} hreflang={altLang} class="ml-auto rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium md:ml-2">{L.langName}</a>
+          <a href={alternate} hreflang={altLang} class="ml-auto shrink-0 whitespace-nowrap rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold md:ml-1">{L.langName}</a>
         ) : (
-          <a href={homeUrl(altLang)} hreflang={altLang} class="ml-auto rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium md:ml-2">{L.langName}</a>
+          <a href={homeUrl(altLang)} hreflang={altLang} class="ml-auto shrink-0 whitespace-nowrap rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold md:ml-1">{L.langName}</a>
         )}
       </div>
       <nav class="flex gap-1 overflow-x-auto border-t border-slate-100 px-2 py-1 md:hidden">
@@ -112,14 +126,50 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
       </nav>
     </header>
 
-    {dlAd && (
-      <div id="dl-gate" hidden data-seconds={MONETIZATION.downloadAdSeconds || 5} class="fixed inset-0 z-[60] grid place-items-center bg-slate-900/60 p-4">
-        <div class="card relative w-full max-w-md text-center">
-          <button type="button" data-dl-close class="absolute top-1 right-1 grid h-11 w-11 place-items-center rounded-full text-xl text-slate-500 hover:bg-slate-100" aria-label={lang === 'en' ? 'Close' : 'Đóng'}>×</button>
-          <div class="text-sm font-semibold">{lang === 'vi' ? 'File của bạn đang được chuẩn bị…' : 'Preparing your file…'}</div>
-          <div class="mt-1 text-[10px] tracking-widest text-slate-600 uppercase">{L.ad}</div>
-          <div class="mt-1 flex min-h-[250px] items-center justify-center overflow-hidden rounded-xl bg-slate-100" set:html={dlAd} />
-          <button type="button" data-dl-go data-label={lang === 'vi' ? '⬇ Tải ngay' : '⬇ Download'} class="btn-primary mt-4 w-full" disabled></button>
+    {(dlAd || dGate) && (
+      <div id="dl-gate" hidden data-seconds={dlAd ? (MONETIZATION.downloadAdSeconds || 5) : 0} class="fixed inset-0 z-[60] grid place-items-center bg-slate-900/70 backdrop-blur-xs p-4">
+        <div class="card relative w-full max-w-lg text-left shadow-2xl">
+          <button type="button" data-dl-close class="absolute top-2 right-2 grid h-9 w-9 place-items-center rounded-full text-xl text-slate-500 hover:bg-slate-100" aria-label={lang === 'en' ? 'Close' : 'Đóng'}>×</button>
+          <div class="text-base font-extrabold text-slate-900">✨ {lang === 'vi' ? 'Bản thiết kế của bạn đã sẵn sàng!' : 'Your file is ready to export!'}</div>
+          <button type="button" data-dl-go data-label={lang === 'vi' ? '⬇ Tải / Xuất bản ngay (Miễn phí 100%)' : '⬇ Download / Export Now (100% Free)'} class="btn-primary mt-3 w-full py-3 text-base shadow-md"></button>
+
+          {dlAd && (
+            <div class="mt-3 flex min-h-[180px] items-center justify-center overflow-hidden rounded-xl bg-slate-100" set:html={dlAd} />
+          )}
+
+          {dGate && (
+            <div class="mt-4 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/90 to-amber-50/70 p-3.5">
+              <div class="flex flex-wrap items-center gap-3.5">
+                <div class="w-28 shrink-0 rounded-xl bg-white p-1.5 shadow-xs ring-1 ring-emerald-200" data-dl-qr set:html={dGate.amountSvgs?.[1]?.svg || dGate.svg} />
+                <div class="min-w-0 flex-1">
+                  <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-800">☕ {lang === 'vi' ? 'Ủng hộ tác giả / Đặt Gói Thiết Kế VIP' : 'Buy the creator a coffee / Book VIP Setup'}</div>
+                  <p class="mt-0.5 text-xs text-slate-600">{lang === 'vi' ? 'Quét VietQR ủng hộ phí duy trì Server hoặc đặt gắn Tên Miền Riêng (.com/.vn) cho Portfolio:' : 'Scan VietQR to support server costs or request custom domain setup:'}</p>
+                  <div class="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-800">
+                    <span class="font-bold">{dGate.bankName}:</span>
+                    <b class="font-mono text-sm text-emerald-950 select-all">{dGate.account}</b>
+                    <button type="button" data-dl-copy-acc data-acc={dGate.account} class="rounded-full border border-emerald-400 bg-white px-2 py-0.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100">📋 {lang === 'vi' ? 'Chép STK' : 'Copy'}</button>
+                  </div>
+                  <div class="mt-2 flex flex-wrap gap-1.5">
+                    {dGate.amountSvgs.map((a, idx) => (
+                      <button type="button" data-dl-qr-amt data-svg={a.svg} class={`rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-bold text-slate-800 hover:border-emerald-500 ${idx === 1 ? 'ring-2 ring-emerald-500 bg-emerald-50' : ''}`}>
+                        {fmtAmt(a.amount)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {topOffer && (
+            <a href={topOffer.url} target="_blank" rel="sponsored noopener nofollow" class="mt-3 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/70 px-3.5 py-2.5 text-xs transition hover:border-amber-400 hover:bg-amber-100/70">
+              <div>
+                <span class="rounded bg-amber-200/80 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-900">{topOffer.badge?.[lang] || 'HOT'}</span>
+                <b class="ml-1.5 text-slate-900">{topOffer.title?.[lang]}</b>
+              </div>
+              <span class="shrink-0 font-extrabold text-brand-700">{topOffer.cta?.[lang]} →</span>
+            </a>
+          )}
         </div>
       </div>
     )}
@@ -160,4 +210,3 @@ if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization',
     </footer>
   </body>
 </html>
-

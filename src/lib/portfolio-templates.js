@@ -268,7 +268,7 @@ function doc({ lang, title, fonts, css, body, script = '' }) {
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?${fonts}&display=swap" rel="stylesheet">
 <style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0}img{max-width:100%;display:block}a{color:inherit}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.anim{opacity:1!important;transform:none!important}}${css}</style></head><body>${body}${script ? `<script>${script}</script>` : ''}</body></html>`;
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv,.anim{opacity:1!important;transform:none!important}}${css}</style></head><body>${body}<script>document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(!h||h.charAt(0)==='#'){e.preventDefault();var t=h.length>1&&document.querySelector(h);if(t)t.scrollIntoView({behavior:'smooth'});}});</script>${script ? `<script>${script}</script>` : ''}</body></html>`;
 }
 
 const contactLinks = (d, cls = '') => [d.mail ? `<a class="${cls}" href="${d.mail}">${d.email}</a>` : '', ...d.links.map((l) => `<a class="${cls}" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`)].filter(Boolean).join('');
@@ -1638,9 +1638,18 @@ function makeUniqueSpecializedPortfolio(cfg, idx = 0) {
     const roleLabel = d.isThumb ? specTitle : d.role;
     const bioLabel = d.isThumb ? specDesc : d.bio;
 
+    const vecMotifs = [
+      `<svg data-pf-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="${c}" stroke-width="2.5" style="flex-shrink:0;cursor:pointer"><rect x="5" y="5" width="30" height="30" fill="${c}18"/><rect x="12" y="12" width="16" height="16" fill="${c}"/></svg>`,
+      `<svg data-pf-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="${c}" stroke-width="2.5" style="flex-shrink:0;cursor:pointer"><circle cx="20" cy="20" r="15" fill="${c}18"/><circle cx="20" cy="20" r="6" fill="${c}"/></svg>`,
+      `<svg data-pf-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="${c}" style="flex-shrink:0;cursor:pointer"><path d="M20 2 L24.5 15.5 L38 20 L24.5 24.5 L20 38 L15.5 24.5 L2 20 L15.5 15.5 Z"/></svg>`,
+      `<svg data-pf-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="${c}" stroke-width="2.5" style="flex-shrink:0;cursor:pointer"><polygon points="20,4 36,34 4,34" fill="${c}22"/><circle cx="20" cy="24" r="5" fill="${c}"/></svg>`,
+      `<svg data-pf-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="${c}" stroke-width="2.5" style="flex-shrink:0;cursor:pointer"><polygon points="20,3 35,11.5 35,28.5 20,37 5,28.5 5,11.5" fill="${c}18"/><circle cx="20" cy="20" r="6" fill="${c}"/></svg>`,
+      `<svg data-pf-vec="1" width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="${c}" stroke-width="2.5" style="flex-shrink:0;cursor:pointer"><rect x="4" y="4" width="20" height="20" fill="${c}"/><circle cx="26" cy="26" r="10" fill="${c}33"/></svg>`
+    ];
+    const sigVec = vecMotifs[idx % vecMotifs.length];
     const logoBadge = d.logo
-      ? `<img src="${d.logo}" alt="${d.name}" style="height:36px;width:auto;max-width:140px;object-fit:contain;border-radius:6px">`
-      : `<span style="display:inline-flex;align-items:center;gap:8px;font-family:${hFont};font-weight:800;font-size:17px"><i style="width:10px;height:10px;border-radius:50%;background:${c};display:inline-block"></i>${d.name}</span>`;
+      ? `<span style="display:inline-flex;align-items:center;gap:10px">${sigVec}<img src="${d.logo}" alt="${d.name}" style="height:36px;width:auto;max-width:140px;object-fit:contain;border-radius:6px"></span>`
+      : `<span style="display:inline-flex;align-items:center;gap:10px;font-family:${hFont};font-weight:800;font-size:17px">${sigVec}<span>${d.name}</span></span>`;
 
     const skillPills = d.skills.slice(0, 7).map((s) => `<span style="padding:4px 11px;border-radius:${idx % 2 ? '99px' : '6px'};background:${c}18;color:${dark ? '#fff' : c};border:1px solid ${c}44;font-size:11.5px;font-weight:700">${s}</span>`).join('');
 
@@ -2030,12 +2039,12 @@ function bespokeOverlay(values, c) {
 
   let doodles = '';
   if (stk === 'doodle') {
-    doodles = `<div style="position:fixed;right:22px;bottom:22px;z-index:30;pointer-events:none;opacity:.85"><svg width="110" height="110" viewBox="0 0 120 120" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"><path d="M60,12 L68,44 L100,52 L68,60 L60,92 L52,60 L20,52 L52,44 Z"/><path d="M18,98 Q55,75 98,104"/></svg></div>`;
+    doodles = `<div style="position:fixed;right:22px;bottom:22px;z-index:30;cursor:pointer;opacity:.85"><svg data-pf-vec="1" width="110" height="110" viewBox="0 0 120 120" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"><path d="M60,12 L68,44 L100,52 L68,60 L60,92 L52,60 L20,52 L52,44 Z"/><path d="M18,98 Q55,75 98,104"/></svg></div>`;
   } else if (stk === 'botanical') {
-    doodles = `<div style="position:fixed;right:18px;bottom:18px;z-index:30;pointer-events:none;opacity:.8"><svg width="110" height="140" viewBox="0 0 110 140" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"><path d="M55,130 Q50,70 70,15 M56,95 Q28,80 20,58 Q42,62 56,82 M60,65 Q86,50 92,30 Q72,38 59,56"/></svg></div>`;
+    doodles = `<div style="position:fixed;right:18px;bottom:18px;z-index:30;cursor:pointer;opacity:.8"><svg data-pf-vec="1" width="110" height="140" viewBox="0 0 110 140" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"><path d="M55,130 Q50,70 70,15 M56,95 Q28,80 20,58 Q42,62 56,82 M60,65 Q86,50 92,30 Q72,38 59,56"/></svg></div>`;
   } else if (stk === 'inkseal') {
     const sTxt = e(String(values.name || 'ẤN').trim().split(/\s+/).pop().slice(0, 2).toUpperCase());
-    doodles = `<div style="position:fixed;right:24px;bottom:24px;z-index:30;pointer-events:none;width:54px;height:54px;background:#b91c1c;color:#fff;border:2px solid #7f1d1d;border-radius:8px;display:grid;place-items:center;font-weight:900;transform:rotate(-8deg);box-shadow:3px 4px 12px rgba(185,28,28,.35)">${sTxt}</div>`;
+    doodles = `<div style="position:fixed;right:24px;bottom:24px;z-index:30;cursor:pointer;width:54px;height:54px;background:#b91c1c;color:#fff;border:2px solid #7f1d1d;border-radius:8px;display:grid;place-items:center;font-weight:900;transform:rotate(-8deg);box-shadow:3px 4px 12px rgba(185,28,28,.35)">${sTxt}</div>`;
   }
   return `<style>${css}</style>` + doodles;
 }
@@ -2043,18 +2052,554 @@ function bespokeOverlay(values, c) {
 // Preview-only script: text that equals a form value becomes click-to-edit and reports changes to the tool via postMessage.
 function editScript(map) {
   const data = JSON.stringify(map).replace(/</g, '\\u003c');
-  return `<style>[data-k]{outline:1px dashed transparent;outline-offset:3px;cursor:text;transition:outline-color .15s}[data-k]:hover{outline-color:rgba(37,99,235,.8)}[data-k][contenteditable]{outline:2px solid #2563eb;background:rgba(37,99,235,.08)}</style>
-<script>(function(){var M=${data};var all=[].slice.call(document.body.querySelectorAll('*'));
-Object.keys(M).forEach(function(k){var v=String(M[k]||'').trim();if(v.length<2)return;
-all.forEach(function(el){if(el.tagName==='SCRIPT'||el.tagName==='STYLE'||el.textContent.trim()!==v)return;
-if([].some.call(el.children,function(ch){return ch.textContent.trim()===v}))return;el.setAttribute('data-k',k);});});
-var multi=function(k){return k==='bio'||/\\.(desc|challenge|solution|result)$/.test(k)};
-document.addEventListener('click',function(ev){var el=ev.target.closest&&ev.target.closest('[data-k]');if(!el)return;ev.preventDefault();ev.stopPropagation();
-if(el.isContentEditable)return;el.setAttribute('contenteditable','plaintext-only');if(!el.isContentEditable)el.setAttribute('contenteditable','true');el.focus();},true);
-document.addEventListener('input',function(ev){var el=ev.target.closest&&ev.target.closest('[data-k]');if(!el)return;var k=el.getAttribute('data-k'),t=el.innerText.replace(/\\s+/g,' ').trim();
-document.querySelectorAll('[data-k]').forEach(function(o){if(o!==el&&o.getAttribute('data-k')===k)o.textContent=t;});parent.postMessage({type:'pf-edit',key:k,value:t},'*');});
-document.addEventListener('keydown',function(ev){var el=ev.target;if(ev.key==='Enter'&&el.isContentEditable&&!multi(el.getAttribute('data-k')||'')){ev.preventDefault();el.blur();}});
-document.addEventListener('focusout',function(ev){if(ev.target.removeAttribute)ev.target.removeAttribute('contenteditable');});})();</script>`;
+  return `<style data-pf-editor-ui="1">
+    [data-pf-sel="1"]{outline:2.5px solid #2563eb!important;outline-offset:3px!important;box-shadow:0 0 0 4px rgba(37,99,235,.18)!important}
+    [data-pf-hover="1"]:not([data-pf-sel="1"]){outline:1.5px dashed rgba(37,99,235,.65)!important;outline-offset:2px!important}
+    [contenteditable="true"],[contenteditable="plaintext-only"]{cursor:text!important}
+    #pf-studio-bar{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:99999;background:rgba(15,23,42,.96);color:#f8fafc;border:1.5px solid #3b82f6;border-radius:16px;padding:8px 12px;box-shadow:0 18px 42px rgba(0,0,0,.45);font:600 11.5px/1.2 system-ui,-apple-system,sans-serif;display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:96vw;backdrop-filter:blur(10px)}
+    #pf-studio-bar button,#pf-studio-bar select,#pf-studio-bar label{background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:8px;padding:4px 7px;font:700 11px/1.1 system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;transition:.12s}
+    #pf-studio-bar button:hover,#pf-studio-bar select:hover,#pf-studio-bar label:hover{background:#2563eb;border-color:#60a5fa;color:#fff}
+    #pf-studio-bar button.on{background:#2563eb;border-color:#93c5fd;color:#fff}
+    #pf-studio-bar input[type="color"]{width:22px;height:22px;border:0;padding:0;background:transparent;cursor:pointer;border-radius:4px}
+    #pf-studio-bar .sep{width:1px;height:18px;background:#334155;margin:0 2px}
+    #pf-studio-bar .tag{background:#1d4ed8;color:#fff;padding:4px 8px;border-radius:6px;font-weight:800;font-size:10.5px;letter-spacing:.04em}
+    @media print{#pf-studio-bar{display:none!important}[data-pf-sel="1"],[data-pf-hover="1"]{outline:0!important;box-shadow:none!important}}
+  </style>
+  <div id="pf-studio-bar" data-pf-editor-ui="1">
+    <span class="tag" id="pfs-tag">✎ Chạm vào Vector / Khung vuông / Chữ / Khối để sửa</span>
+    <button type="button" id="pfs-parent" title="Chọn khung vuông / khối bao ngoài">↑ Khung cha</button>
+    <button type="button" id="pfs-child-vec" title="Chọn Vector SVG bên trong khối này">✦ Chọn Vector</button>
+    <span class="sep"></span>
+    <label title="Đổi màu Chữ hoặc màu Tô (Fill) của Vector SVG">🎨 Chữ/Vector <input type="color" id="pfs-fg" value="#2563eb"></label>
+    <label title="Đổi màu Nền của Khung vuông / Khối">⬜ Nền <input type="color" id="pfs-bg" value="#ffffff"></label>
+    <button type="button" id="pfs-bg-clear" title="Làm nền trong suốt">Ø</button>
+    <label title="Đổi màu Viền khung hoặc Nét vẽ (Stroke) của Vector">🖍 Viền <input type="color" id="pfs-bdr" value="#0f172a"></label>
+    <span class="sep"></span>
+    <button type="button" data-pfs-rad="0px" title="Khung vuông sắc cạnh (0px)">⬜ Vuông</button>
+    <button type="button" data-pfs-rad="12px" title="Khung bo góc vừa (12px)">▢ Bo</button>
+    <button type="button" data-pfs-rad="999px" title="Khung tròn / Pill">◯ Tròn</button>
+    <button type="button" id="pfs-border-cycle" title="Đổi độ dày kiểu viền khung (0px / 1px / 2px / 4px / Nét đứt)">━ Viền</button>
+    <button type="button" id="pfs-shadow" title="Bật/tắt đổ bóng khối cứng / 3D">❐ Bóng</button>
+    <span class="sep"></span>
+    <button type="button" id="pfs-scale-down" title="Thu nhỏ kích thước Vector / Chữ / Khung">− Nhỏ</button>
+    <button type="button" id="pfs-scale-up" title="Phóng to kích thước Vector / Chữ / Khung">＋ To</button>
+    <button type="button" id="pfs-rot-l" title="Xoay trái 15 độ">↺</button>
+    <button type="button" id="pfs-rot-r" title="Xoay phải 15 độ">↻</button>
+    <button type="button" id="pfs-drag-mode" title="Bật chế độ Kéo thả tự do mọi Vector, Khung vuông, Chữ bằng chuột">✥ Kéo di chuyển</button>
+    <button type="button" data-pfs-nudge="-10,0" title="Dịch trái">←</button>
+    <button type="button" data-pfs-nudge="0,-10" title="Dịch lên">↑</button>
+    <button type="button" data-pfs-nudge="0,10" title="Dịch xuống">↓</button>
+    <button type="button" data-pfs-nudge="10,0" title="Dịch phải">→</button>
+    <span class="sep"></span>
+    <select id="pfs-vec-swap" title="Đổi hình Vector hiện tại hoặc Chèn Vector mới vào khối">
+      <option value="">✦ Đổi/Chèn Vector...</option>
+      <option value="square">■ Vector Khung Vuông Đôi</option>
+      <option value="circle">● Vector Tâm Tròn</option>
+      <option value="star">★ Vector Ngôi Sao 4 Cánh</option>
+      <option value="bauhaus">▲ Vector Hình Học Bauhaus</option>
+      <option value="hex">⬡ Vector Lục Giác Kỹ Thuật</option>
+      <option value="wave">〰 Vector Sóng Nghệ Thuật</option>
+      <option value="seal">🉐 Vector Ấn Triện Đỏ</option>
+      <option value="frame">❖ Vector Khung Viền Cổ Điển</option>
+    </select>
+    <input type="search" id="pfs-oss-q" placeholder="🔍 Tìm 200k+ Vector mở (star, art, ai...)" style="background:#1e293b;color:#fff;border:1px solid #334155;border-radius:6px;padding:3px 7px;width:155px;font-size:11px" />
+    <button type="button" id="pfs-oss-btn" title="Tìm kiếm 200.000+ Vector mã nguồn mở miễn phí (Iconify: Lucide, Phosphor, Tabler, Solar)">🌐 Tìm Vector</button>
+    <button type="button" id="pfs-qr-btn" title="Tạo & Chèn mã QR Vector (Link Web, Zalo, VietQR) trực tiếp vào Portfolio">🔳 Chèn QR</button>
+    <button type="button" id="pfs-add-box" title="Chèn thêm 1 Khung vuông / Khối nội dung mới">＋ Khung vuông</button>
+    <button type="button" id="pfs-add-text" title="Chèn thêm 1 dòng Chữ mới">＋ Chữ</button>
+    <label title="Đổi ảnh đang chọn hoặc Chèn ảnh mới từ máy">📷 Ảnh <input type="file" id="pfs-img-input" accept="image/*" style="display:none"></label>
+    <span class="sep"></span>
+    <button type="button" id="pfs-dup" title="Nhân bản Vector / Khung vuông / Khối đang chọn">⧉ Nhân bản</button>
+    <button type="button" id="pfs-up" title="Đưa khối lên trước">▲</button>
+    <button type="button" id="pfs-down" title="Đưa khối xuống sau">▼</button>
+    <button type="button" id="pfs-del" title="Xóa phần tử đang chọn" style="color:#fca5a5">🗑 Xóa</button>
+    <button type="button" id="pfs-undo" title="Hoàn tác thao tác vừa làm">↩ Hoàn tác</button>
+    <div id="pfs-oss-tray" style="display:none;width:100%;padding:6px 4px 2px;border-top:1px solid #334155;gap:6px;flex-wrap:wrap;align-items:center"></div>
+  </div>
+  <script data-pf-editor-ui="1">(function(){
+    var M=${data};
+    var bar=document.getElementById('pf-studio-bar');
+    var tagEl=document.getElementById('pfs-tag');
+    var sel=null, hoverEl=null, dragMode=false, dragging=null;
+    var undoStack=[], syncTimer=0;
+    var syncLiveDoc=function(){
+      clearTimeout(syncTimer);
+      syncTimer=setTimeout(function(){
+        var docClone=document.documentElement.cloneNode(true);
+        [].slice.call(docClone.querySelectorAll('[data-pf-editor-ui]')).forEach(function(n){n.remove()});
+        [].slice.call(docClone.querySelectorAll('[data-pf-sel],[data-pf-hover],[contenteditable]')).forEach(function(n){
+          n.removeAttribute('data-pf-sel');n.removeAttribute('data-pf-hover');n.removeAttribute('contenteditable');
+        });
+        parent.postMessage({type:'pf-dom-snapshot',html:'<!doctype html>\n'+docClone.outerHTML},'*');
+      },120);
+    };
+    var saveUndo=function(){
+      if(sel)sel.removeAttribute('data-pf-sel');
+      if(hoverEl)hoverEl.removeAttribute('data-pf-hover');
+      var clone=document.body.cloneNode(true);
+      [].slice.call(clone.querySelectorAll('[data-pf-editor-ui]')).forEach(function(n){n.remove()});
+      var snap=clone.innerHTML;
+      if(!undoStack.length||undoStack[undoStack.length-1]!==snap){
+        undoStack.push(snap);
+        if(undoStack.length>25)undoStack.shift();
+      }
+      if(sel)sel.setAttribute('data-pf-sel','1');
+      syncLiveDoc();
+    };
+    var markMapped=function(){
+      var all=[].slice.call(document.body.querySelectorAll('*'));
+      Object.keys(M).forEach(function(k){
+        var v=String(M[k]||'').trim();if(v.length<2)return;
+        all.forEach(function(el){
+          if(el.closest&&el.closest('[data-pf-editor-ui]'))return;
+          if(el.tagName==='SCRIPT'||el.tagName==='STYLE'||el.textContent.trim()!==v)return;
+          if([].some.call(el.children,function(ch){return ch.textContent.trim()===v}))return;
+          el.setAttribute('data-k',k);
+        });
+      });
+    };
+    markMapped();
+    saveUndo();
+
+    var isEditorUi=function(el){return !!(el&&el.closest&&(el.closest('#pf-studio-bar')||el.closest('[data-pf-editor-ui]')))};
+    var isSvgPart=function(el){return !!(el&&(el.tagName==='svg'||el.tagName==='SVG'||(el.ownerSVGElement&&el.ownerSVGElement.tagName.toLowerCase()==='svg')))};
+    var getTarget=function(raw){
+      if(!raw||raw===document.body||raw===document.documentElement)return null;
+      if(isEditorUi(raw))return null;
+      if(isSvgPart(raw))return raw.ownerSVGElement||raw;
+      return raw;
+    };
+    var isTextLike=function(el){
+      if(!el||isSvgPart(el)||el.tagName==='IMG')return false;
+      var t=el.tagName.toUpperCase();
+      if(['H1','H2','H3','H4','H5','H6','P','SPAN','A','B','STRONG','EM','I','SMALL','LI','BLOCKQUOTE','FIGCAPTION','TD','TH','LABEL','BUTTON','CITE','CODE'].indexOf(t)>=0)return true;
+      if(el.children.length===0&&(el.textContent||'').trim().length>0)return true;
+      return false;
+    };
+    var describeEl=function(el){
+      if(!el)return '✎ Chạm vào Vector / Khung / Chữ';
+      if(isSvgPart(el))return '✦ Vector SVG';
+      var t=el.tagName.toUpperCase();
+      if(t==='IMG')return '🖼 Hình ảnh';
+      if(isTextLike(el))return '✎ Chữ ('+t+')';
+      return '⬜ Khung / Khối ('+t+')';
+    };
+    var getTransformState=function(el){
+      var sc=parseFloat(el.getAttribute('data-pfs-sc')||'1')||1;
+      var rot=parseFloat(el.getAttribute('data-pfs-rot')||'0')||0;
+      var tx=parseFloat(el.getAttribute('data-pfs-tx')||'0')||0;
+      var ty=parseFloat(el.getAttribute('data-pfs-ty')||'0')||0;
+      return {sc:sc,rot:rot,tx:tx,ty:ty};
+    };
+    var applyTransform=function(el,st){
+      el.setAttribute('data-pfs-sc',String(st.sc));
+      el.setAttribute('data-pfs-rot',String(st.rot));
+      el.setAttribute('data-pfs-tx',String(st.tx));
+      el.setAttribute('data-pfs-ty',String(st.ty));
+      el.style.transform='translate('+st.tx+'px,'+st.ty+'px) rotate('+st.rot+'deg) scale('+st.sc+')';
+    };
+    var selectEl=function(el,enableEdit){
+      if(!el||isEditorUi(el)||el===document.body||el===document.documentElement)return;
+      if(sel&&sel!==el){
+        sel.removeAttribute('data-pf-sel');
+        if(sel.isContentEditable)sel.removeAttribute('contenteditable');
+      }
+      sel=el;
+      sel.setAttribute('data-pf-sel','1');
+      if(tagEl)tagEl.textContent=describeEl(sel);
+      if(enableEdit&&isTextLike(sel)&&!dragMode){
+        sel.setAttribute('contenteditable','true');
+        try{sel.focus()}catch(e){}
+      }
+    };
+
+    document.addEventListener('mouseover',function(ev){
+      var t=getTarget(ev.target);
+      if(hoverEl&&hoverEl!==t)hoverEl.removeAttribute('data-pf-hover');
+      if(t&&t!==sel){hoverEl=t;hoverEl.setAttribute('data-pf-hover','1');}
+    });
+    document.addEventListener('mouseout',function(ev){
+      if(hoverEl&&ev.target===hoverEl){hoverEl.removeAttribute('data-pf-hover');hoverEl=null;}
+    });
+
+    // Prevent any <a> or <form> inside the portfolio canvas from navigating the preview iframe!
+    document.addEventListener('click',function(ev){
+      if(isEditorUi(ev.target))return;
+      var link=ev.target.closest&&ev.target.closest('a,button');
+      if(link&&!link.closest('#pf-mag-modal')&&link.id!=='pf-mag-open'){
+        ev.preventDefault();
+      }
+      var t=getTarget(ev.target);
+      if(!t)return;
+      ev.stopPropagation();
+      selectEl(t,true);
+    },true);
+
+    // Drag to move any element when dragMode is ON or Alt key is held
+    document.addEventListener('pointerdown',function(ev){
+      if(isEditorUi(ev.target))return;
+      if(!dragMode&&!ev.altKey)return;
+      var t=getTarget(ev.target);
+      if(!t)return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      selectEl(t,false);
+      saveUndo();
+      var st=getTransformState(sel);
+      dragging={el:sel,startX:ev.clientX,startY:ev.clientY,origX:st.tx,origY:st.ty,st:st};
+    },true);
+    document.addEventListener('pointermove',function(ev){
+      if(!dragging)return;
+      dragging.st.tx=Math.round(dragging.origX+(ev.clientX-dragging.startX));
+      dragging.st.ty=Math.round(dragging.origY+(ev.clientY-dragging.startY));
+      applyTransform(dragging.el,dragging.st);
+    });
+    document.addEventListener('pointerup',function(){
+      if(dragging){dragging=null;syncLiveDoc();}
+    });
+
+    // Sync inline text edits back to form (if mapped) & mark DOM dirty
+    document.addEventListener('input',function(ev){
+      if(isEditorUi(ev.target))return;
+      var el=ev.target.closest&&ev.target.closest('[data-k]');
+      if(el){
+        var k=el.getAttribute('data-k'),t=(el.innerText||'').replace(/\\s+/g,' ').trim();
+        document.querySelectorAll('[data-k]').forEach(function(o){if(o!==el&&o.getAttribute('data-k')===k)o.textContent=t;});
+        parent.postMessage({type:'pf-edit',key:k,value:t},'*');
+      }
+      syncLiveDoc();
+    });
+
+    // Toolbar actions
+    document.getElementById('pfs-parent').addEventListener('click',function(){
+      if(!sel)return;
+      var p=sel.parentElement;
+      if(p&&p!==document.body&&p!==document.documentElement&&!isEditorUi(p))selectEl(p,false);
+    });
+    document.getElementById('pfs-child-vec').addEventListener('click',function(){
+      var root=sel||document.body;
+      var v=root.querySelector('svg');
+      if(!v&&sel)v=document.querySelector('svg');
+      if(v)selectEl(v,false);
+    });
+    document.getElementById('pfs-fg').addEventListener('input',function(ev){
+      if(!sel)return;
+      saveUndo();
+      var c=ev.target.value;
+      if(isSvgPart(sel)){
+        sel.style.color=c;
+        sel.setAttribute('stroke',c);
+        [].slice.call(sel.querySelectorAll('path,rect,circle,polygon,ellipse,line')).forEach(function(sh,i){
+          if(sh.getAttribute('fill')&&sh.getAttribute('fill')!=='none')sh.setAttribute('fill',i%2?c+'33':c);
+          if(sh.getAttribute('stroke')&&sh.getAttribute('stroke')!=='none')sh.setAttribute('stroke',c);
+        });
+      }else{
+        sel.style.color=c;
+      }
+      syncLiveDoc();
+    });
+    document.getElementById('pfs-bg').addEventListener('input',function(ev){
+      if(!sel)return;
+      saveUndo();
+      sel.style.backgroundColor=ev.target.value;
+      syncLiveDoc();
+    });
+    document.getElementById('pfs-bg-clear').addEventListener('click',function(){
+      if(!sel)return;
+      saveUndo();
+      sel.style.background='transparent';
+      syncLiveDoc();
+    });
+    document.getElementById('pfs-bdr').addEventListener('input',function(ev){
+      if(!sel)return;
+      saveUndo();
+      var c=ev.target.value;
+      if(isSvgPart(sel)){
+        sel.setAttribute('stroke',c);
+        [].slice.call(sel.querySelectorAll('path,rect,circle,polygon,ellipse,line')).forEach(function(sh){sh.setAttribute('stroke',c)});
+      }else{
+        if(!sel.style.borderStyle||sel.style.borderStyle==='none')sel.style.border='2px solid '+c;
+        else sel.style.borderColor=c;
+      }
+      syncLiveDoc();
+    });
+    [].slice.call(bar.querySelectorAll('[data-pfs-rad]')).forEach(function(b){
+      b.addEventListener('click',function(){
+        if(!sel)return;
+        saveUndo();
+        var target=isSvgPart(sel)?sel.parentElement||sel:sel;
+        target.style.borderRadius=b.getAttribute('data-pfs-rad');
+        if(target.tagName!=='IMG')target.style.overflow='hidden';
+      });
+    });
+    var bdrModes=['0px none','1.5px solid currentColor','3px solid currentColor','2.5px dashed currentColor','4px double currentColor'];
+    var bdrIdx=0;
+    document.getElementById('pfs-border-cycle').addEventListener('click',function(){
+      if(!sel)return;
+      saveUndo();
+      bdrIdx=(bdrIdx+1)%bdrModes.length;
+      if(isSvgPart(sel)){
+        var sw=[1,2,3.5,5,2][bdrIdx];
+        sel.setAttribute('stroke-width',String(sw));
+        if(bdrIdx===3)sel.setAttribute('stroke-dasharray','4 3');else sel.removeAttribute('stroke-dasharray');
+      }else{
+        sel.style.border=bdrModes[bdrIdx];
+        if(!sel.style.padding)sel.style.padding='12px';
+      }
+    });
+    var shModes=['none','0 12px 30px rgba(0,0,0,.16)','6px 6px 0 currentColor','0 20px 45px rgba(37,99,235,.28)'];
+    var shIdx=0;
+    document.getElementById('pfs-shadow').addEventListener('click',function(){
+      if(!sel)return;
+      saveUndo();
+      shIdx=(shIdx+1)%shModes.length;
+      sel.style.boxShadow=shModes[shIdx];
+    });
+    var scaleBy=function(delta){
+      if(!sel)return;
+      saveUndo();
+      if(isTextLike(sel)&&!isSvgPart(sel)){
+        var cur=parseFloat(window.getComputedStyle(sel).fontSize)||16;
+        sel.style.fontSize=Math.max(10,Math.round(cur*(delta>0?1.12:0.89)))+'px';
+      }else{
+        var st=getTransformState(sel);
+        st.sc=Math.max(0.25,Math.min(4,Number((st.sc+delta).toFixed(2))));
+        applyTransform(sel,st);
+      }
+    };
+    document.getElementById('pfs-scale-down').addEventListener('click',function(){scaleBy(-0.12)});
+    document.getElementById('pfs-scale-up').addEventListener('click',function(){scaleBy(0.12)});
+    document.getElementById('pfs-rot-l').addEventListener('click',function(){
+      if(!sel)return;saveUndo();var st=getTransformState(sel);st.rot-=15;applyTransform(sel,st);
+    });
+    document.getElementById('pfs-rot-r').addEventListener('click',function(){
+      if(!sel)return;saveUndo();var st=getTransformState(sel);st.rot+=15;applyTransform(sel,st);
+    });
+    var dragBtn=document.getElementById('pfs-drag-mode');
+    dragBtn.addEventListener('click',function(){
+      dragMode=!dragMode;
+      dragBtn.classList.toggle('on',dragMode);
+      if(dragMode&&sel&&sel.isContentEditable)sel.removeAttribute('contenteditable');
+    });
+    [].slice.call(bar.querySelectorAll('[data-pfs-nudge]')).forEach(function(b){
+      b.addEventListener('click',function(){
+        if(!sel)return;
+        saveUndo();
+        var pts=b.getAttribute('data-pfs-nudge').split(',');
+        var st=getTransformState(sel);
+        st.tx+=Number(pts[0]);st.ty+=Number(pts[1]);
+        applyTransform(sel,st);
+      });
+    });
+
+    var VEC_LIB={
+      square:'<svg data-pf-vec="1" width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#2563eb" stroke-width="2.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><rect x="6" y="6" width="44" height="44" fill="#2563eb22"/><rect x="16" y="16" width="24" height="24" fill="#2563eb"/></svg>',
+      circle:'<svg data-pf-vec="1" width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#2563eb" stroke-width="2.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><circle cx="28" cy="28" r="22" fill="#2563eb22"/><circle cx="28" cy="28" r="9" fill="#2563eb"/></svg>',
+      star:'<svg data-pf-vec="1" width="56" height="56" viewBox="0 0 56 56" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><path d="M28 4 L34 22 L52 28 L34 34 L28 52 L22 34 L4 28 L22 22 Z"/></svg>',
+      bauhaus:'<svg data-pf-vec="1" width="60" height="60" viewBox="0 0 60 60" fill="none" stroke="#0f172a" stroke-width="2.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><rect x="6" y="6" width="26" height="26" fill="#ef4444"/><circle cx="38" cy="38" r="16" fill="#f59e0b"/><polygon points="30,10 54,48 14,48" fill="#2563eb88"/></svg>',
+      hex:'<svg data-pf-vec="1" width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#059669" stroke-width="2.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><polygon points="28,4 50,16 50,40 28,52 6,40 6,16" fill="#05966922"/><circle cx="28" cy="28" r="8" fill="#059669"/></svg>',
+      wave:'<svg data-pf-vec="1" width="120" height="36" viewBox="0 0 120 36" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" style="display:inline-block;vertical-align:middle;cursor:pointer"><path d="M4,18 Q20,4 36,18 T68,18 T100,18 T116,18"/><path d="M4,28 Q20,14 36,28 T68,28 T100,28" opacity=".45"/></svg>',
+      seal:'<svg data-pf-vec="1" width="58" height="58" viewBox="0 0 58 58" fill="none" stroke="#b91c1c" stroke-width="2.5" style="display:inline-block;vertical-align:middle;cursor:pointer"><rect x="5" y="5" width="48" height="48" rx="8" fill="#b91c1c"/><rect x="10" y="10" width="38" height="38" rx="4" stroke="#fff" stroke-width="1.5"/><path d="M20,22 H38 M29,16 V42 M20,34 H38" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+      frame:'<svg data-pf-vec="1" width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#d97706" stroke-width="2.2" style="display:inline-block;vertical-align:middle;cursor:pointer"><rect x="6" y="6" width="52" height="52"/><rect x="12" y="12" width="40" height="40" stroke-dasharray="4 3"/><circle cx="32" cy="32" r="10" fill="#d9770633"/></svg>'
+    };
+    document.getElementById('pfs-vec-swap').addEventListener('change',function(ev){
+      var vKey=ev.target.value;if(!vKey||!VEC_LIB[vKey])return;
+      saveUndo();
+      var wrap=document.createElement('div');
+      wrap.innerHTML=VEC_LIB[vKey];
+      var newSvg=wrap.firstElementChild;
+      if(sel&&isSvgPart(sel)){
+        sel.replaceWith(newSvg);
+      }else if(sel){
+        sel.insertAdjacentElement('afterbegin',newSvg);
+      }else{
+        var host=document.querySelector('.w,main,header,body');
+        if(host)host.insertAdjacentElement('afterbegin',newSvg);
+      }
+      selectEl(newSvg,false);
+      ev.target.value='';
+    });
+
+    var insertRawSvg=function(svgMarkup){
+      saveUndo();
+      var wrap=document.createElement('div');
+      wrap.innerHTML=svgMarkup;
+      var newSvg=wrap.querySelector('svg')||wrap.firstElementChild;
+      if(!newSvg)return;
+      newSvg.setAttribute('data-pf-vec','1');
+      if(!newSvg.getAttribute('width'))newSvg.setAttribute('width','52');
+      if(!newSvg.getAttribute('height'))newSvg.setAttribute('height','52');
+      newSvg.style.cssText='display:inline-block;vertical-align:middle;cursor:pointer;color:#2563eb';
+      if(sel&&isSvgPart(sel)){
+        sel.replaceWith(newSvg);
+      }else if(sel){
+        sel.insertAdjacentElement('afterbegin',newSvg);
+      }else{
+        var host=document.querySelector('.w,main,header,body');
+        if(host)host.insertAdjacentElement('afterbegin',newSvg);
+      }
+      selectEl(newSvg,false);
+      syncLiveDoc();
+    };
+    var ossTray=document.getElementById('pfs-oss-tray');
+    var ossInput=document.getElementById('pfs-oss-q');
+    var searchIconify=function(){
+      var q=(ossInput&&ossInput.value||'').trim()||'sparkles';
+      if(!ossTray)return;
+      ossTray.style.display='flex';
+      ossTray.innerHTML='<span style="font-size:11px;color:#93c5fd">⏳ Đang tải Vector mã nguồn mở (Iconify)...</span>';
+      fetch('https://api.iconify.design/search?query='+encodeURIComponent(q)+'&limit=18')
+        .then(function(r){return r.json()})
+        .then(function(d){
+          var icons=d&&d.icons||[];
+          if(!icons.length){ossTray.innerHTML='<span style="font-size:11px;color:#fca5a5">Không tìm thấy vector cho từ khóa này. Thử tiếng Anh (vd: art, star, code, brush, crown)</span>';return;}
+          ossTray.innerHTML='<span style="font-size:10.5px;color:#93c5fd;font-weight:700">Chạm để chèn/đổi Vector:</span>';
+          icons.forEach(function(ic){
+            var btn=document.createElement('button');
+            btn.type='button';
+            btn.title=ic;
+            btn.style.cssText='padding:4px 6px;display:inline-flex;align-items:center;justify-content:center;background:#1e293b;border:1px solid #475569;border-radius:6px;cursor:pointer';
+            btn.innerHTML='<img src="https://api.iconify.design/'+ic+'.svg?color=%23ffffff&height=20" width="20" height="20" alt="'+ic+'"/>';
+            btn.addEventListener('click',function(){
+              fetch('https://api.iconify.design/'+ic+'.svg?height=56')
+                .then(function(r){return r.text()})
+                .then(function(svgTxt){if(svgTxt.indexOf('<svg')>=0)insertRawSvg(svgTxt);});
+            });
+            ossTray.appendChild(btn);
+          });
+          var closeB=document.createElement('button');
+          closeB.type='button';
+          closeB.textContent='✕ Đóng';
+          closeB.style.cssText='margin-left:auto;font-size:10.5px;color:#cbd5e1';
+          closeB.addEventListener('click',function(){ossTray.style.display='none'});
+          ossTray.appendChild(closeB);
+        })
+        .catch(function(){ossTray.innerHTML='<span style="font-size:11px;color:#fca5a5">Lỗi kết nối kho Iconify.</span>';});
+    };
+    var ossBtn=document.getElementById('pfs-oss-btn');
+    if(ossBtn)ossBtn.addEventListener('click',searchIconify);
+    if(ossInput)ossInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();searchIconify();}});
+
+    var qrBtn=document.getElementById('pfs-qr-btn');
+    if(qrBtn)qrBtn.addEventListener('click',function(){
+      var val=window.prompt('Nhập Link Website, Zalo (https://zalo.me/...), hoặc nội dung muốn tạo Mã QR Vector:','https://zalo.me/0901234567');
+      if(!val)return;
+      fetch('https://api.qrserver.com/v1/create-qr-code/?size=140x140&format=svg&margin=4&data='+encodeURIComponent(val.trim()))
+        .then(function(r){return r.text()})
+        .then(function(svgTxt){
+          if(svgTxt.indexOf('<svg')>=0){
+            insertRawSvg(svgTxt);
+          }else{
+            saveUndo();
+            var img=document.createElement('img');
+            img.src='https://api.qrserver.com/v1/create-qr-code/?size=160x160&data='+encodeURIComponent(val.trim());
+            img.style.cssText='width:110px;height:110px;border-radius:10px;border:2px solid currentColor;padding:4px;background:#fff;display:inline-block';
+            if(sel)sel.insertAdjacentElement('afterend',img);else document.body.appendChild(img);
+            selectEl(img,false);
+          }
+        });
+    });
+
+    document.getElementById('pfs-add-box').addEventListener('click',function(){
+      saveUndo();
+      var box=document.createElement('div');
+      box.style.cssText='padding:20px;border:2px solid #2563eb;border-radius:14px;background:rgba(37,99,235,.05);margin:14px 0;display:flex;align-items:center;gap:14px';
+      box.innerHTML=VEC_LIB.square+'<div style="flex:1"><h3 style="margin:0 0 4px;font-size:20px">Khung Vuông Tùy Chỉnh Mới</h3><p style="margin:0;opacity:.8;font-size:14px">Bấm trực tiếp vào chữ, khung vuông hoặc vector này để đổi màu, bo góc, phóng to hoặc kéo di chuyển.</p></div>';
+      if(sel&&sel!==document.body){
+        var container=isSvgPart(sel)?sel.parentElement:sel;
+        container.insertAdjacentElement('afterend',box);
+      }else{
+        (document.querySelector('.w,main,body')||document.body).appendChild(box);
+      }
+      selectEl(box,false);
+    });
+
+    document.getElementById('pfs-add-text').addEventListener('click',function(){
+      saveUndo();
+      var p=document.createElement('p');
+      p.style.cssText='font-size:18px;font-weight:700;margin:8px 0';
+      p.textContent='Nhập nội dung chữ mới tại đây...';
+      if(sel&&sel!==document.body){
+        var container=isSvgPart(sel)?sel.parentElement:sel;
+        container.insertAdjacentElement('afterend',p);
+      }else{
+        (document.querySelector('.w,main,body')||document.body).appendChild(p);
+      }
+      selectEl(p,true);
+    });
+
+    document.getElementById('pfs-img-input').addEventListener('change',function(ev){
+      var f=ev.target.files&&ev.target.files[0];if(!f)return;
+      var reader=new FileReader();
+      reader.onload=function(){
+        saveUndo();
+        var src=String(reader.result||'');
+        if(sel&&sel.tagName==='IMG'){
+          sel.src=src;
+        }else if(sel&&sel.querySelector&&sel.querySelector('img')){
+          sel.querySelector('img').src=src;
+        }else{
+          var img=document.createElement('img');
+          img.src=src;
+          img.style.cssText='max-width:100%;height:auto;border-radius:12px;display:block;margin:10px 0';
+          if(sel)sel.insertAdjacentElement('afterend',img);
+          else document.body.appendChild(img);
+          selectEl(img,false);
+        }
+        syncLiveDoc();
+      };
+      reader.readAsDataURL(f);
+      ev.target.value='';
+    });
+
+    document.getElementById('pfs-dup').addEventListener('click',function(){
+      if(!sel||sel===document.body)return;
+      saveUndo();
+      var cl=sel.cloneNode(true);
+      cl.removeAttribute('data-pf-sel');
+      sel.insertAdjacentElement('afterend',cl);
+      selectEl(cl,false);
+    });
+    document.getElementById('pfs-up').addEventListener('click',function(){
+      if(!sel||!sel.previousElementSibling||isEditorUi(sel.previousElementSibling))return;
+      saveUndo();
+      sel.parentElement.insertBefore(sel,sel.previousElementSibling);
+    });
+    document.getElementById('pfs-down').addEventListener('click',function(){
+      if(!sel||!sel.nextElementSibling||isEditorUi(sel.nextElementSibling))return;
+      saveUndo();
+      sel.parentElement.insertBefore(sel.nextElementSibling,sel);
+    });
+    document.getElementById('pfs-del').addEventListener('click',function(){
+      if(!sel||sel===document.body)return;
+      saveUndo();
+      var next=sel.nextElementSibling||sel.previousElementSibling||sel.parentElement;
+      sel.remove();
+      sel=null;
+      if(next&&next!==document.body&&!isEditorUi(next))selectEl(next,false);
+    });
+    document.getElementById('pfs-undo').addEventListener('click',function(){
+      if(undoStack.length<2)return;
+      undoStack.pop();
+      var prev=undoStack[undoStack.length-1];
+      var uiNodes=[].slice.call(document.body.querySelectorAll('[data-pf-editor-ui]'));
+      document.body.innerHTML=prev;
+      uiNodes.forEach(function(n){document.body.appendChild(n)});
+      sel=null;
+      syncLiveDoc();
+    });
+  })();</script>`;
+
+
+
+
+
+
+
+
+
+
+
 }
 
 function smartAssetHubHtml(d, lang = 'vi') {
@@ -2226,7 +2771,9 @@ function clientMagnetHtml(d, values, lang = 'vi') {
     : srvRows.map((s) => ({ tier: s, price: vi ? 'Báo giá theo yêu cầu' : 'Custom quote', perks: '' }));
 
   const phoneRaw = String(values.bookingPhone || '').replace(/[^\d+]/g, '');
-  const payUrl = safeHref(values.paymentLink);
+  const payUrl = safeUrl(values.paymentLink);
+  const bankName = e(String(values.bankName || 'VietinBank').trim());
+  const bankAcc = e(String(values.bankAccount || '105612356699').replace(/\s+/g, ''));
   const emailRaw = String(values.email || 'hello@example.com').trim();
   const availTxt = e(values.availability || (vi ? 'Đang nhận dự án & Commission mới' : 'Available for new projects & commissions'));
 
@@ -2286,7 +2833,25 @@ function clientMagnetHtml(d, values, lang = 'vi') {
       </div>
       <div style="font-size:12.5px;font-weight:700;color:#475569">${vi ? '1. Chọn gói dịch vụ / hạng mục bạn quan tâm:' : '1. Select a package or service:'}</div>
       <div class="pf-mag-pkgs" id="pf-mag-pkgs">
-        ${packages.map((p, i) => `<div class="pf-mag-pkg${i === 0 ? ' on' : ''}" data-pkg="${p.tier} (${p.price})"><div><b>${p.tier}</b>${p.perks ? `<small>${p.perks}</small>` : ''}</div><span>${p.price}</span></div>`).join('')}
+        ${packages.map((p, i) => `<div class="pf-mag-pkg${i === 0 ? ' on' : ''}" data-pkg="${p.tier} (${p.price})" data-price-str="${p.price}"><div><b>${p.tier}</b>${p.perks ? `<small>${p.perks}</small>` : ''}</div><span>${p.price}</span></div>`).join('')}
+      </div>
+      <div id="pf-mag-fx-bar" style="font-size:11.5px;color:#0369a1;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:7px 11px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <span>🌐 ${vi ? 'Quy đổi tỷ giá quốc tế (Open ER-API):' : 'Live International FX (Open ER-API):'}</span>
+        <b id="pf-mag-fx-val">...</b>
+      </div>
+      ${bankName && bankAcc ? `<div id="pf-mag-qr-box" style="background:linear-gradient(135deg,#f0fdf4,#ecfeff);border:1.5px solid #10b981;border-radius:16px;padding:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <img id="pf-mag-qr-img" src="https://img.vietqr.io/image/${bankName}-${bankAcc}-compact2.png?addInfo=${encodeURIComponent('Coc du an ' + d.name)}" alt="VietQR" style="width:112px;height:112px;object-fit:contain;border-radius:10px;background:#fff;border:1px solid #cbd5e1;padding:4px" />
+        <div style="flex:1;min-width:190px">
+          <div style="font-size:11px;font-weight:800;color:#047857;text-transform:uppercase">⚡ ${vi ? 'Quét VietQR Đặt Cọc Giữ Lịch Ngay' : 'Instant VietQR Deposit Checkout'}</div>
+          <div style="font-size:13px;font-weight:800;color:#0f172a;margin:3px 0">${bankName} · <span id="pf-mag-acc">${bankAcc}</span> <button type="button" id="pf-mag-copy-acc" style="font-size:10.5px;padding:2px 7px;border-radius:99px;border:1px solid #059669;background:#fff;color:#059669;cursor:pointer;font-weight:700">${vi ? 'Sao chép STK' : 'Copy'}</button></div>
+          <div id="pf-mag-qr-amt" style="font-size:12px;color:#334155;margin-bottom:6px">${vi ? 'Tự động điền số tiền cọc 30% theo gói chọn' : 'Auto-fills 30% deposit for selected tier'}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button type="button" data-qr-ratio="0.3" class="pf-qr-mode on" style="font-size:11px;padding:4px 9px;border-radius:8px;border:1px solid #059669;background:#059669;color:#fff;cursor:pointer;font-weight:700">${vi ? 'Cọc 30% giữ lịch' : '30% Deposit'}</button>
+            <button type="button" data-qr-ratio="1" class="pf-qr-mode" style="font-size:11px;padding:4px 9px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#334155;cursor:pointer;font-weight:700">${vi ? 'Thanh toán 100%' : '100% Full'}</button>
+          </div>
+        </div>
+      </div>` : ''}
+      <div>
       </div>
       <div style="font-size:12.5px;font-weight:700;color:#475569;margin-top:10px">${vi ? '2. Thông tin & yêu cầu dự án của bạn:' : '2. Your project details & timeline:'}</div>
       <input type="text" class="pf-mag-in" id="pf-mag-client" placeholder="${vi ? 'Tên của bạn / Tên thương hiệu & SĐT...' : 'Your Name / Brand & Contact...'}" />
@@ -2314,6 +2879,73 @@ function clientMagnetHtml(d, values, lang = 'vi') {
         modal.querySelectorAll('[data-pkg]').forEach(function(x){x.classList.remove('on')});
         el.classList.add('on');
         selPkg=el.getAttribute('data-pkg')||'';
+        updateQrAndFx(el.getAttribute('data-price-str')||'');
+      });
+    });
+    var qrRatio=0.3, vndPerUsd=25400, eurPerUsd=0.92, curPriceStr=${JSON.stringify(packages[0] ? packages[0].price : '')};
+    var parseMoney=function(s){
+      var raw=String(s||'');
+      if(raw.indexOf('$')>=0){
+        var u=parseFloat(raw.replace(/[^0-9.]/g,''))||0;
+        return {usd:u,vnd:Math.round(u*vndPerUsd)};
+      }
+      var digits=parseInt(raw.replace(/[^0-9]/g,''),10)||0;
+      if(digits>0&&digits<10000)digits=digits*1000;
+      return {vnd:digits,usd:digits?Math.round(digits/vndPerUsd):0};
+    };
+    var updateQrAndFx=function(priceStr){
+      if(priceStr!==undefined)curPriceStr=priceStr;
+      var m=parseMoney(curPriceStr);
+      var fxEl=document.getElementById('pf-mag-fx-val');
+      if(fxEl){
+        if(m.vnd>0){
+          var eur=Math.round(m.usd*eurPerUsd);
+          fxEl.textContent='≈ $'+m.usd.toLocaleString('en-US')+' USD · €'+eur.toLocaleString('en-US')+' EUR ('+m.vnd.toLocaleString('vi-VN')+'đ)';
+        }else{
+          fxEl.textContent='1 USD ≈ '+Math.round(vndPerUsd).toLocaleString('vi-VN')+' VND';
+        }
+      }
+      var qrImg=document.getElementById('pf-mag-qr-img');
+      var qrAmtEl=document.getElementById('pf-mag-qr-amt');
+      if(qrImg&&${JSON.stringify(Boolean(bankName && bankAcc))}){
+        var depVnd=Math.round((m.vnd||0)*qrRatio);
+        var memo='Coc '+selPkg.slice(0,28);
+        var url='https://img.vietqr.io/image/${bankName}-${bankAcc}-compact2.png?addInfo='+encodeURIComponent(memo);
+        if(depVnd>=1000)url+='&amount='+depVnd;
+        qrImg.src=url;
+        if(qrAmtEl){
+          qrAmtEl.innerHTML=depVnd>=1000
+            ? (${vi ? "'Số tiền cần chuyển ('+Math.round(qrRatio*100)+'%): '" : "'Transfer amount ('+Math.round(qrRatio*100)+'%): '"}+'<b style="color:#047857">'+depVnd.toLocaleString('vi-VN')+'đ</b> (≈ $'+Math.max(1,Math.round(depVnd/vndPerUsd))+')')
+            : ${vi ? "'Quét mã VietQR để chuyển khoản đặt lịch nhanh'" : "'Scan VietQR to transfer deposit'"};
+        }
+      }
+    };
+    modal.querySelectorAll('[data-qr-ratio]').forEach(function(b){
+      b.addEventListener('click',function(){
+        qrRatio=parseFloat(b.getAttribute('data-qr-ratio')||'0.3')||0.3;
+        modal.querySelectorAll('[data-qr-ratio]').forEach(function(x){
+          var on=x===b;
+          x.style.background=on?'#059669':'#fff';
+          x.style.color=on?'#fff':'#334155';
+          x.style.borderColor=on?'#059669':'#cbd5e1';
+        });
+        updateQrAndFx();
+      });
+    });
+    var copyAccBtn=document.getElementById('pf-mag-copy-acc');
+    if(copyAccBtn)copyAccBtn.addEventListener('click',function(){
+      if(navigator.clipboard)navigator.clipboard.writeText(${JSON.stringify(bankAcc)});
+      copyAccBtn.textContent=${vi ? "'✓ Đã chép'" : "'✓ Copied'"};
+      setTimeout(function(){copyAccBtn.textContent=${vi ? "'Sao chép STK'" : "'Copy'"}},1600);
+    });
+    updateQrAndFx(curPriceStr);
+    fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()}).then(function(d){
+      if(d&&d.rates){
+        if(d.rates.VND)vndPerUsd=d.rates.VND;
+        if(d.rates.EUR)eurPerUsd=d.rates.EUR;
+        updateQrAndFx();
+      }
+    }).catch(function(){[0].forEach(function(){
       });
     });
     var mailBtn=document.getElementById('pf-mag-send-mail');
@@ -2392,6 +3024,8 @@ export function portfolioFields(lang = 'vi') {
     { name: 'email', label: 'Email', default: 'hello@hamy.design' },
     { name: 'bookingPhone', label: vi ? 'Số Zalo / WhatsApp chốt khách nhanh' : 'WhatsApp / Phone for Instant Client Booking', default: vi ? '0901234567' : '+15552345678' },
     { name: 'paymentLink', label: vi ? 'Link Nhận Cọc / Thanh Toán (VietQR, Momo, PayPal, Calendly)' : 'Deposit / Payment or Calendly Booking URL (https://...)', default: '' },
+    { name: 'bankName', label: vi ? 'Ngân hàng nhận cọc VietQR tự động (VD: VietinBank, MB, VCB)' : 'Bank Name for Instant QR Deposit', default: 'VietinBank' },
+    { name: 'bankAccount', label: vi ? 'Số tài khoản nhận cọc VietQR trực tiếp trên Portfolio' : 'Bank Account Number for QR Deposit', default: '105612356699' },
     { name: 'location', label: vi ? 'Nơi làm việc' : 'Location', default: vi ? 'Hà Nội, Việt Nam' : 'Hanoi, Vietnam' },
     { name: 'links', label: vi ? 'Liên kết – mỗi dòng: Tên | https://…' : 'Links – per line: Label | https://…', type: 'textarea', rows: 3, default: 'Website | https://example.com/\nInstagram | https://www.instagram.com/\nLinkedIn | https://www.linkedin.com/' },
     { name: 'skills', label: vi ? 'Kỹ năng & Chất liệu sáng tạo (phân tách dấu phẩy)' : 'Skills & Mediums (comma separated)', default: 'Hand-drawn Illustration, Watercolor, Branding, Motion Graphics, Procreate, Figma, Blender 3D' },
