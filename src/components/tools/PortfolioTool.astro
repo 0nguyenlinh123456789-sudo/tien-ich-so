@@ -443,7 +443,8 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
     };
 
     const fieldHtml = (f: any) => {
-      const val = escapeHtml(saved[f.name] ?? f.default ?? '');
+      const rawSaved = (f.name === 'bankName' || f.name === 'bankAccount') ? (saved[f.name] || f.default || '') : (saved[f.name] ?? f.default ?? '');
+      const val = escapeHtml(rawSaved);
       if (f.type === 'hidden') return `<input type="hidden" name="${f.name}" value="${val}" />`;
       const id = `pf-${f.name}`;
       const label = `<label class="label" for="${id}">${escapeHtml(f.label)}</label>`;

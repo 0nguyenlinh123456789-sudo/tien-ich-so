@@ -7,7 +7,7 @@ import fontVi400 from '@fontsource/be-vietnam-pro/files/be-vietnam-pro-vietnames
 import site from '../config/site.json';
 import { donateInfo, offersFor, MONETIZATION } from '../lib/monetize.js';
 import { t } from '../i18n/ui.js';
-import { SECTIONS, sectionUrl, homeUrl } from '../data/tools.js';
+import { SECTIONS, sectionUrl, toolUrl, homeUrl } from '../data/tools.js';
 
 interface Props {
   title: string;
@@ -38,9 +38,12 @@ const email = (site.contactEmail || '').trim();
 const showEmail = !!email && !/example\.com/i.test(email);
 const donateUrl = (MONETIZATION.donateUrl || "").startsWith("https://") ? MONETIZATION.donateUrl : "";
 const dGate = donateInfo();
-const topOffer = offersFor('tools', undefined, 1)[0];
+const topOffer: any = offersFor('tools', lang, 1)[0];
 const hasDonate = Boolean(donateUrl || dGate);
 const zaloUrl = String((MONETIZATION as any).zaloUrl || '').startsWith('https://zalo.me/') ? (MONETIZATION as any).zaloUrl : '';
+const pfHref = toolUrl('portfolio', lang);
+const cvHref = toolUrl('documents', lang);
+const supportHref = lang === 'en' ? '/en/support' : '/ung-ho';
 // Organization markup on the home pages only.
 const isHome = ['/', '/en', '/en/'].includes(clean(Astro.url.pathname));
 if (isHome) ld.push({ '@context': 'https://schema.org', '@type': 'Organization', name: site.siteName, url: site.siteUrl, logo: new URL('/favicon.svg', site.siteUrl).href, sameAs: [] });
@@ -96,10 +99,10 @@ const fmtAmt = (n: number) => {
           <span>{siteName}</span>
         </a>
         <nav class="ml-auto hidden shrink-0 items-center gap-1 whitespace-nowrap md:flex">
-          <a href={lang === 'en' ? '/en/tools/portfolio-website-builder' : '/cong-cu/tao-portfolio-ca-nhan'} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-gradient-to-r from-rose-600 to-amber-600 px-2.5 py-1 text-xs font-extrabold text-white shadow-xs transition hover:brightness-110">
+          <a href={pfHref} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-gradient-to-r from-rose-600 to-amber-600 px-2.5 py-1 text-xs font-extrabold text-white shadow-xs transition hover:brightness-110">
             🎨 {lang === 'en' ? 'Portfolios' : 'Portfolio'}
           </a>
-          <a href={lang === 'en' ? '/en/tools/cv-contract-invoice' : '/cong-cu/tao-cv-hop-dong-hoa-don'} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-xs font-extrabold text-white shadow-xs transition hover:bg-slate-800">
+          <a href={cvHref} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-slate-900 px-2.5 py-1 text-xs font-extrabold text-white shadow-xs transition hover:bg-slate-800">
             📄 {lang === 'en' ? 'CV & Docs' : 'CV & Hợp đồng'}
           </a>
           {Object.values(SECTIONS).map((s) => (
@@ -108,7 +111,7 @@ const fmtAmt = (n: number) => {
             </a>
           ))}
           {hasDonate && (
-            <a href={lang === 'en' ? '/en/support' : '/ung-ho'} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-800 transition hover:bg-emerald-100">
+            <a href={supportHref} class="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-800 transition hover:bg-emerald-100">
               💎 {lang === 'en' ? 'VIP / Support' : 'Ủng hộ / VIP'}
             </a>
           )}
@@ -119,9 +122,14 @@ const fmtAmt = (n: number) => {
           <a href={homeUrl(altLang)} hreflang={altLang} class="ml-auto shrink-0 whitespace-nowrap rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold md:ml-1">{L.langName}</a>
         )}
       </div>
-      <nav class="flex gap-1 overflow-x-auto border-t border-slate-100 px-2 py-1 md:hidden">
+      <nav class="flex items-center gap-1.5 overflow-x-auto border-t border-slate-100 px-2 py-1.5 md:hidden">
+        <a href={pfHref} class="inline-flex shrink-0 items-center gap-1 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 px-2.5 py-1 text-xs font-extrabold whitespace-nowrap text-white">🎨 Portfolio</a>
+        <a href={cvHref} class="inline-flex shrink-0 items-center gap-1 rounded-full bg-slate-900 px-2.5 py-1 text-xs font-extrabold whitespace-nowrap text-white">📄 {lang === 'en' ? 'CV & Docs' : 'CV & HĐ'}</a>
+        {hasDonate && (
+          <a href={supportHref} class="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-extrabold whitespace-nowrap text-emerald-800">💎 VIP</a>
+        )}
         {Object.values(SECTIONS).map((s) => (
-          <a href={sectionUrl(s.id, lang)} class="inline-flex min-h-11 items-center rounded-lg px-3 text-sm whitespace-nowrap text-slate-600">{s.icon} {s.name[lang]}</a>
+          <a href={sectionUrl(s.id, lang)} class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-slate-600">{s.icon} {s.name[lang]}</a>
         ))}
       </nav>
     </header>
@@ -162,12 +170,12 @@ const fmtAmt = (n: number) => {
           )}
 
           {topOffer && (
-            <a href={topOffer.url} target="_blank" rel="sponsored noopener nofollow" class="mt-3 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/70 px-3.5 py-2.5 text-xs transition hover:border-amber-400 hover:bg-amber-100/70">
-              <div>
-                <span class="rounded bg-amber-200/80 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-900">{topOffer.badge?.[lang] || 'HOT'}</span>
-                <b class="ml-1.5 text-slate-900">{topOffer.title?.[lang]}</b>
+            <a href={topOffer.href || topOffer.url} target="_blank" rel="sponsored noopener nofollow" class="mt-3 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/70 px-3.5 py-2.5 text-xs transition hover:border-amber-400 hover:bg-amber-100/70">
+              <div class="min-w-0 flex-1">
+                <span class="rounded bg-amber-200/80 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-900">{topOffer.icon || '🎁'} HOT</span>
+                <b class="ml-1.5 text-slate-900">{typeof topOffer.title === 'string' ? topOffer.title : topOffer.title?.[lang]}</b>
               </div>
-              <span class="shrink-0 font-extrabold text-brand-700">{topOffer.cta?.[lang]} →</span>
+              <span class="shrink-0 font-extrabold text-brand-700">{typeof topOffer.cta === 'string' ? topOffer.cta : topOffer.cta?.[lang]} →</span>
             </a>
           )}
         </div>
@@ -183,7 +191,14 @@ const fmtAmt = (n: number) => {
       <slot />
     </main>
 
-    <footer class="mt-12 border-t border-slate-200 bg-white">
+    {hasDonate && (
+      <a href={supportHref} class="fixed right-4 bottom-4 z-40 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/80 bg-slate-900/95 px-3.5 py-2 text-xs font-extrabold text-white shadow-xl backdrop-blur-xs transition hover:-translate-y-0.5 hover:bg-emerald-700 print:hidden">
+        <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>💎 {lang === 'en' ? 'VIP Studio & QR' : 'Gói VIP & Ủng hộ QR'}</span>
+      </a>
+    )}
+
+    <footer class="mt-12 border-t border-slate-200 bg-white print:hidden">
       <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm text-slate-600 md:grid-cols-5">
         <div class="md:col-span-1">
           <div class="font-bold text-slate-900">{siteName}</div>
@@ -205,7 +220,7 @@ const fmtAmt = (n: number) => {
         <a class="underline" href={lang === 'en' ? '/en/contact' : '/lien-he'}>{lang === 'en' ? 'Contact' : 'Liên hệ'}</a>
         {showEmail && <> · <a class="underline" href={`mailto:${email}`}>{email}</a></>}
         {zaloUrl && <> · <a class="underline" href={zaloUrl} target="_blank" rel="noopener nofollow">Zalo</a></>}
-        {hasDonate && <> · <a class="font-semibold text-brand-700 underline" href={lang === 'en' ? '/en/support' : '/ung-ho'}>{lang === 'en' ? '☕ Support us' : '☕ Ủng hộ tác giả'}</a></>}
+        {hasDonate && <> · <a class="font-semibold text-brand-700 underline" href={supportHref}>{lang === 'en' ? '☕ Support & VIP' : '☕ Ủng hộ & Dịch vụ VIP'}</a></>}
       </div>
     </footer>
   </body>

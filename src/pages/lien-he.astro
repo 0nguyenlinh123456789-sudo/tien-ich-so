@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import DonateBox from '../components/DonateBox.astro';
 import site from '../config/site.json';
 import M from '../config/monetization.json';
 // Public repository (verified 2026-11-03: issues page returns HTTP 200 without login).
@@ -35,6 +36,7 @@ const zalo = String((M as any).zaloUrl || '').startsWith('https://zalo.me/') ? (
 
     <h2>Lưu ý</h2>
     <p>Đừng đăng thông tin cá nhân (số CCCD, số tài khoản, lương thật kèm họ tên…) lên Issues vì nội dung ở đó công khai. Chúng tôi không tư vấn pháp lý hay tài chính cho từng trường hợp.</p>
-    <p>Xem thêm: <a class="underline" href="/gioi-thieu">Giới thiệu</a> · <a class="underline" href="/chinh-sach-bao-mat">Chính sách bảo mật</a>.</p>
+    <p>Xem thêm: <a class="underline" href="/gioi-thieu">Giới thiệu</a> · <a class="underline" href="/chinh-sach-bao-mat">Chính sách bảo mật</a> · <a class="underline" href="/ung-ho">Ủng hộ & Dịch vụ VIP (VietQR)</a>.</p>
+    <DonateBox lang="vi" compact={false} />
   </article>
 </Layout>

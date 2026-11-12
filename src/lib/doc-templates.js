@@ -7,6 +7,7 @@
 import { moneyToWords } from './numwords.js';
 import { escapeHtml as e, fmtNum } from './format.js';
 import { cvTemplates } from './cv-templates.js';
+import { buildVietQrSvg } from './vietqr.js';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const viDate = (iso) => {
@@ -64,6 +65,29 @@ const signFields = [
   { name: 'signDate', label: 'Ngày ký', type: 'date', default: today() },
   { name: 'signPlace', label: 'Địa điểm ký', default: '' }
 ];
+const payFields = [
+  { name: 'payBank', label: 'Ngân hàng nhận thanh toán / đặt cọc VietQR (VD: VietinBank, VCB, MB)', default: 'VietinBank' },
+  { name: 'payAccount', label: 'Số tài khoản nhận tiền (để tạo mã VietQR tự động trên hợp đồng/báo giá)', default: '105612356699' }
+];
+const vietQrPayBox = (v, amountVnd, memoText) => {
+  const bank = String(v.payBank || 'VietinBank').trim();
+  const acc = String(v.payAccount || '105612356699').replace(/\s+/g, '');
+  if (!bank || !acc) return '';
+  const amt = num(amountVnd);
+  const memoStr = String(memoText || 'Thanh toan hop dong').slice(0, 45);
+  const svgQr = buildVietQrSvg({ bank, account: acc, amount: amt >= 1000 ? amt : 0, memo: memoStr });
+  const memo = encodeURIComponent(memoStr);
+  const qrUrl = `https://img.vietqr.io/image/${encodeURIComponent(bank)}-${encodeURIComponent(acc)}-compact2.png?addInfo=${memo}${amt >= 1000 ? `&amount=${amt}` : ''}`;
+  return `<div style="margin:14px 0;padding:12px 14px;border:1.5px solid #0f172a;border-radius:8px;display:flex;align-items:center;gap:14px;background:#f8fafc">
+    ${svgQr ? `<div style="width:108px;height:108px;flex-shrink:0;border:1px solid #cbd5e1;border-radius:6px;background:#fff;padding:3px">${svgQr}</div>` : `<img src="${qrUrl}" alt="VietQR" style="width:108px;height:108px;object-fit:contain;border:1px solid #cbd5e1;border-radius:6px;background:#fff;padding:3px" />`}
+    <div style="font-size:13px;line-height:1.5">
+      <b>THÔNG TIN CHUYỂN KHOẢN / ĐẶT CỌC NHANH (VIETQR NAPAS 247)</b><br>
+      Ngân hàng thụ hưởng: <b>${e(bank)}</b> &nbsp;|&nbsp; Số tài khoản: <b>${e(acc)}</b><br>
+      ${amt >= 1000 ? `Số tiền tự động điền: <b>${fmtNum(amt)} đồng</b> (${moneyWords(amt)})<br>` : ''}
+      Nội dung chuyển khoản: <b>${e(memoStr)}</b>
+    </div>
+  </div>`;
+};
 const closingVi = (copies = 2) => `Hợp đồng có hiệu lực kể từ ngày ký, được lập thành ${String(copies).padStart(2, '0')} bản có giá trị pháp lý như nhau, mỗi bên giữ ${String(copies / 2).padStart(2, '0')} bản. Tranh chấp phát sinh được giải quyết trước hết bằng thương lượng, hòa giải; nếu không thành, một trong các bên có quyền yêu cầu Tòa án có thẩm quyền giải quyết theo quy định của pháp luật.`;
 
 const BLDS = 'Bộ luật Dân sự số 91/2015/QH13';
@@ -165,6 +189,7 @@ function vnContracts() {
         { name: 'deposit', label: 'Tiền đặt cọc (đồng)', default: '10000000' },
         { name: 'term', label: 'Thời hạn thuê (tháng)', type: 'number', default: '12' },
         { name: 'startDate', label: 'Ngày bàn giao nhà', type: 'date', default: today() },
+        ...payFields,
         ...signFields
       ],
       render: (v) => `<div style="${DOC}">${nationalHeader}${title('HỢP ĐỒNG THUÊ NHÀ Ở', `Căn cứ ${BLDS}; ${LNO}`)}
@@ -172,7 +197,7 @@ function vnContracts() {
         ${art(1, 'Nhà ở cho thuê', `Địa chỉ: <b>${blank(v.property)}</b>. Diện tích sử dụng: ${blank(v.area, '……')} m².<br>Giấy tờ: ${blank(v.ownership)}.<br>Mục đích thuê: để ở.`)}
         ${art(2, 'Thời hạn thuê', `${num(v.term) || '……'} tháng, kể từ ${viDate(v.startDate)}. Hết thời hạn, hai bên có thể thỏa thuận gia hạn bằng văn bản.`)}
         ${art(3, 'Giá thuê, phương thức và thời hạn thanh toán', `Giá thuê: <b>${money(v.rent)} đồng/tháng</b> (Bằng chữ: ${moneyWords(v.rent)}). Thanh toán trước ngày 05 hằng tháng bằng tiền mặt hoặc chuyển khoản.<br>Chi phí điện, nước, internet, dịch vụ do Bên B thanh toán theo thực tế sử dụng.`)}
-        ${art(4, 'Tiền đặt cọc', `Bên B đặt cọc <b>${money(v.deposit)} đồng</b> (Bằng chữ: ${moneyWords(v.deposit)}) để bảo đảm thực hiện hợp đồng. Khi hợp đồng chấm dứt đúng thỏa thuận, Bên A hoàn trả tiền cọc trong 07 ngày sau khi trừ các khoản Bên B còn nợ hoặc chi phí khắc phục hư hỏng do lỗi của Bên B (nếu có).`)}
+        ${art(4, 'Tiền đặt cọc', `Bên B đặt cọc <b>${money(v.deposit)} đồng</b> (Bằng chữ: ${moneyWords(v.deposit)}) để bảo đảm thực hiện hợp đồng. Khi hợp đồng chấm dứt đúng thỏa thuận, Bên A hoàn trả tiền cọc trong 07 ngày sau khi trừ các khoản Bên B còn nợ hoặc chi phí khắc phục hư hỏng do lỗi của Bên B (nếu có).${vietQrPayBox(v, v.deposit, 'Dat coc thue nha')}`)}
         ${art(5, 'Quyền và nghĩa vụ của Bên A', 'Giao nhà và trang thiết bị đúng hiện trạng đã thỏa thuận; bảo đảm cho Bên B sử dụng ổn định trong thời hạn thuê; bảo dưỡng, sửa chữa hư hỏng lớn không do lỗi của Bên B; nhận tiền thuê đầy đủ, đúng hạn.')}
         ${art(6, 'Quyền và nghĩa vụ của Bên B', 'Sử dụng nhà đúng mục đích; trả tiền thuê đúng hạn; giữ gìn nhà và trang thiết bị, sửa chữa hư hỏng do lỗi của mình; không cho thuê lại khi chưa được Bên A đồng ý; chấp hành quy định về an ninh trật tự, phòng cháy chữa cháy, đăng ký cư trú; trả nhà khi hết hạn.')}
         ${art(7, 'Đơn phương chấm dứt hợp đồng', 'Bên muốn đơn phương chấm dứt hợp đồng phải thông báo cho bên kia bằng văn bản trước ít nhất 30 ngày, trừ trường hợp hai bên có thỏa thuận khác. Bên vi phạm nghĩa vụ báo trước phải bồi thường thiệt hại phát sinh (nếu có) theo quy định của pháp luật.')}
@@ -212,11 +237,12 @@ function vnContracts() {
         { name: 'price', label: 'Giá trị giao dịch dự kiến (đồng)', default: '2000000000' },
         { name: 'deposit', label: 'Số tiền đặt cọc (đồng)', default: '200000000' },
         { name: 'deadline', label: 'Hạn giao kết hợp đồng chính', type: 'date', default: today() },
+        ...payFields,
         ...signFields
       ],
       render: (v) => `<div style="${DOC}">${nationalHeader}${title('HỢP ĐỒNG ĐẶT CỌC', `Căn cứ ${BLDS}`)}
         ${opening(v)}${personBlock('BÊN ĐẶT CỌC (Bên A)', v, 'a')}${personBlock('BÊN NHẬN ĐẶT CỌC (Bên B)', v, 'b')}
-        ${art(1, 'Tài sản đặt cọc', `Bên A giao cho Bên B số tiền <b>${money(v.deposit)} đồng</b> (Bằng chữ: ${moneyWords(v.deposit)}).`)}
+        ${art(1, 'Tài sản đặt cọc', `Bên A giao cho Bên B số tiền <b>${money(v.deposit)} đồng</b> (Bằng chữ: ${moneyWords(v.deposit)}).${vietQrPayBox(v, v.deposit, 'Chuyen khoan dat coc')}`)}
         ${art(2, 'Mục đích đặt cọc', `${nl(v.purpose)}<br>Giá trị giao dịch dự kiến: ${money(v.price)} đồng (Bằng chữ: ${moneyWords(v.price)}). Hạn giao kết hợp đồng: chậm nhất ${viDate(v.deadline)}.`)}
         ${art(3, 'Xử lý tiền đặt cọc', 'Theo Điều 328 Bộ luật Dân sự: (a) Trường hợp hợp đồng được giao kết, thực hiện thì tiền đặt cọc được trả lại cho Bên A hoặc được trừ để thực hiện nghĩa vụ trả tiền; (b) Nếu Bên A từ chối việc giao kết, thực hiện hợp đồng thì tiền đặt cọc thuộc về Bên B; (c) Nếu Bên B từ chối việc giao kết, thực hiện hợp đồng thì phải trả cho Bên A tiền đặt cọc và một khoản tiền tương đương giá trị tiền đặt cọc.')}
         ${art(4, 'Cam kết của các bên', 'Bên B cam kết tài sản thuộc quyền sở hữu/sử dụng hợp pháp của mình, không có tranh chấp, không bị kê biên. Bên A đã tìm hiểu kỹ thông tin về tài sản. Đối với giao dịch về bất động sản, hợp đồng chuyển nhượng chính thức phải được công chứng hoặc chứng thực theo quy định của pháp luật.')}
@@ -279,17 +305,47 @@ function vnContracts() {
         { name: 'scope', label: 'Nội dung công việc', type: 'textarea', default: 'Thiết kế và lập trình website giới thiệu doanh nghiệp gồm 05 trang.' },
         { name: 'fee', label: 'Tổng phí dịch vụ (đồng)', default: '20000000' },
         { name: 'deadline', label: 'Hạn bàn giao', type: 'date', default: today() },
+        ...payFields,
         ...signFields
       ],
       render: (v) => `<div style="${DOC}">${nationalHeader}${title('HỢP ĐỒNG DỊCH VỤ', `Căn cứ ${BLDS}`)}
         ${opening(v)}${orgBlock('BÊN SỬ DỤNG DỊCH VỤ (Bên A)', v, 'a')}${orgBlock('BÊN CUNG ỨNG DỊCH VỤ (Bên B)', v, 'b')}
         ${art(1, 'Nội dung dịch vụ', nl(v.scope))}
         ${art(2, 'Thời hạn thực hiện', `Bên B bàn giao kết quả chậm nhất ${viDate(v.deadline)}. Hai bên lập biên bản nghiệm thu khi bàn giao.`)}
-        ${art(3, 'Phí dịch vụ và thanh toán', `Tổng phí: <b>${money(v.fee)} đồng</b> (Bằng chữ: ${moneyWords(v.fee)}). Đợt 1: 50% sau khi ký hợp đồng; Đợt 2: 50% sau khi nghiệm thu.<br>Trường hợp Bên B là cá nhân, Bên A khấu trừ thuế thu nhập cá nhân 10% đối với khoản thanh toán từ 5.000.000 đồng/lần trở lên theo quy định hiện hành (Nghị định 253/2026/NĐ-CP), trừ trường hợp Bên B đủ điều kiện cam kết không khấu trừ.`)}
+        ${art(3, 'Phí dịch vụ và thanh toán', `Tổng phí: <b>${money(v.fee)} đồng</b> (Bằng chữ: ${moneyWords(v.fee)}). Đợt 1: 50% sau khi ký hợp đồng; Đợt 2: 50% sau khi nghiệm thu.<br>Trường hợp Bên B là cá nhân, Bên A khấu trừ thuế thu nhập cá nhân 10% đối với khoản thanh toán từ 5.000.000 đồng/lần trở lên theo quy định hiện hành (Nghị định 253/2026/NĐ-CP), trừ trường hợp Bên B đủ điều kiện cam kết không khấu trừ.${vietQrPayBox(v, Math.round(num(v.fee) * 0.5), 'Tam ung 50% HD dich vu')}`)}
         ${art(4, 'Quyền sở hữu kết quả công việc', 'Sau khi Bên A thanh toán đủ phí dịch vụ, quyền sở hữu đối với kết quả công việc thuộc về Bên A, trừ trường hợp hai bên có thỏa thuận khác bằng văn bản.')}
         ${art(5, 'Bảo mật và đơn phương chấm dứt', 'Hai bên bảo mật thông tin của nhau. Mỗi bên có quyền đơn phương chấm dứt hợp đồng theo quy định của Bộ luật Dân sự và phải báo trước cho bên kia một thời gian hợp lý; Bên A thanh toán cho Bên B phần dịch vụ đã thực hiện.')}
         ${art(6, 'Điều khoản thi hành', closingVi(2))}
         ${signBlock('BÊN SỬ DỤNG DỊCH VỤ', 'BÊN CUNG ỨNG DỊCH VỤ')}</div>`
+    },
+    {
+      id: 'baogia', category: 'Dịch vụ & Thương mại', name: 'Báo giá & Đề nghị thanh toán / Đặt cọc (kèm mã VietQR)',
+      law: `${BLDS} – Đề nghị giao kết hợp đồng và xác nhận đặt cọc thanh toán`,
+      fields: [
+        ...orgFields('a', 'Đơn vị / Cá nhân gửi báo giá'),
+        ...orgFields('b', 'Khách hàng / Đơn vị nhận báo giá'),
+        { name: 'items', label: 'Hạng mục báo giá – mỗi dòng: Tên hạng mục | ĐVT | Số lượng | Đơn giá (đồng)', type: 'textarea', default: 'Thiết kế bộ nhận diện thương hiệu (Logo, Guideline) | Trọn gói | 1 | 12000000\nThiết kế giao diện Website / Portfolio chuẩn SEO | Trang | 5 | 1600000' },
+        { name: 'depositPct', label: 'Tỷ lệ đặt cọc kích hoạt dự án (%)', type: 'number', default: '50' },
+        { name: 'validDays', label: 'Hiệu lực báo giá (ngày)', type: 'number', default: '15' },
+        ...payFields,
+        ...signFields
+      ],
+      render: (v) => {
+        const rows = lines(v.items).map((l) => l.split('|').map((x) => x.trim()));
+        const total = rows.reduce((s, [, , q, p]) => s + num(q) * num(p), 0);
+        const depPct = Math.max(10, Math.min(100, num(v.depositPct) || 50));
+        const depAmt = Math.round((total * depPct) / 100);
+        const td = 'border:1px solid #000;padding:5px 7px';
+        return `<div style="${DOC}">${nationalHeader}${title('BẢNG BÁO GIÁ & ĐỀ NGHỊ TẠM ỨNG DỰ ÁN', `Ngày lập: ${viDate(v.signDate)}`)}
+        ${orgBlock('ĐƠN VỊ CUNG CẤP DỊCH VỤ / BÁO GIÁ', v, 'a')}${orgBlock('KHÁCH HÀNG / ĐƠN VỊ NHẬN BÁO GIÁ', v, 'b')}
+        ${art(1, 'Chi tiết hạng mục & chi phí', `<table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px"><tr><th style="${td}">STT</th><th style="${td}">Hạng mục công việc / Sản phẩm</th><th style="${td}">ĐVT</th><th style="${td}">SL</th><th style="${td}">Đơn giá</th><th style="${td}">Thành tiền</th></tr>
+          ${rows.map(([n, u, q, p], i) => `<tr><td style="${td};text-align:center">${i + 1}</td><td style="${td}">${e(n || '')}</td><td style="${td};text-align:center">${e(u || '')}</td><td style="${td};text-align:right">${fmtNum(num(q))}</td><td style="${td};text-align:right">${fmtNum(num(p))}</td><td style="${td};text-align:right">${fmtNum(num(q) * num(p))}</td></tr>`).join('')}
+          <tr><td colspan="5" style="${td};text-align:right"><b>TỔNG CỘNG THANH TOÁN</b></td><td style="${td};text-align:right"><b>${fmtNum(total)} đ</b></td></tr>
+          <tr><td colspan="5" style="${td};text-align:right"><b>Số tiền đặt cọc / tạm ứng đợt 1 (${depPct}%)</b></td><td style="${td};text-align:right"><b>${fmtNum(depAmt)} đ</b></td></tr></table>
+          Bằng chữ (tổng cộng): ${moneyWords(total)}.`)}
+        ${art(2, 'Phương thức thanh toán & Quét mã VietQR đặt cọc ngay', `Khách hàng xác nhận triển khai bằng cách chuyển khoản đặt cọc đợt 1 (${depPct}% tương đương <b>${fmtNum(depAmt)} đồng</b>). Báo giá có hiệu lực trong vòng ${num(v.validDays) || 15} ngày kể từ ngày lập.${vietQrPayBox(v, depAmt, 'Tam ung bao gia ' + (v.bName || ''))}`)}
+        ${signBlock('XÁC NHẬN CỦA KHÁCH HÀNG', 'ĐƠN VỊ LẬP BÁO GIÁ')}</div>`;
+      }
     },
     {
       id: 'muabanhh', category: 'Dịch vụ & Thương mại', name: 'Hợp đồng mua bán hàng hóa',
@@ -301,6 +357,7 @@ function vnContracts() {
         { name: 'vat', label: 'Thuế GTGT (%)', type: 'number', default: '10' },
         { name: 'delivery', label: 'Địa điểm và thời hạn giao hàng', default: 'Tại kho Bên mua, chậm nhất 07 ngày kể từ ngày ký' },
         { name: 'penalty', label: 'Mức phạt vi phạm (%, tối đa 8%)', type: 'number', default: '8' },
+        ...payFields,
         ...signFields
       ],
       render: (v) => {
@@ -320,7 +377,7 @@ function vnContracts() {
           Bằng chữ: ${moneyWords(sub + vat)}.`)}
         ${art(2, 'Chất lượng hàng hóa', 'Hàng mới 100%, đúng chủng loại, quy cách, có hóa đơn và chứng từ nguồn gốc hợp lệ.')}
         ${art(3, 'Giao nhận hàng', `${blank(v.delivery)}. Hai bên lập biên bản giao nhận khi giao hàng.`)}
-        ${art(4, 'Thanh toán', 'Bên B thanh toán bằng chuyển khoản trong vòng 07 ngày kể từ ngày nhận đủ hàng và hóa đơn giá trị gia tăng hợp lệ.')}
+        ${art(4, 'Thanh toán', `Bên B thanh toán bằng chuyển khoản trong vòng 07 ngày kể từ ngày nhận đủ hàng và hóa đơn giá trị gia tăng hợp lệ.${vietQrPayBox(v, sub + vat, 'Thanh toan HD mua ban')}`)}
         ${art(5, 'Phạt vi phạm và bồi thường thiệt hại', `Bên vi phạm nghĩa vụ hợp đồng chịu phạt ${pen}% giá trị phần nghĩa vụ bị vi phạm (không vượt quá 8% theo Điều 301 Luật Thương mại) và bồi thường thiệt hại thực tế phát sinh theo quy định.`)}
         ${art(6, 'Điều khoản thi hành', closingVi(2))}
         ${signBlock('ĐẠI DIỆN BÊN BÁN', 'ĐẠI DIỆN BÊN MUA')}</div>`;

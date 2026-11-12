@@ -23,18 +23,16 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
           <label class={blk}><input type="radio" name="mode" value="bank" class="sr-only" />🇻🇳 VietQR (VN Bank)</label>
         </>
       )}
-
-
     </div>
     <div class="grid gap-3" data-bank>
       <div class="min-w-0"><label class="label" for="qr-bank">{vi ? 'Ngân hàng nhận' : 'Bank'}</label>
-        <select id="qr-bank" class="input w-full min-w-0" name="bin">{BANKS.map(([b, n]) => <option value={b}>{n}</option>)}</select></div>
-      <div class="min-w-0"><label class="label" for="qr-acc">{vi ? 'Số tài khoản' : 'Account number'}</label><input id="qr-acc" class="input w-full min-w-0" name="acc" inputmode="numeric" autocomplete="off" placeholder="0123456789" /></div>
-      <div class="min-w-0"><label class="label" for="qr-name">{vi ? 'Tên chủ tài khoản (hiện dưới mã, không bắt buộc)' : 'Account holder (shown under the code, optional)'}</label><input id="qr-name" class="input w-full min-w-0" name="holder" autocomplete="off" /></div>
-      <div class="min-w-0"><label class="label" for="qr-amt">{vi ? 'Số tiền (để trống = người chuyển tự nhập)' : 'Amount (blank = payer enters it)'}</label><input id="qr-amt" class="input w-full min-w-0" name="amount" inputmode="numeric" /></div>
-      <div class="min-w-0"><label class="label" for="qr-memo">{vi ? 'Nội dung chuyển khoản' : 'Transfer note'}</label><input id="qr-memo" class="input w-full min-w-0" name="memo" maxlength="60" /></div>
+        <select id="qr-bank" class="input w-full min-w-0" name="bin">{BANKS.map(([b, n]) => <option value={b} selected={b === '970415'}>{n}</option>)}</select></div>
+      <div class="min-w-0"><label class="label" for="qr-acc">{vi ? 'Số tài khoản' : 'Account number'}</label><input id="qr-acc" class="input w-full min-w-0" name="acc" inputmode="numeric" autocomplete="off" value="105612356699" placeholder="0123456789" /></div>
+      <div class="min-w-0"><label class="label" for="qr-name">{vi ? 'Tên chủ tài khoản (hiện dưới mã, không bắt buộc)' : 'Account holder (shown under the code, optional)'}</label><input id="qr-name" class="input w-full min-w-0" name="holder" autocomplete="off" placeholder="NGUYEN VAN A" /></div>
+      <div class="min-w-0"><label class="label" for="qr-amt">{vi ? 'Số tiền (để trống = người chuyển tự nhập)' : 'Amount (blank = payer enters it)'}</label><input id="qr-amt" class="input w-full min-w-0" name="amount" inputmode="numeric" value="199000" /></div>
+      <div class="min-w-0"><label class="label" for="qr-memo">{vi ? 'Nội dung chuyển khoản' : 'Transfer note'}</label><input id="qr-memo" class="input w-full min-w-0" name="memo" maxlength="60" value="THANH TOAN DICH VU" /></div>
     </div>
-    <div class="hidden min-w-0" data-text><label class="label" for="qr-text">{vi ? 'Link hoặc nội dung' : 'Link or text'}</label><textarea id="qr-text" class="input min-h-28 w-full min-w-0" name="text" maxlength="1200">{vi ? 'https://' : 'https://example.com'}</textarea></div>
+    <div class="hidden min-w-0" data-text><label class="label" for="qr-text">{vi ? 'Link hoặc nội dung' : 'Link or text'}</label><textarea id="qr-text" class="input min-h-28 w-full min-w-0" name="text" maxlength="1200">{vi ? 'https://tienichso.vn' : 'https://example.com'}</textarea></div>
     <div class="hidden grid gap-3" data-wifi>
       <div class="min-w-0"><label class="label" for="qr-ssid">{vi ? 'Tên WiFi (SSID)' : 'Network name (SSID)'}</label><input id="qr-ssid" class="input w-full min-w-0" name="ssid" autocomplete="off" /></div>
       <div class="min-w-0"><label class="label" for="qr-pass">{vi ? 'Mật khẩu' : 'Password'}</label><input id="qr-pass" class="input w-full min-w-0" name="pass" autocomplete="off" /></div>
@@ -49,6 +47,7 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
   import qrcode from 'qrcode-generator';
   import { vietQr, cleanMemo, BANKS } from '../../lib/vietqr.js';
   import { escapeHtml } from '../../lib/format.js';
+  import { gate } from '../../scripts/download-gate.js';
 
   // Mã hóa UTF-8 để chữ có dấu đọc đúng.
   (qrcode as any).stringToBytes = (s: string) => Array.from(new TextEncoder().encode(s));
@@ -105,7 +104,7 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
         const q = draw(payload);
         out.innerHTML = `<div class="w-full max-w-72 rounded-xl bg-white p-2">${q.createSvgTag({ cellSize: 6, margin: 4, scalable: true })}</div>`
           + `<div class="grid gap-1 text-center">${caption}</div>`
-          + `<div class="flex flex-wrap justify-center gap-2"><button type="button" class="btn-primary px-3 py-2 text-sm" data-png>${vi ? 'Tải ảnh PNG' : 'Download PNG'}</button></div>`
+          + `<div class="flex flex-wrap justify-center gap-2"><button type="button" class="btn-primary px-4 py-2 text-sm font-bold" data-png>⬇️ ${vi ? 'Tải ảnh QR sắc nét (.PNG)' : 'Download High-Res QR (.PNG)'}</button></div>`
           + (mode === 'bank' ? `<p class="text-xs text-slate-500">${vi ? 'Hãy quét thử bằng app ngân hàng của bạn và kiểm tra đúng tên người nhận trước khi in hoặc gửi đi.' : 'Scan it with your banking app and check the recipient name before printing or sharing.'}</p>` : '');
       } catch {
         out.innerHTML = hint(vi ? 'Nội dung quá dài để tạo mã QR.' : 'Content is too long for a QR code.'); payload = '';
@@ -116,18 +115,21 @@ const blk = 'flex-1 min-w-0 cursor-pointer rounded-xl border border-slate-300 p-
       const t = e.target as HTMLElement;
       if (!payload) return;
       if (t.closest('[data-png]')) {
-        const q = draw(payload);
-        const cell = 12, margin = 4, n = q.getModuleCount();
-        const c = document.createElement('canvas');
-        c.width = c.height = (n + margin * 2) * cell;
-        const ctx = c.getContext('2d')!;
-        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-        ctx.fillStyle = '#000';
-        for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) ctx.fillRect((k + margin) * cell, (r + margin) * cell, cell, cell);
-        const a = document.createElement('a');
-        a.href = c.toDataURL('image/png');
-        a.download = `${fileName}.png`;
-        a.click();
+        const doDownload = () => {
+          const q = draw(payload);
+          const cell = 12, margin = 4, n = q.getModuleCount();
+          const c = document.createElement('canvas');
+          c.width = c.height = (n + margin * 2) * cell;
+          const ctx = c.getContext('2d')!;
+          ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+          ctx.fillStyle = '#000';
+          for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) ctx.fillRect((k + margin) * cell, (r + margin) * cell, cell, cell);
+          const a = document.createElement('a');
+          a.href = c.toDataURL('image/png');
+          a.download = `${fileName}.png`;
+          a.click();
+        };
+        gate(doDownload);
       }
     });
     form.addEventListener('input', calc);

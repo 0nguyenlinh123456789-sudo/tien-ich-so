@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import AffiliateCards from './AffiliateCards.astro';
 import ToolSearch from './ToolSearch.astro';
+import DonateBox from './DonateBox.astro';
 import { TOOLS, primaryToolsIn, secondaryToolsIn, marketBadge, toolUrl, recordUrl, getTool, VN_ONLY_TOOL_IDS } from '../data/tools.js';
 import { getAllRecords } from '../lib/routes.js';
 import site from '../config/site.json';
@@ -335,6 +336,29 @@ const allToolsList = TOOLS.map((tl) => {
   <!-- SLEEK PARTNER DEALS (Limited to 2 visual cards so it's never spammy) -->
   <div class="mt-10">
     <AffiliateCards context="tools" lang={lang} limit={2} />
+    <div class="mt-4 rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 p-4 text-white shadow-md">
+      <div class="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+        <span class="inline-block rounded-full bg-amber-400/20 px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider text-amber-300 uppercase">
+          💎 {vi ? 'DỊCH VỤ VIP & HỢP TÁC 24/7' : '24/7 VIP STUDIO & SPONSORSHIP'}
+        </span>
+        <a href={vi ? '/ung-ho' : '/en/support'} class="text-xs font-extrabold text-amber-300 hover:underline">{vi ? 'Xem bảng giá & Quét QR →' : 'View pricing & QR →'}</a>
+      </div>
+      <div class="grid gap-2.5 sm:grid-cols-3">
+        <a href={vi ? '/ung-ho' : '/en/support'} class="flex items-center justify-between rounded-xl border border-white/15 bg-white/5 p-3 transition hover:border-amber-300/60 hover:bg-white/10">
+          <div><div class="text-xs font-extrabold text-white">🌐 {vi ? 'Gắn Tên Miền Riêng (.com/.vn)' : 'Custom Domain Setup'}</div><div class="text-[11px] text-white/70">{vi ? 'Đưa Portfolio lên web riêng + SSL' : 'Portfolio + Lifetime SSL'}</div></div>
+          <span class="rounded-full bg-emerald-400/20 px-2.5 py-1 text-xs font-extrabold text-emerald-300">{vi ? '199k' : '$9'}</span>
+        </a>
+        <a href={vi ? '/ung-ho' : '/en/support'} class="flex items-center justify-between rounded-xl border border-white/15 bg-white/5 p-3 transition hover:border-amber-300/60 hover:bg-white/10">
+          <div><div class="text-xs font-extrabold text-white">🎨 {vi ? 'Thiết Kế Portfolio + CV 1-1' : '1-on-1 Portfolio + Resume'}</div><div class="text-[11px] text-white/70">{vi ? 'Chỉnh độc bản chuẩn ATS & VietQR' : 'Bespoke ATS + Booking QR'}</div></div>
+          <span class="rounded-full bg-emerald-400/20 px-2.5 py-1 text-xs font-extrabold text-emerald-300">{vi ? '499k' : '$22'}</span>
+        </a>
+        <a href={vi ? '/ung-ho' : '/en/support'} class="flex items-center justify-between rounded-xl border border-white/15 bg-white/5 p-3 transition hover:border-amber-300/60 hover:bg-white/10">
+          <div><div class="text-xs font-extrabold text-white">📣 {vi ? 'Đặt Banner / Thẻ Tài Trợ' : 'Sponsored Placement'}</div><div class="text-[11px] text-white/70">{vi ? 'Quảng bá dịch vụ toàn trang' : 'Site-wide brand feature'}</div></div>
+          <span class="rounded-full bg-emerald-400/20 px-2.5 py-1 text-xs font-extrabold text-emerald-300">{vi ? '990k' : '$45'}</span>
+        </a>
+      </div>
+    </div>
+    <DonateBox lang={lang} compact={false} />
   </div>
 
   {latest.length > 0 && (

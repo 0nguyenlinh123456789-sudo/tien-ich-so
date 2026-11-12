@@ -36,6 +36,8 @@ export function vietQr({ bin, account, amount, memo }) {
 }
 
 // BIN theo danh sách ngân hàng NAPAS/VietQR (các ngân hàng phổ biến).
+import qrcode from 'qrcode-generator';
+
 export const BANKS = [
   ['970436', 'Vietcombank'], ['970415', 'VietinBank'], ['970418', 'BIDV'], ['970405', 'Agribank'],
   ['970407', 'Techcombank'], ['970422', 'MB Bank'], ['970416', 'ACB'], ['970432', 'VPBank'],
@@ -46,3 +48,50 @@ export const BANKS = [
   ['970412', 'PVcomBank'], ['970419', 'NCB'], ['970400', 'Saigonbank'], ['970430', 'PG Bank'],
   ['970438', 'BaoVietBank'], ['970406', 'Vikki Bank (DongA)'], ['970414', 'MBV (OceanBank)'], ['970452', 'KienlongBank']
 ];
+
+const ALIAS_BIN = {
+  vcb: '970436', vietcombank: '970436',
+  ctg: '970415', icb: '970415', vietinbank: '970415', vietin: '970415',
+  bidv: '970418',
+  agribank: '970405', vba: '970405',
+  tcb: '970407', techcombank: '970407',
+  mb: '970422', mbbank: '970422',
+  acb: '970416',
+  vpb: '970432', vpbank: '970432',
+  tpb: '970423', tpbank: '970423',
+  stb: '970403', sacombank: '970403',
+  hdb: '970437', hdbank: '970437',
+  vib: '970441',
+  shb: '970443',
+  eib: '970431', eximbank: '970431',
+  msb: '970426',
+  ocb: '970448',
+  seabank: '970440',
+  lpb: '970449', lpbank: '970449',
+  bvbank: '970454', banviet: '970454',
+  scb: '970429',
+};
+
+export function resolveBankBin(bankNameOrBin) {
+  const raw = String(bankNameOrBin || '').trim();
+  if (/^\d{6}$/.test(raw)) return raw;
+  const key = raw.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (ALIAS_BIN[key]) return ALIAS_BIN[key];
+  const found = BANKS.find(([bin, name]) => bin === raw || name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(key) || key.includes(name.toLowerCase().replace(/[^a-z0-9]/g, '')));
+  return found ? found[0] : '970415';
+}
+
+export function buildVietQrSvg({ bank, bin, account, amount = 0, memo = '' } = {}) {
+  const acc = String(account || '').replace(/\s+/g, '');
+  if (!acc) return '';
+  const bankBin = bin || resolveBankBin(bank);
+  try {
+    const payload = vietQr({ bin: bankBin, account: acc, amount, memo });
+    const q = qrcode(0, 'M');
+    q.addData(payload);
+    q.make();
+    return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+  } catch {
+    return '';
+  }
+}

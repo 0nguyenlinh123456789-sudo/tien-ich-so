@@ -1,6 +1,7 @@
 // Portfolio site generator: every style returns one self-contained HTML document (inline CSS/JS, Google Fonts only).
 // The same string feeds the live preview iframe (srcdoc) and the .html download.
 import { escapeHtml as e } from './format.js';
+import { buildVietQrSvg } from './vietqr.js';
 
 const lines = (s) => String(s || '').split('\n').map((x) => x.trim()).filter(Boolean);
 const list = (s) => String(s || '').split(',').map((x) => x.trim()).filter(Boolean);
@@ -2161,7 +2162,7 @@ function editScript(map) {
     markMapped();
     saveUndo();
 
-    var isEditorUi=function(el){return !!(el&&el.closest&&(el.closest('#pf-studio-bar')||el.closest('[data-pf-editor-ui]')))};
+    var isEditorUi=function(el){return !!(el&&el.closest&&(el.closest('#pf-studio-bar')||el.closest('[data-pf-editor-ui]')||el.closest('#pf-mag-open')||el.closest('#pf-mag-modal')||el.closest('#pf-checkout-sec')))};
     var isSvgPart=function(el){return !!(el&&(el.tagName==='svg'||el.tagName==='SVG'||(el.ownerSVGElement&&el.ownerSVGElement.tagName.toLowerCase()==='svg')))};
     var getTarget=function(raw){
       if(!raw||raw===document.body||raw===document.documentElement)return null;
@@ -2755,6 +2756,17 @@ function smartAssetHubHtml(d, lang = 'vi') {
   return { top, showcase: showcase + lbScript };
 }
 
+function parsePriceVnd(priceStr) {
+  const raw = String(priceStr || '');
+  if (raw.includes('$')) {
+    const u = parseFloat(raw.replace(/[^0-9.]/g, '')) || 0;
+    return Math.round(u * 25400);
+  }
+  let digits = parseInt(raw.replace(/[^0-9]/g, ''), 10) || 0;
+  if (digits > 0 && digits < 10000) digits *= 1000;
+  return digits;
+}
+
 function clientMagnetHtml(d, values, lang = 'vi') {
   const vi = lang !== 'en';
   const c = d.c || '#2563eb';
@@ -2766,16 +2778,36 @@ function clientMagnetHtml(d, values, lang = 'vi') {
     const [title = ''] = l.split('|').map((x) => x.trim());
     return e(title);
   }).filter(Boolean);
-  const packages = pkgRows.length
+  const rawPackages = pkgRows.length
     ? pkgRows
-    : srvRows.map((s) => ({ tier: s, price: vi ? 'Báo giá theo yêu cầu' : 'Custom quote', perks: '' }));
+    : srvRows.map((s) => ({ tier: s, price: vi ? '3.500.000đ' : '$150', perks: '', rawTier: s, rawPrice: '3500000' }));
 
   const phoneRaw = String(values.bookingPhone || '').replace(/[^\d+]/g, '');
   const payUrl = safeUrl(values.paymentLink);
-  const bankName = e(String(values.bankName || 'VietinBank').trim());
-  const bankAcc = e(String(values.bankAccount || '105612356699').replace(/\s+/g, ''));
+  const rawBank = String(values.bankName || 'VietinBank').trim();
+  const rawAcc = String(values.bankAccount || '105612356699').replace(/\s+/g, '');
+  const bankName = e(rawBank);
+  const bankAcc = e(rawAcc);
   const emailRaw = String(values.email || 'hello@example.com').trim();
   const availTxt = e(values.availability || (vi ? 'Đang nhận dự án & Commission mới' : 'Available for new projects & commissions'));
+
+  const packages = rawPackages.map((p) => {
+    const vnd100 = parsePriceVnd(p.rawPrice || p.price);
+    const vnd30 = Math.round(vnd100 * 0.3);
+    const memoBase = `Coc ${p.rawTier || p.tier || d.name}`.slice(0, 25);
+    const svg30 = buildVietQrSvg({ bank: rawBank, account: rawAcc, amount: vnd30 >= 1000 ? vnd30 : 0, memo: memoBase });
+    const svg100 = buildVietQrSvg({ bank: rawBank, account: rawAcc, amount: vnd100 >= 1000 ? vnd100 : 0, memo: `TT ${p.rawTier || p.tier || d.name}`.slice(0, 25) });
+    return { ...p, vnd100, vnd30, svg30, svg100 };
+  });
+  const defaultQrSvg = packages[0]?.svg30 || buildVietQrSvg({ bank: rawBank, account: rawAcc, amount: 0, memo: `Coc du an ${values.name || ''}` });
+  const qrDataList = packages.map((p) => ({
+    label: `${p.tier} (${p.price})`,
+    price: p.price,
+    vnd100: p.vnd100,
+    vnd30: p.vnd30,
+    svg30: p.svg30,
+    svg100: p.svg100,
+  }));
 
   const seoLd = {
     '@context': 'https://schema.org',
@@ -2794,7 +2826,50 @@ function clientMagnetHtml(d, values, lang = 'vi') {
   };
   const headSeo = `<meta name="description" content="${e(String(values.role || '') + ' — ' + String(values.bio || '').slice(0, 140))}"><meta property="og:title" content="${d.name} — ${d.role}"><meta property="og:description" content="${d.bio}"><script type="application/ld+json">${JSON.stringify(seoLd).replace(/</g, '\\u003c')}</script>`;
 
+  const checkoutSection = bankName && bankAcc ? `<section id="pf-checkout-sec" class="pf-chk-sec">
+    <div class="pf-chk-wrap">
+      <div class="pf-chk-card">
+        <div class="pf-chk-left">
+          <span class="pf-chk-badge">⚡ ${vi ? 'THANH TOÁN & ĐẶT CỌC GIỮ LỊCH TRỰC TIẾP (VIETQR 24/7)' : 'INSTANT VIETQR DEPOSIT & BOOKING CHECKOUT'}</span>
+          <h3 class="pf-chk-title">${vi ? `Đặt Dịch Vụ & Thanh Toán Nhanh Cùng ${d.name}` : `Book a Package & Instant Deposit with ${d.name}`}</h3>
+          <p class="pf-chk-desc">${vi ? 'Chọn gói dịch vụ bên dưới — mã QR chuyển khoản bên cạnh sẽ tự động cập nhật đúng số tiền cọc 30% hoặc thanh toán 100% và nội dung chuyển khoản:' : 'Select a service tier below — the VietQR code automatically updates with the exact 30% deposit or 100% amount:'}</p>
+          <div class="pf-mag-pkgs" data-pf-pkg-group>
+            ${packages.map((p, i) => `<div class="pf-mag-pkg${i === 0 ? ' on' : ''}" data-pkg-idx="${i}" data-pkg="${p.tier} (${p.price})" data-price-str="${p.price}"><div><b>${p.tier}</b>${p.perks ? `<small>${p.perks}</small>` : ''}</div><span>${p.price}</span></div>`).join('')}
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button type="button" class="pf-mag-btn pri" data-pf-open-modal="1">⚡ ${vi ? 'Điền yêu cầu chi tiết & Đặt lịch' : 'Fill Project Brief & Book'}</button>
+            ${phoneRaw ? `<a class="pf-mag-btn zalo" href="${vi ? `https://zalo.me/${phoneRaw}` : `https://wa.me/${phoneRaw.replace(/^\+/, '')}`}" target="_blank" rel="noopener">💬 ${vi ? `Nhắn Zalo (${phoneRaw})` : `WhatsApp (${phoneRaw})`}</a>` : ''}
+            <a class="pf-mag-btn" style="background:#f1f5f9;color:#0f172a;border:1px solid #cbd5e1" href="mailto:${e(emailRaw)}">✉️ ${e(emailRaw)}</a>
+          </div>
+        </div>
+        <div class="pf-chk-right">
+          <div class="pf-qr-svg-frame" data-pf-qr-svg>${defaultQrSvg}</div>
+          <div style="text-align:center;margin-top:10px">
+            <div style="font-size:11px;font-weight:800;color:#047857;text-transform:uppercase;letter-spacing:.05em">🏦 ${bankName}</div>
+            <div style="font-size:16px;font-weight:900;color:#0f172a;margin:3px 0;font-family:monospace">${bankAcc}</div>
+            <button type="button" data-pf-copy-stk="${bankAcc}" style="font-size:11.5px;padding:4px 12px;border-radius:99px;border:1.5px solid #059669;background:#fff;color:#059669;cursor:pointer;font-weight:800">📋 ${vi ? 'Sao chép Số TK' : 'Copy Account'}</button>
+            <div data-pf-qr-amt style="font-size:12px;color:#334155;margin:8px 0 6px;font-weight:600">${packages[0]?.vnd30 >= 1000 ? `${vi ? 'Cọc 30%' : '30% Deposit'}: <b style="color:#047857">${packages[0].vnd30.toLocaleString('vi-VN')}đ</b>` : (vi ? 'Quét mã VietQR để chuyển khoản nhanh' : 'Scan VietQR for instant transfer')}</div>
+            <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+              <button type="button" data-qr-ratio="0.3" class="pf-qr-mode on" style="font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid #059669;background:#059669;color:#fff;cursor:pointer;font-weight:700">${vi ? 'Cọc 30%' : '30% Deposit'}</button>
+              <button type="button" data-qr-ratio="1" class="pf-qr-mode" style="font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#334155;cursor:pointer;font-weight:700">${vi ? 'Thanh toán 100%' : '100% Full'}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>` : '';
+
   const modalHtml = `<style>
+    .pf-chk-sec{padding:56px 20px;background:linear-gradient(180deg,rgba(248,250,252,.94),rgba(236,253,245,.92));border-top:1px solid rgba(16,185,129,.25);border-bottom:1px solid rgba(16,185,129,.25);font-family:system-ui,-apple-system,sans-serif;color:#0f172a}
+    .pf-chk-wrap{max-width:1040px;margin:0 auto}
+    .pf-chk-card{display:grid;grid-template-columns:1.35fr .85fr;gap:24px;align-items:center;background:#fff;border:2px solid #10b981;border-radius:24px;padding:26px;box-shadow:0 20px 45px -15px rgba(5,150,105,.18)}
+    .pf-chk-badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#d1fae5;color:#065f46;font-size:11px;font-weight:800;letter-spacing:.04em}
+    .pf-chk-title{margin:8px 0 6px;font-size:clamp(20px,2.6vw,26px);font-weight:900;color:#0f172a}
+    .pf-chk-desc{margin:0 0 12px;font-size:13.5px;color:#475569;line-height:1.5}
+    .pf-chk-right{background:linear-gradient(135deg,#f0fdf4,#ecfeff);border:1.5px solid #a7f3d0;border-radius:20px;padding:18px;display:flex;flex-direction:column;align-items:center}
+    .pf-qr-svg-frame{width:168px;height:168px;background:#fff;border:1.5px solid #cbd5e1;border-radius:14px;padding:8px;box-shadow:0 6px 18px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center}
+    .pf-qr-svg-frame svg{width:100%;height:100%;display:block}
+    @media(max-width:780px){.pf-chk-card{grid-template-columns:1fr}}
     .pf-mag-fab{position:fixed;left:22px;bottom:22px;z-index:9990;display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:999px;background:#0f172a;color:#fff;border:1.5px solid ${c};box-shadow:0 14px 34px rgba(0,0,0,.32);font:700 13px/1.2 system-ui,sans-serif;cursor:pointer;transition:transform .2s,box-shadow .2s}
     .pf-mag-fab:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(0,0,0,.42)}
     .pf-mag-dot{width:9px;height:9px;border-radius:50%;background:#10b981;box-shadow:0 0 0 4px rgba(16,185,129,.25)}
@@ -2816,11 +2891,11 @@ function clientMagnetHtml(d, values, lang = 'vi') {
     .pf-mag-btn.pri{background:${c};color:#fff}
     .pf-mag-btn.zalo{background:#0068ff;color:#fff}
     .pf-mag-btn.pay{background:#059669;color:#fff}
-    @media print{.pf-mag-fab,.pf-mag-modal{display:none!important}}
+    @media print{.pf-mag-fab,.pf-mag-modal,.pf-chk-sec{display:none!important}}
   </style>
   <button type="button" class="pf-mag-fab" id="pf-mag-open">
     <span class="pf-mag-dot"></span>
-    <span>⚡ ${vi ? 'Đặt Dịch Vụ & Báo Giá Nhanh' : 'Book Package & Instant Quote'}</span>
+    <span>⚡ ${vi ? 'Đặt Dịch Vụ & Quét QR Thanh Toán' : 'Book Package & QR Checkout'}</span>
   </button>
   <div class="pf-mag-modal" id="pf-mag-modal">
     <div class="pf-mag-box">
@@ -2832,19 +2907,19 @@ function clientMagnetHtml(d, values, lang = 'vi') {
         <button type="button" class="pf-mag-close" id="pf-mag-close">✕</button>
       </div>
       <div style="font-size:12.5px;font-weight:700;color:#475569">${vi ? '1. Chọn gói dịch vụ / hạng mục bạn quan tâm:' : '1. Select a package or service:'}</div>
-      <div class="pf-mag-pkgs" id="pf-mag-pkgs">
-        ${packages.map((p, i) => `<div class="pf-mag-pkg${i === 0 ? ' on' : ''}" data-pkg="${p.tier} (${p.price})" data-price-str="${p.price}"><div><b>${p.tier}</b>${p.perks ? `<small>${p.perks}</small>` : ''}</div><span>${p.price}</span></div>`).join('')}
+      <div class="pf-mag-pkgs" id="pf-mag-pkgs" data-pf-pkg-group>
+        ${packages.map((p, i) => `<div class="pf-mag-pkg${i === 0 ? ' on' : ''}" data-pkg-idx="${i}" data-pkg="${p.tier} (${p.price})" data-price-str="${p.price}"><div><b>${p.tier}</b>${p.perks ? `<small>${p.perks}</small>` : ''}</div><span>${p.price}</span></div>`).join('')}
       </div>
       <div id="pf-mag-fx-bar" style="font-size:11.5px;color:#0369a1;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:7px 11px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px">
         <span>🌐 ${vi ? 'Quy đổi tỷ giá quốc tế (Open ER-API):' : 'Live International FX (Open ER-API):'}</span>
         <b id="pf-mag-fx-val">...</b>
       </div>
       ${bankName && bankAcc ? `<div id="pf-mag-qr-box" style="background:linear-gradient(135deg,#f0fdf4,#ecfeff);border:1.5px solid #10b981;border-radius:16px;padding:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-        <img id="pf-mag-qr-img" src="https://img.vietqr.io/image/${bankName}-${bankAcc}-compact2.png?addInfo=${encodeURIComponent('Coc du an ' + d.name)}" alt="VietQR" style="width:112px;height:112px;object-fit:contain;border-radius:10px;background:#fff;border:1px solid #cbd5e1;padding:4px" />
+        <div class="pf-qr-svg-frame" style="width:120px;height:120px" data-pf-qr-svg>${defaultQrSvg}</div>
         <div style="flex:1;min-width:190px">
           <div style="font-size:11px;font-weight:800;color:#047857;text-transform:uppercase">⚡ ${vi ? 'Quét VietQR Đặt Cọc Giữ Lịch Ngay' : 'Instant VietQR Deposit Checkout'}</div>
-          <div style="font-size:13px;font-weight:800;color:#0f172a;margin:3px 0">${bankName} · <span id="pf-mag-acc">${bankAcc}</span> <button type="button" id="pf-mag-copy-acc" style="font-size:10.5px;padding:2px 7px;border-radius:99px;border:1px solid #059669;background:#fff;color:#059669;cursor:pointer;font-weight:700">${vi ? 'Sao chép STK' : 'Copy'}</button></div>
-          <div id="pf-mag-qr-amt" style="font-size:12px;color:#334155;margin-bottom:6px">${vi ? 'Tự động điền số tiền cọc 30% theo gói chọn' : 'Auto-fills 30% deposit for selected tier'}</div>
+          <div style="font-size:13px;font-weight:800;color:#0f172a;margin:3px 0">${bankName} · <span id="pf-mag-acc">${bankAcc}</span> <button type="button" id="pf-mag-copy-acc" data-pf-copy-stk="${bankAcc}" style="font-size:10.5px;padding:2px 7px;border-radius:99px;border:1px solid #059669;background:#fff;color:#059669;cursor:pointer;font-weight:700">${vi ? 'Sao chép STK' : 'Copy'}</button></div>
+          <div id="pf-mag-qr-amt" data-pf-qr-amt style="font-size:12px;color:#334155;margin-bottom:6px">${vi ? 'Tự động điền số tiền cọc 30% theo gói chọn' : 'Auto-fills 30% deposit for selected tier'}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <button type="button" data-qr-ratio="0.3" class="pf-qr-mode on" style="font-size:11px;padding:4px 9px;border-radius:8px;border:1px solid #059669;background:#059669;color:#fff;cursor:pointer;font-weight:700">${vi ? 'Cọc 30% giữ lịch' : '30% Deposit'}</button>
             <button type="button" data-qr-ratio="1" class="pf-qr-mode" style="font-size:11px;padding:4px 9px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#334155;cursor:pointer;font-weight:700">${vi ? 'Thanh toán 100%' : '100% Full'}</button>
@@ -2866,88 +2941,81 @@ function clientMagnetHtml(d, values, lang = 'vi') {
   <script>(function(){
     var openBtn=document.getElementById('pf-mag-open'),modal=document.getElementById('pf-mag-modal'),closeBtn=document.getElementById('pf-mag-close');
     if(!openBtn||!modal)return;
-    var selPkg=${JSON.stringify(packages[0] ? `${packages[0].tier} (${packages[0].price})` : 'Custom Project')};
+    var PKGS=${JSON.stringify(qrDataList)};
+    var selIdx=0, qrRatio=0.3, vndPerUsd=25400, eurPerUsd=0.92;
+    var selPkg=PKGS[0]?PKGS[0].label:'Custom Project';
     openBtn.addEventListener('click',function(){modal.classList.add('open')});
+    document.querySelectorAll('[data-pf-open-modal]').forEach(function(b){
+      b.addEventListener('click',function(){modal.classList.add('open')});
+    });
     if(closeBtn)closeBtn.addEventListener('click',function(){modal.classList.remove('open')});
     modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('open')});
     document.querySelectorAll('.pfx-rate,.pfx-srv').forEach(function(card){
       card.style.cursor='pointer';
       card.addEventListener('click',function(){modal.classList.add('open')});
     });
-    modal.querySelectorAll('[data-pkg]').forEach(function(el){
-      el.addEventListener('click',function(){
-        modal.querySelectorAll('[data-pkg]').forEach(function(x){x.classList.remove('on')});
-        el.classList.add('on');
-        selPkg=el.getAttribute('data-pkg')||'';
-        updateQrAndFx(el.getAttribute('data-price-str')||'');
-      });
-    });
-    var qrRatio=0.3, vndPerUsd=25400, eurPerUsd=0.92, curPriceStr=${JSON.stringify(packages[0] ? packages[0].price : '')};
-    var parseMoney=function(s){
-      var raw=String(s||'');
-      if(raw.indexOf('$')>=0){
-        var u=parseFloat(raw.replace(/[^0-9.]/g,''))||0;
-        return {usd:u,vnd:Math.round(u*vndPerUsd)};
-      }
-      var digits=parseInt(raw.replace(/[^0-9]/g,''),10)||0;
-      if(digits>0&&digits<10000)digits=digits*1000;
-      return {vnd:digits,usd:digits?Math.round(digits/vndPerUsd):0};
-    };
-    var updateQrAndFx=function(priceStr){
-      if(priceStr!==undefined)curPriceStr=priceStr;
-      var m=parseMoney(curPriceStr);
+    var syncAllQr=function(){
+      var pkg=PKGS[selIdx]||PKGS[0]||{};
+      selPkg=pkg.label||'Custom Project';
+      var vnd=pkg.vnd100||0;
+      var usd=vnd?Math.round(vnd/vndPerUsd):0;
       var fxEl=document.getElementById('pf-mag-fx-val');
       if(fxEl){
-        if(m.vnd>0){
-          var eur=Math.round(m.usd*eurPerUsd);
-          fxEl.textContent='≈ $'+m.usd.toLocaleString('en-US')+' USD · €'+eur.toLocaleString('en-US')+' EUR ('+m.vnd.toLocaleString('vi-VN')+'đ)';
+        if(vnd>0){
+          var eur=Math.round(usd*eurPerUsd);
+          fxEl.textContent='≈ $'+usd.toLocaleString('en-US')+' USD · €'+eur.toLocaleString('en-US')+' EUR ('+vnd.toLocaleString('vi-VN')+'đ)';
         }else{
           fxEl.textContent='1 USD ≈ '+Math.round(vndPerUsd).toLocaleString('vi-VN')+' VND';
         }
       }
-      var qrImg=document.getElementById('pf-mag-qr-img');
-      var qrAmtEl=document.getElementById('pf-mag-qr-amt');
-      if(qrImg&&${JSON.stringify(Boolean(bankName && bankAcc))}){
-        var depVnd=Math.round((m.vnd||0)*qrRatio);
-        var memo='Coc '+selPkg.slice(0,28);
-        var url='https://img.vietqr.io/image/${bankName}-${bankAcc}-compact2.png?addInfo='+encodeURIComponent(memo);
-        if(depVnd>=1000)url+='&amount='+depVnd;
-        qrImg.src=url;
-        if(qrAmtEl){
-          qrAmtEl.innerHTML=depVnd>=1000
-            ? (${vi ? "'Số tiền cần chuyển ('+Math.round(qrRatio*100)+'%): '" : "'Transfer amount ('+Math.round(qrRatio*100)+'%): '"}+'<b style="color:#047857">'+depVnd.toLocaleString('vi-VN')+'đ</b> (≈ $'+Math.max(1,Math.round(depVnd/vndPerUsd))+')')
-            : ${vi ? "'Quét mã VietQR để chuyển khoản đặt lịch nhanh'" : "'Scan VietQR to transfer deposit'"};
-        }
+      var svgHtml=(qrRatio===1?pkg.svg100:pkg.svg30)||pkg.svg30||'';
+      if(svgHtml){
+        document.querySelectorAll('[data-pf-qr-svg]').forEach(function(box){box.innerHTML=svgHtml;});
       }
+      var depVnd=qrRatio===1?(pkg.vnd100||0):(pkg.vnd30||0);
+      var amtHtml=depVnd>=1000
+        ? (${vi ? "'Số tiền cần chuyển ('+Math.round(qrRatio*100)+'%): '" : "'Transfer amount ('+Math.round(qrRatio*100)+'%): '"}+'<b style="color:#047857">'+depVnd.toLocaleString('vi-VN')+'đ</b> (≈ $'+Math.max(1,Math.round(depVnd/vndPerUsd))+')')
+        : ${vi ? "'Quét mã VietQR để chuyển khoản đặt lịch nhanh'" : "'Scan VietQR to transfer deposit'"};
+      document.querySelectorAll('[data-pf-qr-amt]').forEach(function(el){el.innerHTML=amtHtml;});
     };
-    modal.querySelectorAll('[data-qr-ratio]').forEach(function(b){
+    document.querySelectorAll('[data-pkg-idx]').forEach(function(el){
+      el.addEventListener('click',function(){
+        selIdx=parseInt(el.getAttribute('data-pkg-idx')||'0',10)||0;
+        document.querySelectorAll('[data-pkg-idx]').forEach(function(x){
+          x.classList.toggle('on',parseInt(x.getAttribute('data-pkg-idx')||'0',10)===selIdx);
+        });
+        syncAllQr();
+      });
+    });
+    document.querySelectorAll('[data-qr-ratio]').forEach(function(b){
       b.addEventListener('click',function(){
         qrRatio=parseFloat(b.getAttribute('data-qr-ratio')||'0.3')||0.3;
-        modal.querySelectorAll('[data-qr-ratio]').forEach(function(x){
-          var on=x===b;
+        document.querySelectorAll('[data-qr-ratio]').forEach(function(x){
+          var on=parseFloat(x.getAttribute('data-qr-ratio')||'0.3')===qrRatio;
           x.style.background=on?'#059669':'#fff';
           x.style.color=on?'#fff':'#334155';
           x.style.borderColor=on?'#059669':'#cbd5e1';
         });
-        updateQrAndFx();
+        syncAllQr();
       });
     });
-    var copyAccBtn=document.getElementById('pf-mag-copy-acc');
-    if(copyAccBtn)copyAccBtn.addEventListener('click',function(){
-      if(navigator.clipboard)navigator.clipboard.writeText(${JSON.stringify(bankAcc)});
-      copyAccBtn.textContent=${vi ? "'✓ Đã chép'" : "'✓ Copied'"};
-      setTimeout(function(){copyAccBtn.textContent=${vi ? "'Sao chép STK'" : "'Copy'"}},1600);
+    document.querySelectorAll('[data-pf-copy-stk]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var stk=btn.getAttribute('data-pf-copy-stk')||${JSON.stringify(bankAcc)};
+        if(navigator.clipboard)navigator.clipboard.writeText(stk);
+        var orig=btn.textContent;
+        btn.textContent=${vi ? "'✓ Đã chép STK'" : "'✓ Copied'"};
+        setTimeout(function(){btn.textContent=orig},1600);
+      });
     });
-    updateQrAndFx(curPriceStr);
+    syncAllQr();
     fetch('https://open.er-api.com/v6/latest/USD').then(function(r){return r.json()}).then(function(d){
       if(d&&d.rates){
         if(d.rates.VND)vndPerUsd=d.rates.VND;
         if(d.rates.EUR)eurPerUsd=d.rates.EUR;
-        updateQrAndFx();
+        syncAllQr();
       }
-    }).catch(function(){[0].forEach(function(){
-      });
-    });
+    }).catch(function(){});
     var mailBtn=document.getElementById('pf-mag-send-mail');
     if(mailBtn)mailBtn.addEventListener('click',function(){
       var cl=(document.getElementById('pf-mag-client')||{}).value||'Client';
@@ -2958,7 +3026,7 @@ function clientMagnetHtml(d, values, lang = 'vi') {
     });
   })();</script>`;
 
-  return { headSeo, modalHtml };
+  return { headSeo, checkoutSection, modalHtml };
 }
 
 export function renderPortfolio(styleId, values, images, lang = 'vi', opts = {}) {
@@ -2987,6 +3055,10 @@ export function renderPortfolio(styleId, values, images, lang = 'vi', opts = {})
   if (overlay) html = html.replace('</body>', overlay + '</body>');
   const magnet = clientMagnetHtml(d, values, lang);
   if (magnet.headSeo) html = html.replace('</head>', magnet.headSeo + '</head>');
+  if (magnet.checkoutSection) {
+    const fAt = html.lastIndexOf('<footer');
+    html = fAt > 0 ? html.slice(0, fAt) + magnet.checkoutSection + html.slice(fAt) : html.replace('</body>', magnet.checkoutSection + '</body>');
+  }
   if (magnet.modalHtml) html = html.replace('</body>', magnet.modalHtml + '</body>');
   const font = PORTFOLIO_FONTS[values.font];
   if (font && font.q) {

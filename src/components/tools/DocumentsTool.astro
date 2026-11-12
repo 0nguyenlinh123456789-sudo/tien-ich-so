@@ -430,7 +430,8 @@ const chip = 'rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm 
         if (saved[k] !== undefined) sel.value = saved[k];
       });
       fieldsEl.innerHTML = tp.fields.map((fd: any) => {
-        const val = escapeHtml(saved[fd.name] ?? fd.default ?? '');
+        const rawSaved = (fd.name === 'payBank' || fd.name === 'payAccount') ? (saved[fd.name] || fd.default || '') : (saved[fd.name] ?? fd.default ?? '');
+        const val = escapeHtml(rawSaved);
         const id = `doc-${fd.name}`;
         const label = `<label class="label" for="${id}">${escapeHtml(fd.label)}</label>`;
         if (fd.type === 'photo') {

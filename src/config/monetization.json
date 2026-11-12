@@ -41,6 +41,78 @@
     },
     "tiers": [
       {
+        "id": "vip-domain",
+        "icon": "🌐",
+        "title": {
+          "vi": "Gắn Tên Miền Riêng (.com/.vn) & SSL Cho Portfolio",
+          "en": "Custom Domain (.com/.design) & SSL Setup"
+        },
+        "price": {
+          "vi": "199.000đ",
+          "en": "$9 (199k)"
+        },
+        "cta": {
+          "vi": "Đặt gói ngay (VietQR)",
+          "en": "Book Instant Setup"
+        },
+        "href": {
+          "vi": "/ung-ho",
+          "en": "/en/support"
+        },
+        "desc": {
+          "vi": "Trỏ domain riêng (.com/.vn), cấu hình HTTPS/SSL tự động & tối ưu tốc độ tải toàn cầu cho Portfolio của bạn.",
+          "en": "Connect your own domain (.com/.vn) with automatic HTTPS/SSL and global edge CDN."
+        }
+      },
+      {
+        "id": "vip-bespoke",
+        "icon": "✨",
+        "title": {
+          "vi": "Thiết Kế & Chuẩn Hóa CV / Portfolio VIP 1-1",
+          "en": "1-on-1 Bespoke CV & Portfolio Polish"
+        },
+        "desc": {
+          "vi": "Chuyên gia biên tập lại câu chữ, căn chỉnh layout A4 chuẩn ATS quốc tế & xuất bộ hồ sơ trúng tuyển.",
+          "en": "Expert copywriting, ATS layout optimization and custom Case Study design."
+        },
+        "price": {
+          "vi": "499.000đ",
+          "en": "$25 (499k)"
+        },
+        "cta": {
+          "vi": "Đặt gói VIP 1-1",
+          "en": "Book 1-on-1 VIP"
+        },
+        "href": {
+          "vi": "/ung-ho",
+          "en": "/en/support"
+        }
+      },
+      {
+        "id": "vip-sponsor",
+        "icon": "📣",
+        "title": {
+          "vi": "Đặt Banner Tài Trợ & Giới Thiệu Sản Phẩm",
+          "en": "Sponsored Tool Placement & Brand Banner"
+        },
+        "desc": {
+          "vi": "Hiển thị thương hiệu/dịch vụ của bạn trước hàng chục ngàn người dùng tra cứu công cụ tài chính & hồ sơ mỗi tháng.",
+          "en": "Reach thousands of high-intent professionals using our finance and career tools monthly."
+        },
+        "price": {
+          "vi": "990.000đ/tháng",
+          "en": "$49/mo"
+        },
+        "cta": {
+          "vi": "Đặt vị trí tài trợ",
+          "en": "Book Sponsorship"
+        },
+        "href": {
+          "vi": "/ung-ho",
+          "en": "/en/support"
+        }
+      },
+      {
         "id": "portfolio-pro",
         "icon": "🎨",
         "title": {

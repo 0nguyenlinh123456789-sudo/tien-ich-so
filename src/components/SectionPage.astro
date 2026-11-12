@@ -7,6 +7,7 @@ import Layout from '../layouts/Layout.astro';
 import ToolRenderer from './ToolRenderer.astro';
 import AffiliateCards from './AffiliateCards.astro';
 import AdSlot from './AdSlot.astro';
+import DonateBox from './DonateBox.astro';
 import { SECTIONS, toolsIn, primaryToolsIn, secondaryToolsIn, marketBadge, nextStepToolsFor, getTool, toolUrl, sectionUrl, recordUrl, homeUrl } from '../data/tools.js';
 import { buildRecordContent } from '../lib/seo-content.js';
 import { t } from '../i18n/ui.js';
@@ -33,7 +34,7 @@ const primaryTools = primaryToolsIn(sectionId, lang);
 const secondaryTools = secondaryToolsIn(sectionId, lang);
 
 // These tools already render offers and ads inside MonetizedResult.
-const LEGACY_MONETIZED = ['salary', 'loan', 'fire', 'numerology', 'tarot', 'goodday', 'compress', 'moneywords', 'documents', 'portfolio'];
+const LEGACY_MONETIZED = ['salary', 'loan', 'fire', 'numerology', 'tarot', 'goodday', 'compress', 'moneywords', 'documents', 'portfolio', 'fx'];
 // Google shows ~155 chars; short UI copy is expanded with the SEO title and first FAQ answer.
 const metaDesc = (txt: string) => { const t = txt.replace(/\s+/g, ' ').trim(); return t.length <= 155 ? t : t.slice(0, 154).replace(/\s+\S*$/, '') + '…'; };
 const content = kind === 'record' ? buildRecordContent(record) : null;
@@ -178,7 +179,7 @@ const peerTools = ((tool as any)?.market === 'vn' && !vi) || ((tool as any)?.mar
     <>
       <p class="mt-1.5 text-sm text-slate-500">{tool!.desc[lang]}</p>
       <div class="mt-6"><ToolRenderer toolId={toolId!} lang={lang} /></div>
-      {!LEGACY_MONETIZED.includes(toolId!) && (<><AffiliateCards context={section.context} tool={toolId} lang={lang} limit={4} /><AdSlot lang={lang} /></>)}
+      {!LEGACY_MONETIZED.includes(toolId!) && (<><AffiliateCards context={section.context} tool={toolId} lang={lang} limit={4} /><AdSlot lang={lang} /><DonateBox lang={lang} compact={false} /></>)}
       {toolFaq.length > 0 && (
         <section class="mt-10 max-w-3xl">
           <h2 class="mb-3 text-xl font-bold">{lang === 'vi' ? 'Câu hỏi thường gặp' : 'Frequently Asked Questions'}</h2>

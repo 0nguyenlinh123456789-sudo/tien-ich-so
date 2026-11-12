@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import DonateBox from '../../components/DonateBox.astro';
 import site from '../../config/site.json';
 import M from '../../config/monetization.json';
 // Public repository (verified 2026-11-03: issues page returns HTTP 200 without login).
@@ -34,6 +35,7 @@ const zalo = String((M as any).zaloUrl || '').startsWith('https://zalo.me/') ? (
 
     <h2>Please note</h2>
     <p>Do not post personal data (ID numbers, bank accounts, real salary with your name) in Issues, as they are public. We cannot give individual legal or financial advice.</p>
-    <p>See also: <a class="underline" href="/en/about">About</a> · <a class="underline" href="/en/privacy">Privacy Policy</a>.</p>
+    <p>See also: <a class="underline" href="/en/about">About</a> · <a class="underline" href="/en/privacy">Privacy Policy</a> · <a class="underline" href="/en/support">Support & VIP Studio (QR)</a>.</p>
+    <DonateBox lang="en" compact={false} />
   </article>
 </Layout>
