@@ -25,9 +25,13 @@ Hiện link dẫn thẳng về Shopee nên **chưa có hoa hồng**. Để có h
 
 1. Đăng ký publisher tại https://pub.accesstrade.vn (cá nhân, miễn phí). Khai website: link workers.dev hiện tại.
 2. Vào chiến dịch Shopee / Lazada / Tiki → bấm *Đăng ký chạy* → được duyệt.
-3. Lấy **deep link prefix** (dạng `https://go.isclix.com/deep_link/<id>?url=`) và dán vào
-   `"accesstradeDeepLinkPrefix"`. Toàn bộ 22 link tự động bọc lại → mỗi đơn hàng khách mua trong 7–30 ngày
-   sau khi bấm link đều tính hoa hồng (Shopee ~1–10% tùy ngành).
+3. Lấy **deep link prefix** của TỪNG chiến dịch (mỗi sàn một prefix riêng, dạng
+   `https://go.isclix.com/deep_link/v6/<pub_id>/<campaign_id>?sub4=oneatweb&url_enc=`): vào Công cụ → Tạo link sâu,
+   dán 1 link sản phẩm bất kỳ của sàn đó, copy link kết quả và cắt bỏ phần url đã mã hóa ở cuối.
+4. Dán vào `"accesstradeDeepLinkPrefixes"` đúng khóa sàn (`shopee.vn`, `lazada.vn`, `tiki.vn`) trong
+   `monetization.json`. Toàn bộ link tự động bọc lại → mỗi đơn khách mua trong 7–30 ngày sau khi bấm link đều
+   tính hoa hồng (Shopee ~1–10% tùy ngành). Tài khoản publisher của bạn ĐÃ có (pub_id 7102804567469033199 —
+   đang chạy 2 chiến dịch VPBank/TPBank), chỉ cần đăng ký thêm chiến dịch Shopee/Lazada rồi điền prefix: ~5 phút.
 
 Thay thế hoặc bổ sung: Shopee Affiliate trực tiếp (https://affiliate.shopee.vn) – cũng miễn phí, tự tạo link theo
 từ khóa rồi thay `url` của từng offer.

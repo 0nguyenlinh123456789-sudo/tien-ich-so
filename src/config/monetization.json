@@ -9,6 +9,12 @@
   "bannerScriptAttributes": {},
   "inContentAdHtml": "",
   "accesstradeDeepLinkPrefix": "",
+  "_accesstradeHelp": "Mỗi sàn 1 prefix riêng. Vào pub.accesstrade.vn → Công cụ → Tạo link sâu (Deep link), chọn chiến dịch Shopee (hoặc Lazada/Tiki), dán 1 link sản phẩm bất kỳ, lấy link kết quả rồi cắt phần TRƯỚC url gốc đã mã hóa (thường có dạng https://go.isclix.com/deep_link/v6/<pub_id>/<campaign_id>?sub4=oneatweb&url_enc=). Dán vào đúng sàn bên dưới. Để trống = link gốc không hoa hồng.",
+  "accesstradeDeepLinkPrefixes": {
+    "shopee.vn": "",
+    "lazada.vn": "",
+    "tiki.vn": ""
+  },
   "adsTxt": "",
   "donateUrl": "",
   "_donateHelp": "Ủng hộ qua VietQR: điền bank (tên hoặc BIN trong src/lib/vietqr.js), account (số tài khoản), name (tên chủ TK). Để account rỗng = ẩn toàn bộ khối ủng hộ. donateUrl: link Buy Me a Coffee / Ko-fi / PayPal.me (cho khách nước ngoài). zaloUrl: link https://zalo.me/0xxxxxxxxx để khách đặt dịch vụ.",

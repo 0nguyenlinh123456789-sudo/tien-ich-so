@@ -7,8 +7,15 @@ export const MONETIZATION = M;
 
 export function wrapAffiliate(url, wrap = true) {
   if (!url) return '#';
-  const prefix = (M.accesstradeDeepLinkPrefix || '').trim();
-  if (!wrap || !prefix) return url;
+  if (!wrap) return url;
+  // Accesstrade deep-link prefixes differ per campaign (Shopee ≠ Lazada ≠ Tiki),
+  // so match the merchant's hostname against the per-merchant map first.
+  const map = M.accesstradeDeepLinkPrefixes || {};
+  let host = '';
+  try { host = new URL(url).hostname; } catch { /* relative or malformed → leave as-is */ }
+  const key = Object.keys(map).find((k) => k && host.endsWith(k) && String(map[k] || '').trim());
+  const prefix = (key ? String(map[key]).trim() : (M.accesstradeDeepLinkPrefix || '').trim());
+  if (!prefix) return url;
   return prefix + encodeURIComponent(url);
 }
 
