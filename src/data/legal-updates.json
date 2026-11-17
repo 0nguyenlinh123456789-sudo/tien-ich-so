@@ -1,6 +1,6 @@
 {
   "source": "Cổng Thông tin điện tử Chính phủ – vanban.chinhphu.vn",
-  "updatedAt": "2026-11-04T08:39:39.540Z",
+  "updatedAt": "2026-11-17T10:14:29.800Z",
   "topics": [
     {
       "id": "luong",
@@ -36,6 +36,19 @@
     }
   ],
   "items": [
+    {
+      "code": "413/2026/NĐ-CP",
+      "type": "Nghị định",
+      "date": "16/11/2026",
+      "title": "Sửa đổi, bổ sung một số điều của Nghị định số 104/2025/NĐ-CP ngày 15 tháng 5 năm 2025 của Chính phủ quy định chi tiết một số điều và biện pháp thi hành Luật Công chứng",
+      "url": "https://vanban.chinhphu.vn/?pageid=27160&docid=220301",
+      "file": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/413_2026_ndcp_14112026-signed-1-.signed.pdf",
+      "topics": [
+        "dansu"
+      ],
+      "impact": false,
+      "checkedAt": "2026-11-17"
+    },
     {
       "code": "2085/QĐ-TTg",
       "type": "Quyết định Thủ tướng",
