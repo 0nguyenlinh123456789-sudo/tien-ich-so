@@ -1,126 +1,126 @@
 {
   "source": "Vietcombank",
-  "updated": "11/19/2026 11:10:00 AM",
+  "updated": "11/19/2026 3:08:17 PM",
   "rates": {
     "AUD": {
       "name": "AUSTRALIAN DOLLAR",
-      "buy": 16777.58,
-      "transfer": 16947.06,
-      "sell": 17490.38
+      "buy": 16793.14,
+      "transfer": 16962.77,
+      "sell": 17506.58
     },
     "CAD": {
       "name": "CANADIAN DOLLAR",
-      "buy": 17498.25,
-      "transfer": 17675,
-      "sell": 18241.67
+      "buy": 17508.2,
+      "transfer": 17685.05,
+      "sell": 18252.01
     },
     "CHF": {
       "name": "SWISS FRANC",
-      "buy": 29757.62,
-      "transfer": 30058.2,
-      "sell": 31021.87
+      "buy": 29752.53,
+      "transfer": 30053.06,
+      "sell": 31016.52
     },
     "CNY": {
       "name": "YUAN RENMINBI",
-      "buy": 3760.99,
-      "transfer": 3798.98,
-      "sell": 3920.77
+      "buy": 3764.98,
+      "transfer": 3803.01,
+      "sell": 3924.93
     },
     "DKK": {
       "name": "DANISH KRONE",
       "buy": null,
-      "transfer": 3709.18,
-      "sell": 3851.14
+      "transfer": 3708.47,
+      "sell": 3850.39
     },
     "EUR": {
       "name": "EURO",
-      "buy": 27520.55,
-      "transfer": 27798.54,
-      "sell": 28972.42
+      "buy": 27511.85,
+      "transfer": 27789.75,
+      "sell": 28963.23
     },
     "GBP": {
       "name": "POUND STERLING",
-      "buy": 32966,
-      "transfer": 33298.99,
-      "sell": 34366.56
+      "buy": 32964.04,
+      "transfer": 33297.01,
+      "sell": 34364.48
     },
     "HKD": {
       "name": "HONGKONG DOLLAR",
-      "buy": 3187.03,
-      "transfer": 3219.22,
-      "sell": 3342.43
+      "buy": 3189.87,
+      "transfer": 3222.09,
+      "sell": 3345.41
     },
     "INR": {
       "name": "INDIAN RUPEE",
       "buy": null,
-      "transfer": 273.75,
-      "sell": 285.54
+      "transfer": 274.32,
+      "sell": 286.13
     },
     "JPY": {
       "name": "YEN",
-      "buy": 155.43,
-      "transfer": 157,
-      "sell": 166.13
+      "buy": 155.4,
+      "transfer": 156.97,
+      "sell": 166.1
     },
     "KRW": {
       "name": "KOREAN WON",
-      "buy": 16.72,
-      "transfer": 18.58,
-      "sell": 20.16
+      "buy": 16.75,
+      "transfer": 18.61,
+      "sell": 20.19
     },
     "KWD": {
       "name": "KUWAITI DINAR",
       "buy": null,
-      "transfer": 82843.55,
-      "sell": 86861.78
+      "transfer": 82854.34,
+      "sell": 86872.98
     },
     "MYR": {
       "name": "MALAYSIAN RINGGIT",
       "buy": null,
-      "transfer": 6198.06,
-      "sell": 6333.11
+      "transfer": 6193.84,
+      "sell": 6328.79
     },
     "NOK": {
       "name": "NORWEGIAN KRONER",
       "buy": null,
-      "transfer": 2598.06,
-      "sell": 2708.31
+      "transfer": 2597.09,
+      "sell": 2707.29
     },
     "RUB": {
       "name": "RUSSIAN RUBLE",
       "buy": null,
-      "transfer": 297.17,
-      "sell": 328.97
+      "transfer": 297.89,
+      "sell": 329.76
     },
     "SAR": {
       "name": "SAUDI RIAL",
       "buy": null,
-      "transfer": 6820.07,
-      "sell": 7113.82
+      "transfer": 6825.38,
+      "sell": 7119.35
     },
     "SEK": {
       "name": "SWEDISH KRONA",
       "buy": null,
-      "transfer": 2479.77,
-      "sell": 2585
+      "transfer": 2478.48,
+      "sell": 2583.65
     },
     "SGD": {
       "name": "SINGAPORE DOLLAR",
-      "buy": 19438.29,
-      "transfer": 19634.64,
-      "sell": 20304.7
+      "buy": 19438.33,
+      "transfer": 19634.67,
+      "sell": 20304.72
     },
     "THB": {
       "name": "THAILAND BAHT",
-      "buy": 668.79,
-      "transfer": 743.1,
-      "sell": 774.63
+      "buy": 668.13,
+      "transfer": 742.36,
+      "sell": 773.86
     },
     "USD": {
       "name": "US DOLLAR",
-      "buy": 25510,
-      "transfer": 25540,
-      "sell": 25920
+      "buy": 25530,
+      "transfer": 25560,
+      "sell": 25940
     }
   }
 }
