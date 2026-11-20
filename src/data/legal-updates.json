@@ -1,6 +1,6 @@
 {
   "source": "Cổng Thông tin điện tử Chính phủ – vanban.chinhphu.vn",
-  "updatedAt": "2026-11-17T10:14:29.800Z",
+  "updatedAt": "2026-11-20T09:43:03.497Z",
   "topics": [
     {
       "id": "luong",
@@ -36,6 +36,19 @@
     }
   ],
   "items": [
+    {
+      "code": "17/2026/TT-BTP",
+      "type": "Thông tư",
+      "date": "16/11/2026",
+      "title": "Sửa đổi, bổ sung một số điều của Thông tư số 05/2025/TT-BTP ngày 15 tháng 5 năm 2025 của Bộ trưởng Bộ Tư pháp quy định chi tiết một số điều và biện pháp thi hành Luật Công chứng được sửa đổi, bổ sung bởi Thông tư số 11/2025/TT-BTP và Thông tư số 06/2025/TT-BTP ngày 15 tháng 5 năm 2025 của Bộ trưởng Bộ Tư pháp quy định về tập sự hành nghề công chứng",
+      "url": "https://vanban.chinhphu.vn/?pageid=27160&docid=220321",
+      "file": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/17-btp.signed.pdf",
+      "topics": [
+        "dansu"
+      ],
+      "impact": false,
+      "checkedAt": "2026-11-20"
+    },
     {
       "code": "413/2026/NĐ-CP",
       "type": "Nghị định",
